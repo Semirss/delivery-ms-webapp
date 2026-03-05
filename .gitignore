@@ -1,0 +1,24 @@
+# Root .gitignore for the monorepo
+
+# Environment variables - NEVER commit these
+webapp/.env.local
+webapp/.env
+telegram-bot/.env
+**/.env.local
+**/.env
+
+# Dependency directories
+**/node_modules/
+**/__pycache__/
+**/*.pyc
+**/venv/
+**/.venv/
+
+# Build outputs
+webapp/.next/
+webapp/out/
+
+# Misc
+.DS_Store
+*.log
+Thumbs.db
