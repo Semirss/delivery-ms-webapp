@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import NetworkStatus from "../components/NetworkStatus";
 
 type Delivery = {
   id: string;
@@ -35,6 +36,7 @@ export default function DriverPortal() {
     isOpen: boolean; type: 'confirm' | 'alert'; title: string; message: string;
     onConfirm?: () => void; onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
+  const [apiError, setApiError] = useState(false);
 
   // Authentication persistence & realtime
   useEffect(() => {
@@ -76,8 +78,10 @@ export default function DriverPortal() {
       const res = await fetch(`/api/deliveries?driver_id=${driver.id}`);
       const data = await res.json();
       setDeliveries(Array.isArray(data) ? data : []);
+      setApiError(false);
     } catch (err) {
       console.error(err);
+      setApiError(true);
     }
   };
 
@@ -134,24 +138,30 @@ export default function DriverPortal() {
   };
 
   const updateDeliveryStatus = async (id: string, status: string) => {
-    setModalConfig({
-       isOpen: true, type: 'confirm', title: 'Confirm Status',
-       message: `Mark delivery as ${status}?`,
-       onCancel: () => setModalConfig(prev => ({ ...prev, isOpen: false })),
-       onConfirm: async () => {
-          setModalConfig(prev => ({ ...prev, isOpen: false }));
-          try {
-            await fetch(`/api/deliveries/${id}/status`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ status })
-            });
-            // realtime updates will fetch automatically
-          } catch (err) {
-            console.error(err);
-          }
-       }
-    });
+    const successMessages: Record<string, { title: string; message: string }> = {
+      'Picked Up': { title: '🚲 En Route!', message: "Package picked up! You're now on the way to the customer." },
+      'Delivered':  { title: '🏁 Delivered!', message: "Great work! The delivery has been completed successfully." },
+      'Pending':    { title: '↩️ Reassigned', message: "Delivery sent back to pending. Another driver can pick it up." },
+    };
+    // Optimistically update local state so the UI changes instantly
+    setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status } : d));
+    try {
+      await fetch(`/api/deliveries/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      // Show success modal
+      const msg = successMessages[status] || { title: 'Updated!', message: `Status changed to ${status}.` };
+      setModalConfig({
+        isOpen: true, type: 'alert', title: msg.title, message: msg.message,
+        onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
+      });
+    } catch (err) {
+      console.error(err);
+      // Rollback on error
+      setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status: 'Assigned' } : d));
+    }
   };
 
   const toggleOnlineStatus = async () => {
@@ -178,6 +188,7 @@ export default function DriverPortal() {
   if (!driver) {
     return (
       <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-black font-sans bg-[url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
+        <NetworkStatus apiError={apiError} />
         <div className="absolute inset-0 bg-neutral-900/40 backdrop-blur-sm"></div>
         <div className="max-w-md w-full mx-auto space-y-8 relative z-10 p-8 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20">
           <div>
@@ -249,6 +260,7 @@ export default function DriverPortal() {
 
   return (
     <div className="min-h-screen bg-neutral-100 pb-20 text-neutral-900 font-sans">
+      <NetworkStatus apiError={apiError} />
       
       {/* Premium Header */}
       <div className="bg-white px-5 py-6 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] sticky top-0 z-20 rounded-b-3xl">
@@ -341,9 +353,12 @@ export default function DriverPortal() {
                           <p className="font-medium text-emerald-600 mt-0.5">{job.delivery_fee || 'TBD'}</p>
                        </div>
                        <div className="col-span-2">
-                          <p className="text-[10px] font-bold text-neutral-400 uppercase">Customer Phone</p>
-                          <p className="font-medium text-blue-600 mt-0.5">{job.customer_phone}</p>
-                       </div>
+                           <p className="text-[10px] font-bold text-neutral-400 uppercase">Call Customer</p>
+                           <a href={`tel:${job.customer_phone}`} className="inline-flex items-center space-x-1.5 mt-1 font-bold text-blue-600 hover:text-blue-700 active:text-blue-800 transition-colors">
+                             <span>📞</span>
+                             <span className="underline underline-offset-2">{job.customer_phone}</span>
+                           </a>
+                        </div>
                     </div>
                   </div>
                   

@@ -42,18 +42,13 @@ export default function Home() {
     <div className="min-h-screen bg-neutral-900 font-sans text-neutral-100 flex flex-col justify-between selection:bg-blue-500/30">
       
       <header className="px-6 py-6 border-b border-neutral-800/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+        <div className="max-w-6xl mx-auto flex items-center justify-center">
            <div className="flex items-center space-x-3">
              <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                 <span className="text-xl font-extrabold text-white leading-none">SD</span>
              </div>
              <h1 className="text-xl font-extrabold tracking-tight text-white">Swift<span className="text-blue-500">Dispatch</span></h1>
            </div>
-           
-           <nav className="flex space-x-4">
-             <Link href="/drivers" className="text-sm font-bold text-neutral-400 hover:text-white transition-colors px-4 py-2 hover:bg-neutral-800 rounded-xl">Driver Portal</Link>
-             <Link href="/admin/login" className="text-sm font-bold text-neutral-400 hover:text-white transition-colors px-4 py-2 hover:bg-neutral-800 rounded-xl">Admin Login</Link>
-           </nav>
         </div>
       </header>
 
@@ -62,36 +57,16 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
         <div className="absolute top-0 right-[-10%] w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
 
-        <div className="max-w-4xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
-           
-           {/* Left Hero Text */}
-           <div className="space-y-6 text-center md:text-left">
-              <div className="inline-flex items-center space-x-2 bg-neutral-800/50 backdrop-blur-md border border-neutral-700/50 rounded-full px-4 py-1.5 shadow-sm text-sm font-bold text-blue-400">
+        <div className="max-w-md mx-auto w-full items-center">
+
+           {/* Right Form */}
+           <div className="bg-neutral-800/80 text-center  backdrop-blur-xl border border-neutral-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-md mx-auto">
+                          <div className="inline-flex items-center space-x-2 bg-neutral-800/50 backdrop-blur-md border border-neutral-700/50 rounded-full px-8  py-1.5 shadow-sm text-sm font-bold text-blue-400">
                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
                  <span>Now accepting requests</span>
               </div>
-              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-                 Fast, reliable delivery <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">via bike.</span>
-              </h2>
-              <p className="text-lg text-neutral-400 font-medium max-w-lg mx-auto md:mx-0">
-                 Skip the traffic. Book a localized bike courier instantly and track their progress live.
-              </p>
-              
-              <div className="hidden md:flex items-center space-x-6 pt-4">
-                 <div className="flex -space-x-3">
-                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=1" alt="Driver" />
-                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=2" alt="Driver" />
-                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=3" alt="Driver" />
-                    <div className="w-10 h-10 rounded-full border-2 border-neutral-900 bg-neutral-800 flex items-center justify-center text-xs font-bold text-white">+50</div>
-                 </div>
-                 <p className="text-sm font-bold text-neutral-400">Trusted active fleet</p>
-              </div>
-           </div>
-
-           {/* Right Form */}
-           <div className="bg-neutral-800/80 backdrop-blur-xl border border-neutral-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-md mx-auto">
              <div className="text-center mb-6">
-                <h3 className="text-xl font-extrabold text-white">Book a Courier</h3>
+                <h3 className="text-xl font-extrabold pt-4 text-white">Book a Courier</h3>
                 <p className="text-sm font-medium text-neutral-400 mt-1">Fill the details below</p>
              </div>
 

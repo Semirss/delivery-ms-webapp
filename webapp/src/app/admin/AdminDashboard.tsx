@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import NetworkStatus from "../components/NetworkStatus";
 
 type Delivery = {
   id: string;
@@ -33,6 +34,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending">("deliveries");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [apiError, setApiError] = useState(false);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean; type: 'confirm' | 'alert' | 'prompt'; title: string; message: string;
     fields?: { name: string; label: string; value: string }[];
@@ -81,8 +83,10 @@ export default function AdminDashboard() {
       
       setDeliveries(Array.isArray(delData) ? delData : []);
       setDrivers(Array.isArray(drvData) ? drvData : []);
+      setApiError(false);
     } catch (error) {
        console.error(error);
+       setApiError(true);
     } finally {
       setLoading(false);
     }
@@ -200,6 +204,8 @@ export default function AdminDashboard() {
   return (
     <div className="flex h-screen bg-neutral-50 text-neutral-900 font-sans relative">
       
+      <NetworkStatus apiError={apiError} />
+
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
          <div 
