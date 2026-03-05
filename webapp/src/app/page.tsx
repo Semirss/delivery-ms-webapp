@@ -2,117 +2,166 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  
+  const [error, setError] = useState("");
+  const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.currentTarget;
     setLoading(true);
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries()) as Record<string, any>;
-    
-    // Convert delivery_fee to number if present
-    if (data.delivery_fee) {
-      data.delivery_fee = parseFloat(data.delivery_fee as string);
-    }
-    
+    setError("");
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
     try {
-      const res = await fetch('/api/deliveries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch("/api/deliveries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error("Failed to submit");
+
+      if (!res.ok) throw new Error("Submission failed");
+      
       setSuccess(true);
-      form.reset();
-    } catch(err) {
-      console.error(err);
-      alert("Failed to submit request.");
+      (e.target as HTMLFormElement).reset();
+      
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
     }
+
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full mx-auto space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">
-            Request a Delivery
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Fast bike-based delivery service right to your door
-          </p>
+    <div className="min-h-screen bg-neutral-900 font-sans text-neutral-100 flex flex-col justify-between selection:bg-blue-500/30">
+      
+      <header className="px-6 py-6 border-b border-neutral-800/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+           <div className="flex items-center space-x-3">
+             <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span className="text-xl font-extrabold text-white leading-none">SD</span>
+             </div>
+             <h1 className="text-xl font-extrabold tracking-tight text-white">Swift<span className="text-blue-500">Dispatch</span></h1>
+           </div>
+           
+           <nav className="flex space-x-4">
+             <Link href="/drivers" className="text-sm font-bold text-neutral-400 hover:text-white transition-colors px-4 py-2 hover:bg-neutral-800 rounded-xl">Driver Portal</Link>
+             <Link href="/admin/login" className="text-sm font-bold text-neutral-400 hover:text-white transition-colors px-4 py-2 hover:bg-neutral-800 rounded-xl">Admin Login</Link>
+           </nav>
         </div>
-        
-        {success ? (
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-8 text-center shadow-sm">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-            </div>
-            <h3 className="text-xl font-bold mb-2">Request Submitted!</h3>
-            <p className="text-sm mb-6 text-emerald-700">We've received your delivery request. A driver will be assigned to you shortly.</p>
-            <button 
-              onClick={() => setSuccess(false)}
-              className="px-6 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-bold transition-colors shadow-sm"
-            >
-              Submit Another Request
-            </button>
-          </div>
-        ) : (
-          <form className="bg-white shadow-xl rounded-2xl p-8 border border-gray-100 space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="customer_name" className="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
-                <input required type="text" name="customer_name" id="customer_name" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="John Doe" />
+      </header>
+
+      <main className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 relative overflow-hidden">
+        {/* Background glow effects */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+        <div className="absolute top-0 right-[-10%] w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+
+        <div className="max-w-4xl mx-auto w-full grid md:grid-cols-2 gap-12 items-center">
+           
+           {/* Left Hero Text */}
+           <div className="space-y-6 text-center md:text-left">
+              <div className="inline-flex items-center space-x-2 bg-neutral-800/50 backdrop-blur-md border border-neutral-700/50 rounded-full px-4 py-1.5 shadow-sm text-sm font-bold text-blue-400">
+                 <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                 <span>Now accepting requests</span>
               </div>
+              <h2 className="text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                 Fast, reliable delivery <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">via bike.</span>
+              </h2>
+              <p className="text-lg text-neutral-400 font-medium max-w-lg mx-auto md:mx-0">
+                 Skip the traffic. Book a localized bike courier instantly and track their progress live.
+              </p>
               
-              <div>
-                <label htmlFor="customer_phone" className="block text-sm font-bold text-gray-700 mb-1">Phone Number</label>
-                <input required type="tel" name="customer_phone" id="customer_phone" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="+1234567890" />
+              <div className="hidden md:flex items-center space-x-6 pt-4">
+                 <div className="flex -space-x-3">
+                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=1" alt="Driver" />
+                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=2" alt="Driver" />
+                    <img className="w-10 h-10 rounded-full border-2 border-neutral-900" src="https://i.pravatar.cc/100?img=3" alt="Driver" />
+                    <div className="w-10 h-10 rounded-full border-2 border-neutral-900 bg-neutral-800 flex items-center justify-center text-xs font-bold text-white">+50</div>
+                 </div>
+                 <p className="text-sm font-bold text-neutral-400">Trusted active fleet</p>
               </div>
+           </div>
 
-              <div>
-                <label htmlFor="pickup_location" className="block text-sm font-bold text-gray-700 mb-1">Pickup Location</label>
-                <input required type="text" name="pickup_location" id="pickup_location" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="123 Sender Street" />
-              </div>
+           {/* Right Form */}
+           <div className="bg-neutral-800/80 backdrop-blur-xl border border-neutral-700/50 p-8 rounded-[2rem] shadow-2xl relative z-10 w-full max-w-md mx-auto">
+             <div className="text-center mb-6">
+                <h3 className="text-xl font-extrabold text-white">Book a Courier</h3>
+                <p className="text-sm font-medium text-neutral-400 mt-1">Fill the details below</p>
+             </div>
 
-              <div>
-                <label htmlFor="dropoff_location" className="block text-sm font-bold text-gray-700 mb-1">Drop-off Location</label>
-                <input required type="text" name="dropoff_location" id="dropoff_location" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="456 Receiver Avenue" />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div>
-                  <label htmlFor="package_type" className="block text-sm font-bold text-gray-700 mb-1">Package Type</label>
-                  <input type="text" name="package_type" id="package_type" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="Documents, Food..." />
-                </div>
-                <div>
-                  <label htmlFor="delivery_fee" className="block text-sm font-bold text-gray-700 mb-1">Est. Fee ($)</label>
-                  <input type="number" step="0.01" name="delivery_fee" id="delivery_fee" className="block w-full border-gray-300 border rounded-lg shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 focus:bg-white transition-colors outline-none" placeholder="10.00" />
-                </div>
-              </div>
-            </div>
+             {success && (
+               <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl text-center shadow-inner">
+                 <span className="text-3xl block mb-2">🎉</span>
+                 <p className="font-extrabold text-emerald-400">Request Dispatched!</p>
+                 <p className="text-xs text-emerald-500/80 mt-1 font-medium">We will assign a driver to you shortly. A driver will contact you for the delivery fee.</p>
+               </div>
+             )}
+             
+             {error && (
+               <div className="mb-6 bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl text-center shadow-inner animate-in fade-in">
+                 <span className="text-3xl block mb-2">⚠️</span>
+                 <p className="font-extrabold text-rose-400">Request Failed</p>
+                 <p className="text-xs text-rose-500/80 mt-1 font-medium">{error}</p>
+               </div>
+             )}
 
-            <div className="pt-2">
-              <button disabled={loading} type="submit" className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg shadow-md text-sm font-extrabold text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-50 transition-all">
-                {loading ? 'Submitting...' : 'Confirm Delivery Request'}
-              </button>
-            </div>
-          </form>
-        )}
-        
-        <div className="text-center mt-8">
-          <Link href="/admin" className="inline-flex items-center text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">
-            Go to Admin Dashboard 
-            <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-          </Link>
+             <form className="space-y-5" onSubmit={handleSubmit}>
+               <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Your Name</label>
+                    <input required type="text" name="customer_name" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Phone</label>
+                    <input required type="tel" name="customer_phone" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
+                  </div>
+               </div>
+               
+               <div className="relative pl-7 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-neutral-700 before:z-0 py-2">
+                  <div className="relative z-10 flex items-center">
+                     <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-400 rounded-full text-[10px] ring-4 ring-neutral-800">🟢</span>
+                     <div className="w-full">
+                       <input required type="text" name="pickup_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
+                     </div>
+                  </div>
+                  <div className="relative z-10 flex items-center">
+                     <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-rose-500/20 text-rose-400 rounded-full text-[10px] ring-4 ring-neutral-800">📍</span>
+                     <div className="w-full">
+                       <input required type="text" name="dropoff_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
+                     </div>
+                  </div>
+               </div>
+
+               <div>
+                 <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Package Details</label>
+                 <select required name="package_type" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                   <option value="Documents">Documents</option>
+                   <option value="Small Box">Small Box</option>
+                   <option value="Food/Groceries">Food / Groceries</option>
+                   <option value="Electronics">Electronics</option>
+                   <option value="Other">Other</option>
+                 </select>
+               </div>
+               
+               <button disabled={loading} type="submit" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative">
+                 <span className="relative z-10">{loading ? 'Dispatching...' : 'Request Courier Now'}</span>
+                 <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                 <span className="relative z-10 ml-2 group-hover:translate-x-1 transition-transform">→</span>
+               </button>
+             </form>
+           </div>
         </div>
-      </div>
+      </main>
+
+      <footer className="py-6 text-center text-xs font-bold text-neutral-500 uppercase tracking-widest relative z-10">
+        SwiftDispatch © 2026. Made for efficiency.
+      </footer>
     </div>
   );
 }
