@@ -3,7 +3,7 @@ import logging
 import requests
 import threading
 from flask import Flask, request, jsonify
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler, 
     ContextTypes, MessageHandler, filters, ConversationHandler
@@ -22,190 +22,356 @@ app = Flask(__name__)
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_BOT_TOKEN")
 API_BASE_URL = os.getenv("NEXTJS_API_URL", "http://localhost:3000/api")
 
-# Conversation States for Customer
-PICKUP_LOC, DROPOFF_LOC, CONFIRM = range(3)
+# --- CONVERSATION STATES ---
+# Customer Flow
+CUST_NAME, CUST_PHONE, CUST_PICKUP, CUST_DROPOFF, CUST_PACKAGE, CUST_CONFIRM = range(6)
+# Driver Auth Flow
+DRV_AUTH_CHOICE, DRV_LOGIN_NAME, DRV_LOGIN_PASS, DRV_SIGNUP_NAME, DRV_SIGNUP_PHONE, DRV_SIGNUP_PASS = range(6, 12)
 
 # ================= CUSTOMER FLOW ================= #
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     keyboard = [
-        [InlineKeyboardButton("Request Delivery", callback_data='request_delivery')],
-        [InlineKeyboardButton("I am a Driver", callback_data='driver_login')]
+        [InlineKeyboardButton("📦 Request Delivery", callback_data='flow_customer')],
+        [InlineKeyboardButton("🚲 I am a Driver", callback_data='flow_driver')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # Use reply_text for text messages
     if update.message:
         await update.message.reply_text(
-            "Welcome to the Delivery MVP! What would you like to do?",
+            "Welcome to SwiftDispatch! 🚲\nHow can we help you today?",
             reply_markup=reply_markup,
         )
     return ConversationHandler.END
 
-async def start_delivery_request(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+
+# --- CUSTOMER REQUEST BUILDER ---
+async def start_customer_flow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     
-    context.user_data['customer_name'] = update.effective_user.first_name
-    
-    await query.edit_message_text(text="Let's start your delivery request! Please reply with the pickup location:")
-    return PICKUP_LOC
+    # Try to extract name if available, otherwise ask
+    name = update.effective_user.first_name
+    if name:
+        context.user_data['customer_name'] = name
+        await query.edit_message_text("Let's get your delivery sorted! Please reply with your Phone Number:")
+        return CUST_PHONE
+    else:
+        await query.edit_message_text("Let's get your delivery sorted! Please reply with your Full Name:")
+        return CUST_NAME
 
-async def get_pickup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def cust_get_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['customer_name'] = update.message.text
+    await update.message.reply_text("Thanks! Please reply with your Phone Number:")
+    return CUST_PHONE
+
+async def cust_get_phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['customer_phone'] = update.message.text
+    await update.message.reply_text("Great. Where are we picking the package up from? (Reply with pickup address)")
+    return CUST_PICKUP
+
+async def cust_get_pickup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['pickup_location'] = update.message.text
-    await update.message.reply_text("Great. Now, please reply with the drop-off location:")
-    return DROPOFF_LOC
+    await update.message.reply_text("Got it. Where are we dropping it off? (Reply with drop-off address)")
+    return CUST_DROPOFF
 
-async def get_dropoff(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def cust_get_dropoff(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     context.user_data['dropoff_location'] = update.message.text
     
-    pickup = context.user_data['pickup_location']
-    dropoff = context.user_data['dropoff_location']
+    keyboard = [
+        [InlineKeyboardButton("Documents", callback_data='pkg_Documents'), InlineKeyboardButton("Small Box", callback_data='pkg_Small Box')],
+        [InlineKeyboardButton("Food/Groceries", callback_data='pkg_Food/Groceries'), InlineKeyboardButton("Electronics", callback_data='pkg_Electronics')],
+        [InlineKeyboardButton("Other", callback_data='pkg_Other')]
+    ]
+    await update.message.reply_text("Almost done. What type of package is this?", reply_markup=InlineKeyboardMarkup(keyboard))
+    return CUST_PACKAGE
+
+async def cust_get_package(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    await query.answer()
+    pkg_type = query.data.replace('pkg_', '')
+    context.user_data['package_type'] = pkg_type
+    
+    return await render_customer_confirmation(query, context)
+
+async def render_customer_confirmation(query, context) -> int:
+    name = context.user_data.get('customer_name')
+    phone = context.user_data.get('customer_phone')
+    pickup = context.user_data.get('pickup_location')
+    dropoff = context.user_data.get('dropoff_location')
+    pkg = context.user_data.get('package_type')
     
     keyboard = [
-        [InlineKeyboardButton("Confirm Request", callback_data='confirm_request')],
-        [InlineKeyboardButton("Cancel", callback_data='cancel_request')]
+        [InlineKeyboardButton("✅ Confirm Request", callback_data='confirm_request')],
+        [InlineKeyboardButton("✏️ Edit Details", callback_data='edit_request')],
+        [InlineKeyboardButton("❌ Cancel", callback_data='cancel_request')]
     ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
     
-    await update.message.reply_text(
-        f"Please confirm your delivery details:\n\n"
-        f"📍 Pickup: {pickup}\n"
-        f"🏁 Drop-off: {dropoff}\n"
-        f"📦 Package: Standard\n"
-        f"💵 Est. Fee: $10.00\n\n"
-        f"Is this correct?",
-        reply_markup=reply_markup
+    text = (
+        f"📋 Please confirm your delivery details:\n\n"
+        f"👤 Name: {name}\n"
+        f"📞 Phone: {phone}\n"
+        f"🟢 Pickup: {pickup}\n"
+        f"📍 Drop-off: {dropoff}\n"
+        f"📦 Package: {pkg}\n\n"
+        f"Is everything correct?"
     )
-    return CONFIRM
+    
+    if query.message.text:
+        await query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+    else: # If replacing an inline keyboard from previous msg
+        await query.message.reply_text(text, reply_markup=InlineKeyboardMarkup(keyboard))
+        
+    return CUST_CONFIRM
 
-async def confirm_delivery(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def cust_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     
     if query.data == 'cancel_request':
-        await query.edit_message_text("Request cancelled.")
+        await query.edit_message_text("❌ Request cancelled.")
         return ConversationHandler.END
         
+    if query.data == 'edit_request':
+        await query.edit_message_text("Let's start over. Please reply with the pickup location:")
+        return CUST_PICKUP
+        
     payload = {
-        "customer_name": context.user_data.get('customer_name', 'Telegram User'),
-        "customer_phone": context.user_data.get('customer_phone', 'via Telegram'),
-        "pickup_location": context.user_data['pickup_location'],
-        "dropoff_location": context.user_data['dropoff_location'],
-        "package_type": "Standard",
-        "delivery_fee": 10.00
+        "customer_name": context.user_data.get('customer_name'),
+        "customer_phone": context.user_data.get('customer_phone'),
+        "pickup_location": context.user_data.get('pickup_location'),
+        "dropoff_location": context.user_data.get('dropoff_location'),
+        "package_type": context.user_data.get('package_type'),
+        "delivery_fee": None # Handled manually later
     }
     
     try:
         response = requests.post(f"{API_BASE_URL}/deliveries", json=payload)
         response.raise_for_status()
-        await query.edit_message_text("✅ Your delivery request has been created! A driver will be assigned soon.")
+        await query.edit_message_text(
+            "🎉 Your delivery request has been dispatched!\n\n"
+            "An available bike courier will be assigned shortly. They will contact you regarding the delivery fee."
+        )
     except Exception as e:
         logger.error(f"Error creating delivery: {e}")
-        await query.edit_message_text("❌ Failed to create delivery request. Please try again later.")
+        await query.edit_message_text("⚠️ Failed to create delivery request. Please try again later.")
         
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text("Operation cancelled.")
+    await update.message.reply_text("Process cancelled. Send /start to begin again.")
     return ConversationHandler.END
 
-# ================= DRIVER FLOW ================= #
 
-async def driver_login(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+# ================= DRIVER FLOW & AUTH ================= #
+
+async def start_driver_flow(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
-    telegram_id = update.effective_user.id
     
+    # Check if already logged in via memory
+    if context.user_data.get('is_driver_logged_in'):
+        await show_driver_menu(query.message, context)
+        return ConversationHandler.END
+
+    keyboard = [
+        [InlineKeyboardButton("🔑 Log In", callback_data='drv_login')],
+        [InlineKeyboardButton("📝 Sign Up", callback_data='drv_signup')]
+    ]
     await query.edit_message_text(
-        f"Driver portal access. Your Telegram ID is: {telegram_id}.\nProvide this to the Admin for assignment."
+        "Welcome to the Driver Portal.\nAre you an existing driver or looking to join the fleet?",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
+    return DRV_AUTH_CHOICE
 
-async def driver_action(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def drv_auth_choice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     await query.answer()
     
-    data = query.data # format: action_deliveryId
-    action, delivery_id = data.split('_', 1)
+    if query.data == 'drv_login':
+        await query.edit_message_text("Please reply with your Driver Full Name:")
+        return DRV_LOGIN_NAME
+    elif query.data == 'drv_signup':
+        await query.edit_message_text("Excited to have you! Please reply with your Full Name:")
+        return DRV_SIGNUP_NAME
+    return ConversationHandler.END
+
+# --- LOGIN ---
+async def drv_login_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['try_login_name'] = update.message.text
+    await update.message.reply_text("Please reply with your Password:")
+    return DRV_LOGIN_PASS
+
+async def drv_login_pass(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    password = update.message.text
+    name = context.user_data.get('try_login_name')
     
-    new_status = ""
-    if action == "accept":
-        new_status = "Picked Up"
-    elif action == "pickedup":
-        new_status = "Delivered"
+    try:
+        # Check login against the Next API
+        res = requests.post(f"{API_BASE_URL}/drivers/login", json={"name": name, "password": password})
         
-    # TODO: Update DB through Next.js API
-    # requests.post(f"{API_BASE_URL}/deliveries/{delivery_id}/status", json={"status": new_status})
+        if res.status_code != 200:
+            await update.message.reply_text("❌ Invalid name or password. Try /start again.")
+            return ConversationHandler.END
+            
+        driver_data = res.json()
+        
+        if driver_data.get('approval_status') == 'Pending':
+            await update.message.reply_text(
+                "⏳ Your account is currently Pending Approval.\n\n"
+                "You cannot login until the admin approves your account. You will receive a notification here when approved."
+            )
+            return ConversationHandler.END
+            
+        # Success Login
+        context.user_data['is_driver_logged_in'] = True
+        context.user_data['driver_id'] = driver_data.get('id')
+        context.user_data['driver_name'] = driver_data.get('name')
+        
+        # Link their telegram ID if not linked
+        telegram_id = str(update.effective_chat.id)
+        if driver_data.get('telegram_id') != telegram_id:
+            requests.patch(f"{API_BASE_URL}/drivers/{driver_data.get('id')}", json={"telegram_id": telegram_id})
+        
+        await update.message.reply_text(f"✅ Login successful! Welcome back, {name}.")
+        await show_driver_menu(update.message, context)
+        
+    except Exception as e:
+        logger.error(f"Login error: {e}")
+        await update.message.reply_text("⚠️ System error during login. Try again later.")
+        
+    return ConversationHandler.END
+
+# --- SIGNUP ---
+async def drv_signup_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['signup_name'] = update.message.text
+    await update.message.reply_text("Please reply with your Phone Number:")
+    return DRV_SIGNUP_PHONE
+
+async def drv_signup_phone(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    context.user_data['signup_phone'] = update.message.text
+    await update.message.reply_text("Please reply with a Password you want to use for your account:")
+    return DRV_SIGNUP_PASS
+
+async def drv_signup_pass(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    password = update.message.text
+    name = context.user_data.get('signup_name')
+    phone = context.user_data.get('signup_phone')
+    telegram_id = str(update.effective_chat.id)
     
-    if action == "accept":
-        keyboard = [[InlineKeyboardButton("Mark as Delivered", callback_data=f"pickedup_{delivery_id}")]]
-        await query.edit_message_text("Delivery Accepted! Click when delivered.", reply_markup=InlineKeyboardMarkup(keyboard))
-    elif action == "pickedup":
-        await query.edit_message_text("Delivery Marked as Completed! 🏁")
+    payload = {
+        "name": name,
+        "phone": phone,
+        "password": password,
+        "telegram_id": telegram_id,
+        "status": "Offline",
+        "approval_status": "Pending"
+    }
+    
+    try:
+        res = requests.post(f"{API_BASE_URL}/drivers", json=payload)
+        res.raise_for_status()
+        await update.message.reply_text(
+            "📝 Signup successful!\n\n"
+            "⏳ Waiting for approval. You cannot login until the admin approves your account.\n"
+            "You will be notified right here when your account is ready."
+        )
+    except Exception as e:
+        logger.error(f"Signup error: {e}")
+        await update.message.reply_text("❌ Failed to create account. You may already have an account using this Telegram Profile. Try logging in.")
+        
+    return ConversationHandler.END
 
 
-# ================= FLASK KEEP-ALIVE & WEBHOOK ================= #
+# --- DRIVER MENU COMMANDS ---
+async def show_driver_menu(message, context):
+    name = context.user_data.get('driver_name', '')
+    # Send a persistent reply keyboard for Online/Offline actions and Logout
+    keyboard = [
+        ["🟢 Go Online", "🔴 Go Offline"],
+        ["🚪 Logout"]
+    ]
+    markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    await message.reply_text(f"Hey {name}! Use the menu below to manage your dispatch status.", reply_markup=markup)
+
+async def toggle_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not context.user_data.get('is_driver_logged_in'):
+        await update.message.reply_text("You must be logged in as a driver. Send /start")
+        return
+
+    text = update.message.text
+    driver_id = context.user_data.get('driver_id')
+    new_status = "Online" if "Online" in text else "Offline"
+    
+    try:
+        requests.patch(f"{API_BASE_URL}/drivers/{driver_id}", json={"status": new_status})
+        await update.message.reply_text(f"✅ Status updated to: {new_status}")
+    except Exception as e:
+         await update.message.reply_text("❌ Failed to update status.")
+
+async def logout_driver(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data.get('is_driver_logged_in'):
+        context.user_data.clear()
+        from telegram import ReplyKeyboardRemove
+        await update.message.reply_text("🚪 Logged out successfully.", reply_markup=ReplyKeyboardRemove())
+    else:
+        await update.message.reply_text("You are not logged in.")
+
+
+# ================= FLASK KEEP-ALIVE ================= #
 
 @app.route("/")
 def index():
-    return "Delivery MVP Telegram Bot is running via Flask."
+    return "SwiftDispatch Telegram Bot is running."
 
+# Keep original webhook for future proofing if Next sends notifications directly to bot server
 @app.route("/webhook/notify", methods=["POST"])
 def notify_driver():
-    """Endpoint called by Next.js when a driver is assigned."""
-    data = request.json
-    driver_telegram_id = data.get('driver', {}).get('telegram_id')
-    delivery_id = data.get('id')
-    pickup = data.get('pickup_location')
-    dropoff = data.get('dropoff_location')
-    
-    if not driver_telegram_id:
-        return jsonify({"error": "No telegram_id for driver"}), 400
-        
-    telegram_api_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    
-    keyboard = {
-        "inline_keyboard": [
-            [{"text": "Accept Delivery", "callback_data": f"accept_{delivery_id}"}]
-        ]
-    }
-    
-    payload = {
-        "chat_id": driver_telegram_id,
-        "text": f"🚨 NEW DELIVERY ASSIGNED 🚨\n\n📍 Pickup: {pickup}\n🏁 Drop-off: {dropoff}",
-        "reply_markup": keyboard
-    }
-    
-    requests.post(telegram_api_url, json=payload)
     return jsonify({"success": True})
-
 
 def main() -> None:
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
-    conv_handler = ConversationHandler(
-        entry_points=[
-            CommandHandler('start', start),
-            CallbackQueryHandler(start_delivery_request, pattern='^request_delivery$')
-        ],
+    # CUSTOMER FLOW
+    cust_handler = ConversationHandler(
+        entry_points=[CallbackQueryHandler(start_customer_flow, pattern='^flow_customer$')],
         states={
-            PICKUP_LOC: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_pickup)],
-            DROPOFF_LOC: [MessageHandler(filters.TEXT & ~filters.COMMAND, get_dropoff)],
-            CONFIRM: [CallbackQueryHandler(confirm_delivery, pattern='^(confirm_request|cancel_request)$')]
+            CUST_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, cust_get_name)],
+            CUST_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, cust_get_phone)],
+            CUST_PICKUP: [MessageHandler(filters.TEXT & ~filters.COMMAND, cust_get_pickup)],
+            CUST_DROPOFF: [MessageHandler(filters.TEXT & ~filters.COMMAND, cust_get_dropoff)],
+            CUST_PACKAGE: [CallbackQueryHandler(cust_get_package, pattern='^pkg_')],
+            CUST_CONFIRM: [CallbackQueryHandler(cust_confirm, pattern='^(confirm_request|cancel_request|edit_request)$')]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+    
+    # DRIVER AUTH FLOW
+    drv_handler = ConversationHandler(
+        entry_points=[CallbackQueryHandler(start_driver_flow, pattern='^flow_driver$')],
+        states={
+            DRV_AUTH_CHOICE: [CallbackQueryHandler(drv_auth_choice, pattern='^(drv_login|drv_signup)$')],
+            DRV_LOGIN_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, drv_login_name)],
+            DRV_LOGIN_PASS: [MessageHandler(filters.TEXT & ~filters.COMMAND, drv_login_pass)],
+            DRV_SIGNUP_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, drv_signup_name)],
+            DRV_SIGNUP_PHONE: [MessageHandler(filters.TEXT & ~filters.COMMAND, drv_signup_phone)],
+            DRV_SIGNUP_PASS: [MessageHandler(filters.TEXT & ~filters.COMMAND, drv_signup_pass)],
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-    application.add_handler(conv_handler)
-    application.add_handler(CallbackQueryHandler(driver_login, pattern='^driver_login$'))
-    application.add_handler(CallbackQueryHandler(driver_action, pattern='^(accept|pickedup)_.*$'))
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(cust_handler)
+    application.add_handler(drv_handler)
+    
+    # Persistent Driver menu buttons
+    application.add_handler(MessageHandler(filters.Regex('^(🟢 Go Online|🔴 Go Offline)$'), toggle_status))
+    application.add_handler(MessageHandler(filters.Regex('^🚪 Logout$'), logout_driver))
 
-    # Start bot polling in the main thread
     print("Starting bot polling...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
-    # Run flask in a separate thread so polling can run in main thread
     def run_flask():
         port = int(os.environ.get("PORT", 5000))
         app.run(host="0.0.0.0", port=port, use_reloader=False)
