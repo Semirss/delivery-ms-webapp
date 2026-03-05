@@ -30,7 +30,7 @@ export default function DriverPortal() {
   const [loading, setLoading] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [authError, setAuthError] = useState("");
-  const [authSuccess, setAuthSuccess] = useState("");
+  const [showTelegramModal, setShowTelegramModal] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean; type: 'confirm' | 'alert'; title: string; message: string;
@@ -89,43 +89,26 @@ export default function DriverPortal() {
     e.preventDefault();
     setLoading(true);
     setAuthError("");
-    setAuthSuccess("");
     
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
     try {
-      if (authMode === "login") {
-        const res = await fetch("/api/drivers/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: data.name, password: data.password })
-        });
-        
-        if (!res.ok) throw new Error("Invalid name or password");
-        const session = await res.json();
-        
-        if (session.approval_status === "Pending") {
-           throw new Error("Waiting for approval. You cannot login until the admin approves your account.");
-        }
-        
-        setDriver(session);
-        localStorage.setItem('mvp_driver_session', JSON.stringify(session));
-      } else {
-         // Sign Up
-         const res = await fetch("/api/drivers", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, status: 'Offline' }) // default to offline
-        });
-        if (!res.ok) {
-           const errData = await res.json();
-           throw new Error(errData.error || "Signup failed");
-        }
-        setAuthSuccess("Signup successful! Waiting for approval. You cannot login until the admin approves your account.");
-        setAuthMode("login");
-        setTimeout(() => setAuthSuccess(""), 10000);
+      const res = await fetch("/api/drivers/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: data.name, password: data.password })
+      });
+      
+      if (!res.ok) throw new Error("Invalid name or password");
+      const session = await res.json();
+      
+      if (session.approval_status === "Pending") {
+         throw new Error("Waiting for approval. You cannot login until the admin approves your account.");
       }
+      
+      setDriver(session);
+      localStorage.setItem('mvp_driver_session', JSON.stringify(session));
     } catch (err: any) {
       setAuthError(err.message);
     }
@@ -190,65 +173,75 @@ export default function DriverPortal() {
       <div className="min-h-screen bg-neutral-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-black font-sans bg-[url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center">
         <NetworkStatus apiError={apiError} />
         <div className="absolute inset-0 bg-neutral-900/40 backdrop-blur-sm"></div>
+
+        {/* Telegram Signup Modal */}
+        {showTelegramModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowTelegramModal(false)} />
+            <div className="relative bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center space-y-5 z-10">
+              <div className="mx-auto w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">✈️</span>
+              </div>
+              <h3 className="text-2xl font-extrabold text-neutral-900">Sign Up via Telegram</h3>
+              <p className="text-neutral-500 font-medium text-sm leading-relaxed">
+                Driver accounts are created through our Telegram bot.<br />
+                Open the bot, tap <strong>"I am a Driver"</strong> then <strong>"Sign Up"</strong> to register.
+              </p>
+              <a
+                href="https://t.me/sgcherosbot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center space-x-2 w-full py-4 bg-[#2AABEE] hover:bg-[#1d96d3] text-white font-extrabold rounded-2xl shadow-lg shadow-blue-500/20 transition-all"
+              >
+                <span className="text-xl">📲</span>
+                <span>Open @sgcherosbot</span>
+              </a>
+              <button onClick={() => setShowTelegramModal(false)} className="text-sm font-bold text-neutral-400 hover:text-neutral-700 transition-colors">
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-md w-full mx-auto space-y-8 relative z-10 p-8 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20">
           <div>
             <div className="mx-auto h-16 w-16 bg-blue-600 rounded-[1.2rem] flex items-center justify-center shadow-xl shadow-blue-500/30">
                <span className="text-2xl font-extrabold text-white leading-none">SD</span>
             </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-neutral-900 tracking-tight">Driver Portal</h2>
-            <p className="mt-2 text-center text-sm font-medium text-neutral-500">
-               {authMode === "login" ? "Welcome back" : "Join the fleet"}
-            </p>
+            <p className="mt-2 text-center text-sm font-medium text-neutral-500">Welcome back</p>
           </div>
           
-          <form className="space-y-5" onSubmit={handleAuth}>
-            {authError && (
-              <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm text-center font-bold">
-                {authError}
+            <form className="space-y-5" onSubmit={handleAuth}>
+              {authError && (
+                <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm text-center font-bold">
+                  {authError}
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                 <div>
+                   <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
+                   <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
+                 </div>
+                 
+                 <div>
+                   <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
+                   <input required type="password" name="password" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="••••••••" />
+                 </div>
               </div>
-            )}
-            {authSuccess && (
-              <div className="p-4 bg-amber-50 text-amber-600 border border-amber-200 rounded-xl text-sm text-center font-bold whitespace-pre-wrap">
-                {authSuccess}
+
+              <button disabled={loading} type="submit" className="w-full mt-6 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-all">
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+              
+              <div className="text-center pt-2 flex justify-between px-2">
+                 <button type="button" onClick={() => setShowTelegramModal(true)} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">
+                    Need an account?
+                 </button>
+                 <Link href="/" className="text-sm font-bold text-neutral-400 hover:text-neutral-900 transition-colors">Go Home</Link>
               </div>
-            )}
-            
-            <div className="space-y-4">
-               <div>
-                 <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
-                 <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
-               </div>
-               
-               {authMode === "signup" && (
-                 <>
-                   <div>
-                     <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Phone Number</label>
-                     <input required type="tel" name="phone" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="+1234567890" />
-                   </div>
-                   <div>
-                     <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Telegram Username (Optional)</label>
-                     <input type="text" name="telegram_id" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="@username" />
-                   </div>
-                 </>
-               )}
-
-               <div>
-                 <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
-                 <input required type="password" name="password" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="••••••••" />
-               </div>
-            </div>
-
-            <button disabled={loading} type="submit" className="w-full mt-6 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-all">
-              {loading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Create Account')}
-            </button>
-            
-            <div className="text-center pt-2 flex justify-between px-2">
-               <button type="button" onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError(""); setAuthSuccess(""); }} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">
-                  {authMode === "login" ? "Need an account?" : "Already have an account?"}
-               </button>
-               <Link href="/" className="text-sm font-bold text-neutral-400 hover:text-neutral-900 transition-colors">Go Home</Link>
-            </div>
-          </form>
+            </form>
         </div>
       </div>
     );
