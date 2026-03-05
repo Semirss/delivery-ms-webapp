@@ -329,7 +329,7 @@ def index():
 def notify_driver():
     return jsonify({"success": True})
 
-def main() -> None:
+async def main() -> None:
     application = Application.builder().token(TELEGRAM_TOKEN).build()
 
     # CUSTOMER FLOW
@@ -369,9 +369,18 @@ def main() -> None:
     application.add_handler(MessageHandler(filters.Regex('^🚪 Logout$'), logout_driver))
 
     print("Starting bot polling...")
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    # PTB 21.x + Python 3.14: use async context manager + explicit polling
+    async with application:
+        await application.start()
+        await application.updater.start_polling(allowed_updates=Update.ALL_TYPES)
+        print("Bot is live. Waiting for updates...")
+        # Run forever until process is killed
+        import asyncio as _asyncio
+        await _asyncio.sleep(float('inf'))
 
 if __name__ == "__main__":
+    import asyncio
+
     def run_flask():
         port = int(os.environ.get("PORT", 5000))
         app.run(host="0.0.0.0", port=port, use_reloader=False)
@@ -380,4 +389,4 @@ if __name__ == "__main__":
     flask_thread.daemon = True
     flask_thread.start()
 
-    main()
+    asyncio.run(main())
