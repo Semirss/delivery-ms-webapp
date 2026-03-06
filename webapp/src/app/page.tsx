@@ -93,7 +93,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex items-center justify-center">
            <div className="flex items-center space-x-3">
              <div className="h-12 w-12 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/30">
-                <Image src="/logo.jpg" alt="Motorbike Logo" width={48} height={48} className="object-cover" />
+                <Image src="/logo1.jpg" alt="Motorbike Logo" width={48} height={48} className="object-cover" />
              </div>
              <h1 className="text-xl font-extrabold tracking-tight text-white capitalize">Motorbike</h1>
            </div>
