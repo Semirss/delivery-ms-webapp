@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "YOUR_BOT_TOKEN")
-API_BASE_URL = os.getenv("NEXTJS_API_URL", "https://motobikeet.vercel.app/api")
+API_BASE_URL = os.getenv("NEXTJS_API_URL", "https://moto-bike-delivery.vercel.app/api")
 
 # --- CONVERSATION STATES ---
 # Customer Flow
