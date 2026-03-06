@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [category, setCategory] = useState("Bike");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -44,10 +46,10 @@ export default function Home() {
       <header className="px-6 py-6 border-b border-neutral-800/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto flex items-center justify-center">
            <div className="flex items-center space-x-3">
-             <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <span className="text-xl font-extrabold text-white leading-none">SD</span>
+             <div className="h-12 w-12 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/30">
+                <Image src="/logo.jpg" alt="Motorbike Logo" width={48} height={48} className="object-cover" />
              </div>
-             <h1 className="text-xl font-extrabold tracking-tight text-white">Swift<span className="text-blue-500">Dispatch</span></h1>
+             <h1 className="text-xl font-extrabold tracking-tight text-white capitalize">Motorbike</h1>
            </div>
         </div>
       </header>
@@ -124,6 +126,24 @@ export default function Home() {
                  </select>
                </div>
                
+               <div>
+                 <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Vehicle Category</label>
+                 <select required name="vehicle_category" value={category} onChange={(e) => setCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                   <option value="Bike">Bike</option>
+                   <option value="Motor">Motor</option>
+                 </select>
+               </div>
+
+               <div className="bg-neutral-900/50 border border-neutral-700/50 p-4 rounded-xl flex items-center justify-center space-x-3 shadow-inner">
+                  <span className="text-2xl">{category === 'Bike' ? '🚲' : '🏍️'}</span>
+                  <div>
+                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Estimated Price</p>
+                    <p className="font-extrabold text-lg text-emerald-400">
+                      {category === 'Bike' ? '200 - 600 Birr' : '350 - 800 Birr'}
+                    </p>
+                  </div>
+               </div>
+               
                <button disabled={loading} type="submit" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative">
                  <span className="relative z-10">{loading ? 'Dispatching...' : 'Request Courier Now'}</span>
                  <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -135,7 +155,7 @@ export default function Home() {
       </main>
 
       <footer className="py-6 text-center text-xs font-bold text-neutral-500 uppercase tracking-widest relative z-10">
-        SwiftDispatch © 2026. Made for efficiency.
+        Motorbike © 2026. Made for efficiency.
       </footer>
     </div>
   );

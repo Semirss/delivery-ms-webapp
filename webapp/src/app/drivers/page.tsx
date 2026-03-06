@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import NetworkStatus from "../components/NetworkStatus";
+import Image from "next/image";
 
 type Delivery = {
   id: string;
@@ -22,6 +23,7 @@ type Driver = {
   name: string;
   status: string;
   approval_status: string;
+  vehicle_type?: string;
 };
 
 export default function DriverPortal() {
@@ -90,25 +92,45 @@ export default function DriverPortal() {
     setLoading(true);
     setAuthError("");
     
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
+    const formElement = e.currentTarget;
+    const formData = new FormData(formElement);
 
     try {
-      const res = await fetch("/api/drivers/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.name, password: data.password })
-      });
-      
-      if (!res.ok) throw new Error("Invalid name or password");
-      const session = await res.json();
-      
-      if (session.approval_status === "Pending") {
-         throw new Error("Waiting for approval. You cannot login until the admin approves your account.");
+      if (authMode === "login") {
+        const data = Object.fromEntries(formData.entries());
+        const res = await fetch("/api/drivers/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: data.name, password: data.password })
+        });
+        
+        if (!res.ok) throw new Error("Invalid name or password");
+        const session = await res.json();
+        
+        if (session.approval_status === "Pending") {
+           throw new Error("Waiting for approval. You cannot login until the admin approves your account.");
+        }
+        
+        setDriver(session);
+        localStorage.setItem('mvp_driver_session', JSON.stringify(session));
+      } else {
+        const file = formData.get('personal_id') as File;
+        if (file && file.size > 2 * 1024 * 1024) throw new Error("ID photo must be under 2MB.");
+        
+        const res = await fetch("/api/drivers", {
+          method: "POST",
+          body: formData 
+        });
+
+        if (!res.ok) {
+           const errData = await res.json();
+           throw new Error(errData.error || "Signup failed. A driver with this details may already exist.");
+        }
+        
+        setAuthMode("login");
+        setAuthError("Signup successful! Please wait for admin approval to login.");
+        formElement.reset();
       }
-      
-      setDriver(session);
-      localStorage.setItem('mvp_driver_session', JSON.stringify(session));
     } catch (err: any) {
       setAuthError(err.message);
     }
@@ -166,6 +188,23 @@ export default function DriverPortal() {
      }
   };
 
+  const toggleVehicleType = async () => {
+     if (!driver) return;
+     const newType = driver.vehicle_type === "Motor" ? "Bike" : "Motor";
+     setDriver({ ...driver, vehicle_type: newType });
+     
+     try {
+       await fetch(`/api/drivers/${driver.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ vehicle_type: newType })
+       });
+     } catch (err) {
+        console.error("Failed to toggle vehicle type");
+        setDriver({ ...driver, vehicle_type: driver.vehicle_type });
+     }
+  };
+
 
   // --- AUTH VIEW ---
   if (!driver) {
@@ -205,39 +244,74 @@ export default function DriverPortal() {
 
         <div className="max-w-md w-full mx-auto space-y-8 relative z-10 p-8 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20">
           <div>
-            <div className="mx-auto h-16 w-16 bg-blue-600 rounded-[1.2rem] flex items-center justify-center shadow-xl shadow-blue-500/30">
-               <span className="text-2xl font-extrabold text-white leading-none">SD</span>
-            </div>
+             <div className="mx-auto h-16 w-16 rounded-[1.2rem] flex items-center justify-center overflow-hidden shadow-xl shadow-blue-500/30">
+                <Image src="/logo.jpg" alt="Motorbike Logo" width={64} height={64} className="object-cover" />
+             </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-neutral-900 tracking-tight">Driver Portal</h2>
-            <p className="mt-2 text-center text-sm font-medium text-neutral-500">Welcome back</p>
+            <p className="mt-2 text-center text-sm font-medium text-neutral-500">{authMode === 'login' ? 'Welcome back' : 'Join our fleet'}</p>
           </div>
           
             <form className="space-y-5" onSubmit={handleAuth}>
               {authError && (
-                <div className="p-4 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm text-center font-bold">
+                <div className={`p-4 ${authError.includes('successful') ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-red-50 text-red-600 border-red-200'} border rounded-xl text-sm text-center font-bold`}>
                   {authError}
                 </div>
               )}
               
-              <div className="space-y-4">
-                 <div>
-                   <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
-                   <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
-                 </div>
-                 
-                 <div>
-                   <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
-                   <input required type="password" name="password" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="••••••••" />
-                 </div>
-              </div>
+              {authMode === "login" ? (
+                  <div className="space-y-4">
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
+                       <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
+                       <input required type="password" name="password" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="••••••••" />
+                     </div>
+                  </div>
+              ) : (
+                  <div className="space-y-4 h-64 overflow-y-auto pr-2 custom-scrollbar">
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
+                       <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Phone Number</label>
+                       <input required type="tel" name="phone" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="0912345678" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Telegram Username <span className="text-xs text-neutral-400 font-normal ml-2">(To receive notifications)</span></label>
+                       <input required type="text" name="telegram_username" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="@username" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Plate Number</label>
+                       <input required type="text" name="plate_number" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="AA 12345" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Vehicle Type</label>
+                       <select required name="vehicle_type" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all">
+                         <option value="Bike">Bike</option>
+                         <option value="Motor">Motor</option>
+                       </select>
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Personal ID Photo <span className="text-xs text-red-400 ml-1">Max 2MB</span></label>
+                       <input required type="file" accept="image/*" name="personal_id" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
+                       <input required type="password" name="password" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="••••••••" />
+                     </div>
+                  </div>
+              )}
 
               <button disabled={loading} type="submit" className="w-full mt-6 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 transition-all">
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? 'Processing...' : (authMode === 'login' ? 'Sign In' : 'Submit Application')}
               </button>
               
               <div className="text-center pt-2 flex justify-between px-2">
-                 <button type="button" onClick={() => setShowTelegramModal(true)} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">
-                    Need an account?
+                 <button type="button" onClick={() => setAuthMode(authMode === "login" ? "signup" : "login")} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">
+                    {authMode === "login" ? "Need an account?" : "Already have an account?"}
                  </button>
                  <Link href="/" className="text-sm font-bold text-neutral-400 hover:text-neutral-900 transition-colors">Go Home</Link>
               </div>
@@ -272,22 +346,41 @@ export default function DriverPortal() {
           </button>
         </div>
 
-        {/* Online Toggle */}
-        <div className="bg-neutral-50 p-4 rounded-2xl flex items-center justify-between border border-neutral-100">
-           <div className="flex items-center space-x-3">
-              <span className="text-xl">🏃</span>
-              <div>
-                 <p className="font-bold text-neutral-800 text-sm">Status</p>
-                 <p className="text-xs font-medium text-neutral-500">Are you ready to ride?</p>
-              </div>
-           </div>
-           
-           <button 
-              onClick={toggleOnlineStatus}
-              className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${driver.status === 'Online' ? 'bg-emerald-500' : 'bg-neutral-300'}`}
-            >
-              <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${driver.status === 'Online' ? 'translate-x-7 shadow-sm' : 'translate-x-1 shadow-sm'}`} />
-            </button>
+        {/* Online Toggle & Vehicle Type */}
+        <div className="grid grid-cols-2 gap-4">
+            <div className="bg-neutral-50 p-4 rounded-2xl flex items-center justify-between border border-neutral-100 col-span-2 sm:col-span-1">
+               <div className="flex items-center space-x-3">
+                  <span className="text-xl">🏃</span>
+                  <div>
+                     <p className="font-bold text-neutral-800 text-sm">Status</p>
+                     <p className="text-xs font-medium text-neutral-500">Ready to ride?</p>
+                  </div>
+               </div>
+               
+               <button 
+                  onClick={toggleOnlineStatus}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${driver.status === 'Online' ? 'bg-emerald-500' : 'bg-neutral-300'}`}
+                >
+                  <span className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${driver.status === 'Online' ? 'translate-x-7 shadow-sm' : 'translate-x-1 shadow-sm'}`} />
+                </button>
+            </div>
+
+            <div className="bg-neutral-50 p-4 rounded-2xl flex items-center justify-between border border-neutral-100 col-span-2 sm:col-span-1">
+               <div className="flex items-center space-x-3">
+                  <span className="text-xl">{driver.vehicle_type === 'Motor' ? '🏍️' : '🚲'}</span>
+                  <div>
+                     <p className="font-bold text-neutral-800 text-sm">Vehicle</p>
+                     <p className="text-xs font-medium text-neutral-500 text-blue-600">{driver.vehicle_type || 'Bike'}</p>
+                  </div>
+               </div>
+               
+               <button 
+                  onClick={toggleVehicleType}
+                  className="px-3 py-1.5 bg-white border border-neutral-200 text-neutral-600 text-xs font-bold rounded-lg shadow-sm hover:bg-neutral-50"
+                >
+                  Switch
+                </button>
+            </div>
         </div>
       </div>
 

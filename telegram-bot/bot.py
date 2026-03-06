@@ -39,7 +39,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     if update.message:
         await update.message.reply_text(
-            "Welcome to SwiftDispatch! 🚲\nHow can we help you today?",
+            "Welcome to Motorbike! 🏍️\nHow can we help you today?",
             reply_markup=reply_markup,
         )
     return ConversationHandler.END
@@ -322,7 +322,7 @@ async def logout_driver(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @app.route("/")
 def index():
-    return "SwiftDispatch Telegram Bot is running."
+    return "Motorbike Telegram Bot is running."
 
 # Keep original webhook for future proofing if Next sends notifications directly to bot server
 @app.route("/webhook/notify", methods=["POST"])

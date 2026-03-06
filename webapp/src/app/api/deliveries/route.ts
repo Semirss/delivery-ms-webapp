@@ -23,12 +23,12 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee } = body;
+        const { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee, vehicle_category } = body;
 
         const { data, error } = await supabase
             .from('deliveries')
             .insert([
-                { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee }
+                { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee, vehicle_category }
             ])
             .select()
             .single();

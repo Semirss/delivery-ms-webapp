@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import NetworkStatus from "../components/NetworkStatus";
+import Image from "next/image";
 
 type Delivery = {
   id: string;
@@ -12,11 +13,12 @@ type Delivery = {
   pickup_location: string;
   dropoff_location: string;
   package_type: string;
+  vehicle_category?: string;
   delivery_fee: string | null;
   status: string;
   driver_id: string | null;
   created_at: string;
-  driver?: { name: string; phone: string; telegram_id: string };
+  driver?: { name: string; phone: string; telegram_id: string; vehicle_type?: string; };
 };
 
 type Driver = {
@@ -24,8 +26,12 @@ type Driver = {
   name: string;
   phone: string;
   telegram_id: string;
+  telegram_username: string;
+  plate_number: string;
+  personal_id_url: string;
   status: string;
   approval_status: string;
+  vehicle_type?: string;
 };
 
 export default function AdminDashboard() {
@@ -101,33 +107,33 @@ export default function AdminDashboard() {
     router.refresh();
   };
 
-  const approveDriver = (id: string, telegram_id: string | null) => {
+  const approveDriver = (driver: Driver) => {
     setModalConfig({
       isOpen: true, type: 'confirm', title: 'Approve Driver',
-      message: 'Approve this driver? They will be notified automatically via Telegram if they linked their account.',
+      message: 'Approve this driver? They will be notified automatically via SMS.',
       onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
-        setDrivers(prev => prev.map(d => d.id === id ? { ...d, approval_status: 'Approved' } : d));
-        const { error } = await supabase.from('drivers').update({ approval_status: 'Approved' }).eq('id', id);
+        setDrivers(prev => prev.map(d => d.id === driver.id ? { ...d, approval_status: 'Approved' } : d));
+        const { error } = await supabase.from('drivers').update({ approval_status: 'Approved' }).eq('id', driver.id);
         if (error) {
            setModalConfig({ isOpen: true, type: 'alert', title: 'Error', message: error.message, onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
            fetchData(); // Rollback
         } else {
-           if (telegram_id) {
+           if (driver.phone) {
               try {
-                const res = await fetch('/api/webhook/telegram-notify', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ telegram_id: telegram_id, message: "🎉 Congratulations! You have been approved by the Admin. You can now Log In using your name and password." }) });
+                const res = await fetch('/api/sms/send', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: driver.phone, message: "🎉 Congratulations! You have been approved by the Admin. You can now Log In using your name and password." }) });
                 if (!res.ok) {
                    const errData = await res.json();
                    setModalConfig({ 
                      isOpen: true, type: 'alert', 
-                     title: 'Approval Succeeded (Webhook Failed)', 
-                     message: `Driver approved, but Telegram block: ${errData.details?.description || 'Could not verify username/chat.'}`,
+                     title: 'Approval Succeeded (SMS Failed)', 
+                     message: `Driver approved, but SMS failed: ${errData.error || 'Unknown error'}`,
                      onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false }))
                    });
                 }
               } catch (e) {
-                console.error("Failed to notify driver", e);
+                console.error("Failed to notify driver via SMS", e);
               }
            }
            fetchData();
@@ -173,19 +179,20 @@ export default function AdminDashboard() {
      const driver = drivers.find((d: any) => d.id === id);
      if (!driver) return;
 
-     setModalConfig({
+      setModalConfig({
        isOpen: true, type: 'prompt', title: 'Edit Driver',
        message: 'Update the driver details below:',
        fields: [
          { name: 'name', label: 'Driver Name', value: driver.name },
-         { name: 'phone', label: 'Driver Phone', value: driver.phone }
+         { name: 'phone', label: 'Driver Phone', value: driver.phone },
+         { name: 'plate_number', label: 'Plate Number', value: driver.plate_number || '' }
        ],
        onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
        onConfirm: async (data: any) => {
           setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
           if (data.name && data.phone) {
-             setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, phone: data.phone } : d));
-             await supabase.from('drivers').update({ name: data.name, phone: data.phone }).eq('id', id);
+             setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, phone: data.phone, plate_number: data.plate_number } : d));
+             await supabase.from('drivers').update({ name: data.name, phone: data.phone, plate_number: data.plate_number }).eq('id', id);
              fetchData();
           }
        }
@@ -218,8 +225,8 @@ export default function AdminDashboard() {
       <aside className={`fixed md:static inset-y-0 left-0 w-64 bg-neutral-900 text-white flex flex-col shadow-2xl z-40 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-             <div className="h-10 w-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <span className="text-xl font-extrabold text-white leading-none">SD</span>
+             <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/30">
+                <Image src="/logo.jpg" alt="Motorbike Logo" width={40} height={40} className="object-cover" />
              </div>
              <h1 className="text-xl font-extrabold tracking-tight">Admin</h1>
           </div>
@@ -324,80 +331,81 @@ export default function AdminDashboard() {
                           </div>
                        </div>
 
-                       <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden">
-                          <table className="min-w-full divide-y divide-neutral-200 text-sm">
-                             <thead className="bg-neutral-50">
-                                <tr>
-                                   <th className="px-6 py-4 text-left font-bold text-neutral-500 uppercase tracking-wider">Customer</th>
-                                   <th className="px-6 py-4 text-left font-bold text-neutral-500 uppercase tracking-wider">Route</th>
-                                   <th className="px-6 py-4 text-left font-bold text-neutral-500 uppercase tracking-wider">Status & Driver</th>
-                                </tr>
-                             </thead>
-                             <tbody className="divide-y divide-neutral-100 bg-white">
-                                {deliveries.map(d => (
-                                   <tr key={d.id} className="hover:bg-neutral-50 transition-colors">
-                                      <td className="px-6 py-4">
-                                         <p className="font-bold text-neutral-900">{d.customer_name}</p>
-                                         <p className="text-neutral-500">{d.customer_phone}</p>
-                                      </td>
-                                      <td className="px-6 py-4 max-w-xs">
-                                         <div className="flex flex-col space-y-1">
-                                           <div className="flex items-start">
-                                              <span className="text-blue-500 mr-2">🟢</span>
-                                              <span className="font-medium text-neutral-800 truncate">{d.pickup_location}</span>
-                                           </div>
-                                           <div className="flex items-start">
-                                              <span className="text-red-500 mr-2">📍</span>
-                                              <span className="font-medium text-neutral-800 truncate">{d.dropoff_location}</span>
-                                           </div>
-                                         </div>
-                                      </td>
-                                      <td className="px-6 py-4">
-                                         {d.status === 'Pending' ? (
-                                            <div className="space-y-2">
-                                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">Pending</span>
+                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           {deliveries.length === 0 && (
+                               <div className="col-span-full py-12 text-center text-neutral-500 font-medium bg-white rounded-2xl border border-neutral-200">No deliveries found.</div>
+                           )}
+                           {deliveries.map(d => (
+                              <div key={d.id} className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 flex flex-col relative group hover:shadow-md transition-shadow">
+                                  <div className="flex justify-between items-start mb-4">
+                                      <div>
+                                          <h3 className="font-extrabold text-neutral-900 text-lg">{d.customer_name}</h3>
+                                          <p className="text-neutral-500 text-sm font-medium">{d.customer_phone}</p>
+                                      </div>
+                                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap
+                                          ${d.status === 'Pending' ? 'bg-amber-100 text-amber-800' : ''}
+                                          ${d.status === 'Assigned' ? 'bg-blue-100 text-blue-800' : ''}
+                                          ${d.status === 'Picked Up' ? 'bg-indigo-100 text-indigo-800' : ''}
+                                          ${d.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : ''}
+                                          ${d.status === 'Cancelled' ? 'bg-red-100 text-red-800' : ''}
+                                      `}>
+                                          {d.status === 'Pending' ? '⏳ Pending' : d.status}
+                                      </span>
+                                  </div>
+                                  
+                                  <div className="flex-1 space-y-3 mb-6">
+                                      <div className="flex items-start bg-neutral-50 p-3 rounded-xl">
+                                          <span className="text-blue-500 mr-2 flex-shrink-0">🟢</span>
+                                          <span className="text-sm font-medium text-neutral-800 line-clamp-2">{d.pickup_location}</span>
+                                      </div>
+                                      <div className="flex items-start bg-neutral-50 p-3 rounded-xl">
+                                          <span className="text-red-500 mr-2 flex-shrink-0">📍</span>
+                                          <span className="text-sm font-medium text-neutral-800 line-clamp-2">{d.dropoff_location}</span>
+                                      </div>
+
+                                      <div className="grid grid-cols-2 gap-2 mt-4">
+                                          <div className="bg-blue-50/50 p-2 rounded-lg">
+                                             <p className="text-[10px] uppercase font-bold text-neutral-400">Item</p>
+                                             <p className="text-xs font-bold text-neutral-700 truncate">{d.package_type}</p>
+                                          </div>
+                                          <div className="bg-emerald-50/50 p-2 rounded-lg">
+                                             <p className="text-[10px] uppercase font-bold text-neutral-400">Required</p>
+                                             <p className="text-xs font-bold text-neutral-700 truncate">{d.vehicle_category === 'Motor' ? '🏍️ Motor' : '🚲 Bike'}</p>
+                                          </div>
+                                      </div>
+                                  </div>
+
+                                  <div className="mt-auto pt-4 border-t border-neutral-100">
+                                      {d.status === 'Pending' ? (
+                                          <div className="space-y-2">
                                               <select 
-                                                className="block w-full text-sm rounded-lg border-neutral-300 bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                                                className="block w-full text-sm rounded-xl border-neutral-200 bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 font-medium py-3"
                                                 onChange={(e) => {
                                                    if (e.target.value) assignDriver(d.id, e.target.value);
                                                 }}
                                                 defaultValue=""
                                               >
-                                                <option value="" disabled>Assign to...</option>
+                                                <option value="" disabled>Assign Driver...</option>
                                                 {activeDrivers.filter(drv => drv.status === 'Online').map(drv => (
-                                                   <option key={drv.id} value={drv.id}>{drv.name} (Online)</option>
+                                                   <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online)</option>
                                                 ))}
                                                 {activeDrivers.filter(drv => drv.status === 'Offline').map(drv => (
-                                                   <option key={drv.id} value={drv.id}>{drv.name} (Offline)</option>
+                                                   <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Offline)</option>
                                                 ))}
                                               </select>
-                                            </div>
-                                         ) : (
-                                            <div>
-                                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold mb-1
-                                                  ${d.status === 'Assigned' ? 'bg-blue-100 text-blue-800' : ''}
-                                                  ${d.status === 'Picked Up' ? 'bg-indigo-100 text-indigo-800' : ''}
-                                                  ${d.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : ''}
-                                                  ${d.status === 'Cancelled' ? 'bg-red-100 text-red-800' : ''}
-                                               `}>
-                                                  {d.status}
-                                               </span>
-                                               <p className="font-medium text-neutral-700 mt-1 flex items-center">
-                                                  <span className="text-neutral-400 mr-1.5 flex-shrink-0">👤</span>
+                                          </div>
+                                      ) : (
+                                          <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-xl">
+                                              <p className="text-xs font-bold text-neutral-400 uppercase tracking-wide">Driver</p>
+                                              <p className="font-bold text-neutral-800 text-sm flex items-center">
+                                                  <span className="mr-1.5">{d.driver?.vehicle_type === 'Motor' ? '🏍️' : '🚲'}</span>
                                                   {d.driver?.name}
-                                               </p>
-                                            </div>
-                                         )}
-                                      </td>
-                                   </tr>
-                                ))}
-                                {deliveries.length === 0 && (
-                                   <tr>
-                                     <td colSpan={3} className="px-6 py-12 text-center text-neutral-500 font-medium">No deliveries found.</td>
-                                   </tr>
-                                )}
-                             </tbody>
-                          </table>
+                                              </p>
+                                          </div>
+                                      )}
+                                  </div>
+                              </div>
+                           ))}
                        </div>
                     </div>
                  )}
@@ -416,10 +424,19 @@ export default function AdminDashboard() {
                              </div>
                              <h3 className="text-xl font-extrabold text-neutral-900 truncate">{drv.name}</h3>
                              <p className="text-neutral-500 font-medium mt-1 truncate">{drv.phone}</p>
-                             <p className="text-neutral-400 text-sm mt-1 truncate">{drv.telegram_id}</p>
+                             <p className="text-neutral-400 text-sm mt-1 truncate">{drv.telegram_username || drv.telegram_id || 'No Telegram'}</p>
+                             <div className="flex items-center space-x-2 mt-2">
+                                <span className="text-neutral-600 font-bold text-sm">Plate: {drv.plate_number || 'N/A'}</span>
+                                <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-lg ${drv.vehicle_type === 'Motor' ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                                  {drv.vehicle_type === 'Motor' ? '🏍️ Motor' : '🚲 Bike'}
+                                </span>
+                             </div>
                              
                              <div className="mt-4 flex space-x-2">
                                 <button onClick={() => editDriver(drv.id)} className="flex-1 px-3 py-1.5 bg-neutral-100 text-neutral-600 font-bold text-xs rounded-lg hover:bg-neutral-200 transition-colors">Edit</button>
+                                {drv.personal_id_url && (
+                                   <a href={drv.personal_id_url} target="_blank" rel="noopener noreferrer" className="flex-1 px-3 py-1.5 bg-blue-50 text-blue-600 font-bold text-xs rounded-lg text-center hover:bg-blue-100 transition-colors">View ID</a>
+                                )}
                                 <button onClick={() => deleteDriver(drv.id)} className="flex-1 px-3 py-1.5 bg-red-50 text-red-600 font-bold text-xs rounded-lg hover:bg-red-100 transition-colors">Delete</button>
                              </div>
 
@@ -454,11 +471,16 @@ export default function AdminDashboard() {
                                    </div>
                                 </div>
                              </div>
-                             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
+                              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
+                                {drv.personal_id_url && (
+                                   <a href={drv.personal_id_url} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-50 text-blue-600 font-bold text-center rounded-xl hover:bg-blue-100 transition-colors w-full sm:w-auto text-sm">
+                                      View ID
+                                   </a>
+                                )}
                                 <button onClick={() => rejectDriver(drv.id)} className="px-4 py-2 bg-neutral-100 text-neutral-600 font-bold justify-center rounded-xl hover:bg-neutral-200 transition-colors w-full sm:w-auto text-sm">
                                    Reject
                                 </button>
-                                <button onClick={() => approveDriver(drv.id, drv.telegram_id)} className="px-4 py-2 bg-blue-600 shadow-lg shadow-blue-600/20 text-white font-bold rounded-xl hover:bg-blue-700 transition-all w-full sm:w-auto text-sm">
+                                <button onClick={() => approveDriver(drv)} className="px-4 py-2 bg-blue-600 shadow-lg shadow-blue-600/20 text-white font-bold rounded-xl hover:bg-blue-700 transition-all w-full sm:w-auto text-sm">
                                    Approve
                                 </button>
                              </div>
