@@ -142,7 +142,7 @@ export default function DriverPortal() {
         localStorage.setItem('mvp_driver_session', JSON.stringify(session));
       } else {
         const file = formData.get('personal_id') as File;
-        if (file && file.size > 2 * 1024 * 1024) throw new Error("ID photo must be under 2MB.");
+        if (file && file.size > 5 * 1024 * 1024 * 1024 * 1024 * 1024) throw new Error("ID photo must be under 2MB.");
         
         const res = await fetch("/api/drivers", {
           method: "POST",
@@ -322,7 +322,7 @@ export default function DriverPortal() {
                        </select>
                      </div>
                      <div>
-                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Personal ID Photo <span className="text-xs text-red-400 ml-1">Max 2MB</span></label>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Personal ID Photo <span className="text-xs text-red-400 ml-1">Max 5MB</span></label>
                        <input required type="file" accept="image/*" name="personal_id" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
                      </div>
                      <div>

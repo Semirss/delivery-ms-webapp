@@ -35,7 +35,7 @@ export async function POST(request: Request) {
             status = formData.get('status') as string;
 
             if (file && file.size > 0) {
-                if (file.size > 2 * 1024 * 1024) {
+                if (file.size > 5 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
                     return NextResponse.json({ error: "Image must be under 2MB" }, { status: 400 });
                 }
 
