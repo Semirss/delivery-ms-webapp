@@ -7,36 +7,82 @@ import Image from "next/image";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false); // Renamed from success
   const [error, setError] = useState("");
-  const [category, setCategory] = useState("Bike");
+  const [name, setName] = useState(""); // New state
+  const [phone, setPhone] = useState(""); // New state
+  const [pickup, setPickup] = useState(""); // New state
+  const [dropoff, setDropoff] = useState(""); // New state
+  const [packageType, setPackageType] = useState("Documents"); // New state, with default
+  const [vehicleCategory, setVehicleCategory] = useState("Bike"); // Renamed from category
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!packageType || !pickup || !dropoff || !phone) {
+       setError("Please fill out all fields.");
+       return;
+    }
+
     setLoading(true);
     setError("");
 
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries());
-
     try {
+      // 1. Convert address string to Lat/Lng using Nominatim
+      let pickupLat = null, pickupLng = null;
+      let dropoffLat = null, dropoffLng = null;
+
+      try {
+          const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickup)}`);
+          const pickupData = await pickupRes.json();
+          if (pickupData && pickupData.length > 0) {
+              pickupLat = parseFloat(pickupData[0].lat);
+              pickupLng = parseFloat(pickupData[0].lon);
+          }
+
+          const dropoffRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoff)}`);
+          const dropoffData = await dropoffRes.json();
+          if (dropoffData && dropoffData.length > 0) {
+              dropoffLat = parseFloat(dropoffData[0].lat);
+              dropoffLng = parseFloat(dropoffData[0].lon);
+          }
+      } catch (err) {
+          console.warn("Geocoding failed, coordinates will be null", err);
+      }
+
+      // 2. Submit Delivery
       const res = await fetch("/api/deliveries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+           customer_name: name || "Guest",
+           customer_phone: phone,
+           pickup_location: pickup,
+           dropoff_location: dropoff,
+           package_type: packageType,
+           vehicle_category: vehicleCategory,
+           pickup_lat: pickupLat,
+           pickup_lng: pickupLng,
+           dropoff_lat: dropoffLat,
+           dropoff_lng: dropoffLng
+        })
       });
 
-      if (!res.ok) throw new Error("Submission failed");
+      if (!res.ok) throw new Error("Failed to submit delivery.");
       
-      setSuccess(true);
-      (e.target as HTMLFormElement).reset();
+      setSubmitted(true);
+      // Reset form fields after successful submission
+      setName("");
+      setPhone("");
+      setPickup("");
+      setDropoff("");
+      setPackageType("Documents");
+      setVehicleCategory("Bike");
       
-      setTimeout(() => setSuccess(false), 5000);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setTimeout(() => setSubmitted(false), 5000); // Optional: hide success message after a delay
+    } catch (err: any) {
+      setError(err.message || "An unexpected error occurred.");
     }
-
     setLoading(false);
   };
 
@@ -72,7 +118,7 @@ export default function Home() {
                 <p className="text-sm font-medium text-neutral-400 mt-1">Fill the details below</p>
              </div>
 
-             {success && (
+             {submitted && (
                <div className="mb-6 bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-xl text-center shadow-inner">
                  <span className="text-3xl block mb-2">🎉</span>
                  <p className="font-extrabold text-emerald-400">Request Dispatched!</p>
@@ -92,32 +138,32 @@ export default function Home() {
                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Your Name</label>
-                    <input required type="text" name="customer_name" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
+                    <input required type="text" name="customer_name" value={name} onChange={(e) => setName(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Phone</label>
-                    <input required type="tel" name="customer_phone" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
+                    <input required type="tel" name="customer_phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
                   </div>
                </div>
                
                <div className="relative pl-7 space-y-4 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-neutral-700 before:z-0 py-2">
-                  <div className="relative z-10 flex items-center">
+                   <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-400 rounded-full text-[10px] ring-4 ring-neutral-800">🟢</span>
                      <div className="w-full">
-                       <input required type="text" name="pickup_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
+                       <input required type="text" name="pickup_location" value={pickup} onChange={(e) => setPickup(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
                      </div>
                   </div>
                   <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-rose-500/20 text-rose-400 rounded-full text-[10px] ring-4 ring-neutral-800">📍</span>
                      <div className="w-full">
-                       <input required type="text" name="dropoff_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
+                       <input required type="text" name="dropoff_location" value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
                      </div>
                   </div>
                </div>
 
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Package Details</label>
-                 <select required name="package_type" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select required name="package_type" value={packageType} onChange={(e) => setPackageType(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Documents">Documents</option>
                    <option value="Small Box">Small Box</option>
                    <option value="Food/Groceries">Food / Groceries</option>
@@ -128,18 +174,18 @@ export default function Home() {
                
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Vehicle Category</label>
-                 <select required name="vehicle_category" value={category} onChange={(e) => setCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select required name="vehicle_category" value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Bike">Bike</option>
                    <option value="Motor">Motor</option>
                  </select>
                </div>
 
                <div className="bg-neutral-900/50 border border-neutral-700/50 p-4 rounded-xl flex items-center justify-center space-x-3 shadow-inner">
-                  <span className="text-2xl">{category === 'Bike' ? '🚲' : '🏍️'}</span>
+                  <span className="text-2xl">{vehicleCategory === 'Bike' ? '🚲' : '🏍️'}</span>
                   <div>
                     <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Estimated Price</p>
                     <p className="font-extrabold text-lg text-emerald-400">
-                      {category === 'Bike' ? '200 - 600 Birr' : '350 - 800 Birr'}
+                      {vehicleCategory === 'Bike' ? '200 - 600 Birr' : '350 - 800 Birr'}
                     </p>
                   </div>
                </div>

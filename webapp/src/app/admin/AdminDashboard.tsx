@@ -5,6 +5,9 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import NetworkStatus from "../components/NetworkStatus";
 import Image from "next/image";
+import dynamic from 'next/dynamic';
+
+const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 
 type Delivery = {
   id: string;
@@ -18,7 +21,11 @@ type Delivery = {
   status: string;
   driver_id: string | null;
   created_at: string;
-  driver?: { name: string; phone: string; telegram_id: string; vehicle_type?: string; };
+  driver?: { name: string; phone: string; telegram_id: string; vehicle_type?: string; current_lat?: number; current_lng?: number; };
+  pickup_lat?: number;
+  pickup_lng?: number;
+  dropoff_lat?: number;
+  dropoff_lng?: number;
 };
 
 type Driver = {
@@ -39,12 +46,15 @@ export default function AdminDashboard() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending">("deliveries");
+  const [filterStatus, setFilterStatus] = useState<string>("All");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [modalConfig, setModalConfig] = useState<{
-    isOpen: boolean; type: 'confirm' | 'alert' | 'prompt'; title: string; message: string;
+    isOpen: boolean; type: 'confirm' | 'alert' | 'prompt' | 'map'; title: string; message: string;
     fields?: { name: string; label: string; value: string }[];
-    onConfirm?: (data?: any) => void; onCancel?: () => void;
+    mapData?: { driverLat?: number; driverLng?: number; pickupLat?: number; pickupLng?: number; dropoffLat?: number; dropoffLng?: number; };
+    onConfirm?: (data?: any) => void;
+    onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const router = useRouter();
 
@@ -307,6 +317,22 @@ export default function AdminDashboard() {
                  {/* DELIVERIES TAB */}
                  {activeTab === 'deliveries' && (
                     <div className="space-y-6">
+                       <div className="flex justify-between items-center mb-2">
+                           <h3 className="font-extrabold text-neutral-800 text-lg">Delivery Board</h3>
+                           <select 
+                               className="block rounded-xl border-neutral-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm font-medium py-2 pl-3 pr-10 text-neutral-700 bg-white"
+                               value={filterStatus}
+                               onChange={(e) => setFilterStatus(e.target.value)}
+                           >
+                               <option value="All">All Statuses</option>
+                               <option value="Pending">Pending</option>
+                               <option value="Assigned">Assigned</option>
+                               <option value="Picked Up">Picked Up</option>
+                               <option value="Delivered">Delivered</option>
+                               <option value="Cancelled">Cancelled</option>
+                           </select>
+                       </div>
+                       
                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                           <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-100 flex items-center">
                             <div className="h-12 w-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mr-4">📦</div>
@@ -332,10 +358,10 @@ export default function AdminDashboard() {
                        </div>
 
                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                           {deliveries.length === 0 && (
-                               <div className="col-span-full py-12 text-center text-neutral-500 font-medium bg-white rounded-2xl border border-neutral-200">No deliveries found.</div>
+                           {deliveries.filter(d => filterStatus === "All" || d.status === filterStatus).length === 0 && (
+                               <div className="col-span-full py-12 text-center text-neutral-500 font-medium bg-white rounded-2xl border border-neutral-200">No deliveries found for this filter.</div>
                            )}
-                           {deliveries.map(d => (
+                           {deliveries.filter(d => filterStatus === "All" || d.status === filterStatus).map(d => (
                               <div key={d.id} className="bg-white rounded-2xl border border-neutral-200 shadow-sm p-6 flex flex-col relative group hover:shadow-md transition-shadow">
                                   <div className="flex justify-between items-start mb-4">
                                       <div>
@@ -402,6 +428,25 @@ export default function AdminDashboard() {
                                                   {d.driver?.name}
                                               </p>
                                           </div>
+                                      )}
+
+                                      {/* Tracking Map Button */}
+                                      {['Assigned', 'Picked Up'].includes(d.status) && (
+                                         <button 
+                                            className="w-full mt-3 flex items-center justify-center space-x-2 bg-neutral-900 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-black transition-colors"
+                                            onClick={() => setModalConfig({
+                                               isOpen: true, type: 'map', title: `Track: ${d.customer_name}`, message: '',
+                                               mapData: { 
+                                                 driverLat: d.driver?.current_lat, driverLng: d.driver?.current_lng,
+                                                 pickupLat: d.pickup_lat, pickupLng: d.pickup_lng,
+                                                 dropoffLat: d.dropoff_lat, dropoffLng: d.dropoff_lng
+                                               },
+                                               onConfirm: () => setModalConfig(prev => ({...prev, isOpen: false}))
+                                            })}
+                                         >
+                                            <span>🗺️</span>
+                                            <span>Live Tracking</span>
+                                         </button>
                                       )}
                                   </div>
                               </div>
@@ -525,15 +570,39 @@ export default function AdminDashboard() {
                       ))}
                    </form>
                 )}
+
+                {modalConfig.type === 'map' && (
+                    <div className="space-y-6">
+                        <div className="rounded-xl overflow-hidden border border-neutral-200 shadow-inner">
+                             {modalConfig.mapData ? (
+                                <LiveMap 
+                                    driverLat={modalConfig.mapData.driverLat}
+                                    driverLng={modalConfig.mapData.driverLng}
+                                    pickupLat={modalConfig.mapData.pickupLat}
+                                    pickupLng={modalConfig.mapData.pickupLng}
+                                    dropoffLat={modalConfig.mapData.dropoffLat}
+                                    dropoffLng={modalConfig.mapData.dropoffLng}
+                                />
+                             ) : (
+                                <div className="h-[400px] flex items-center justify-center bg-neutral-100 text-neutral-500 font-bold">
+                                   No tracking data available.
+                                </div>
+                             )}
+                        </div>
+                        <button onClick={modalConfig.onConfirm} className="w-full px-4 py-3 bg-neutral-900 text-white font-extrabold rounded-xl hover:bg-black shadow-lg">Close Tracking</button>
+                    </div>
+                )}
                 
-                <div className="flex space-x-3 justify-end">
-                   {(modalConfig.type === 'confirm' || modalConfig.type === 'prompt') && (
-                      <button type="button" onClick={modalConfig.onCancel} className="px-5 py-2.5 bg-neutral-100 text-neutral-600 font-bold rounded-xl hover:bg-neutral-200 transition-colors text-sm">Cancel</button>
-                   )}
-                   <button type={modalConfig.type === 'prompt' ? 'submit' : 'button'} form={modalConfig.type === 'prompt' ? 'modal-form' : undefined} onClick={modalConfig.type !== 'prompt' ? modalConfig.onConfirm : undefined} className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all text-sm">
-                      {modalConfig.type === 'alert' ? 'OK' : 'Confirm'}
-                   </button>
-                </div>
+                {modalConfig.type !== 'map' && (
+                  <div className="flex space-x-3 justify-end">
+                    {(modalConfig.type === 'confirm' || modalConfig.type === 'prompt') && (
+                        <button type="button" onClick={modalConfig.onCancel} className="px-5 py-2.5 bg-neutral-100 text-neutral-600 font-bold rounded-xl hover:bg-neutral-200 transition-colors text-sm">Cancel</button>
+                    )}
+                    <button type={modalConfig.type === 'prompt' ? 'submit' : 'button'} form={modalConfig.type === 'prompt' ? 'modal-form' : undefined} onClick={modalConfig.type !== 'prompt' ? modalConfig.onConfirm : undefined} className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all text-sm">
+                        {modalConfig.type === 'alert' ? 'OK' : 'Confirm'}
+                    </button>
+                  </div>
+                )}
              </div>
           </div>
         </div>

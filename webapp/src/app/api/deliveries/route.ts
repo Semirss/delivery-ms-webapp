@@ -4,15 +4,15 @@ import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const driver_id = searchParams.get('driver_id');
+    const customer_phone = searchParams.get('customer_phone');
 
     let query = supabase
         .from('deliveries')
-        .select('*, driver:drivers(name, phone, telegram_id)')
+        .select('*, driver:drivers(name, phone, telegram_id, vehicle_type, current_lat, current_lng)')
         .order('created_at', { ascending: false });
 
-    if (driver_id) {
-        query = query.eq('driver_id', driver_id);
-    }
+    if (driver_id) query = query.eq('driver_id', driver_id);
+    if (customer_phone) query = query.eq('customer_phone', customer_phone);
 
     const { data, error } = await query;
 

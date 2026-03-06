@@ -39,6 +39,7 @@ export default function DriverPortal() {
     onConfirm?: () => void; onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const [apiError, setApiError] = useState(false);
+  const [locationEnabled, setLocationEnabled] = useState(false);
 
   // Authentication persistence & realtime
   useEffect(() => {
@@ -60,19 +61,45 @@ export default function DriverPortal() {
            setDriver(payload.new as Driver);
            localStorage.setItem('mvp_driver_session', JSON.stringify(payload.new));
         })
-        .subscribe();
-        
       // Auto-refresh every 2 minutes for fail-safe syncing
       const intervalId = setInterval(() => {
          fetchData();
       }, 120000);
 
+      // Start GPS Tracking if online
+      let watchId: number;
+      if (driver.status === 'Online' && 'geolocation' in navigator) {
+          watchId = navigator.geolocation.watchPosition(
+              async (position) => {
+                  setLocationEnabled(true);
+                  const { latitude, longitude } = position.coords;
+                  try {
+                      await fetch(`/api/drivers/${driver.id}/location`, {
+                          method: 'PATCH',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ lat: latitude, lng: longitude })
+                      });
+                  } catch (err) {
+                      console.error("Failed to update location", err);
+                  }
+              },
+              (error) => {
+                  console.error("GPS Error:", error);
+                  setLocationEnabled(false);
+              },
+              { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+          );
+      } else {
+          setLocationEnabled(false);
+      }
+
       return () => { 
         supabase.removeChannel(sub); 
         clearInterval(intervalId);
+        if (watchId) navigator.geolocation.clearWatch(watchId);
       };
     }
-  }, [driver?.id]);
+  }, [driver?.id, driver?.status]);
 
   const fetchData = async () => {
     if (!driver) return;
@@ -345,6 +372,17 @@ export default function DriverPortal() {
              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
           </button>
         </div>
+
+        {/* GPS Warning label */}
+        {driver.status === 'Online' && !locationEnabled && (
+           <div className="mb-4 bg-red-50 border border-red-200 p-3 rounded-xl flex items-start space-x-3 shadow-sm">
+              <span className="text-red-500 text-lg">⚠️</span>
+              <div>
+                  <h3 className="text-red-800 font-bold text-sm">Location Access Required</h3>
+                  <p className="text-red-600 text-xs font-medium mt-0.5">Please allow GPS tracking in your browser so we can assign you nearby deliveries.</p>
+              </div>
+           </div>
+        )}
 
         {/* Online Toggle & Vehicle Type */}
         <div className="grid grid-cols-2 gap-4">

@@ -30,3 +30,13 @@ ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS vehicle_category TEXT;
 -- 6. Setup Supabase Storage for Driver IDs (Run in SQL editor if not using UI)
 -- INSERT INTO storage.buckets (id, name, public) VALUES ('driver_ids', 'driver_ids', true) ON CONFLICT (id) DO NOTHING;
 -- Note: Remember to set RLS policies on the bucket via Supabase Dashboard to allow uploads (e.g. INSERT for anon/authenticated if doing public uploads, or specific roles).
+
+-- 7. Live Tracking (GPS) for Deliveries and Drivers
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS current_lat FLOAT8;
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS current_lng FLOAT8;
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS last_location_update TIMESTAMPTZ;
+
+ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS pickup_lat FLOAT8;
+ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS pickup_lng FLOAT8;
+ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS dropoff_lat FLOAT8;
+ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS dropoff_lng FLOAT8;
