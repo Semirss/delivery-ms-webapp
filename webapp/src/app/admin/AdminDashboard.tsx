@@ -431,7 +431,7 @@ export default function AdminDashboard() {
                       <option value="Assigned">Assigned</option>
                       <option value="Picked Up">Picked Up</option>
                       <option value="Delivered">Delivered</option>
-                      <option value="Cancelled">Cancelled</option>
+                      <option value="Cancelled">Cancelled/Rejected</option>
                     </select>
                   </div>
 
