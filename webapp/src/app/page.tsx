@@ -26,7 +26,7 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!packageType || !pickup || !dropoff || !phone) {
+    if (!name || !packageType || !pickup || !dropoff || !phone) {
        setError("Please fill out all fields.");
        return;
     }
@@ -145,11 +145,11 @@ export default function Home() {
                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Your Name</label>
-                    <input required type="text" name="customer_name" value={name} onChange={(e) => setName(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
+                    <input type="text" name="customer_name" value={name} onChange={(e) => setName(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Phone</label>
-                    <input required type="tel" name="customer_phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
+                    <input type="tel" name="customer_phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
                   </div>
                </div>
                
@@ -157,20 +157,20 @@ export default function Home() {
                    <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-400 rounded-full text-[10px] ring-4 ring-neutral-800">🟢</span>
                      <div className="w-full">
-                       <input required type="text" name="pickup_location" value={pickup} onChange={(e) => setPickup(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
+                       <input type="text" name="pickup_location" value={pickup} onChange={(e) => setPickup(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
                      </div>
                   </div>
                   <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-rose-500/20 text-rose-400 rounded-full text-[10px] ring-4 ring-neutral-800">📍</span>
                      <div className="w-full">
-                       <input required type="text" name="dropoff_location" value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
+                       <input type="text" name="dropoff_location" value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
                      </div>
                   </div>
                </div>
 
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Package Details</label>
-                 <select required name="package_type" value={packageType} onChange={(e) => setPackageType(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select name="package_type" value={packageType} onChange={(e) => setPackageType(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Documents">Documents</option>
                    <option value="Small Box">Small Box</option>
                    <option value="Food/Groceries">Food / Groceries</option>
@@ -181,7 +181,7 @@ export default function Home() {
                
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Vehicle Category</label>
-                 <select required name="vehicle_category" value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select name="vehicle_category" value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Bike">Bike</option>
                    <option value="Motor">Motor</option>
                  </select>
