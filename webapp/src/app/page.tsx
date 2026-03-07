@@ -197,7 +197,7 @@ export default function Home() {
                   </div>
                </div>
                
-               <button onClick={handleSubmit} disabled={loading} type="button" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98]">
+               <button onTouchEnd={(e) => { e.preventDefault(); handleSubmit(); }} onClick={handleSubmit} disabled={loading} type="button" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98] pointer-events-auto z-50 touch-manipulation">
                  <span className="relative z-10 pointer-events-none">{loading ? 'Dispatching...' : 'Request Courier Now'}</span>
                  <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-0"></div>
                  <span className="relative z-10 ml-2 group-hover:translate-x-1 transition-transform pointer-events-none">→</span>
