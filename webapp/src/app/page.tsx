@@ -24,8 +24,8 @@ export default function Home() {
   const [vehicleCategory, setVehicleCategory] = useState("Bike"); // Renamed from category
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!name || !packageType || !pickup || !dropoff || !phone) {
        setError("Please fill out all fields.");
        return;
@@ -141,7 +141,7 @@ export default function Home() {
                </div>
              )}
 
-             <form className="space-y-5" onSubmit={handleSubmit}>
+             <div className="space-y-5">
                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Your Name</label>
@@ -197,12 +197,12 @@ export default function Home() {
                   </div>
                </div>
                
-               <button disabled={loading} type="submit" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98]">
+               <button onClick={handleSubmit} disabled={loading} type="button" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98]">
                  <span className="relative z-10 pointer-events-none">{loading ? 'Dispatching...' : 'Request Courier Now'}</span>
                  <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-0"></div>
                  <span className="relative z-10 ml-2 group-hover:translate-x-1 transition-transform pointer-events-none">→</span>
                </button>
-             </form>
+             </div>
            </div>
         </div>
       </main>
