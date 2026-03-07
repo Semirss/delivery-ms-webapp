@@ -16,23 +16,24 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false); // Renamed from success
   const [error, setError] = useState("");
-  const [name, setName] = useState(""); // New state
-  const [phone, setPhone] = useState(""); // New state
-  const [pickup, setPickup] = useState(""); // New state
-  const [dropoff, setDropoff] = useState(""); // New state
   const [packageType, setPackageType] = useState("Documents"); // New state, with default
   const [vehicleCategory, setVehicleCategory] = useState("Bike"); // Renamed from category
   const router = useRouter();
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!name || !packageType || !pickup || !dropoff || !phone) {
-       setError("Please fill out all fields.");
-       return;
-    } 
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoading(true);
     setError("");
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    // Basic validation
+    if (!data.customer_name || !data.customer_phone || !data.pickup_location || !data.dropoff_location) {
+        setError("Please fill out all fields.");
+        setLoading(false);
+        return;
+    }
 
     try {
       // 1. Convert address string to Lat/Lng using Nominatim
@@ -40,14 +41,17 @@ export default function Home() {
       let dropoffLat = null, dropoffLng = null;
 
       try {
-          const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickup)}`);
+          const pickupStr = data.pickup_location as string;
+          const dropoffStr = data.dropoff_location as string;
+          
+          const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickupStr)}`);
           const pickupData = await pickupRes.json();
           if (pickupData && pickupData.length > 0) {
               pickupLat = parseFloat(pickupData[0].lat);
               pickupLng = parseFloat(pickupData[0].lon);
           }
 
-          const dropoffRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoff)}`);
+          const dropoffRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoffStr)}`);
           const dropoffData = await dropoffRes.json();
           if (dropoffData && dropoffData.length > 0) {
               dropoffLat = parseFloat(dropoffData[0].lat);
@@ -62,12 +66,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-           customer_name: name || "Guest",
-           customer_phone: phone,
-           pickup_location: pickup,
-           dropoff_location: dropoff,
-           package_type: packageType,
-           vehicle_category: vehicleCategory,
+           ...data,
            pickup_lat: pickupLat,
            pickup_lng: pickupLng,
            dropoff_lat: dropoffLat,
@@ -78,15 +77,9 @@ export default function Home() {
       if (!res.ok) throw new Error("Failed to submit delivery.");
       
       setSubmitted(true);
-      // Reset form fields after successful submission
-      setName("");
-      setPhone("");
-      setPickup("");
-      setDropoff("");
-      setPackageType("Documents");
-      setVehicleCategory("Bike");
+      (e.target as HTMLFormElement).reset(); // Reset form natively
       
-      setTimeout(() => setSubmitted(false), 5000); // Optional: hide success message after a delay
+      setTimeout(() => setSubmitted(false), 5000);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     }
@@ -141,15 +134,15 @@ export default function Home() {
                </div>
              )}
 
-             <div className="space-y-5">
+             <form className="space-y-5" onSubmit={handleSubmit}>
                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Your Name</label>
-                    <input type="text" name="customer_name" value={name} onChange={(e) => setName(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
+                    <input required type="text" name="customer_name" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="John Doe" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Phone</label>
-                    <input type="tel" name="customer_phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
+                    <input required type="tel" name="customer_phone" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="089..." />
                   </div>
                </div>
                
@@ -157,20 +150,20 @@ export default function Home() {
                    <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-blue-500/20 text-blue-400 rounded-full text-[10px] ring-4 ring-neutral-800">🟢</span>
                      <div className="w-full">
-                       <input type="text" name="pickup_location" value={pickup} onChange={(e) => setPickup(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
+                       <input required type="text" name="pickup_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Pickup Address" />
                      </div>
                   </div>
                   <div className="relative z-10 flex items-center">
                      <span className="absolute -left-[30px] flex items-center justify-center w-6 h-6 bg-rose-500/20 text-rose-400 rounded-full text-[10px] ring-4 ring-neutral-800">📍</span>
                      <div className="w-full">
-                       <input type="text" name="dropoff_location" value={dropoff} onChange={(e) => setDropoff(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
+                       <input required type="text" name="dropoff_location" className="block w-full border border-neutral-700 rounded-xl shadow-sm px-4 py-3 bg-neutral-900/50 text-white placeholder-neutral-600 focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all" placeholder="Drop-off Address" />
                      </div>
                   </div>
                </div>
 
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Package Details</label>
-                 <select name="package_type" value={packageType} onChange={(e) => setPackageType(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select required name="package_type" className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Documents">Documents</option>
                    <option value="Small Box">Small Box</option>
                    <option value="Food/Groceries">Food / Groceries</option>
@@ -181,7 +174,7 @@ export default function Home() {
                
                <div>
                  <label className="block text-xs font-bold text-neutral-400 mb-1.5 ml-1 uppercase tracking-wider">Vehicle Category</label>
-                 <select name="vehicle_category" value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
+                 <select required name="vehicle_category" value={vehicleCategory} onChange={(e) => setVehicleCategory(e.target.value)} className="block w-full border border-neutral-700 rounded-xl shadow-sm p-3.5 bg-neutral-900/50 text-white focus:ring-blue-500 focus:border-blue-500 sm:text-sm font-medium transition-all">
                    <option value="Bike">Bike</option>
                    <option value="Motor">Motor</option>
                  </select>
@@ -197,12 +190,12 @@ export default function Home() {
                   </div>
                </div>
                
-               <button onTouchEnd={(e) => { e.preventDefault(); handleSubmit(); }} onClick={handleSubmit} disabled={loading} type="button" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98] pointer-events-auto z-50 touch-manipulation">
+               <button disabled={loading} type="submit" className="w-full mt-2 py-4 px-4 rounded-xl shadow-xl shadow-blue-500/20 text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-500 disabled:opacity-50 transition-all flex items-center justify-center group overflow-hidden relative cursor-pointer active:scale-[0.98]">
                  <span className="relative z-10 pointer-events-none">{loading ? 'Dispatching...' : 'Request Courier Now'}</span>
                  <div className="absolute inset-0 h-full w-full bg-gradient-to-r from-blue-600 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-0"></div>
                  <span className="relative z-10 ml-2 group-hover:translate-x-1 transition-transform pointer-events-none">→</span>
                </button>
-             </div>
+             </form>
            </div>
         </div>
       </main>
