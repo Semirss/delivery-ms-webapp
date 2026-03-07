@@ -613,24 +613,6 @@ export default function AdminDashboard() {
                       pickupLabel={assigningDelivery?.pickup_location}
                     />
                   </div>
-
-                  {/* Driver legend */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {activeDrivers.filter(d => d.current_lat && d.current_lng).map(d => (
-                      <div key={d.id} className="bg-white rounded-xl border border-neutral-200 p-3 flex items-center space-x-2">
-                        <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${d.status === 'Online' ? 'bg-emerald-500' : 'bg-neutral-300'}`} />
-                        <div className="min-w-0">
-                          <p className="font-bold text-xs text-neutral-800 truncate">{d.name}</p>
-                          <p className="text-[10px] text-neutral-400">{d.status} · {d.vehicle_type || 'Bike'}</p>
-                        </div>
-                      </div>
-                    ))}
-                    {activeDrivers.filter(d => d.current_lat && d.current_lng).length === 0 && (
-                      <div className="col-span-full text-center text-neutral-500 text-sm font-medium py-4 bg-white rounded-xl border border-neutral-200">
-                        No drivers have shared their location yet.
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
 

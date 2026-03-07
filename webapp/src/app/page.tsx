@@ -211,69 +211,78 @@ export default function Home() {
         MotoBike © 2026. Made for efficiency.
       </footer>
 
-      {/* ── Sticky Contact FAB (bottom-right, opens upward) ── */}
-      <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col-reverse items-end gap-3">
-        {/* Expanded contact options */}
+      {/* ── Sticky Contact FAB — bottom-right, opens UPWARD ── */}
+      <div className="fixed bottom-0 right-0 z-50 p-4 flex flex-col items-end gap-2">
+
+        {/* Expanded contacts — stack upward above the trigger button */}
         <div
-          className={`flex flex-col-reverse gap-3 transition-all duration-300 ${
-            contactOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
+          className={`flex flex-col items-end gap-3 transition-all duration-300 origin-bottom ${
+            contactOpen
+              ? "opacity-100 translate-y-0 pointer-events-auto scale-100"
+              : "opacity-0 translate-y-6 pointer-events-none scale-95"
           }`}
         >
           {/* Phone 1 */}
-          <a href={`tel:${CONTACT_PHONE}`} title="Call us" className="group flex items-center gap-2 justify-end">
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[11px] font-bold text-white bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1 rounded-lg shadow-lg whitespace-nowrap">
               {CONTACT_PHONE}
             </span>
-            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/30 transition-all hover:scale-110">
+            <a
+              href={`tel:${CONTACT_PHONE}`}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/40 transition-all hover:scale-110 active:scale-95"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.59.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.59 1 1 0 01-.25 1.01l-2.2 2.2z"/>
               </svg>
-            </span>
-          </a>
+            </a>
+          </div>
 
           {/* Phone 2 */}
-          <a href={`tel:${CONTACT_PHONE2}`} title="Call us (alt)" className="group flex items-center gap-2 justify-end">
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[11px] font-bold text-white bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1 rounded-lg shadow-lg whitespace-nowrap">
               {CONTACT_PHONE2}
             </span>
-            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-teal-500 hover:bg-teal-400 shadow-lg shadow-teal-500/30 transition-all hover:scale-110">
+            <a
+              href={`tel:${CONTACT_PHONE2}`}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-teal-500 hover:bg-teal-400 shadow-lg shadow-teal-500/40 transition-all hover:scale-110 active:scale-95"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.59.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.59 1 1 0 01-.25 1.01l-2.2 2.2z"/>
               </svg>
-            </span>
-          </a>
+            </a>
+          </div>
 
           {/* Email */}
-          <a href={`mailto:${CONTACT_EMAIL}`} title="Email us" className="group flex items-center gap-2 justify-end">
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[11px] font-bold text-white bg-neutral-900/80 backdrop-blur-sm px-2.5 py-1 rounded-lg shadow-lg whitespace-nowrap">
               {CONTACT_EMAIL}
             </span>
-            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-400 shadow-lg shadow-blue-500/30 transition-all hover:scale-110">
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-400 shadow-lg shadow-blue-500/40 transition-all hover:scale-110 active:scale-95"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
               </svg>
-            </span>
-          </a>
+            </a>
+          </div>
         </div>
 
-        {/* Main toggle button */}
+        {/* Main trigger button */}
         <button
-          onClick={() => setContactOpen((o) => !o)}
-          title="Contact us"
+          onClick={() => setContactOpen(o => !o)}
           aria-label="Toggle contact options"
-          className={`w-14 h-14 flex items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
+          className={`w-14 h-14 flex items-center justify-center rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 ${
             contactOpen
-              ? "bg-neutral-700 hover:bg-neutral-600 rotate-45"
+              ? "bg-neutral-800 hover:bg-neutral-700"
               : "bg-blue-600 hover:bg-blue-500 shadow-blue-500/40"
           }`}
         >
           {contactOpen ? (
-            // X icon when open
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
-            // Chat bubble / headset icon when closed
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20 2H4a2 2 0 00-2 2v13a2 2 0 002 2h3l3 3 3-3h5a2 2 0 002-2V4a2 2 0 00-2-2zm-9 10H7v-2h4v2zm6 0h-4v-2h4v2zm0-4H7V6h10v2z"/>
             </svg>
