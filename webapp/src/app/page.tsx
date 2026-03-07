@@ -229,6 +229,8 @@ export default function Home() {
             </span>
             <a
               href={`tel:${CONTACT_PHONE.replace(/\s+/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/40 transition-all hover:scale-110 active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -244,6 +246,8 @@ export default function Home() {
             </span>
             <a
               href={`tel:${CONTACT_PHONE2.replace(/\s+/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center rounded-full bg-teal-500 hover:bg-teal-400 shadow-lg shadow-teal-500/40 transition-all hover:scale-110 active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -259,6 +263,8 @@ export default function Home() {
             </span>
             <a
               href={`mailto:${CONTACT_EMAIL.trim()}?subject=Inquiry%20from%20Website`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-400 shadow-lg shadow-blue-500/40 transition-all hover:scale-110 active:scale-95"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
