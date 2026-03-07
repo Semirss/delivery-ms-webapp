@@ -269,7 +269,6 @@ export default function Home() {
               if (typeof window !== "undefined") {
                 const tg = (window as any).Telegram?.WebApp;
                 const url = `https://t.me/${CONTACT_TELEGRAM}`;
-                // Let Telegram Mini App natively handle Telegram links
                 if (tg && tg.openTelegramLink) {
                   tg.openTelegramLink(url);
                 } else {
@@ -285,10 +284,11 @@ export default function Home() {
             </svg>
           </button>
 
-          {/* Email - Now an anchor tag with target="_top" */}
+          {/* Email - Fixed with target="_blank" */}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            target="_top"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center w-12 h-12 bg-indigo-500 hover:bg-indigo-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Email"
           >
@@ -297,10 +297,11 @@ export default function Home() {
             </svg>
           </a>
 
-          {/* Phone 2 - Now an anchor tag with target="_top" */}
+          {/* Phone 2 - Fixed with target="_blank" */}
           <a
             href={`tel:${CONTACT_PHONE2}`}
-            target="_top"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center w-12 h-12 bg-emerald-500 hover:bg-emerald-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Call Alternative"
           >
@@ -309,10 +310,11 @@ export default function Home() {
             </svg>
           </a>
 
-          {/* Phone 1 - Now an anchor tag with target="_top" */}
+          {/* Phone 1 - Fixed with target="_blank" */}
           <a
             href={`tel:${CONTACT_PHONE}`}
-            target="_top"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center justify-center w-12 h-12 bg-blue-500 hover:bg-blue-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Call Main"
           >
