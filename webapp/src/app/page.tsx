@@ -29,7 +29,7 @@ export default function Home() {
     if (!name || !packageType || !pickup || !dropoff || !phone) {
        setError("Please fill out all fields.");
        return;
-    }
+    } 
 
     setLoading(true);
     setError("");
