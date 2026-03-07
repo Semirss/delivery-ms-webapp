@@ -20,8 +20,7 @@ export default function Home() {
 
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  // NEW: Ref to target the top of the form for scrolling
-  const topRef = useRef<HTMLDivElement>(null); 
+  const topRef = useRef<HTMLDivElement>(null);
 
   // Telegram Mini App expand
   useEffect(() => {
@@ -29,20 +28,6 @@ export default function Home() {
       (window as any).Telegram.WebApp.expand();
     }
   }, []);
-
-  // Universal handler for external app links (Phone, Email, Telegram)
-  const handleActionLink = (url: string) => {
-    if (typeof window !== "undefined") {
-      const tg = (window as any).Telegram?.WebApp;
-      if (tg && url.startsWith("https://t.me/")) {
-        // Use native Telegram routing if available
-        tg.openTelegramLink(url);
-      } else {
-        // Force the browser/webview to execute the intent
-        window.location.href = url;
-      }
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -114,7 +99,6 @@ export default function Home() {
       formRef.current?.reset();
       setVehicleCategory("Bike");
 
-      // NEW: Smoothly scroll back to the top of the form
       setTimeout(() => {
         topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
@@ -123,7 +107,6 @@ export default function Home() {
     } catch (err: any) {
       setError(err.message || "Unexpected error occurred.");
       
-      // Scroll up to show the error message too
       setTimeout(() => {
         topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
@@ -151,10 +134,8 @@ export default function Home() {
 
       {/* Main */}
       <main className="flex-1 flex justify-center items-center px-4 py-8 relative">
-        {/* Subtle background glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-lg h-96 bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
 
-        {/* NEW: Added ref={topRef} and scroll-mt-24 to account for the sticky header height */}
         <div 
           ref={topRef} 
           className="bg-neutral-900/80 backdrop-blur-xl border border-neutral-800 p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl relative z-10 scroll-mt-24"
@@ -227,7 +208,6 @@ export default function Home() {
               </select>
             </div>
 
-            {/* Gorgeous Pricing Widget */}
             <div
               className={`mt-2 p-4 rounded-2xl border transition-all duration-500 flex items-center justify-between ${
                 vehicleCategory === "Bike"
@@ -270,14 +250,12 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="text-center py-6 text-xs font-medium text-neutral-600">
         MotoBike © 2026
       </footer>
 
       {/* Upward-Popping Contact FAB */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        {/* Expanding Menu Items */}
         <div
           className={`flex flex-col gap-3 mb-4 transition-all duration-300 origin-bottom ${
             contactOpen
@@ -287,7 +265,18 @@ export default function Home() {
         >
           {/* Telegram */}
           <button
-            onClick={() => handleActionLink(`https://t.me/${CONTACT_TELEGRAM}`)}
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                const tg = (window as any).Telegram?.WebApp;
+                const url = `https://t.me/${CONTACT_TELEGRAM}`;
+                // Let Telegram Mini App natively handle Telegram links
+                if (tg && tg.openTelegramLink) {
+                  tg.openTelegramLink(url);
+                } else {
+                  window.open(url, "_blank");
+                }
+              }
+            }}
             className="flex items-center justify-center w-12 h-12 bg-[#229ED9] hover:bg-[#1f8ec2] shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Telegram"
           >
@@ -296,38 +285,41 @@ export default function Home() {
             </svg>
           </button>
 
-          {/* Email */}
-          <button
-            onClick={() => handleActionLink(`mailto:${CONTACT_EMAIL}`)}
+          {/* Email - Now an anchor tag with target="_top" */}
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            target="_top"
             className="flex items-center justify-center w-12 h-12 bg-indigo-500 hover:bg-indigo-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Email"
           >
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
             </svg>
-          </button>
+          </a>
 
-          {/* Phone 2 */}
-          <button
-            onClick={() => handleActionLink(`tel:${CONTACT_PHONE2}`)}
+          {/* Phone 2 - Now an anchor tag with target="_top" */}
+          <a
+            href={`tel:${CONTACT_PHONE2}`}
+            target="_top"
             className="flex items-center justify-center w-12 h-12 bg-emerald-500 hover:bg-emerald-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Call Alternative"
           >
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.076-7.076l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
             </svg>
-          </button>
+          </a>
 
-          {/* Phone 1 */}
-          <button
-            onClick={() => handleActionLink(`tel:${CONTACT_PHONE}`)}
+          {/* Phone 1 - Now an anchor tag with target="_top" */}
+          <a
+            href={`tel:${CONTACT_PHONE}`}
+            target="_top"
             className="flex items-center justify-center w-12 h-12 bg-blue-500 hover:bg-blue-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
             aria-label="Call Main"
           >
             <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.076-7.076l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
             </svg>
-          </button>
+          </a>
         </div>
 
         {/* Main Toggle Button */}
