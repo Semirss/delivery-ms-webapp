@@ -4,11 +4,23 @@ import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await context.params;
-        const { status } = await request.json();
+        const { status, cancelled_by, cancellation_reason } = await request.json();
+
+        const updatePayload: Record<string, any> = { status };
+
+        // Track who/what caused a cancellation or re-pending
+        if (cancelled_by) updatePayload.cancelled_by = cancelled_by;
+        if (cancellation_reason) updatePayload.cancellation_reason = cancellation_reason;
+
+        // When reverting to Pending, unassign the driver
+        if (status === 'Pending') {
+            updatePayload.driver_id = null;
+            updatePayload.assigned_at = null;
+        }
 
         const { data, error } = await supabase
             .from('deliveries')
-            .update({ status })
+            .update(updatePayload)
             .eq('id', id)
             .select()
             .single();

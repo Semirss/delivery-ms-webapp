@@ -169,11 +169,11 @@ export default function DriverPortal() {
     localStorage.removeItem('mvp_driver_session');
   };
 
-  const updateDeliveryStatus = async (id: string, status: string) => {
+  const updateDeliveryStatus = async (id: string, status: string, extraData?: Record<string, string>) => {
     const successMessages: Record<string, { title: string; message: string }> = {
       'Picked Up': { title: '🚲 En Route!', message: "Package picked up! You're now on the way to the customer." },
       'Delivered':  { title: '🏁 Delivered!', message: "Great work! The delivery has been completed successfully." },
-      'Pending':    { title: '↩️ Reassigned', message: "Delivery sent back to pending. Another driver can pick it up." },
+      'Pending':    { title: '↩️ Rejected', message: "Delivery sent back to pending. Another driver can pick it up." },
     };
     // Optimistically update local state so the UI changes instantly
     setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status } : d));
@@ -181,9 +181,8 @@ export default function DriverPortal() {
       await fetch(`/api/deliveries/${id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status })
+        body: JSON.stringify({ status, ...extraData })
       });
-      // Show success modal
       const msg = successMessages[status] || { title: 'Updated!', message: `Status changed to ${status}.` };
       setModalConfig({
         isOpen: true, type: 'alert', title: msg.title, message: msg.message,
@@ -191,7 +190,6 @@ export default function DriverPortal() {
       });
     } catch (err) {
       console.error(err);
-      // Rollback on error
       setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status: 'Assigned' } : d));
     }
   };
@@ -274,8 +272,9 @@ export default function DriverPortal() {
              <div className="mx-auto h-16 w-16 rounded-[1.2rem] flex items-center justify-center overflow-hidden shadow-xl shadow-blue-500/30">
                 <Image src="/logo1.jpg" alt="Motorbike Logo" width={64} height={64} className="object-cover" />
              </div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-neutral-900 tracking-tight">Driver Portal</h2>
-            <p className="mt-2 text-center text-sm font-medium text-neutral-500">{authMode === 'login' ? 'Welcome back' : 'Join our fleet'}</p>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-neutral-900 tracking-tight">MotoBike</h2>
+            <p className="mt-1 text-center text-sm font-extrabold text-blue-600">Driver Portal</p>
+            <p className="mt-1 text-center text-sm font-medium text-neutral-500">{authMode === 'login' ? 'Welcome back' : 'Join our fleet'}</p>
           </div>
           
             <form className="space-y-5" onSubmit={handleAuth}>
@@ -363,10 +362,10 @@ export default function DriverPortal() {
              <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm">
                 {driver.name.charAt(0)}
              </div>
-             <div>
-               <h1 className="font-extrabold text-lg text-neutral-900 leading-tight">Driver Portal</h1>
-               <p className="text-xs font-bold text-neutral-400">Welcome, {driver.name}</p>
-             </div>
+           <div>
+             <h1 className="font-extrabold text-lg text-neutral-900 leading-tight">MotoBike</h1>
+             <p className="text-xs font-bold text-neutral-400">Driver Portal · {driver.name}</p>
+           </div>
           </div>
           <button onClick={handleLogout} className="text-neutral-400 hover:text-neutral-900 p-2 rounded-full hover:bg-neutral-50 transition-colors">
              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
@@ -489,7 +488,13 @@ export default function DriverPortal() {
                   <div className="p-4 bg-neutral-50/50 border-t border-neutral-100 space-y-3">
                     {job.status === 'Assigned' && (
                       <div className="flex space-x-3">
-                        <button onClick={() => updateDeliveryStatus(job.id, 'Pending')} className="w-1/3 py-4 bg-white text-rose-500 border border-neutral-200 font-extrabold rounded-xl hover:bg-rose-50 shadow-sm text-sm transition-colors">
+                        <button
+                           onClick={() => updateDeliveryStatus(job.id, 'Pending', {
+                             cancelled_by: 'driver_reject',
+                             cancellation_reason: `Driver ${driver.name} rejected the delivery`
+                           })}
+                           className="w-1/3 py-4 bg-white text-rose-500 border border-neutral-200 font-extrabold rounded-xl hover:bg-rose-50 shadow-sm text-sm transition-colors"
+                         >
                           Reject
                         </button>
                         <button onClick={() => updateDeliveryStatus(job.id, 'Picked Up')} className="w-2/3 py-4 bg-blue-600 shadow-lg shadow-blue-500/20 text-white font-extrabold rounded-xl hover:bg-blue-700 text-sm transition-all focus:ring-4 focus:ring-blue-500/30">

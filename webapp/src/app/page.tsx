@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-// ── Contact details – update these to your own ──
-const CONTACT_PHONE = "+251900000000";       // e.g. +251912345678
-const CONTACT_EMAIL = "info@motorbike.et";   // your support email
+// ── Contact details ──
+const CONTACT_PHONE  = "+251931323328";
+const CONTACT_PHONE2 = "+251920202304";
+const CONTACT_EMAIL  = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";     // Telegram username (no @)
 
 export default function Home() {
@@ -101,7 +102,7 @@ export default function Home() {
              <div className="h-12 w-12 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/30">
                 <Image src="/logo1.jpg" alt="Motorbike Logo" width={48} height={48} className="object-cover" />
              </div>
-             <h1 className="text-xl font-extrabold tracking-tight text-white capitalize">Motorbike</h1>
+             <h1 className="text-xl font-extrabold tracking-tight text-white">MotoBike</h1>
            </div>
         </div>
       </header>
@@ -207,27 +208,35 @@ export default function Home() {
       </main>
 
       <footer className="py-6 text-center text-xs font-bold text-neutral-500 uppercase tracking-widest relative z-10">
-        Motorbike © 2026. Made for efficiency.
+        MotoBike © 2026. Made for efficiency.
       </footer>
 
-      {/* ── Sticky Contact FAB ── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col-reverse items-end gap-3">
+      {/* ── Sticky Contact FAB (bottom-right, opens upward) ── */}
+      <div className="fixed bottom-6 right-4 sm:right-6 z-50 flex flex-col-reverse items-end gap-3">
         {/* Expanded contact options */}
         <div
           className={`flex flex-col-reverse gap-3 transition-all duration-300 ${
             contactOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"
           }`}
         >
-          {/* Phone */}
-          <a
-            href={`tel:${CONTACT_PHONE}`}
-            title="Call us"
-            className="group flex items-center gap-2"
-          >
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors">
+          {/* Phone 1 */}
+          <a href={`tel:${CONTACT_PHONE}`} title="Call us" className="group flex items-center gap-2 justify-end">
+            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
               {CONTACT_PHONE}
             </span>
-            <span className="w-12 h-12 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/30 transition-all hover:scale-110">
+            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-emerald-500 hover:bg-emerald-400 shadow-lg shadow-emerald-500/30 transition-all hover:scale-110">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.59.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.59 1 1 0 01-.25 1.01l-2.2 2.2z"/>
+              </svg>
+            </span>
+          </a>
+
+          {/* Phone 2 */}
+          <a href={`tel:${CONTACT_PHONE2}`} title="Call us (alt)" className="group flex items-center gap-2 justify-end">
+            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
+              {CONTACT_PHONE2}
+            </span>
+            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-teal-500 hover:bg-teal-400 shadow-lg shadow-teal-500/30 transition-all hover:scale-110">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.59.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.59 1 1 0 01-.25 1.01l-2.2 2.2z"/>
               </svg>
@@ -235,35 +244,13 @@ export default function Home() {
           </a>
 
           {/* Email */}
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            title="Email us"
-            className="group flex items-center gap-2"
-          >
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors">
+          <a href={`mailto:${CONTACT_EMAIL}`} title="Email us" className="group flex items-center gap-2 justify-end">
+            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors whitespace-nowrap">
               {CONTACT_EMAIL}
             </span>
-            <span className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-400 shadow-lg shadow-blue-500/30 transition-all hover:scale-110">
+            <span className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-400 shadow-lg shadow-blue-500/30 transition-all hover:scale-110">
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-              </svg>
-            </span>
-          </a>
-
-          {/* Telegram */}
-          <a
-            href={`https://t.me/${CONTACT_TELEGRAM}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Message us on Telegram"
-            className="group flex items-center gap-2"
-          >
-            <span className="text-xs font-bold text-neutral-300 group-hover:text-white bg-neutral-800/90 border border-neutral-700 px-3 py-1.5 rounded-full shadow-lg hidden sm:block transition-colors">
-              @{CONTACT_TELEGRAM}
-            </span>
-            <span className="w-12 h-12 flex items-center justify-center rounded-full bg-sky-500 hover:bg-sky-400 shadow-lg shadow-sky-500/30 transition-all hover:scale-110">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8.02c-.12.57-.46.71-.93.44l-2.52-1.86-1.22 1.17c-.13.13-.25.25-.51.25l.18-2.58 4.67-4.22c.2-.18-.05-.28-.32-.1L7.6 15.47l-2.47-.77c-.54-.17-.55-.54.11-.8l9.64-3.72c.45-.16.84.11.76.62z"/>
               </svg>
             </span>
           </a>
