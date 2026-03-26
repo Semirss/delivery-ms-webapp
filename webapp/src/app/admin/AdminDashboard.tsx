@@ -322,7 +322,7 @@ export default function AdminDashboard() {
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-blue-500/30">
-              <Image src="/logo1.jpg" alt="MotoBike Logo" width={40} height={40} className="object-cover" />
+              <Image src="/favlogo1.png" alt="MotoBike Logo" width={40} height={40} className="object-cover" />
             </div>
             <div>
               <h1 className="text-lg font-extrabold tracking-tight leading-tight">MotoBike</h1>

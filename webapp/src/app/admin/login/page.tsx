@@ -44,7 +44,7 @@ export default function AdminLogin() {
       <div className="max-w-md w-full space-y-8 p-10 bg-neutral-900/90 border border-neutral-800 rounded-2xl shadow-2xl relative z-10 backdrop-blur-md">
         <div>
           <div className="mx-auto h-16 w-16  items-center justify-center ">
-                <Image src="/logo1.jpg" alt="Motorbike Logo" width={58} height={58} className="object-cover rounded-2xl" />
+                <Image src="/favlogo1.png" alt="Motorbike Logo" width={58} height={58} className="object-cover rounded-2xl" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">Admin Portal</h2>
           <p className="mt-2 text-center text-sm text-neutral-400">Sign in to manage dispatch</p>

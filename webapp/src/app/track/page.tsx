@@ -68,7 +68,7 @@ export default function TrackPage() {
           <div className="flex justify-between h-20 items-center">
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative h-12 w-12 rounded-[1rem] overflow-hidden shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-                <Image src="/logo1.jpg" alt="Motorbike Dispatch" fill className="object-cover" />
+                <Image src="/favlogo1.png" alt="Motorbike Dispatch" fill className="object-cover" />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-neutral-900">
                 Motor<span className="text-blue-600">bike</span>

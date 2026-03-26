@@ -270,7 +270,7 @@ export default function DriverPortal() {
         <div className="max-w-md w-full mx-auto space-y-8 relative z-10 p-8 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20">
           <div>
              <div className="mx-auto h-16 w-16 rounded-[1.2rem] flex items-center justify-center overflow-hidden shadow-xl shadow-blue-500/30">
-                <Image src="/logo1.jpg" alt="Motorbike Logo" width={64} height={64} className="object-cover" />
+                <Image src="/favlogo1.png" alt="Motorbike Logo" width={64} height={64} className="object-cover" />
              </div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-neutral-900 tracking-tight">MotoBike</h2>
             <p className="mt-1 text-center text-sm font-extrabold text-blue-600">Driver Portal</p>
