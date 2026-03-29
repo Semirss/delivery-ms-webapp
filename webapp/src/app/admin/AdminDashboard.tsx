@@ -105,6 +105,8 @@ export default function AdminDashboard() {
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [apiError, setApiError] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('connecting');
   const [tickKey, setTickKey] = useState(0); // force countdown re-render
   const [assigningDelivery, setAssigningDelivery] = useState<Delivery | null>(null); // for map-assisted assignment
   const [modalConfig, setModalConfig] = useState<{
@@ -115,6 +117,67 @@ export default function AdminDashboard() {
     onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const router = useRouter();
+
+  // ── Toast Notifications State ───────────────────────────────────────────
+  const [toasts, setToasts] = useState<{ id: number; message: string }[]>([]);
+  const addToast = useCallback((message: string) => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  }, []);
+
+  // ── fetchData – wrapped in useCallback so its identity is stable.
+  // A ref is also kept so realtime callbacks always call the *current* version.
+  const prevDeliveryCountRef = useRef<number>(-1); // -1 = initial load
+
+  const fetchData = useCallback(async () => {
+    try {
+      const ts = Date.now(); // cache-bust: forces browser not to serve stale
+      const [delRes, drvRes] = await Promise.all([
+        fetch(`/api/deliveries?_t=${ts}`, { cache: 'no-store' }),
+        fetch(`/api/drivers?_t=${ts}`, { cache: 'no-store' })
+      ]);
+      if (!delRes.ok || !drvRes.ok) throw new Error('Failed to fetch');
+      const delData = await delRes.json();
+      const drvData = await drvRes.json();
+
+      // Reliable newly-added detection
+      if (prevDeliveryCountRef.current >= 0) {
+        const newCount = Array.isArray(delData) ? delData.length : 0;
+        const diff = newCount - prevDeliveryCountRef.current;
+        if (diff > 0) {
+          setUnreadCount(prev => prev + diff);
+          // Show toast alert describing the new request
+          if (Array.isArray(delData) && delData.length > 0) {
+               const newest = delData[0]; // descending by created_at
+               const vehicle = newest.vehicle_category || 'motor/bike';
+               addToast(`🚀 New ${vehicle} delivery requested by ${newest.customer_name || 'Customer'}!`);
+          } else {
+               addToast(`🚀 ${diff} new delivery request(s) received!`);
+          }
+        }
+      }
+      prevDeliveryCountRef.current = Array.isArray(delData) ? delData.length : 0;
+
+      setDeliveries(Array.isArray(delData) ? delData : []);
+      setDrivers(Array.isArray(drvData) ? drvData : []);
+      setApiError(false);
+    } catch (error) {
+      console.error(error);
+      setApiError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Keep a ref so realtime callbacks always call the latest fetchData
+  const fetchDataRef = useRef(fetchData);
+  useEffect(() => { fetchDataRef.current = fetchData; }, [fetchData]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const reconnectTimerRef = useRef<number | null>(null);
+  const reconnectAttemptRef = useRef(0);
 
   // ── Countdown ticker (every second) ──────────────────────────────────────
   useEffect(() => {
@@ -135,7 +198,7 @@ export default function AdminDashboard() {
         await fetch(`/api/deliveries/${d.id}/status`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             status: 'Pending',
             cancelled_by: 'timeout',
             cancellation_reason: 'Driver did not accept within 2 minutes'
@@ -145,7 +208,7 @@ export default function AdminDashboard() {
         console.error('Failed to revert delivery', d.id, e);
       }
     }
-    if (timedOut.length > 0) fetchData();
+    if (timedOut.length > 0) fetchDataRef.current();
   }, [deliveries]);
 
   useEffect(() => {
@@ -153,40 +216,106 @@ export default function AdminDashboard() {
     return () => clearInterval(interval);
   }, [checkTimeouts]);
 
-  // ── Auto-refresh + real-time ──────────────────────────────────────────────
-  useEffect(() => {
-    const intervalId = setInterval(fetchData, 120000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-    const deliverySub = supabase.channel('admin-db-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries' }, () => fetchData())
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'drivers' }, () => fetchData())
-      .subscribe();
-    return () => { supabase.removeChannel(deliverySub); };
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const [delRes, drvRes] = await Promise.all([
-        fetch("/api/deliveries"),
-        fetch("/api/drivers")
-      ]);
-      if (!delRes.ok || !drvRes.ok) throw new Error("Failed to fetch");
-      const delData = await delRes.json();
-      const drvData = await drvRes.json();
-      setDeliveries(Array.isArray(delData) ? delData : []);
-      setDrivers(Array.isArray(drvData) ? drvData : []);
-      setApiError(false);
-    } catch (error) {
-      console.error(error);
-      setApiError(true);
-    } finally {
-      setLoading(false);
+  const clearReconnectTimer = useCallback(() => {
+    if (reconnectTimerRef.current !== null) {
+      window.clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
     }
-  };
+  }, []);
+
+  const scheduleReconnect = useCallback(() => {
+    if (reconnectTimerRef.current !== null) return;
+    setRealtimeState('reconnecting');
+    const delay = Math.min(1000 * (2 ** reconnectAttemptRef.current), 10000);
+    reconnectTimerRef.current = window.setTimeout(() => {
+      reconnectTimerRef.current = null;
+      connectRealtimeRef.current();
+    }, delay);
+    reconnectAttemptRef.current += 1;
+  }, []);
+
+  const connectRealtime = useCallback(() => {
+    clearReconnectTimer();
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+
+    setRealtimeState(reconnectAttemptRef.current > 0 ? 'reconnecting' : 'connecting');
+
+    const channel = supabase
+      .channel('deliveries-sync')
+      .on('broadcast', { event: 'delivery_created' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'delivery_assigned' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'delivery_status_updated' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'driver_created' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'driver_updated' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'driver_deleted' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on('broadcast', { event: 'driver_location_updated' }, () => {
+        setTimeout(() => fetchDataRef.current(), 100);
+      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'deliveries' },
+        () => {
+          setTimeout(() => fetchDataRef.current(), 300);
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'drivers' },
+        () => setTimeout(() => fetchDataRef.current(), 300)
+      )
+      .subscribe((status) => {
+        console.log('[Admin Realtime]', status);
+        if (status === 'SUBSCRIBED') {
+          reconnectAttemptRef.current = 0;
+          setRealtimeState('live');
+        }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          scheduleReconnect();
+        }
+      });
+
+    channelRef.current = channel;
+  }, [clearReconnectTimer, scheduleReconnect]);
+
+  const connectRealtimeRef = useRef(connectRealtime);
+  useEffect(() => { connectRealtimeRef.current = connectRealtime; }, [connectRealtime]);
+
+  useEffect(() => {
+    fetchDataRef.current();
+    connectRealtimeRef.current();
+
+    const handleOnline = () => {
+      reconnectAttemptRef.current = 0;
+      connectRealtimeRef.current();
+      fetchDataRef.current();
+    };
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      clearReconnectTimer();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      setRealtimeState('offline');
+    };
+  }, [clearReconnectTimer]);
 
   const pendingDrivers = drivers.filter(d => d.approval_status === 'Pending');
   const activeDrivers = drivers.filter(d => d.approval_status === 'Approved');
@@ -207,9 +336,14 @@ export default function AdminDashboard() {
       onConfirm: async () => {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
         setDrivers(prev => prev.map(d => d.id === driver.id ? { ...d, approval_status: 'Approved' } : d));
-        const { error } = await supabase.from('drivers').update({ approval_status: 'Approved' }).eq('id', driver.id);
-        if (error) {
-          setModalConfig({ isOpen: true, type: 'alert', title: 'Error', message: error.message, onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+        const res = await fetch(`/api/drivers/${driver.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ approval_status: 'Approved' })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Error', message: errData?.error || 'Failed to approve driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
           fetchData();
         } else {
           if (driver.phone) {
@@ -231,9 +365,10 @@ export default function AdminDashboard() {
       onConfirm: async () => {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
         setDrivers(prev => prev.filter(d => d.id !== id));
-        const { error } = await supabase.from('drivers').delete().eq('id', id);
-        if (error) {
-          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: error.message, onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+        const res = await fetch(`/api/drivers/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
           fetchData();
         }
       }
@@ -247,8 +382,11 @@ export default function AdminDashboard() {
       onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
-        const { error } = await supabase.from('drivers').delete().eq('id', id);
-        if (error) setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: error.message, onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+        const res = await fetch(`/api/drivers/${id}`, { method: 'DELETE' });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+        }
         fetchData();
       }
     });
@@ -270,7 +408,11 @@ export default function AdminDashboard() {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
         if (data.name && data.phone) {
           setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, phone: data.phone, plate_number: data.plate_number } : d));
-          await supabase.from('drivers').update({ name: data.name, phone: data.phone, plate_number: data.plate_number }).eq('id', id);
+          await fetch(`/api/drivers/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: data.name, phone: data.phone, plate_number: data.plate_number })
+          });
           fetchData();
         }
       }
@@ -280,7 +422,11 @@ export default function AdminDashboard() {
   const toggleDriverActive = async (driver: Driver) => {
     const newActive = driver.is_active === false ? true : false;
     setDrivers(prev => prev.map(d => d.id === driver.id ? { ...d, is_active: newActive } : d));
-    await supabase.from('drivers').update({ is_active: newActive }).eq('id', driver.id);
+    await fetch(`/api/drivers/${driver.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_active: newActive })
+    });
   };
 
   // ── Delivery assignment ───────────────────────────────────────────────────
@@ -390,9 +536,32 @@ export default function AdminDashboard() {
               {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab}
             </h2>
           </div>
-          <div className="flex items-center space-x-3 flex-shrink-0">
-            <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-            <span className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Live Sync</span>
+          <div className="flex items-center space-x-4 flex-shrink-0">
+            <button 
+              onClick={() => {
+                setUnreadCount(0);
+                setActiveTab('deliveries');
+                setFilterStatus('All');
+                setDateRange('all');
+              }}
+              className="relative p-2 text-neutral-500 hover:text-blue-600 transition-colors bg-neutral-50 hover:bg-blue-50 rounded-full"
+              title="Notifications"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm animate-[bounce_1s_infinite]">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <div className="flex items-center space-x-2 bg-neutral-50 py-1.5 px-3 rounded-full border border-neutral-100">
+              <span className={`w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] ${realtimeState === 'live' ? 'bg-green-500 animate-pulse' : realtimeState === 'reconnecting' || realtimeState === 'connecting' ? 'bg-amber-500 animate-pulse' : 'bg-neutral-400'}`}></span>
+              <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest leading-none">
+                {realtimeState === 'live' ? 'Live Sync' : realtimeState === 'reconnecting' ? 'Reconnecting' : realtimeState === 'connecting' ? 'Connecting' : 'Offline'}
+              </span>
+            </div>
           </div>
         </header>
 
@@ -853,6 +1022,18 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end space-y-3 pointer-events-none">
+        {toasts.map(toast => (
+          <div key={toast.id} className="bg-neutral-900 text-white min-w-[280px] px-5 py-4 rounded-xl shadow-2xl font-semibold text-sm border border-neutral-700/50 flex items-start space-x-3 transition-all duration-300 translate-y-0 opacity-100">
+            <span className="text-blue-500 mt-0.5">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </span>
+            <span className="leading-snug flex-1">{toast.message}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

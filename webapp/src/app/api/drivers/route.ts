@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
     const { data, error } = await supabase
         .from('drivers')
@@ -96,6 +99,19 @@ export async function POST(request: Request) {
                 hint: error.hint,
                 code: error.code
             }, { status: 500 });
+        }
+
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'driver_created',
+                payload: {
+                    driver_id: data.id,
+                    approval_status: data.approval_status
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
         }
 
         return NextResponse.json(data, { status: 201 });

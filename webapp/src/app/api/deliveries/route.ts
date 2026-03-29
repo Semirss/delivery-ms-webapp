@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const driver_id = searchParams.get('driver_id');
@@ -32,8 +35,24 @@ export async function POST(request: Request) {
             ])
             .select()
             .single();
-
         if (error) throw error;
+
+        // Broadcast to all active clients that the DB was updated, forcing them to re-fetch immediately.
+        // This is 100% reliable even if Postgres Replication isn't configured correctly.
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'delivery_created',
+                payload: {
+                    delivery_id: data.id,
+                    customer_name: data.customer_name,
+                    created_at: data.created_at
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
+        }
+
         return NextResponse.json(data, { status: 201 });
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });

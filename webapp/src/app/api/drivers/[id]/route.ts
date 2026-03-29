@@ -14,6 +14,20 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
             .single();
 
         if (error) throw error;
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'driver_updated',
+                payload: {
+                    driver_id: data.id,
+                    status: data.status,
+                    approval_status: data.approval_status,
+                    is_active: data.is_active
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
+        }
         return NextResponse.json(data);
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
@@ -33,6 +47,17 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
             .eq('id', id);
 
         if (error) throw error;
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'driver_deleted',
+                payload: {
+                    driver_id: id
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
+        }
         return NextResponse.json({ success: true });
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });

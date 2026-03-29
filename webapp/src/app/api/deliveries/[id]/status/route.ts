@@ -26,6 +26,19 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
             .single();
 
         if (error) throw error;
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'delivery_status_updated',
+                payload: {
+                    delivery_id: data.id,
+                    driver_id: data.driver_id,
+                    status: data.status
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
+        }
         return NextResponse.json(data);
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });

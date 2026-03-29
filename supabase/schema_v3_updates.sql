@@ -10,3 +10,17 @@ ALTER TABLE public.deliveries ADD COLUMN IF NOT EXISTS cancelled_by TEXT; -- 'dr
 -- 3. Driver active/inactive permanent state (separate from Online/Offline)
 ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
 UPDATE public.drivers SET is_active = true WHERE is_active IS NULL;
+
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.deliveries;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.drivers;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;

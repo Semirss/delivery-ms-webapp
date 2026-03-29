@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import NetworkStatus from "../components/NetworkStatus";
@@ -40,8 +40,66 @@ export default function DriverPortal() {
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const [apiError, setApiError] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('offline');
 
-  // Authentication persistence & realtime
+  // ── Toast Notifications State ───────────────────────────────────────────
+  const [toasts, setToasts] = useState<{ id: number; message: string }[]>([]);
+  const addToast = useCallback((message: string) => {
+    const id = Date.now() + Math.random();
+    setToasts(prev => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  }, []);
+
+  // Track previous count of Assigned jobs to detect new assignments.
+  const prevAssignedCountRef = useRef<number>(-1);
+
+  // ── fetchData wrapped in useCallback ─────────────────────────────────────
+  // driverId passed explicitly so the fn never closes over stale driver state.
+  const fetchData = useCallback(async (driverId?: string) => {
+    const id = driverId ?? driver?.id;
+    if (!id) return;
+    try {
+      const ts = Date.now();
+      const res = await fetch(`/api/deliveries?driver_id=${id}&_t=${ts}`, { cache: 'no-store' });
+      const data = await res.json();
+      
+      const assignedJobs = Array.isArray(data) ? data.filter(d => d.status === 'Assigned').length : 0;
+
+      // Bump badge if we have more Assigned jobs than before (skip first load)
+      if (prevAssignedCountRef.current >= 0 && assignedJobs > prevAssignedCountRef.current) {
+        const diff = assignedJobs - prevAssignedCountRef.current;
+        setUnreadCount(prev => prev + diff);
+        
+        // Show visual toast alert describing the new assigned request
+        const newest = Array.isArray(data) ? data.find(d => d.status === 'Assigned') : null;
+        if (newest) {
+          const vehicle = newest.vehicle_category || 'delivery';
+          addToast(`🛵 New ${vehicle} assignment received! Drive to ${newest.pickup_location}`);
+        } else {
+          addToast(`🛵 You have ${diff} new delivery assignment(s)!`);
+        }
+      }
+      prevAssignedCountRef.current = assignedJobs;
+
+      setDeliveries(Array.isArray(data) ? data : []);
+      setApiError(false);
+    } catch (err) {
+      console.error(err);
+      setApiError(true);
+    }
+  }, [driver?.id]);
+
+  // Stable ref so realtime callbacks always call the latest fetchData
+  const fetchDataRef = useRef(fetchData);
+  useEffect(() => { fetchDataRef.current = fetchData; }, [fetchData]);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const reconnectTimerRef = useRef<number | null>(null);
+  const reconnectAttemptRef = useRef(0);
+
+  // Authentication persistence
   useEffect(() => {
     const stored = localStorage.getItem('mvp_driver_session');
     if (stored) {
@@ -49,70 +107,160 @@ export default function DriverPortal() {
     }
   }, []);
 
+  const clearReconnectTimer = useCallback(() => {
+    if (reconnectTimerRef.current !== null) {
+      window.clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
-    if (driver?.id) {
-      fetchData();
+    if (!driver?.id) {
+      clearReconnectTimer();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      setRealtimeState('offline');
+      return;
+    }
 
-      const sub = supabase.channel('schema-db-changes')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'deliveries', filter: `driver_id=eq.${driver.id}` }, () => {
-           fetchData();
-        })
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'drivers', filter: `id=eq.${driver.id}` }, (payload) => {
-           setDriver(payload.new as Driver);
-           localStorage.setItem('mvp_driver_session', JSON.stringify(payload.new));
-        })
-      // Auto-refresh every 2 minutes for fail-safe syncing
-      const intervalId = setInterval(() => {
-         fetchData();
-      }, 120000);
+    fetchDataRef.current(driver.id);
 
-      // Start GPS Tracking if online
-      let watchId: number;
-      if (driver.status === 'Online' && 'geolocation' in navigator) {
-          watchId = navigator.geolocation.watchPosition(
-              async (position) => {
-                  setLocationEnabled(true);
-                  const { latitude, longitude } = position.coords;
-                  try {
-                      await fetch(`/api/drivers/${driver.id}/location`, {
-                          method: 'PATCH',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ lat: latitude, lng: longitude })
-                      });
-                  } catch (err) {
-                      console.error("Failed to update location", err);
-                  }
-              },
-              (error) => {
-                  console.error("GPS Error:", error);
-                  setLocationEnabled(false);
-              },
-              { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
-          );
-      } else {
-          setLocationEnabled(false);
+    const parsePayload = (payload: unknown) => {
+      if (payload && typeof payload === 'object') return payload as Record<string, unknown>;
+      return {};
+    };
+
+    const scheduleReconnect = () => {
+      if (reconnectTimerRef.current !== null) return;
+      setRealtimeState('reconnecting');
+      const delay = Math.min(1000 * (2 ** reconnectAttemptRef.current), 10000);
+      reconnectTimerRef.current = window.setTimeout(() => {
+        reconnectTimerRef.current = null;
+        connectRealtime();
+      }, delay);
+      reconnectAttemptRef.current += 1;
+    };
+
+    const connectRealtime = () => {
+      clearReconnectTimer();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
 
-      return () => { 
-        supabase.removeChannel(sub); 
-        clearInterval(intervalId);
-        if (watchId) navigator.geolocation.clearWatch(watchId);
-      };
+      setRealtimeState(reconnectAttemptRef.current > 0 ? 'reconnecting' : 'connecting');
+
+      const channel = supabase
+      .channel('deliveries-sync')
+      .on('broadcast', { event: 'delivery_assigned' }, ({ payload }) => {
+        const parsed = parsePayload(payload);
+        const eventDriverId = typeof parsed.driver_id === 'string' ? parsed.driver_id : null;
+        if (!eventDriverId || eventDriverId === driver.id) {
+          setTimeout(() => fetchDataRef.current(driver.id), 100);
+        }
+      })
+      .on('broadcast', { event: 'delivery_status_updated' }, ({ payload }) => {
+        const parsed = parsePayload(payload);
+        const eventDriverId = typeof parsed.driver_id === 'string' ? parsed.driver_id : null;
+        if (!eventDriverId || eventDriverId === driver.id) {
+          setTimeout(() => fetchDataRef.current(driver.id), 100);
+        }
+      })
+      .on('broadcast', { event: 'driver_updated' }, ({ payload }) => {
+        const parsed = parsePayload(payload);
+        const eventDriverId = typeof parsed.driver_id === 'string' ? parsed.driver_id : null;
+        if (eventDriverId === driver.id) {
+          setTimeout(() => fetchDataRef.current(driver.id), 100);
+        }
+      })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'deliveries', filter: `driver_id=eq.${driver.id}` },
+        () => {
+          setTimeout(() => fetchDataRef.current(driver.id), 300);
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'drivers', filter: `id=eq.${driver.id}` },
+        (payload) => {
+          setDriver(payload.new as Driver);
+          localStorage.setItem('mvp_driver_session', JSON.stringify(payload.new));
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Driver Realtime]', status);
+        if (status === 'SUBSCRIBED') {
+          reconnectAttemptRef.current = 0;
+          setRealtimeState('live');
+        }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          scheduleReconnect();
+        }
+      });
+
+      channelRef.current = channel;
+    };
+
+    connectRealtime();
+
+    const handleOnline = () => {
+      reconnectAttemptRef.current = 0;
+      connectRealtime();
+      fetchDataRef.current(driver.id);
+    };
+    window.addEventListener('online', handleOnline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      clearReconnectTimer();
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+      setRealtimeState('offline');
+    };
+  }, [driver?.id, clearReconnectTimer]);
+
+  useEffect(() => {
+    if (!driver?.id) {
+      setLocationEnabled(false);
+      return;
     }
+
+    let watchId: number;
+    if (driver.status === 'Online' && 'geolocation' in navigator) {
+      watchId = navigator.geolocation.watchPosition(
+        async (position) => {
+          setLocationEnabled(true);
+          const { latitude, longitude } = position.coords;
+          try {
+            await fetch(`/api/drivers/${driver.id}/location`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ lat: latitude, lng: longitude })
+            });
+          } catch (err) {
+            console.error('Failed to update location', err);
+          }
+        },
+        (error) => {
+          console.error('GPS Error:', error);
+          setLocationEnabled(false);
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+      );
+    } else {
+      setLocationEnabled(false);
+    }
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
   }, [driver?.id, driver?.status]);
 
-  const fetchData = async () => {
-    if (!driver) return;
-    try {
-      const res = await fetch(`/api/deliveries?driver_id=${driver.id}`);
-      const data = await res.json();
-      setDeliveries(Array.isArray(data) ? data : []);
-      setApiError(false);
-    } catch (err) {
-      console.error(err);
-      setApiError(true);
-    }
-  };
 
   const handleAuth = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -367,9 +515,36 @@ export default function DriverPortal() {
              <p className="text-xs font-bold text-neutral-400">Driver Portal · {driver.name}</p>
            </div>
           </div>
-          <button onClick={handleLogout} className="text-neutral-400 hover:text-neutral-900 p-2 rounded-full hover:bg-neutral-50 transition-colors">
-             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => {
+                setUnreadCount(0);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="relative p-2 text-neutral-400 hover:text-blue-600 rounded-full hover:bg-neutral-50 transition-colors"
+              title="Notifications"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm animate-[bounce_1s_infinite]">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <button onClick={handleLogout} className="text-neutral-400 hover:text-neutral-900 p-2 rounded-full hover:bg-neutral-50 transition-colors">
+               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            </button>
+          </div>
+        </div>
+        <div className="flex justify-end">
+          <div className="flex items-center space-x-2 bg-neutral-50 py-1.5 px-3 rounded-full border border-neutral-100">
+            <span className={`w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.6)] ${realtimeState === 'live' ? 'bg-green-500 animate-pulse' : realtimeState === 'reconnecting' || realtimeState === 'connecting' ? 'bg-amber-500 animate-pulse' : 'bg-neutral-400'}`}></span>
+            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest leading-none">
+              {realtimeState === 'live' ? 'Live Sync' : realtimeState === 'reconnecting' ? 'Reconnecting' : realtimeState === 'connecting' ? 'Connecting' : 'Offline'}
+            </span>
+          </div>
         </div>
 
         {/* GPS Warning label */}
@@ -597,6 +772,18 @@ export default function DriverPortal() {
           </div>
         </div>
       )}
+
+      {/* Driver Toast Notifications */}
+      <div className="fixed bottom-24 left-4 right-4 z-[9999] flex flex-col items-center space-y-2 pointer-events-none">
+        {toasts.map(toast => (
+          <div key={toast.id} className="bg-neutral-900 text-white w-full max-w-sm px-5 py-4 rounded-xl shadow-2xl font-semibold text-sm border border-neutral-700/50 flex items-start space-x-3 transition-all duration-300 opacity-100">
+            <span className="text-yellow-400 mt-0.5">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </span>
+            <span className="leading-snug flex-1">{toast.message}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

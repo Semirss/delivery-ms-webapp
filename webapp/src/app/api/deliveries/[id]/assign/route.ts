@@ -37,6 +37,20 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
                 console.error("Failed to notify telegram webhook:", e);
             }
         }
+        // Broadcast to all active driver/admin dashboards to re-fetch data
+        try {
+            await supabase.channel('deliveries-sync').send({
+                type: 'broadcast',
+                event: 'delivery_assigned',
+                payload: {
+                    delivery_id: data.id,
+                    driver_id: data.driver_id,
+                    status: data.status
+                }
+            });
+        } catch (e) {
+            console.error('Broadcast failed', e);
+        }
 
         return NextResponse.json({ success: true, data });
     } catch (err: any) {
