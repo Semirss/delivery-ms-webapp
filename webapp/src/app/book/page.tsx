@@ -202,7 +202,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🚲</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Bike</span>
-                    <span className="text-xs font-semibold opacity-70">200-600 Br</span>
+                    <span className="text-xs font-semibold opacity-70">100-400 Br</span>
                   </div>
                 </div>
 
@@ -217,7 +217,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🏍️</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Motorbike</span>
-                    <span className="text-xs font-semibold opacity-70">350-800 Br</span>
+                    <span className="text-xs font-semibold opacity-70">200-500 Br</span>
                   </div>
                 </div>
               </div>

@@ -50,6 +50,15 @@ type Driver = {
   current_lng?: number | null;
 };
 
+type DeliveryNotification = {
+  id: string;
+  customer_name: string;
+  vehicle_category?: string;
+  created_at: string;
+  pickup_location: string;
+  dropoff_location: string;
+};
+
 // ── Timeout config ───────────────────────────────────────────────────────────
 const ASSIGN_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
 
@@ -106,6 +115,8 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<DeliveryNotification[]>([]);
   const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('connecting');
   const [tickKey, setTickKey] = useState(0); // force countdown re-render
   const [assigningDelivery, setAssigningDelivery] = useState<Delivery | null>(null); // for map-assisted assignment
@@ -130,7 +141,7 @@ export default function AdminDashboard() {
 
   // ── fetchData – wrapped in useCallback so its identity is stable.
   // A ref is also kept so realtime callbacks always call the *current* version.
-  const prevDeliveryCountRef = useRef<number>(-1); // -1 = initial load
+  const prevDeliveryIdsRef = useRef<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     try {
@@ -143,23 +154,27 @@ export default function AdminDashboard() {
       const delData = await delRes.json();
       const drvData = await drvRes.json();
 
-      // Reliable newly-added detection
-      if (prevDeliveryCountRef.current >= 0) {
-        const newCount = Array.isArray(delData) ? delData.length : 0;
-        const diff = newCount - prevDeliveryCountRef.current;
-        if (diff > 0) {
-          setUnreadCount(prev => prev + diff);
-          // Show toast alert describing the new request
-          if (Array.isArray(delData) && delData.length > 0) {
-               const newest = delData[0]; // descending by created_at
-               const vehicle = newest.vehicle_category || 'motor/bike';
-               addToast(`🚀 New ${vehicle} delivery requested by ${newest.customer_name || 'Customer'}!`);
-          } else {
-               addToast(`🚀 ${diff} new delivery request(s) received!`);
+      if (Array.isArray(delData)) {
+        const newIds = new Set(delData.map((d: Delivery) => d.id));
+        if (prevDeliveryIdsRef.current.size > 0) {
+          const newlyRequested = delData.filter((d: Delivery) => !prevDeliveryIdsRef.current.has(d.id));
+          if (newlyRequested.length > 0) {
+            setUnreadCount(prev => prev + newlyRequested.length);
+            setNotifications(prev => {
+              const next = [...newlyRequested, ...prev];
+              const uniqueById = new Map<string, DeliveryNotification>();
+              next.forEach(item => {
+                if (!uniqueById.has(item.id)) uniqueById.set(item.id, item);
+              });
+              return Array.from(uniqueById.values()).slice(0, 30);
+            });
+            const newest = newlyRequested[0];
+            const vehicle = newest.vehicle_category || 'motor/bike';
+            addToast(`🚀 New ${vehicle} delivery requested by ${newest.customer_name || 'Customer'}!`);
           }
         }
+        prevDeliveryIdsRef.current = newIds;
       }
-      prevDeliveryCountRef.current = Array.isArray(delData) ? delData.length : 0;
 
       setDeliveries(Array.isArray(delData) ? delData : []);
       setDrivers(Array.isArray(drvData) ? drvData : []);
@@ -442,6 +457,14 @@ export default function AdminDashboard() {
 
   // ── Date-filtered stats ───────────────────────────────────────────────────
   const filteredDeliveries = filterByDate(deliveries, dateRange);
+  const isCancelledRecord = (d: Delivery) => d.status === 'Cancelled' || !!d.cancelled_by || !!d.cancellation_reason;
+  const displayedDeliveries = deliveries.filter(d =>
+    filterStatus === "All"
+      ? true
+      : filterStatus === "Cancelled"
+        ? isCancelledRecord(d)
+        : d.status === filterStatus
+  );
 
   // ── Analytics data ────────────────────────────────────────────────────────
   const uniqueCustomers = new Set(deliveries.map(d => d.customer_phone)).size;
@@ -540,9 +563,7 @@ export default function AdminDashboard() {
             <button 
               onClick={() => {
                 setUnreadCount(0);
-                setActiveTab('deliveries');
-                setFilterStatus('All');
-                setDateRange('all');
+                setNotificationsOpen(true);
               }}
               className="relative p-2 text-neutral-500 hover:text-blue-600 transition-colors bg-neutral-50 hover:bg-blue-50 rounded-full"
               title="Notifications"
@@ -638,10 +659,10 @@ export default function AdminDashboard() {
 
                   {/* Delivery cards */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {deliveries.filter(d => filterStatus === "All" || d.status === filterStatus).length === 0 && (
+                    {displayedDeliveries.length === 0 && (
                       <div className="col-span-full py-12 text-center text-neutral-500 font-medium bg-white rounded-2xl border border-neutral-200">No deliveries found.</div>
                     )}
-                    {deliveries.filter(d => filterStatus === "All" || d.status === filterStatus).map(d => {
+                    {displayedDeliveries.map(d => {
                       const secsLeft = d.status === 'Assigned' ? getSecondsLeft(d.assigned_at) : 0;
                       const isTimingOut = d.status === 'Assigned' && secsLeft > 0 && secsLeft < 60;
                       return (
@@ -957,6 +978,35 @@ export default function AdminDashboard() {
           )}
         </div>
       </main>
+
+      {notificationsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={() => setNotificationsOpen(false)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden relative z-10">
+            <div className="p-6 border-b border-neutral-100 flex items-center justify-between">
+              <h3 className="text-xl font-extrabold text-neutral-900">Notifications</h3>
+              <div className="flex items-center space-x-2">
+                <button onClick={() => { setNotifications([]); setUnreadCount(0); }} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100">Clear</button>
+                <button onClick={() => setNotificationsOpen(false)} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-bold hover:bg-neutral-200">Close</button>
+              </div>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3">
+              {notifications.length === 0 && (
+                <div className="py-10 text-center text-neutral-500 font-medium">No delivery notifications yet.</div>
+              )}
+              {notifications.map((note) => (
+                <div key={note.id} className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
+                  <p className="text-sm font-extrabold text-neutral-900">Requested by {note.customer_name || 'Customer'}</p>
+                  <p className="text-xs text-neutral-600 mt-1">{note.vehicle_category || 'motor/bike'} delivery</p>
+                  <p className="text-xs text-neutral-500 mt-1">Pickup: {note.pickup_location}</p>
+                  <p className="text-xs text-neutral-500 mt-1">Dropoff: {note.dropoff_location}</p>
+                  <p className="text-[11px] text-neutral-400 mt-2">{new Date(note.created_at).toLocaleString()}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Custom Modal */}
       {modalConfig.isOpen && (

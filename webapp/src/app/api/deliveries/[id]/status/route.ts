@@ -12,8 +12,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         if (cancelled_by) updatePayload.cancelled_by = cancelled_by;
         if (cancellation_reason) updatePayload.cancellation_reason = cancellation_reason;
 
-        // When reverting to Pending, unassign the driver
-        if (status === 'Pending') {
+        if (status === 'Pending' || status === 'Cancelled') {
             updatePayload.driver_id = null;
             updatePayload.assigned_at = null;
         }

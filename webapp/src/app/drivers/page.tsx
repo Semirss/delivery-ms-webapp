@@ -26,6 +26,14 @@ type Driver = {
   vehicle_type?: string;
 };
 
+type DriverNotification = {
+  id: string;
+  customer_name: string;
+  pickup_location: string;
+  dropoff_location: string;
+  created_at: string;
+};
+
 export default function DriverPortal() {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
@@ -41,6 +49,8 @@ export default function DriverPortal() {
   const [apiError, setApiError] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState<DriverNotification[]>([]);
   const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('offline');
 
   // ── Toast Notifications State ───────────────────────────────────────────
@@ -54,7 +64,7 @@ export default function DriverPortal() {
   }, []);
 
   // Track previous count of Assigned jobs to detect new assignments.
-  const prevAssignedCountRef = useRef<number>(-1);
+  const prevAssignedIdsRef = useRef<Set<string>>(new Set());
 
   // ── fetchData wrapped in useCallback ─────────────────────────────────────
   // driverId passed explicitly so the fn never closes over stale driver state.
@@ -66,23 +76,28 @@ export default function DriverPortal() {
       const res = await fetch(`/api/deliveries?driver_id=${id}&_t=${ts}`, { cache: 'no-store' });
       const data = await res.json();
       
-      const assignedJobs = Array.isArray(data) ? data.filter(d => d.status === 'Assigned').length : 0;
+      if (Array.isArray(data)) {
+        const assignedDeliveries = data.filter((d: Delivery) => d.status === 'Assigned');
+        const assignedIds = new Set(assignedDeliveries.map((d: Delivery) => d.id));
 
-      // Bump badge if we have more Assigned jobs than before (skip first load)
-      if (prevAssignedCountRef.current >= 0 && assignedJobs > prevAssignedCountRef.current) {
-        const diff = assignedJobs - prevAssignedCountRef.current;
-        setUnreadCount(prev => prev + diff);
-        
-        // Show visual toast alert describing the new assigned request
-        const newest = Array.isArray(data) ? data.find(d => d.status === 'Assigned') : null;
-        if (newest) {
-          const vehicle = newest.vehicle_category || 'delivery';
-          addToast(`🛵 New ${vehicle} assignment received! Drive to ${newest.pickup_location}`);
-        } else {
-          addToast(`🛵 You have ${diff} new delivery assignment(s)!`);
+        if (prevAssignedIdsRef.current.size > 0) {
+          const newAssignments = assignedDeliveries.filter((d: Delivery) => !prevAssignedIdsRef.current.has(d.id));
+          if (newAssignments.length > 0) {
+            setUnreadCount(prev => prev + newAssignments.length);
+            setNotifications(prev => {
+              const next = [...newAssignments, ...prev];
+              const uniqueById = new Map<string, DriverNotification>();
+              next.forEach(item => {
+                if (!uniqueById.has(item.id)) uniqueById.set(item.id, item);
+              });
+              return Array.from(uniqueById.values()).slice(0, 30);
+            });
+            const newest = newAssignments[0];
+            addToast(`🛵 New assignment received! Drive to ${newest.pickup_location}`);
+          }
         }
+        prevAssignedIdsRef.current = assignedIds;
       }
-      prevAssignedCountRef.current = assignedJobs;
 
       setDeliveries(Array.isArray(data) ? data : []);
       setApiError(false);
@@ -321,7 +336,7 @@ export default function DriverPortal() {
     const successMessages: Record<string, { title: string; message: string }> = {
       'Picked Up': { title: '🚲 En Route!', message: "Package picked up! You're now on the way to the customer." },
       'Delivered':  { title: '🏁 Delivered!', message: "Great work! The delivery has been completed successfully." },
-      'Pending':    { title: '↩️ Rejected', message: "Delivery sent back to pending. Another driver can pick it up." },
+      'Pending':    { title: '↩️ Rejected', message: "Delivery returned to pending and saved in admin cancelled/rejected history." },
     };
     // Optimistically update local state so the UI changes instantly
     setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status } : d));
@@ -519,7 +534,7 @@ export default function DriverPortal() {
             <button 
               onClick={() => {
                 setUnreadCount(0);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setNotificationsOpen(true);
               }}
               className="relative p-2 text-neutral-400 hover:text-blue-600 rounded-full hover:bg-neutral-50 transition-colors"
               title="Notifications"
@@ -751,6 +766,34 @@ export default function DriverPortal() {
           </div>
         </div>
       </div>
+
+      {notificationsOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={() => setNotificationsOpen(false)}></div>
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden relative z-10">
+            <div className="p-6 border-b border-neutral-100 flex items-center justify-between">
+              <h3 className="text-xl font-extrabold text-neutral-900">Notifications</h3>
+              <div className="flex items-center space-x-2">
+                <button onClick={() => { setNotifications([]); setUnreadCount(0); }} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100">Clear</button>
+                <button onClick={() => setNotificationsOpen(false)} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-bold hover:bg-neutral-200">Close</button>
+              </div>
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3">
+              {notifications.length === 0 && (
+                <div className="py-10 text-center text-neutral-500 font-medium">No assignment notifications yet.</div>
+              )}
+              {notifications.map((note) => (
+                <div key={note.id} className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
+                  <p className="text-sm font-extrabold text-neutral-900">Customer: {note.customer_name || 'Customer'}</p>
+                  <p className="text-xs text-neutral-500 mt-1">Pickup: {note.pickup_location}</p>
+                  <p className="text-xs text-neutral-500 mt-1">Dropoff: {note.dropoff_location}</p>
+                  <p className="text-[11px] text-neutral-400 mt-2">{new Date(note.created_at).toLocaleString()}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Driver Custom Modal */}
       {modalConfig.isOpen && (
