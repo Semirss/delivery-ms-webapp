@@ -256,7 +256,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold text-neutral-900 mb-2">Bicycle Courier</h3>
                 <p className="text-neutral-500 mb-6">Best for light items, documents, and navigating localized traffic jams.</p>
                 <div className="flex items-end space-x-2 mb-8">
-                  <span className="text-5xl font-bold text-neutral-900">200</span>
+                  <span className="text-5xl font-bold text-neutral-900">100</span>
                   <span className="text-lg text-neutral-500 font-medium pb-1.5">ETB</span>
                   <span className="text-sm text-neutral-400 pb-2">/ base fare</span>
                 </div>
@@ -295,7 +295,7 @@ export default function LandingPage() {
                 <h3 className="text-2xl font-bold text-white mb-2">Motorbike Courier</h3>
                 <p className="text-neutral-400 mb-6">Fastest option across the entire city, capable of handling heavier packages.</p>
                 <div className="flex items-end space-x-2 mb-8">
-                  <span className="text-5xl font-bold text-white">350</span>
+                  <span className="text-5xl font-bold text-white">200</span>
                   <span className="text-lg text-neutral-400 font-medium pb-1.5">ETB</span>
                   <span className="text-sm text-neutral-500 pb-2">/ base fare</span>
                 </div>
