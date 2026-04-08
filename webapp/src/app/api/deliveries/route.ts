@@ -26,19 +26,46 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee, vehicle_category } = body;
+        const {
+            customer_name,
+            customer_phone,
+            pickup_location,
+            dropoff_location,
+            package_type,
+            delivery_fee,
+            vehicle_category,
+            pickup_lat,
+            pickup_lng,
+            dropoff_lat,
+            dropoff_lng,
+        } = body;
+
+        const insertPayload = {
+            customer_name,
+            customer_phone,
+            pickup_location,
+            dropoff_location,
+            package_type,
+            delivery_fee: delivery_fee ?? null,
+            vehicle_category: vehicle_category ?? null,
+            pickup_lat: pickup_lat ?? null,
+            pickup_lng: pickup_lng ?? null,
+            dropoff_lat: dropoff_lat ?? null,
+            dropoff_lng: dropoff_lng ?? null,
+        };
 
         const { data, error } = await supabase
             .from('deliveries')
-            .insert([
-                { customer_name, customer_phone, pickup_location, dropoff_location, package_type, delivery_fee, vehicle_category }
-            ])
+            .insert([insertPayload])
             .select()
             .single();
-        if (error) throw error;
 
-        // Broadcast to all active clients that the DB was updated, forcing them to re-fetch immediately.
-        // This is 100% reliable even if Postgres Replication isn't configured correctly.
+        if (error) {
+            console.error('[POST /api/deliveries] Supabase error:', JSON.stringify(error));
+            throw new Error(error.message);
+        }
+
+        // Broadcast so drivers re-fetch immediately
         try {
             await supabase.channel('deliveries-sync').send({
                 type: 'broadcast',
@@ -46,8 +73,8 @@ export async function POST(request: Request) {
                 payload: {
                     delivery_id: data.id,
                     customer_name: data.customer_name,
-                    created_at: data.created_at
-                }
+                    created_at: data.created_at,
+                },
             });
         } catch (e) {
             console.error('Broadcast failed', e);
@@ -55,6 +82,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json(data, { status: 201 });
     } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error('[POST /api/deliveries] Error:', err?.message ?? err);
+        return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
     }
 }

@@ -6,12 +6,81 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// ── Price Calculator Widget ───────────────────────────────────────────────
+const PRICING_CALC = {
+  Bike:  { base: 30, perKm: 50 },
+  Motor: { base: 40, perKm: 60 },
+};
+
+function PriceCalculator() {
+  const [km, setKm] = useState(3);
+  const [vehicle, setVehicle] = useState<'Bike' | 'Motor'>('Motor');
+  const { base, perKm } = PRICING_CALC[vehicle];
+  const price = Math.round((base + km * perKm) / 10) * 10;
+
+  return (
+    <div className="mt-14 max-w-xl mx-auto bg-white rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.05)] border border-neutral-100 p-8">
+      <div className="text-center mb-6">
+        <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Try it out</span>
+        <h3 className="text-xl font-bold text-neutral-900 mt-1">Estimate Your Delivery Cost</h3>
+      </div>
+
+      {/* Vehicle Toggle */}
+      <div className="flex bg-neutral-100 p-1.5 rounded-2xl mb-6">
+        {(['Bike', 'Motor'] as const).map(v => (
+          <button
+            key={v}
+            onClick={() => setVehicle(v)}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              vehicle === v ? 'bg-white shadow text-neutral-900' : 'text-neutral-500 hover:text-neutral-700'
+            }`}
+          >
+            {v === 'Bike' ? '🚲 Bicycle' : '🏍️ Motorbike'}
+          </button>
+        ))}
+      </div>
+
+      {/* KM Slider */}
+      <div className="mb-6">
+        <div className="flex justify-between mb-3">
+          <label className="text-sm font-bold text-neutral-700">Distance</label>
+          <span className="text-sm font-bold text-neutral-900">{km} km</span>
+        </div>
+        <input
+          type="range" min={1} max={30} value={km}
+          onChange={e => setKm(Number(e.target.value))}
+          className="w-full h-2 bg-neutral-200 rounded-full appearance-none cursor-pointer accent-black"
+        />
+        <div className="flex justify-between text-xs text-neutral-400 mt-1.5">
+          <span>1 km</span><span>30 km</span>
+        </div>
+      </div>
+
+      {/* Result */}
+      <div className="bg-neutral-50 rounded-2xl p-5 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Estimated Price</p>
+          <p className="text-3xl font-bold text-neutral-900">{price} <span className="text-base font-semibold text-neutral-500">Birr</span></p>
+          <p className="text-xs text-neutral-400 mt-1">{base} base + {km} × {perKm} Birr/km</p>
+        </div>
+        <Link href="/book">
+          <button className="bg-black text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-neutral-800 transition-colors flex items-center space-x-2">
+            <span>Book Now</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 // ── Contact details ──
 const CONTACT_PHONE = "+251931323328";
 const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";
 
+// ── Main landing page ─────────────────────────────────────────────────────
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
@@ -236,7 +305,7 @@ export default function LandingPage() {
           <div className="text-center mb-16 space-y-4">
             <span className="text-orange-600 font-bold tracking-wider uppercase text-sm block">Transparent Pricing</span>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">Simple, fair rates for Addis.</h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">Pay strictly by distance and vehicle type. No unpredictable surges, no haggling.</p>
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">Pay by distance — no surges, no haggling. Starting at just <strong>30 Birr</strong> + distance rate.</p>
           </div>
 
           <motion.div 
@@ -246,7 +315,7 @@ export default function LandingPage() {
             variants={staggerContainer}
             className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
           >
-            {/* Eco Bike Pricing */}
+            {/* Bike Pricing */}
             <motion.div variants={fadeIn} className="bg-white/80 backdrop-blur-xl border border-white p-10 rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 blur-[60px] pointer-events-none group-hover:scale-110 transition-transform duration-500" />
               <div className="relative z-10 flex flex-col h-full">
@@ -255,10 +324,17 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-neutral-900 mb-2">Bicycle Courier</h3>
                 <p className="text-neutral-500 mb-6">Best for light items, documents, and navigating localized traffic jams.</p>
-                <div className="flex items-end space-x-2 mb-8">
-                  <span className="text-5xl font-bold text-neutral-900">100</span>
-                  <span className="text-lg text-neutral-500 font-medium pb-1.5">ETB</span>
-                  <span className="text-sm text-neutral-400 pb-2">/ base fare</span>
+                <div className="mb-2">
+                  <div className="flex items-end space-x-2">
+                    <span className="text-5xl font-bold text-neutral-900">30</span>
+                    <span className="text-lg text-neutral-500 font-medium pb-1.5">Birr</span>
+                    <span className="text-sm text-neutral-400 pb-2">base fare</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 mt-2 mb-8">
+                    <span className="text-2xl font-bold text-emerald-600">+50</span>
+                    <span className="text-sm text-neutral-500 font-medium">Birr / km</span>
+                    <span className="text-xs text-neutral-400 ml-1">(real road distance)</span>
+                  </div>
                 </div>
                 <ul className="space-y-4 flex-1 mb-8">
                   <li className="flex items-center space-x-3 text-neutral-700">
@@ -271,7 +347,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center space-x-3 text-neutral-700">
                     <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span>Ideal for areas like Bole, Piassa</span>
+                    <span>e.g. 5 km trip = <strong>280 Birr</strong></span>
                   </li>
                 </ul>
                 <Link href="/book">
@@ -294,10 +370,17 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2">Motorbike Courier</h3>
                 <p className="text-neutral-400 mb-6">Fastest option across the entire city, capable of handling heavier packages.</p>
-                <div className="flex items-end space-x-2 mb-8">
-                  <span className="text-5xl font-bold text-white">200</span>
-                  <span className="text-lg text-neutral-400 font-medium pb-1.5">ETB</span>
-                  <span className="text-sm text-neutral-500 pb-2">/ base fare</span>
+                <div className="mb-2">
+                  <div className="flex items-end space-x-2">
+                    <span className="text-5xl font-bold text-white">40</span>
+                    <span className="text-lg text-neutral-400 font-medium pb-1.5">Birr</span>
+                    <span className="text-sm text-neutral-500 pb-2">base fare</span>
+                  </div>
+                  <div className="flex items-center space-x-1.5 mt-2 mb-8">
+                    <span className="text-2xl font-bold text-purple-400">+60</span>
+                    <span className="text-sm text-neutral-400 font-medium">Birr / km</span>
+                    <span className="text-xs text-neutral-500 ml-1">(real road distance)</span>
+                  </div>
                 </div>
                 <ul className="space-y-4 flex-1 mb-8">
                   <li className="flex items-center space-x-3 text-neutral-300">
@@ -310,7 +393,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center space-x-3 text-neutral-300">
                     <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span>Heavy duty, weather-resistant box</span>
+                    <span>e.g. 5 km trip = <strong className="text-white">340 Birr</strong></span>
                   </li>
                 </ul>
                 <Link href="/book">
@@ -321,6 +404,9 @@ export default function LandingPage() {
               </div>
             </motion.div>
           </motion.div>
+
+          {/* Price Calculator Widget */}
+          <PriceCalculator />
         </div>
       </section>
 

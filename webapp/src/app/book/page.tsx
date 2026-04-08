@@ -1,24 +1,197 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MapPin, Bike, CopyCheck, AlertCircle, ArrowRight } from "lucide-react";
+import { ArrowLeft, MapPin, CopyCheck, AlertCircle, ArrowRight, Loader2 } from "lucide-react";
 
 const CONTACT_PHONE = "+251931323328";
 const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";
 
+// Pricing config
+const PRICING = {
+  Bike:  { base: 30, perKm: 50 },
+  Motor: { base: 40, perKm: 60 },
+};
+
+// Comprehensive list of Addis Ababa neighborhoods / sub-cities / areas
+const ADDIS_NEIGHBORHOODS = [
+  "Piassa", "Bole", "Megenagna", "Kazanchis", "Sarbet", "Saris",
+  "Kality", "CMC", "Gerji", "Gofa", "Gotera", "Lebu", "Lemi Kura",
+  "Akaki Kality", "Nifas Silk Lafto", "Kirkos", "Gulele", "Kolfe Keranio",
+  "Lideta", "Bole Bulbula", "Bole Michael", "Bole Atlas", "Bole Arabsa",
+  "Ayat", "Summit", "Jemo", "Jemo 1", "Jemo 2", "Jemo 3",
+  "Mekanisa", "Kotebe", "Yeka", "Shiro Meda", "Arada", "Arat Kilo",
+  "Sidist Kilo", "Amist Kilo", "Urael", "Bole Mikael", "Bole Rwanda",
+  "Welo Sefer", "Lamberet", "Garibaldi", "Mexico", "Wollo Sefer",
+  "Teklehaimanot", "Cherkos", "Lafto", "Addis Ketema", "Merkato",
+  "Autobus Tera", "Tor Hailoch", "Nifas Silk", "Bambis", "Bethel",
+  "Aware", "Lideta", "Stadium", "Leghar", "Haile Garment",
+  "Meskel Square", "Anbessa", "Dembel", "Kara", "Figa", "Goro",
+  "Meri", "Sholla", "Ferensay", "Imperial", "Beklo Bet", "Zenebework",
+  "Wingate", "Qirqos", "Shimedre Selam", "Bulbulo", "Tor Sefer",
+  "Mikael", "Qera", "Gojam Berenda", "Abebaye", "Abyssinia",
+  "Churchill Avenue", "Debre Zeit Road", "Jimma Road", "Ambo Road",
+  "Airport", "Bole International Airport", "Old Airport", "Addis Ababa University",
+  "Black Lion Hospital", "Tikur Anbessa", "St. Paul Hospital", "ALERT",
+  "ECA", "African Union", "UNECA", "Meles Zenawi Foundation",
+  "Hilton Hotel", "Sheraton", "Radisson Blu", "National Palace",
+  "Entoto", "Entoto Park", "Entoto Mountain", "Furi", "Teppi",
+  "Wosha Mikael", "Etchegenet", "Saris Addis Sefer", "Gelan",
+  "Bishoftu Road", "Debre Birhan Road", "Mojo Road",
+];
+
+// ── LocationInput Component ────────────────────────────────────────────────
+function LocationInput({
+  name, placeholder, value, onChange, icon
+}: {
+  name: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  icon: React.ReactNode;
+}) {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    onChange(v);
+    if (v.trim().length >= 1) {
+      const filtered = ADDIS_NEIGHBORHOODS.filter(n =>
+        n.toLowerCase().includes(v.toLowerCase())
+      ).slice(0, 7);
+      setSuggestions(filtered);
+      setOpen(filtered.length > 0);
+    } else {
+      setSuggestions([]);
+      setOpen(false);
+    }
+  };
+
+  const handleSelect = (neighborhood: string) => {
+    onChange(neighborhood);
+    setSuggestions([]);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className="relative">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10">
+          {icon}
+        </div>
+        <input
+          ref={inputRef}
+          name={name}
+          required
+          autoComplete="off"
+          placeholder={placeholder}
+          value={value}
+          onChange={handleChange}
+          onFocus={() => {
+            if (suggestions.length > 0) setOpen(true);
+          }}
+          className="w-full pl-11 pr-5 py-4 rounded-2xl bg-[#f0f2f5] border-2 border-transparent focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 transition-all outline-none text-neutral-900 font-medium placeholder:text-neutral-500 placeholder:font-normal shadow-sm"
+        />
+      </div>
+
+      {/* Suggestions Dropdown */}
+      {open && suggestions.length > 0 && (
+        <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.10)] border border-neutral-100 z-50 overflow-hidden">
+          {suggestions.map((s, i) => (
+            <button
+              key={s}
+              type="button"
+              onMouseDown={() => handleSelect(s)}
+              className={`w-full flex items-center space-x-3 px-4 py-3 text-left text-sm font-medium text-neutral-800 hover:bg-neutral-50 transition-colors ${i !== suggestions.length - 1 ? "border-b border-neutral-50" : ""}`}
+            >
+              <MapPin className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+              <span>{s}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Distance calculation via OSRM (real road distances from OSM) ──────────
+async function getRoadDistanceKm(
+  pickupText: string,
+  dropoffText: string
+): Promise<number | null> {
+  try {
+    // Geocode both as "{neighborhood}, Addis Ababa, Ethiopia"
+    const geocode = async (q: string) => {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Addis Ababa, Ethiopia")}`,
+        { headers: { "User-Agent": "MotoBikeDelivery/1.0" } }
+      );
+      const data = await res.json();
+      if (!data?.length) return null;
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    };
+
+    const [pickup, dropoff] = await Promise.all([
+      geocode(pickupText),
+      geocode(dropoffText),
+    ]);
+
+    if (!pickup || !dropoff) return null;
+
+    // Get road distance from OSRM
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${pickup.lng},${pickup.lat};${dropoff.lng},${dropoff.lat}?overview=false`;
+    const osrmRes = await fetch(osrmUrl);
+    const osrmData = await osrmRes.json();
+
+    if (osrmData?.routes?.[0]?.distance) {
+      return osrmData.routes[0].distance / 1000; // meters → km
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function calcPrice(km: number, vehicle: "Bike" | "Motor"): number {
+  const { base, perKm } = PRICING[vehicle];
+  const raw = base + km * perKm;
+  return Math.round(raw / 10) * 10; // round to nearest 10
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────
 export default function Book() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const [vehicleCategory, setVehicleCategory] = useState("Bike");
+  const [vehicleCategory, setVehicleCategory] = useState<"Bike" | "Motor">("Bike");
+
+  const [pickupValue, setPickupValue] = useState("");
+  const [dropoffValue, setDropoffValue] = useState("");
+
+  const [distanceKm, setDistanceKm] = useState<number | null>(null);
+  const [priceEstimate, setPriceEstimate] = useState<number | null>(null);
+  const [priceLoading, setPriceLoading] = useState(false);
 
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
@@ -26,9 +199,39 @@ export default function Book() {
     }
   }, []);
 
+  // Recalculate price whenever pickup, dropoff, or vehicle changes
+  useEffect(() => {
+    if (!pickupValue.trim() || !dropoffValue.trim()) {
+      setDistanceKm(null);
+      setPriceEstimate(null);
+      return;
+    }
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      setPriceLoading(true);
+      const km = await getRoadDistanceKm(pickupValue, dropoffValue);
+      if (km !== null) {
+        setDistanceKm(km);
+        setPriceEstimate(calcPrice(km, vehicleCategory));
+      } else {
+        setDistanceKm(null);
+        setPriceEstimate(null);
+      }
+      setPriceLoading(false);
+    }, 900);
+
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [pickupValue, dropoffValue, vehicleCategory]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (loading) return;
+
+    if (!pickupValue.trim() || !dropoffValue.trim()) {
+      setError("Please fill out all fields.");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -36,54 +239,53 @@ export default function Book() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
-    if (!data.customer_name || !data.customer_phone || !data.pickup_location || !data.dropoff_location) {
-      setError("Please fill out all fields.");
-      setLoading(false);
-      return;
-    }
+    // Use live price estimate as a number (DB-compatible)
+    const feeValue = priceEstimate ?? null;
 
     try {
-      let pickupLat = null;
-      let pickupLng = null;
-      let dropoffLat = null;
-      let dropoffLng = null;
-
+      let pickupLat = null, pickupLng = null, dropoffLat = null, dropoffLng = null;
       try {
-        const pickupStr = data.pickup_location as string;
-        const dropoffStr = data.dropoff_location as string;
-
-        const pickupRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(pickupStr)}`);
-        const pickupData = await pickupRes.json();
-        if (pickupData?.length) {
-          pickupLat = parseFloat(pickupData[0].lat);
-          pickupLng = parseFloat(pickupData[0].lon);
-        }
-
-        const dropoffRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(dropoffStr)}`);
-        const dropoffData = await dropoffRes.json();
-        if (dropoffData?.length) {
-          dropoffLat = parseFloat(dropoffData[0].lat);
-          dropoffLng = parseFloat(dropoffData[0].lon);
-        }
-      } catch (err) {
-        console.warn("Geocoding failed", err);
-      }
+        const geocode = async (q: string) => {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Addis Ababa, Ethiopia")}`,
+            { headers: { "User-Agent": "MotoBikeDelivery/1.0" } }
+          );
+          return await res.json();
+        };
+        const [pd, dd] = await Promise.all([geocode(pickupValue), geocode(dropoffValue)]);
+        if (pd?.length) { pickupLat = parseFloat(pd[0].lat); pickupLng = parseFloat(pd[0].lon); }
+        if (dd?.length) { dropoffLat = parseFloat(dd[0].lat); dropoffLng = parseFloat(dd[0].lon); }
+      } catch {}
 
       const res = await fetch("/api/deliveries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...data,
+          customer_name: data.customer_name,
+          customer_phone: data.customer_phone,
+          pickup_location: pickupValue,
+          dropoff_location: dropoffValue,
+          package_type: data.package_type,
+          vehicle_category: vehicleCategory,
+          delivery_fee: feeValue,
           pickup_lat: pickupLat, pickup_lng: pickupLng,
-          dropoff_lat: dropoffLat, dropoff_lng: dropoffLng
+          dropoff_lat: dropoffLat, dropoff_lng: dropoffLng,
         })
       });
 
-      if (!res.ok) throw new Error("Failed to submit delivery.");
+      if (!res.ok) {
+        let errMsg = "Failed to submit delivery.";
+        try { const errData = await res.json(); errMsg = errData.error || errMsg; } catch {}
+        throw new Error(errMsg);
+      }
 
       setSubmitted(true);
       formRef.current?.reset();
+      setPickupValue("");
+      setDropoffValue("");
       setVehicleCategory("Bike");
+      setDistanceKm(null);
+      setPriceEstimate(null);
       setTimeout(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       setTimeout(() => setSubmitted(false), 5000);
     } catch (err: any) {
@@ -92,6 +294,8 @@ export default function Book() {
     }
     setLoading(false);
   };
+
+  const { base, perKm } = PRICING[vehicleCategory];
 
   return (
     <div className="min-h-screen bg-[#ebf0ee] text-neutral-900 flex flex-col font-sans selection:bg-purple-200">
@@ -115,15 +319,15 @@ export default function Book() {
             <h1 className="text-xl font-bold tracking-tight text-neutral-900">MotoBike</h1>
           </div>
           
-          <div className="w-16" /> {/* Spacer */}
+          <div className="w-16" />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex justify-center items-center px-4  relative z-10 w-full">
+      <main className="flex-1 flex justify-center items-start px-4 py-8 relative z-10 w-full">
         <div 
           ref={topRef} 
-          className=" p-8 sm:p-10 rounded-[2.5rem] w-full max-w-[500px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] scroll-mt-32"
+          className="p-8 sm:p-10 rounded-[2.5rem] w-full max-w-[520px] shadow-[0_20px_50px_rgba(0,0,0,0.04)] scroll-mt-32"
         >
           <div className="mb-10 text-center space-y-2">
             <h2 className="text-4xl font-medium tracking-tight text-neutral-900">Book Courier</h2>
@@ -157,23 +361,56 @@ export default function Book() {
                 />
               </div>
 
-              <div className="relative group">
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center space-y-1">
-                 <div className="w-3 h-3 border-2 border-blue-500 rounded-full" />
-                 <div className="w-0.5 h-6 bg-neutral-300 rounded-full" />
-                 <MapPin className="w-4 h-4 text-emerald-500 fill-emerald-100" />
-                </div>
-                <div className="space-y-3">
-                  <input
-                    name="pickup_location" required placeholder="Pickup Address"
-                    className="w-full pl-12 pr-5 py-4 rounded-2xl bg-[#f0f2f5] border-2 border-transparent focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 transition-all outline-none text-neutral-900 font-medium placeholder:text-neutral-500 placeholder:font-normal shadow-sm"
-                  />
-                  <input
-                    name="dropoff_location" required placeholder="Drop-off Address"
-                    className="w-full pl-12 pr-5 py-4 rounded-2xl bg-[#f0f2f5] border-2 border-transparent focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 transition-all outline-none text-neutral-900 font-medium placeholder:text-neutral-500 placeholder:font-normal shadow-sm"
-                  />
-                </div>
+              {/* Address Inputs with Neighborhood Autocomplete */}
+              <div className="space-y-3 relative">
+                {/* Route line decoration */}
+                <div className="absolute left-[1.05rem] top-[3.4rem] bottom-[3.4rem] w-0.5 bg-neutral-300 rounded-full z-0 pointer-events-none" />
+
+                <LocationInput
+                  name="pickup_location"
+                  placeholder="Pickup Neighborhood (e.g. Bole)"
+                  value={pickupValue}
+                  onChange={setPickupValue}
+                  icon={<div className="w-3 h-3 border-2 border-blue-500 rounded-full bg-white" />}
+                />
+                <LocationInput
+                  name="dropoff_location"
+                  placeholder="Drop-off Neighborhood (e.g. Piassa)"
+                  value={dropoffValue}
+                  onChange={setDropoffValue}
+                  icon={<MapPin className="w-4 h-4 text-emerald-500 fill-emerald-100" />}
+                />
               </div>
+
+              {/* Live Price Estimate Card */}
+              {(priceLoading || priceEstimate !== null) && (
+                <div className={`bg-white border rounded-2xl p-4 transition-all shadow-sm ${priceEstimate ? 'border-emerald-100' : 'border-neutral-100'}`}>
+                  {priceLoading ? (
+                    <div className="flex items-center space-x-3 text-neutral-500">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-sm font-medium">Calculating distance...</span>
+                    </div>
+                  ) : priceEstimate !== null && distanceKm !== null ? (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider">Estimated Price</p>
+                        <p className="text-2xl font-bold text-neutral-900 mt-0.5">
+                          {priceEstimate} <span className="text-base font-semibold text-neutral-500">Birr</span>
+                        </p>
+                        <p className="text-xs text-neutral-400 mt-1">
+                          {distanceKm.toFixed(1)} km · {base} base + {distanceKm.toFixed(1)} × {perKm} Birr/km
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end text-right">
+                        <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-xl mb-1">
+                          {vehicleCategory === "Bike" ? "🚲" : "🏍️"}
+                        </div>
+                        <p className="text-[10px] font-bold text-neutral-400">Real road distance</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
 
               <select
                 name="package_type"
@@ -187,6 +424,7 @@ export default function Book() {
               </select>
             </div>
 
+            {/* Vehicle Type */}
             <div className="pt-2">
               <input type="hidden" name="vehicle_category" value={vehicleCategory} />
               <p className="text-sm font-semibold text-neutral-400 mb-3 px-1">Vehicle Type</p>
@@ -202,7 +440,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🚲</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Bike</span>
-                    <span className="text-xs font-semibold opacity-70">100-400 Br</span>
+                    <span className="text-xs font-semibold opacity-70">30 + 50/km Birr</span>
                   </div>
                 </div>
 
@@ -217,7 +455,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🏍️</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Motorbike</span>
-                    <span className="text-xs font-semibold opacity-70">200-500 Br</span>
+                    <span className="text-xs font-semibold opacity-70">40 + 60/km Birr</span>
                   </div>
                 </div>
               </div>
@@ -230,10 +468,13 @@ export default function Book() {
               <span>{loading ? "Dispatching Rider..." : "Request Vehicle Now"}</span>
               {!loading && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
             </button>
+
+            <p className="text-center text-xs text-neutral-400 pt-1">
+              Final price confirmed by rider · {base} Birr base + {perKm} Birr/km for {vehicleCategory}
+            </p>
           </form>
         </div>
       </main>
-
     </div>
   );
 }

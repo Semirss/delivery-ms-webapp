@@ -53,7 +53,7 @@ export default function DriverPortal() {
   const [notifications, setNotifications] = useState<DriverNotification[]>([]);
   const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('offline');
 
-  // ── Toast Notifications State ───────────────────────────────────────────
+  // ── Toast Notifications State ───────────────────────────────────────────────
   const [toasts, setToasts] = useState<{ id: number; message: string }[]>([]);
   const addToast = useCallback((message: string) => {
     const id = Date.now() + Math.random();
@@ -63,10 +63,46 @@ export default function DriverPortal() {
     }, 5000);
   }, []);
 
+  // ── Web Audio ping + vibration ────────────────────────────────────────
+  const playPing = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // First tone — high pitch
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.frequency.setValueAtTime(880, ctx.currentTime);
+      gain1.gain.setValueAtTime(0.5, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.4);
+      // Second tone — slightly lower, slight delay
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.frequency.setValueAtTime(660, ctx.currentTime + 0.15);
+      gain2.gain.setValueAtTime(0.4, ctx.currentTime + 0.15);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc2.start(ctx.currentTime + 0.15);
+      osc2.stop(ctx.currentTime + 0.6);
+      setTimeout(() => ctx.close(), 1000);
+    } catch (e) {
+      console.warn('Audio ping failed', e);
+    }
+    // Vibration (mobile devices)
+    if ('vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200]);
+    }
+  }, []);
+
   // Track previous count of Assigned jobs to detect new assignments.
   const prevAssignedIdsRef = useRef<Set<string>>(new Set());
+  // Flag: skip diff on first fetch (just seed the Set silently)
+  const initialFetchDoneRef = useRef(false);
 
-  // ── fetchData wrapped in useCallback ─────────────────────────────────────
+  // ── fetchData wrapped in useCallback ────────────────────────────────────────
   // driverId passed explicitly so the fn never closes over stale driver state.
   const fetchData = useCallback(async (driverId?: string) => {
     const id = driverId ?? driver?.id;
@@ -80,9 +116,14 @@ export default function DriverPortal() {
         const assignedDeliveries = data.filter((d: Delivery) => d.status === 'Assigned');
         const assignedIds = new Set(assignedDeliveries.map((d: Delivery) => d.id));
 
-        if (prevAssignedIdsRef.current.size > 0) {
+        if (!initialFetchDoneRef.current) {
+          // First fetch — just seed the set silently, no alerts
+          prevAssignedIdsRef.current = assignedIds;
+          initialFetchDoneRef.current = true;
+        } else {
           const newAssignments = assignedDeliveries.filter((d: Delivery) => !prevAssignedIdsRef.current.has(d.id));
           if (newAssignments.length > 0) {
+            playPing();
             setUnreadCount(prev => prev + newAssignments.length);
             setNotifications(prev => {
               const next = [...newAssignments, ...prev];
@@ -93,10 +134,18 @@ export default function DriverPortal() {
               return Array.from(uniqueById.values()).slice(0, 30);
             });
             const newest = newAssignments[0];
-            addToast(`🛵 New assignment received! Drive to ${newest.pickup_location}`);
+            addToast(`🛕 New assignment! Pick up from ${newest.pickup_location}`);
+            // Browser system notification (if permission granted)
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+              new Notification('MotoBike — New Delivery!', {
+                body: `Pick up from ${newest.pickup_location} → ${newest.dropoff_location}`,
+                icon: '/favlogo1.png',
+                tag: newest.id,
+              });
+            }
           }
+          prevAssignedIdsRef.current = assignedIds;
         }
-        prevAssignedIdsRef.current = assignedIds;
       }
 
       setDeliveries(Array.isArray(data) ? data : []);
@@ -105,7 +154,7 @@ export default function DriverPortal() {
       console.error(err);
       setApiError(true);
     }
-  }, [driver?.id]);
+  }, [driver?.id, playPing, addToast]);
 
   // Stable ref so realtime callbacks always call the latest fetchData
   const fetchDataRef = useRef(fetchData);
@@ -175,6 +224,10 @@ export default function DriverPortal() {
         if (!eventDriverId || eventDriverId === driver.id) {
           setTimeout(() => fetchDataRef.current(driver.id), 100);
         }
+      })
+      .on('broadcast', { event: 'delivery_created' }, () => {
+        // A new order was placed — re-fetch in case admin assigns immediately
+        setTimeout(() => fetchDataRef.current(driver.id), 300);
       })
       .on('broadcast', { event: 'delivery_status_updated' }, ({ payload }) => {
         const parsed = parsePayload(payload);
@@ -303,6 +356,11 @@ export default function DriverPortal() {
         
         setDriver(session);
         localStorage.setItem('mvp_driver_session', JSON.stringify(session));
+
+        // Request browser notification permission
+        if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+          Notification.requestPermission();
+        }
       } else {
         const file = formData.get('personal_id') as File;
         if (file && file.size > 5 * 1024 * 1024 * 1024 * 1024 * 1024) throw new Error("ID photo must be under 2MB.");
@@ -741,7 +799,7 @@ export default function DriverPortal() {
                          </div>
                          <div>
                             <p className="text-[10px] font-bold text-neutral-400 uppercase">Fee</p>
-                            <p className="font-medium text-emerald-600 mt-0.5">{job.delivery_fee || 'TBD'}</p>
+                            <p className="font-medium text-emerald-600 mt-0.5">{job.delivery_fee ? `${job.delivery_fee} Birr` : 'TBD'}</p>
                          </div>
                       </div>
                       <div className="space-y-2 pt-2 border-t border-neutral-100">
