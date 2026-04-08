@@ -54,6 +54,7 @@ type DeliveryNotification = {
   id: string;
   customer_name: string;
   vehicle_category?: string;
+  delivery_fee?: string | null;
   created_at: string;
   pickup_location: string;
   dropoff_location: string;
@@ -129,15 +130,45 @@ export default function AdminDashboard() {
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const router = useRouter();
 
-  // ── Toast Notifications State ───────────────────────────────────────────
+  // ── Toast + Sound Notifications State ──────────────────────────────────
   const [toasts, setToasts] = useState<{ id: number; message: string }[]>([]);
+  const notificationSoundRef = useRef<AudioContext | null>(null);
+
+  const playNotificationSound = useCallback(() => {
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      notificationSoundRef.current = ctx;
+      // Three ascending tones
+      const playTone = (freq: number, startTime: number, duration: number) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        oscillator.frequency.setValueAtTime(freq, startTime);
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+      const t = ctx.currentTime;
+      playTone(520, t, 0.18);
+      playTone(660, t + 0.2, 0.18);
+      playTone(800, t + 0.4, 0.28);
+    } catch (e) {
+      console.warn('Audio notification not supported', e);
+    }
+  }, []);
+
   const addToast = useCallback((message: string) => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev, { id, message }]);
+    playNotificationSound();
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 5000);
-  }, []);
+  }, [playNotificationSound]);
 
   // ── fetchData – wrapped in useCallback so its identity is stable.
   // A ref is also kept so realtime callbacks always call the *current* version.
@@ -474,6 +505,27 @@ export default function AdminDashboard() {
     ? Math.round((deliveries.filter(d => d.status === 'Delivered').length / deliveries.length) * 100)
     : 0;
 
+  // ── Revenue analytics ────────────────────────────────────────────────────
+  const calcRevenue = (dels: Delivery[]) =>
+    dels
+      .filter(d => d.status === 'Delivered')
+      .reduce((sum, d) => sum + (parseFloat(d.delivery_fee ?? '0') || 0), 0);
+
+  const now = new Date();
+  const todayRevenue = calcRevenue(
+    deliveries.filter(d => new Date(d.created_at).toDateString() === now.toDateString())
+  );
+  const monthRevenue = calcRevenue(
+    deliveries.filter(d => {
+      const dt = new Date(d.created_at);
+      return dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear();
+    })
+  );
+  const yearRevenue = calcRevenue(
+    deliveries.filter(d => new Date(d.created_at).getFullYear() === now.getFullYear())
+  );
+  const totalRevenue = calcRevenue(deliveries);
+
   // ─────────────────────────────────────────────────────────────────────────
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────
@@ -707,14 +759,18 @@ export default function AdminDashboard() {
                               <span className="text-red-500 mr-2 flex-shrink-0">📍</span>
                               <span className="text-sm font-medium text-neutral-800 line-clamp-2">{d.dropoff_location}</span>
                             </div>
-                            <div className="grid grid-cols-2 gap-2 mt-2">
+                            <div className="grid grid-cols-3 gap-2 mt-2">
                               <div className="bg-blue-50/50 p-2 rounded-lg">
                                 <p className="text-[10px] uppercase font-bold text-neutral-400">Item</p>
                                 <p className="text-xs font-bold text-neutral-700 truncate">{d.package_type}</p>
                               </div>
                               <div className="bg-emerald-50/50 p-2 rounded-lg">
-                                <p className="text-[10px] uppercase font-bold text-neutral-400">Required</p>
+                                <p className="text-[10px] uppercase font-bold text-neutral-400">Vehicle</p>
                                 <p className="text-xs font-bold text-neutral-700 truncate">{d.vehicle_category === 'Motor' ? '🏍️ Motor' : '🚲 Bike'}</p>
+                              </div>
+                              <div className="bg-amber-50/50 p-2 rounded-lg">
+                                <p className="text-[10px] uppercase font-bold text-neutral-400">Fee</p>
+                                <p className="text-xs font-bold text-amber-700 truncate">{d.delivery_fee ? `${d.delivery_fee} Br` : '—'}</p>
                               </div>
                             </div>
                           </div>
@@ -867,6 +923,34 @@ export default function AdminDashboard() {
               {/* ── ANALYTICS TAB ───────────────────────────────────────── */}
               {activeTab === 'analytics' && (
                 <div className="space-y-6">
+                  {/* Revenue cards */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-5 rounded-2xl shadow-md text-white">
+                      <div className="text-2xl mb-2">📅</div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-emerald-100">Today's Revenue</p>
+                      <p className="text-2xl font-extrabold mt-1">{todayRevenue.toLocaleString()} <span className="text-sm font-bold opacity-80">Birr</span></p>
+                      <p className="text-xs text-emerald-100 mt-1">{deliveries.filter(d => d.status === 'Delivered' && new Date(d.created_at).toDateString() === now.toDateString()).length} deliveries</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-5 rounded-2xl shadow-md text-white">
+                      <div className="text-2xl mb-2">📆</div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-blue-100">This Month</p>
+                      <p className="text-2xl font-extrabold mt-1">{monthRevenue.toLocaleString()} <span className="text-sm font-bold opacity-80">Birr</span></p>
+                      <p className="text-xs text-blue-100 mt-1">{now.toLocaleString('en-US', { month: 'long' })}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-violet-500 to-purple-700 p-5 rounded-2xl shadow-md text-white">
+                      <div className="text-2xl mb-2">🗓️</div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-violet-100">This Year</p>
+                      <p className="text-2xl font-extrabold mt-1">{yearRevenue.toLocaleString()} <span className="text-sm font-bold opacity-80">Birr</span></p>
+                      <p className="text-xs text-violet-100 mt-1">{now.getFullYear()}</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-5 rounded-2xl shadow-md text-white">
+                      <div className="text-2xl mb-2">💰</div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-amber-100">All-Time Revenue</p>
+                      <p className="text-2xl font-extrabold mt-1">{totalRevenue.toLocaleString()} <span className="text-sm font-bold opacity-80">Birr</span></p>
+                      <p className="text-xs text-amber-100 mt-1">{deliveries.filter(d => d.status === 'Delivered').length} completed orders</p>
+                    </div>
+                  </div>
+
                   {/* Top stat cards */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-neutral-100">

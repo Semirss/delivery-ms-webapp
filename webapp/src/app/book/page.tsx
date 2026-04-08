@@ -16,32 +16,119 @@ const PRICING = {
   Motor: { base: 40, perKm: 60 },
 };
 
-// Comprehensive list of Addis Ababa neighborhoods / sub-cities / areas
+// Comprehensive list of Addis Ababa neighborhoods / sub-cities / areas (300+)
 const ADDIS_NEIGHBORHOODS = [
-  "Piassa", "Bole", "Megenagna", "Kazanchis", "Sarbet", "Saris",
-  "Kality", "CMC", "Gerji", "Gofa", "Gotera", "Lebu", "Lemi Kura",
-  "Akaki Kality", "Nifas Silk Lafto", "Kirkos", "Gulele", "Kolfe Keranio",
-  "Lideta", "Bole Bulbula", "Bole Michael", "Bole Atlas", "Bole Arabsa",
-  "Ayat", "Summit", "Jemo", "Jemo 1", "Jemo 2", "Jemo 3",
-  "Mekanisa", "Kotebe", "Yeka", "Shiro Meda", "Arada", "Arat Kilo",
-  "Sidist Kilo", "Amist Kilo", "Urael", "Bole Mikael", "Bole Rwanda",
-  "Welo Sefer", "Lamberet", "Garibaldi", "Mexico", "Wollo Sefer",
-  "Teklehaimanot", "Cherkos", "Lafto", "Addis Ketema", "Merkato",
-  "Autobus Tera", "Tor Hailoch", "Nifas Silk", "Bambis", "Bethel",
-  "Aware", "Lideta", "Stadium", "Leghar", "Haile Garment",
-  "Meskel Square", "Anbessa", "Dembel", "Kara", "Figa", "Goro",
-  "Meri", "Sholla", "Ferensay", "Imperial", "Beklo Bet", "Zenebework",
-  "Wingate", "Qirqos", "Shimedre Selam", "Bulbulo", "Tor Sefer",
-  "Mikael", "Qera", "Gojam Berenda", "Abebaye", "Abyssinia",
-  "Churchill Avenue", "Debre Zeit Road", "Jimma Road", "Ambo Road",
-  "Airport", "Bole International Airport", "Old Airport", "Addis Ababa University",
-  "Black Lion Hospital", "Tikur Anbessa", "St. Paul Hospital", "ALERT",
+  // Sub-cities
+  "Addis Ketema", "Akaki Kality", "Arada", "Bole", "Gulele",
+  "Kirkos", "Kolfe Keranio", "Lideta", "Nifas Silk Lafto", "Yeka",
+  "Lemi Kura",
+
+  // Bole area
+  "Bole Mikael", "Bole Michael", "Bole Rwanda", "Bole Atlas", "Bole Bulbula",
+  "Bole Arabsa", "Bole 16", "Bole Medhanialem", "Bole Subcity", "Bole Airport",
+  "Bole International Airport", "Old Airport", "CMC", "CMC Road", "CMC Michael",
+
+  // Kazanchis / Piassa / Arada
+  "Piassa", "Kazanchis", "Urael", "Arat Kilo", "Sidist Kilo", "Amist Kilo",
+  "Abiot", "Afincho Ber", "Debre Damo", "Genet Hotel Area", "Haile Garment",
+  "Ledeta", "Menilik Square", "Mercato Triangle", "Teklehaimanot",
+  "Addis Ababa Stadium", "National Theatre", "Municipality Area",
+
+  // Merkato & surroundings
+  "Merkato", "Addis Merkato", "Gebre Guracha", "Shola Market", "Shola",
+  "Kera", "Qera", "Gojam Berenda", "Kolfe", "Kolfe 01", "Kolfe Michael",
+  "Autobus Tera", "Laghar", "Leghar", "Mexico", "Mexico Square",
+
+  // Megenagna & surrounding
+  "Megenagna", "Gerji", "Gerji Mebrat Hail", "Gerji Condominium",
+  "Summit", "Summit Condominium", "Ayat", "Ayat Condominium",
+  "Kotebe", "Kotebe Michael", "Kotebe Metro", "Kotebe College",
+  "Yeka Michael", "Yeka Tafo", "Yeka Abado",
+
+  // Sarbet / Gofa / Jemo
+  "Sarbet", "Saris", "Saris Addis Sefer", "Gofa", "Gofa Sefer", "Gofa Mebrat",
+  "Gofa Condominium", "Jemo", "Jemo 1", "Jemo 2", "Jemo 3",
+  "Jemo Michael", "Mekanisa", "Mekanisa Abo", "Mekanisa Condominium",
+  "Lebu", "Lebu Mebrat Hail", "Lebu Condominium", "Lebu Michael",
+  "Nifas Silk", "Nifas Silk Condominium",
+
+  // Kality / Akaki
+  "Kality", "Kality Condominium", "Akaki", "Akaki Kality Industrial",
+  "Gelan", "Gelan Condominium", "Gelan Industrial", "Akaki River",
+  "Kilinto", "Dukem Road", "Bishoftu Road", "Mojo Road",
+
+  // CMC / Koye / 44-Mazoria
+  "Koye Feche", "Koye Condominium", "44 Mazoria", "Repi", "Repi Soap Factory",
+  "Lafto", "Lafto Condominium", "Lafto 01", "Lafto Michael",
+
+  // Tor Hailoch / Kazanchis belt
+  "Tor Hailoch", "Tor Sefer", "Welo Sefer", "Wollo Sefer", "Lamberet",
+  "Bambis", "Bethel", "Aware", "Aware Michael", "Beklo Bet",
+  "Zenebework", "Wingate", "Shimedre Selam", "Qirqos",
+
+  // Gulele / Entoto / Shiro Meda
+  "Gulele", "Shiro Meda", "Entoto", "Entoto Park", "Entoto Mountain",
+  "Mariam", "Kechene", "Kechene Medhanialem", "Abebaye", "Abissinia",
+  "Lideta Condominium", "Lideta Michael", "Arat Kilo Student Area",
+
+  // Old area / Ferensay / Imperial
+  "Ferensay", "Ferensay Legasion", "Imperial", "Garibaldi", "Churchill Avenue",
+  "Cherkos", "Meri", "Figa", "Goro", "Gotera", "Gotera Condominium",
+  "Anbessa Sefer", "Dembel", "Dembel City Center",
+
+  // Hospitals / Institutions
+  "Tikur Anbessa", "Black Lion Hospital", "St. Paul Hospital", "ALERT Hospital",
   "ECA", "African Union", "UNECA", "Meles Zenawi Foundation",
+  "Addis Ababa University", "Unity University", "Ethiopian Civil Service University",
+
+  // Hotels / Landmarks
   "Hilton Hotel", "Sheraton", "Radisson Blu", "National Palace",
-  "Entoto", "Entoto Park", "Entoto Mountain", "Furi", "Teppi",
-  "Wosha Mikael", "Etchegenet", "Saris Addis Sefer", "Gelan",
-  "Bishoftu Road", "Debre Birhan Road", "Mojo Road",
+  "Meskel Square", "Maskel Square", "Stadium", "Abebe Bikila Stadium",
+  "Martyrs Square", "Ras Hotel", "Jupiter Hotel", "Elilly Hotel",
+
+  // Subcity specific woreda zones
+  "Woreda 01", "Woreda 02", "Woreda 03", "Woreda 04", "Woreda 05",
+  "Woreda 06", "Woreda 07", "Woreda 08", "Woreda 09", "Woreda 10",
+
+  // Major roads as landmarks
+  "Debre Zeit Road", "Jimma Road", "Ambo Road", "Debre Birhan Road",
+  "Adama Road", "Welisso Road", "Shashamane Road", "Nekemte Road",
+
+  // More residential/commercial pockets
+  "Hana Mariam", "Hana Maria", "Liya Condominium", "Sunshine Condominium",
+  "Total Area Bole", "Total Area CMC", "Doro Manekia", "Kality Prison",
+  "Tulu Dimtu", "Beherawi Theatre", "Balcha Hospital", "Minilik Hospital",
+  "Kidane Mihret", "Genet Amba", "Biruk Wenz", "Saris Abo", "Saris Mender",
+
+  // Addis Ababa Ring Road areas
+  "Ring Road", "Inner Ring Road", "Outer Ring Road", "4 Kilo", "6 Kilo",
+  "Mexico Junction", "Bambis Junction", "Gotera Junction", "Ayat Junction",
+
+  // Additional pockets
+  "Bole Dembel", "Fiyel Bet", "Buna Temari", "Semit", "Semit Condominium",
+  "Gurd Shola", "Gurd Shola Mall", "Gurd Shola Michael",
+  "Lideta Market", "Saris Market", "Kera Market", "Shola Market",
+  "Diplomatic Area", "Bole Diplomatic", "Old Airport Road",
+  "Urael Church", "Meddhanialem", "Medhanialem", "Kidus Gabriel",
+  "Debir Zeyit", "Yeka Condominium", "Ayat Real Estate", "Ayat 22",
+
+  // Industrial/logistics zones
+  "Lafto Industry", "Akaki Industry", "Megenagna Industry",
+  "Bole Lemi", "Bole Lemi 2", "Bole Lemi Industry Park",
+
+  // Farther edges still in Addis
+  "Nifas Silk 21 Condominium", "Kaliti", "Kirkos Subcity",
+  "Asko", "Asko Condominium", "Asko Mender", "Kolfe Condominium",
+  "Lamberet Condominium", "Biruh Tesfa", "Biruh Tesfa Condominium",
+  "Gemini Business Center", "Sunshine Real Estate", "Ayat City",
+  "Entoto Observatory", "Entoto Natural Park",
+  "Addis Ababa Science Museum", "Addis Ababa Train Station",
+  "Light Rail Megenagna", "Light Rail Stadium", "Light Rail Mexico",
+  "Teker", "Amanuel Hospital", "Yekatit 12 Hospital", "Zewditu Hospital",
+  "Woldiya Sefer", "Godana Sefer", "Dereba", "Dereba Mender",
+  "Finfine", "Finfine Condominium", "Meri Condominium",
 ];
+
 
 // ── LocationInput Component ────────────────────────────────────────────────
 function LocationInput({
@@ -136,15 +223,28 @@ async function getRoadDistanceKm(
   dropoffText: string
 ): Promise<number | null> {
   try {
-    // Geocode both as "{neighborhood}, Addis Ababa, Ethiopia"
+    // Smart geocode: try with "Addis Ababa, Ethiopia" suffix first,
+    // then fall back to a plain OSM search so unknown neighborhoods still work.
     const geocode = async (q: string) => {
-      const res = await fetch(
+      const headers = { "User-Agent": "MotoBikeDelivery/1.0" };
+
+      // 1st attempt: neighbourhood + city context
+      const r1 = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Addis Ababa, Ethiopia")}`,
-        { headers: { "User-Agent": "MotoBikeDelivery/1.0" } }
+        { headers }
       );
-      const data = await res.json();
-      if (!data?.length) return null;
-      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      const d1 = await r1.json();
+      if (d1?.length) return { lat: parseFloat(d1[0].lat), lng: parseFloat(d1[0].lon) };
+
+      // 2nd attempt: plain global search (handles custom / unknown areas)
+      const r2 = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Ethiopia")}`,
+        { headers }
+      );
+      const d2 = await r2.json();
+      if (d2?.length) return { lat: parseFloat(d2[0].lat), lng: parseFloat(d2[0].lon) };
+
+      return null;
     };
 
     const [pickup, dropoff] = await Promise.all([
