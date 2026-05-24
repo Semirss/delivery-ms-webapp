@@ -8,8 +8,8 @@ import { useEffect, useState } from "react";
 
 // ── Price Calculator Widget ───────────────────────────────────────────────
 const PRICING_CALC = {
-  Bike:  { base: 30, perKm: 50 },
-  Motor: { base: 40, perKm: 60 },
+  Bike:  { base: 30, perKm: 40 },
+  Motor: { base: 40, perKm: 50 },
 };
 
 function PriceCalculator() {
@@ -331,7 +331,7 @@ export default function LandingPage() {
                     <span className="text-sm text-neutral-400 pb-2">base fare</span>
                   </div>
                   <div className="flex items-center space-x-1.5 mt-2 mb-8">
-                    <span className="text-2xl font-bold text-emerald-600">+50</span>
+                    <span className="text-2xl font-bold text-emerald-600">+40</span>
                     <span className="text-sm text-neutral-500 font-medium">Birr / km</span>
                     <span className="text-xs text-neutral-400 ml-1">(real road distance)</span>
                   </div>
@@ -347,7 +347,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center space-x-3 text-neutral-700">
                     <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span>e.g. 5 km trip = <strong>280 Birr</strong></span>
+                    <span>e.g. 5 km trip = <strong>230 Birr</strong></span>
                   </li>
                 </ul>
                 <Link href="/book">
@@ -377,7 +377,7 @@ export default function LandingPage() {
                     <span className="text-sm text-neutral-500 pb-2">base fare</span>
                   </div>
                   <div className="flex items-center space-x-1.5 mt-2 mb-8">
-                    <span className="text-2xl font-bold text-purple-400">+60</span>
+                    <span className="text-2xl font-bold text-purple-400">+50</span>
                     <span className="text-sm text-neutral-400 font-medium">Birr / km</span>
                     <span className="text-xs text-neutral-500 ml-1">(real road distance)</span>
                   </div>
@@ -393,7 +393,7 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-center space-x-3 text-neutral-300">
                     <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span>e.g. 5 km trip = <strong className="text-white">340 Birr</strong></span>
+                    <span>e.g. 5 km trip = <strong className="text-white">290 Birr</strong></span>
                   </li>
                 </ul>
                 <Link href="/book">
