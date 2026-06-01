@@ -20239,6 +20239,40506 @@ export const ADDIS_LOCATIONS: Record<string, {lat: number, lng: number}> = {
   "Koye Feche Gubae": {
     "lat": 8.9049,
     "lng": 38.80474
+  },
+  "Atena Tera": { "lat": 9.0347, "lng": 38.7302 },
+  "Kaliti": { "lat": 8.8955, "lng": 38.7583 },
+  "Piassa": { "lat": 9.0315, "lng": 38.7523 },
+  "Mexico": { "lat": 9.0097, "lng": 38.7458 },
+  "Bole Medhanialem": { "lat": 8.9950, "lng": 38.7894 },
+  "Bole Atlas": { "lat": 8.9972, "lng": 38.7836 },
+  "Megenagna": { "lat": 9.0194, "lng": 38.8005 },
+  "Haya Hulet": { "lat": 9.0116, "lng": 38.7850 },
+  "Urael": { "lat": 9.0075, "lng": 38.7708 },
+  "Kasanchis": { "lat": 9.0133, "lng": 38.7652 },
+  "Sarbet": { "lat": 8.9925, "lng": 38.7397 },
+  "Bisrate Gabriel": { "lat": 8.9866, "lng": 38.7350 },
+  "Jemo": { "lat": 8.9644, "lng": 38.7233 },
+  "Lebu": { "lat": 8.9666, "lng": 38.7111 },
+  "Lafto": { "lat": 8.9538, "lng": 38.7355 },
+  "Repi": { "lat": 8.9722, "lng": 38.7061 },
+  "Betel": { "lat": 9.0188, "lng": 38.7066 },
+  "Torhailoch": { "lat": 9.0125, "lng": 38.7233 },
+  "Ayer Tena": { "lat": 8.9941, "lng": 38.7022 },
+  "Asko": { "lat": 9.0552, "lng": 38.6947 },
+  "Shiro Meda": { "lat": 9.0527, "lng": 38.7619 },
+  "6 Kilo": { "lat": 9.0436, "lng": 38.7630 },
+  "5 Kilo": { "lat": 9.0388, "lng": 38.7641 },
+  "4 Kilo": { "lat": 9.0344, "lng": 38.7633 },
+  "22 Mazoria": { "lat": 9.0069, "lng": 38.7852 },
+  "Gerji": { "lat": 9.0033, "lng": 38.8055 },
+  "CMC": { "lat": 9.0200, "lng": 38.8350 },
+  "Ayat": { "lat": 9.0266, "lng": 38.8580 },
+  "Summit": { "lat": 9.0311, "lng": 38.8688 },
+  "Tafo": { "lat": 9.0522, "lng": 38.8788 },
+  "Kotebe": { "lat": 9.0377, "lng": 38.8344 },
+  "Kara": { "lat": 9.0455, "lng": 38.8555 },
+  "Gurd Shola": { "lat": 9.0166, "lng": 38.8166 },
+  "Figa": { "lat": 9.0077, "lng": 38.8255 },
+  "Salite Mihret": { "lat": 9.0133, "lng": 38.8233 },
+  "Jacros": { "lat": 9.0011, "lng": 38.8188 },
+  "Gotera": { "lat": 8.9822, "lng": 38.7611 },
+  "Saris": { "lat": 8.9711, "lng": 38.7633 },
+  "Akaki": { "lat": 8.8755, "lng": 38.7755 },
+  "Tuludimtu": { "lat": 8.8666, "lng": 38.8011 },
+  "Gelan": { "lat": 8.8411, "lng": 38.8111 },
+  "Kera": { "lat": 8.9911, "lng": 38.7455 },
+  "Gofa": { "lat": 8.9755, "lng": 38.7488 },
+  "Mekanisa": { "lat": 8.9722, "lng": 38.7300 },
+  "Vatican": { "lat": 8.9833, "lng": 38.7311 },
+  "Bambis": { "lat": 9.0088, "lng": 38.7611 },
+  "Stadium": { "lat": 9.0111, "lng": 38.7533 },
+  "Legehar": { "lat": 9.0100, "lng": 38.7500 },
+  "Teklehaimanot": { "lat": 9.0200, "lng": 38.7422 },
+  "Merkato": { "lat": 9.0277, "lng": 38.7388 },
+  "Autotera": { "lat": 9.0288, "lng": 38.7344 },
+  "Kolfe": { "lat": 9.0333, "lng": 38.7188 },
+  "Keraniyo": { "lat": 9.0411, "lng": 38.7122 },
+  "Zenebe Werk": { "lat": 9.0300, "lng": 38.7055 },
+  "Alert": { "lat": 8.9955, "lng": 38.7200 },
+  "Koshe": { "lat": 8.9833, "lng": 38.7100 },
+  "Rufael": { "lat": 9.0355, "lng": 38.7411 },
+  "Abinet": { "lat": 9.0155, "lng": 38.7388 },
+  "Lideta": { "lat": 9.0155, "lng": 38.7344 },
+  "Geja Sefer": { "lat": 9.0033, "lng": 38.7411 },
+  "Sengatera": { "lat": 9.0133, "lng": 38.7488 },
+  "Goma Kuteba": { "lat": 9.0233, "lng": 38.7333 },
+  "Meshualekia": { "lat": 8.9977, "lng": 38.7588 },
+  "Cherkos": { "lat": 8.9955, "lng": 38.7555 },
+  "Lancha": { "lat": 8.9855, "lng": 38.7577 },
+  "Beklo Bet": { "lat": 8.9888, "lng": 38.7600 },
+  "Kadisco": { "lat": 8.9833, "lng": 38.7722 },
+  "Kality Square": { "lat": 8.8955, "lng": 38.7583 },
+  "Addisu Gebeya": { "lat": 9.0477, "lng": 38.7388 },
+  "Shegole": { "lat": 9.0511, "lng": 38.7311 },
+  "Sebara Babur": { "lat": 9.0288, "lng": 38.7411 },
+  "Gojam Berenda": { "lat": 9.0333, "lng": 38.7355 },
+  "Talian Sefer": { "lat": 9.0355, "lng": 38.7455 },
+  "Arat Kilo": { "lat": 9.0344, "lng": 38.7633 },
+  "Sidist Kilo": { "lat": 9.0436, "lng": 38.7630 },
+  "Amist Kilo": { "lat": 9.0388, "lng": 38.7641 },
+  "Aware": { "lat": 9.0255, "lng": 38.7688 },
+  "Bena Sefer": { "lat": 9.0155, "lng": 38.7755 },
+  "Meskel Square": { "lat": 9.0105, "lng": 38.7615 },
+  "Hayahulet": { "lat": 9.0116, "lng": 38.7850 },
+  "Megenagna Shola": { "lat": 9.0166, "lng": 38.8005 },
+  "Bole Rwanda": { "lat": 8.9900, "lng": 38.7888 },
+  "Bole Michael": { "lat": 8.9822, "lng": 38.7900 },
+  "Bole Bulbula": { "lat": 8.9500, "lng": 38.7850 },
+  "Goro": { "lat": 9.0011, "lng": 38.8255 },
+  "Yeka Abado": { "lat": 9.0500, "lng": 38.8500 },
+  "Hayat": { "lat": 9.0250, "lng": 38.8500 },
+  "Summit Condominium": { "lat": 9.0300, "lng": 38.8700 },
+  "Tuludimtu Condominium": { "lat": 8.8650, "lng": 38.8050 },
+  "Gelan Condominium": { "lat": 8.8400, "lng": 38.8150 },
+  "Kality Condominium": { "lat": 8.8900, "lng": 38.7600 },
+  "Jemo 1": { "lat": 8.9600, "lng": 38.7200 },
+  "Jemo 2": { "lat": 8.9500, "lng": 38.7150 },
+  "Jemo 3": { "lat": 8.9400, "lng": 38.7100 },
+  "Repi Soap Factory": { "lat": 8.9700, "lng": 38.7050 },
+  "Wingate": { "lat": 9.0550, "lng": 38.7350 },
+  "Burayu": { "lat": 9.0600, "lng": 38.6500 },
+  "Sebeta": { "lat": 8.9100, "lng": 38.6200 },
+  "Akaki Beseka": { "lat": 8.8700, "lng": 38.7800 },
+  "Koye Feche": { "lat": 8.9000, "lng": 38.8000 },
+  "Piassa Enkulal Tera Block 1": {
+    "lat": 9.03598,
+    "lng": 38.75499
+  },
+  "Piassa Enkulal Tera Block 2": {
+    "lat": 9.02685,
+    "lng": 38.75092
+  },
+  "Piassa Enkulal Tera Block 3": {
+    "lat": 9.02970,
+    "lng": 38.75001
+  },
+  "Piassa Enkulal Tera Block 4": {
+    "lat": 9.02860,
+    "lng": 38.74744
+  },
+  "Piassa Enkulal Tera Block 5": {
+    "lat": 9.03411,
+    "lng": 38.74894
+  },
+  "Piassa Enkulal Tera Block 6": {
+    "lat": 9.02949,
+    "lng": 38.75159
+  },
+  "Piassa Enkulal Tera Block 7": {
+    "lat": 9.03280,
+    "lng": 38.75315
+  },
+  "Piassa Enkulal Tera Block 8": {
+    "lat": 9.02820,
+    "lng": 38.74901
+  },
+  "Piassa Enkulal Tera Block 9": {
+    "lat": 9.03185,
+    "lng": 38.75118
+  },
+  "Piassa Enkulal Tera Block 10": {
+    "lat": 9.03308,
+    "lng": 38.74915
+  },
+  "Piassa Enkulal Tera Block 11": {
+    "lat": 9.02903,
+    "lng": 38.75283
+  },
+  "Piassa Enkulal Tera Block 12": {
+    "lat": 9.02856,
+    "lng": 38.74902
+  },
+  "Piassa Enkulal Tera Block 13": {
+    "lat": 9.02791,
+    "lng": 38.75006
+  },
+  "Piassa Enkulal Tera Block 14": {
+    "lat": 9.03084,
+    "lng": 38.75480
+  },
+  "Piassa Enkulal Tera Block 15": {
+    "lat": 9.02721,
+    "lng": 38.75642
+  },
+  "Piassa Enkulal Tera Block 16": {
+    "lat": 9.03584,
+    "lng": 38.74943
+  },
+  "Piassa Enkulal Tera Block 17": {
+    "lat": 9.03047,
+    "lng": 38.75162
+  },
+  "Piassa Enkulal Tera Block 18": {
+    "lat": 9.02777,
+    "lng": 38.74792
+  },
+  "Piassa Enkulal Tera Block 19": {
+    "lat": 9.03510,
+    "lng": 38.75529
+  },
+  "Piassa Enkulal Tera Block 20": {
+    "lat": 9.03501,
+    "lng": 38.75078
+  },
+  "Piassa Enkulal Tera Block 21": {
+    "lat": 9.02671,
+    "lng": 38.75600
+  },
+  "Piassa Enkulal Tera Block 22": {
+    "lat": 9.03363,
+    "lng": 38.75576
+  },
+  "Piassa Enkulal Tera Block 23": {
+    "lat": 9.02795,
+    "lng": 38.75684
+  },
+  "Piassa Enkulal Tera Block 24": {
+    "lat": 9.03424,
+    "lng": 38.75499
+  },
+  "Piassa Enkulal Tera Block 25": {
+    "lat": 9.02692,
+    "lng": 38.75497
+  },
+  "Piassa Enkulal Tera Block 26": {
+    "lat": 9.03217,
+    "lng": 38.75332
+  },
+  "Piassa Enkulal Tera Block 27": {
+    "lat": 9.03525,
+    "lng": 38.75726
+  },
+  "Piassa Enkulal Tera Block 28": {
+    "lat": 9.03431,
+    "lng": 38.74928
+  },
+  "Piassa Enkulal Tera Block 29": {
+    "lat": 9.03047,
+    "lng": 38.75049
+  },
+  "Piassa Enkulal Tera Block 30": {
+    "lat": 9.02654,
+    "lng": 38.75397
+  },
+  "Piassa Enkulal Tera Block 31": {
+    "lat": 9.03287,
+    "lng": 38.75122
+  },
+  "Piassa Enkulal Tera Block 32": {
+    "lat": 9.03095,
+    "lng": 38.75331
+  },
+  "Piassa Enkulal Tera Block 33": {
+    "lat": 9.03626,
+    "lng": 38.74828
+  },
+  "Piassa Enkulal Tera Block 34": {
+    "lat": 9.03523,
+    "lng": 38.75157
+  },
+  "Piassa Enkulal Tera Block 35": {
+    "lat": 9.03131,
+    "lng": 38.75297
+  },
+  "Piassa Enkulal Tera Block 36": {
+    "lat": 9.02999,
+    "lng": 38.75426
+  },
+  "Piassa Enkulal Tera Block 37": {
+    "lat": 9.03514,
+    "lng": 38.74958
+  },
+  "Piassa Enkulal Tera Block 38": {
+    "lat": 9.03606,
+    "lng": 38.74938
+  },
+  "Piassa Enkulal Tera Block 39": {
+    "lat": 9.03499,
+    "lng": 38.75595
+  },
+  "Piassa Enkulal Tera Block 40": {
+    "lat": 9.03019,
+    "lng": 38.74949
+  },
+  "Piassa Enkulal Tera Block 41": {
+    "lat": 9.03429,
+    "lng": 38.75028
+  },
+  "Piassa Enkulal Tera Block 42": {
+    "lat": 9.02977,
+    "lng": 38.75062
+  },
+  "Piassa Enkulal Tera Block 43": {
+    "lat": 9.02870,
+    "lng": 38.74769
+  },
+  "Piassa Enkulal Tera Block 44": {
+    "lat": 9.02805,
+    "lng": 38.75409
+  },
+  "Piassa Enkulal Tera Block 45": {
+    "lat": 9.02789,
+    "lng": 38.74872
+  },
+  "Piassa Enkulal Tera Block 46": {
+    "lat": 9.03185,
+    "lng": 38.74900
+  },
+  "Piassa Enkulal Tera Block 47": {
+    "lat": 9.02988,
+    "lng": 38.75090
+  },
+  "Piassa Enkulal Tera Block 48": {
+    "lat": 9.02996,
+    "lng": 38.75277
+  },
+  "Piassa Enkulal Tera Block 49": {
+    "lat": 9.03247,
+    "lng": 38.74981
+  },
+  "Piassa Enkulal Tera Block 50": {
+    "lat": 9.03615,
+    "lng": 38.74781
+  },
+  "Piassa Enkulal Tera Block 51": {
+    "lat": 9.02726,
+    "lng": 38.75333
+  },
+  "Piassa Enkulal Tera Block 52": {
+    "lat": 9.03445,
+    "lng": 38.74835
+  },
+  "Piassa Enkulal Tera Block 53": {
+    "lat": 9.02823,
+    "lng": 38.74839
+  },
+  "Piassa Enkulal Tera Block 54": {
+    "lat": 9.03634,
+    "lng": 38.75262
+  },
+  "Piassa Enkulal Tera Block 55": {
+    "lat": 9.02662,
+    "lng": 38.75565
+  },
+  "Piassa Enkulal Tera Block 56": {
+    "lat": 9.03099,
+    "lng": 38.75181
+  },
+  "Piassa Enkulal Tera Block 57": {
+    "lat": 9.03371,
+    "lng": 38.75147
+  },
+  "Piassa Enkulal Tera Block 58": {
+    "lat": 9.03542,
+    "lng": 38.74742
+  },
+  "Piassa Enkulal Tera Block 59": {
+    "lat": 9.02935,
+    "lng": 38.74793
+  },
+  "Piassa Enkulal Tera Block 60": {
+    "lat": 9.03584,
+    "lng": 38.74903
+  },
+  "Piassa Enkulal Tera Block 61": {
+    "lat": 9.03323,
+    "lng": 38.75428
+  },
+  "Piassa Enkulal Tera Block 62": {
+    "lat": 9.03340,
+    "lng": 38.74792
+  },
+  "Piassa Enkulal Tera Block 63": {
+    "lat": 9.03514,
+    "lng": 38.75278
+  },
+  "Piassa Enkulal Tera Block 64": {
+    "lat": 9.03282,
+    "lng": 38.74948
+  },
+  "Piassa Enkulal Tera Block 65": {
+    "lat": 9.03008,
+    "lng": 38.75191
+  },
+  "Piassa Enkulal Tera Block 66": {
+    "lat": 9.03024,
+    "lng": 38.75047
+  },
+  "Piassa Enkulal Tera Block 67": {
+    "lat": 9.02706,
+    "lng": 38.75324
+  },
+  "Piassa Enkulal Tera Block 68": {
+    "lat": 9.03638,
+    "lng": 38.75338
+  },
+  "Piassa Enkulal Tera Block 69": {
+    "lat": 9.02731,
+    "lng": 38.75058
+  },
+  "Piassa Enkulal Tera Block 70": {
+    "lat": 9.03183,
+    "lng": 38.75115
+  },
+  "Piassa Enkulal Tera Block 71": {
+    "lat": 9.02898,
+    "lng": 38.75728
+  },
+  "Piassa Enkulal Tera Block 72": {
+    "lat": 9.02939,
+    "lng": 38.75420
+  },
+  "Piassa Enkulal Tera Block 73": {
+    "lat": 9.03272,
+    "lng": 38.75463
+  },
+  "Piassa Enkulal Tera Block 74": {
+    "lat": 9.02807,
+    "lng": 38.75406
+  },
+  "Piassa Enkulal Tera Block 75": {
+    "lat": 9.03351,
+    "lng": 38.75222
+  },
+  "Piassa Enkulal Tera Block 76": {
+    "lat": 9.03568,
+    "lng": 38.75689
+  },
+  "Piassa Enkulal Tera Block 77": {
+    "lat": 9.02704,
+    "lng": 38.75377
+  },
+  "Piassa Enkulal Tera Block 78": {
+    "lat": 9.03571,
+    "lng": 38.74847
+  },
+  "Piassa Enkulal Tera Block 79": {
+    "lat": 9.02729,
+    "lng": 38.74872
+  },
+  "Piassa Enkulal Tera Block 80": {
+    "lat": 9.03265,
+    "lng": 38.75434
+  },
+  "Piassa Enkulal Tera Block 81": {
+    "lat": 9.03234,
+    "lng": 38.75346
+  },
+  "Piassa Enkulal Tera Block 82": {
+    "lat": 9.03445,
+    "lng": 38.75365
+  },
+  "Piassa Enkulal Tera Block 83": {
+    "lat": 9.03617,
+    "lng": 38.75157
+  },
+  "Piassa Enkulal Tera Block 84": {
+    "lat": 9.03533,
+    "lng": 38.75670
+  },
+  "Piassa Enkulal Tera Block 85": {
+    "lat": 9.03628,
+    "lng": 38.74954
+  },
+  "Piassa Enkulal Tera Block 86": {
+    "lat": 9.03558,
+    "lng": 38.75081
+  },
+  "Piassa Enkulal Tera Block 87": {
+    "lat": 9.03316,
+    "lng": 38.75440
+  },
+  "Piassa Enkulal Tera Block 88": {
+    "lat": 9.02965,
+    "lng": 38.75703
+  },
+  "Piassa Enkulal Tera Block 89": {
+    "lat": 9.03062,
+    "lng": 38.75261
+  },
+  "Piassa Enkulal Tera Block 90": {
+    "lat": 9.03483,
+    "lng": 38.75184
+  },
+  "Piassa Enkulal Tera Block 91": {
+    "lat": 9.03221,
+    "lng": 38.75157
+  },
+  "Piassa Enkulal Tera Block 92": {
+    "lat": 9.03374,
+    "lng": 38.75259
+  },
+  "Piassa Enkulal Tera Block 93": {
+    "lat": 9.03584,
+    "lng": 38.74734
+  },
+  "Piassa Enkulal Tera Block 94": {
+    "lat": 9.02715,
+    "lng": 38.75567
+  },
+  "Piassa Enkulal Tera Block 95": {
+    "lat": 9.02953,
+    "lng": 38.74923
+  },
+  "Piassa Enkulal Tera Block 96": {
+    "lat": 9.03369,
+    "lng": 38.75344
+  },
+  "Piassa Enkulal Tera Block 97": {
+    "lat": 9.03294,
+    "lng": 38.75687
+  },
+  "Piassa Enkulal Tera Block 98": {
+    "lat": 9.03114,
+    "lng": 38.74833
+  },
+  "Piassa Enkulal Tera Block 99": {
+    "lat": 9.03608,
+    "lng": 38.75640
+  },
+  "Piassa Enkulal Tera Block 100": {
+    "lat": 9.03152,
+    "lng": 38.75237
+  },
+  "Piassa Doro Tera Block 1": {
+    "lat": 9.03504,
+    "lng": 38.75247
+  },
+  "Piassa Doro Tera Block 2": {
+    "lat": 9.03618,
+    "lng": 38.75074
+  },
+  "Piassa Doro Tera Block 3": {
+    "lat": 9.02798,
+    "lng": 38.75531
+  },
+  "Piassa Doro Tera Block 4": {
+    "lat": 9.02720,
+    "lng": 38.75088
+  },
+  "Piassa Doro Tera Block 5": {
+    "lat": 9.03116,
+    "lng": 38.75514
+  },
+  "Piassa Doro Tera Block 6": {
+    "lat": 9.03388,
+    "lng": 38.75599
+  },
+  "Piassa Doro Tera Block 7": {
+    "lat": 9.02818,
+    "lng": 38.75656
+  },
+  "Piassa Doro Tera Block 8": {
+    "lat": 9.02859,
+    "lng": 38.75254
+  },
+  "Piassa Doro Tera Block 9": {
+    "lat": 9.02811,
+    "lng": 38.75447
+  },
+  "Piassa Doro Tera Block 10": {
+    "lat": 9.03123,
+    "lng": 38.75518
+  },
+  "Piassa Doro Tera Block 11": {
+    "lat": 9.03180,
+    "lng": 38.75686
+  },
+  "Piassa Doro Tera Block 12": {
+    "lat": 9.03629,
+    "lng": 38.74756
+  },
+  "Piassa Doro Tera Block 13": {
+    "lat": 9.03183,
+    "lng": 38.75542
+  },
+  "Piassa Doro Tera Block 14": {
+    "lat": 9.02756,
+    "lng": 38.74931
+  },
+  "Piassa Doro Tera Block 15": {
+    "lat": 9.02941,
+    "lng": 38.75250
+  },
+  "Piassa Doro Tera Block 16": {
+    "lat": 9.03494,
+    "lng": 38.74978
+  },
+  "Piassa Doro Tera Block 17": {
+    "lat": 9.03157,
+    "lng": 38.74926
+  },
+  "Piassa Doro Tera Block 18": {
+    "lat": 9.03088,
+    "lng": 38.75225
+  },
+  "Piassa Doro Tera Block 19": {
+    "lat": 9.02809,
+    "lng": 38.75445
+  },
+  "Piassa Doro Tera Block 20": {
+    "lat": 9.02958,
+    "lng": 38.75633
+  },
+  "Piassa Doro Tera Block 21": {
+    "lat": 9.02904,
+    "lng": 38.75676
+  },
+  "Piassa Doro Tera Block 22": {
+    "lat": 9.03352,
+    "lng": 38.75444
+  },
+  "Piassa Doro Tera Block 23": {
+    "lat": 9.03416,
+    "lng": 38.75641
+  },
+  "Piassa Doro Tera Block 24": {
+    "lat": 9.03440,
+    "lng": 38.74771
+  },
+  "Piassa Doro Tera Block 25": {
+    "lat": 9.02969,
+    "lng": 38.74863
+  },
+  "Piassa Doro Tera Block 26": {
+    "lat": 9.03569,
+    "lng": 38.74763
+  },
+  "Piassa Doro Tera Block 27": {
+    "lat": 9.02704,
+    "lng": 38.75343
+  },
+  "Piassa Doro Tera Block 28": {
+    "lat": 9.03158,
+    "lng": 38.75155
+  },
+  "Piassa Doro Tera Block 29": {
+    "lat": 9.02953,
+    "lng": 38.75716
+  },
+  "Piassa Doro Tera Block 30": {
+    "lat": 9.02756,
+    "lng": 38.75237
+  },
+  "Piassa Doro Tera Block 31": {
+    "lat": 9.03029,
+    "lng": 38.75536
+  },
+  "Piassa Doro Tera Block 32": {
+    "lat": 9.02851,
+    "lng": 38.75247
+  },
+  "Piassa Doro Tera Block 33": {
+    "lat": 9.03351,
+    "lng": 38.75124
+  },
+  "Piassa Doro Tera Block 34": {
+    "lat": 9.03097,
+    "lng": 38.75306
+  },
+  "Piassa Doro Tera Block 35": {
+    "lat": 9.03204,
+    "lng": 38.75256
+  },
+  "Piassa Doro Tera Block 36": {
+    "lat": 9.03374,
+    "lng": 38.74807
+  },
+  "Piassa Doro Tera Block 37": {
+    "lat": 9.03530,
+    "lng": 38.74895
+  },
+  "Piassa Doro Tera Block 38": {
+    "lat": 9.03516,
+    "lng": 38.74954
+  },
+  "Piassa Doro Tera Block 39": {
+    "lat": 9.03168,
+    "lng": 38.75673
+  },
+  "Piassa Doro Tera Block 40": {
+    "lat": 9.03152,
+    "lng": 38.74881
+  },
+  "Piassa Doro Tera Block 41": {
+    "lat": 9.03083,
+    "lng": 38.75479
+  },
+  "Piassa Doro Tera Block 42": {
+    "lat": 9.03369,
+    "lng": 38.74982
+  },
+  "Piassa Doro Tera Block 43": {
+    "lat": 9.03572,
+    "lng": 38.75610
+  },
+  "Piassa Doro Tera Block 44": {
+    "lat": 9.03318,
+    "lng": 38.75533
+  },
+  "Piassa Doro Tera Block 45": {
+    "lat": 9.03622,
+    "lng": 38.75120
+  },
+  "Piassa Doro Tera Block 46": {
+    "lat": 9.03435,
+    "lng": 38.74779
+  },
+  "Piassa Doro Tera Block 47": {
+    "lat": 9.02727,
+    "lng": 38.75272
+  },
+  "Piassa Doro Tera Block 48": {
+    "lat": 9.03282,
+    "lng": 38.75714
+  },
+  "Piassa Doro Tera Block 49": {
+    "lat": 9.02814,
+    "lng": 38.74842
+  },
+  "Piassa Doro Tera Block 50": {
+    "lat": 9.02699,
+    "lng": 38.74896
+  },
+  "Piassa Doro Tera Block 51": {
+    "lat": 9.03061,
+    "lng": 38.75184
+  },
+  "Piassa Doro Tera Block 52": {
+    "lat": 9.02914,
+    "lng": 38.74926
+  },
+  "Piassa Doro Tera Block 53": {
+    "lat": 9.03615,
+    "lng": 38.74820
+  },
+  "Piassa Doro Tera Block 54": {
+    "lat": 9.03022,
+    "lng": 38.75079
+  },
+  "Piassa Doro Tera Block 55": {
+    "lat": 9.02736,
+    "lng": 38.75177
+  },
+  "Piassa Doro Tera Block 56": {
+    "lat": 9.03206,
+    "lng": 38.75597
+  },
+  "Piassa Doro Tera Block 57": {
+    "lat": 9.02937,
+    "lng": 38.75382
+  },
+  "Piassa Doro Tera Block 58": {
+    "lat": 9.02764,
+    "lng": 38.75647
+  },
+  "Piassa Doro Tera Block 59": {
+    "lat": 9.03432,
+    "lng": 38.75622
+  },
+  "Piassa Doro Tera Block 60": {
+    "lat": 9.03213,
+    "lng": 38.75455
+  },
+  "Piassa Doro Tera Block 61": {
+    "lat": 9.03293,
+    "lng": 38.75348
+  },
+  "Piassa Doro Tera Block 62": {
+    "lat": 9.03631,
+    "lng": 38.75197
+  },
+  "Piassa Doro Tera Block 63": {
+    "lat": 9.03583,
+    "lng": 38.75030
+  },
+  "Piassa Doro Tera Block 64": {
+    "lat": 9.03098,
+    "lng": 38.75573
+  },
+  "Piassa Doro Tera Block 65": {
+    "lat": 9.02868,
+    "lng": 38.75330
+  },
+  "Piassa Doro Tera Block 66": {
+    "lat": 9.03470,
+    "lng": 38.75704
+  },
+  "Piassa Doro Tera Block 67": {
+    "lat": 9.03032,
+    "lng": 38.75051
+  },
+  "Piassa Doro Tera Block 68": {
+    "lat": 9.02830,
+    "lng": 38.74956
+  },
+  "Piassa Doro Tera Block 69": {
+    "lat": 9.03384,
+    "lng": 38.75341
+  },
+  "Piassa Doro Tera Block 70": {
+    "lat": 9.02966,
+    "lng": 38.75457
+  },
+  "Piassa Doro Tera Block 71": {
+    "lat": 9.03003,
+    "lng": 38.75159
+  },
+  "Piassa Doro Tera Block 72": {
+    "lat": 9.02718,
+    "lng": 38.74880
+  },
+  "Piassa Doro Tera Block 73": {
+    "lat": 9.02718,
+    "lng": 38.75293
+  },
+  "Piassa Doro Tera Block 74": {
+    "lat": 9.03614,
+    "lng": 38.75572
+  },
+  "Piassa Doro Tera Block 75": {
+    "lat": 9.03146,
+    "lng": 38.74859
+  },
+  "Piassa Doro Tera Block 76": {
+    "lat": 9.02969,
+    "lng": 38.75528
+  },
+  "Piassa Doro Tera Block 77": {
+    "lat": 9.02972,
+    "lng": 38.75123
+  },
+  "Piassa Doro Tera Block 78": {
+    "lat": 9.03533,
+    "lng": 38.75472
+  },
+  "Piassa Doro Tera Block 79": {
+    "lat": 9.03466,
+    "lng": 38.74839
+  },
+  "Piassa Doro Tera Block 80": {
+    "lat": 9.03386,
+    "lng": 38.74933
+  },
+  "Piassa Doro Tera Block 81": {
+    "lat": 9.03028,
+    "lng": 38.75181
+  },
+  "Piassa Doro Tera Block 82": {
+    "lat": 9.03161,
+    "lng": 38.75610
+  },
+  "Piassa Doro Tera Block 83": {
+    "lat": 9.02917,
+    "lng": 38.74812
+  },
+  "Piassa Doro Tera Block 84": {
+    "lat": 9.03022,
+    "lng": 38.74916
+  },
+  "Piassa Doro Tera Block 85": {
+    "lat": 9.03464,
+    "lng": 38.74804
+  },
+  "Piassa Doro Tera Block 86": {
+    "lat": 9.02738,
+    "lng": 38.75267
+  },
+  "Piassa Doro Tera Block 87": {
+    "lat": 9.03069,
+    "lng": 38.75417
+  },
+  "Piassa Doro Tera Block 88": {
+    "lat": 9.02949,
+    "lng": 38.75654
+  },
+  "Piassa Doro Tera Block 89": {
+    "lat": 9.02757,
+    "lng": 38.74972
+  },
+  "Piassa Doro Tera Block 90": {
+    "lat": 9.03100,
+    "lng": 38.74944
+  },
+  "Piassa Doro Tera Block 91": {
+    "lat": 9.02738,
+    "lng": 38.74875
+  },
+  "Piassa Doro Tera Block 92": {
+    "lat": 9.02984,
+    "lng": 38.74823
+  },
+  "Piassa Doro Tera Block 93": {
+    "lat": 9.02721,
+    "lng": 38.75587
+  },
+  "Piassa Doro Tera Block 94": {
+    "lat": 9.03445,
+    "lng": 38.75319
+  },
+  "Piassa Doro Tera Block 95": {
+    "lat": 9.02743,
+    "lng": 38.74946
+  },
+  "Piassa Doro Tera Block 96": {
+    "lat": 9.03307,
+    "lng": 38.75315
+  },
+  "Piassa Doro Tera Block 97": {
+    "lat": 9.03122,
+    "lng": 38.75104
+  },
+  "Piassa Doro Tera Block 98": {
+    "lat": 9.02768,
+    "lng": 38.75415
+  },
+  "Piassa Doro Tera Block 99": {
+    "lat": 9.03079,
+    "lng": 38.74791
+  },
+  "Piassa Doro Tera Block 100": {
+    "lat": 9.03247,
+    "lng": 38.74925
+  },
+  "Piassa Somali Tera Block 1": {
+    "lat": 9.02994,
+    "lng": 38.75036
+  },
+  "Piassa Somali Tera Block 2": {
+    "lat": 9.02913,
+    "lng": 38.75723
+  },
+  "Piassa Somali Tera Block 3": {
+    "lat": 9.03164,
+    "lng": 38.75501
+  },
+  "Piassa Somali Tera Block 4": {
+    "lat": 9.02921,
+    "lng": 38.75309
+  },
+  "Piassa Somali Tera Block 5": {
+    "lat": 9.03527,
+    "lng": 38.75666
+  },
+  "Piassa Somali Tera Block 6": {
+    "lat": 9.03512,
+    "lng": 38.74987
+  },
+  "Piassa Somali Tera Block 7": {
+    "lat": 9.02726,
+    "lng": 38.74819
+  },
+  "Piassa Somali Tera Block 8": {
+    "lat": 9.02964,
+    "lng": 38.74752
+  },
+  "Piassa Somali Tera Block 9": {
+    "lat": 9.03594,
+    "lng": 38.74842
+  },
+  "Piassa Somali Tera Block 10": {
+    "lat": 9.03127,
+    "lng": 38.75640
+  },
+  "Piassa Somali Tera Block 11": {
+    "lat": 9.03076,
+    "lng": 38.75690
+  },
+  "Piassa Somali Tera Block 12": {
+    "lat": 9.02741,
+    "lng": 38.75493
+  },
+  "Piassa Somali Tera Block 13": {
+    "lat": 9.03202,
+    "lng": 38.75729
+  },
+  "Piassa Somali Tera Block 14": {
+    "lat": 9.03052,
+    "lng": 38.75058
+  },
+  "Piassa Somali Tera Block 15": {
+    "lat": 9.02661,
+    "lng": 38.74890
+  },
+  "Piassa Somali Tera Block 16": {
+    "lat": 9.03264,
+    "lng": 38.75372
+  },
+  "Piassa Somali Tera Block 17": {
+    "lat": 9.03561,
+    "lng": 38.75584
+  },
+  "Piassa Somali Tera Block 18": {
+    "lat": 9.03169,
+    "lng": 38.75315
+  },
+  "Piassa Somali Tera Block 19": {
+    "lat": 9.02902,
+    "lng": 38.75233
+  },
+  "Piassa Somali Tera Block 20": {
+    "lat": 9.03381,
+    "lng": 38.74740
+  },
+  "Piassa Somali Tera Block 21": {
+    "lat": 9.02757,
+    "lng": 38.75264
+  },
+  "Piassa Somali Tera Block 22": {
+    "lat": 9.02979,
+    "lng": 38.75516
+  },
+  "Piassa Somali Tera Block 23": {
+    "lat": 9.02716,
+    "lng": 38.75616
+  },
+  "Piassa Somali Tera Block 24": {
+    "lat": 9.03528,
+    "lng": 38.75280
+  },
+  "Piassa Somali Tera Block 25": {
+    "lat": 9.02914,
+    "lng": 38.75136
+  },
+  "Piassa Somali Tera Block 26": {
+    "lat": 9.02848,
+    "lng": 38.75696
+  },
+  "Piassa Somali Tera Block 27": {
+    "lat": 9.03442,
+    "lng": 38.75331
+  },
+  "Piassa Somali Tera Block 28": {
+    "lat": 9.02892,
+    "lng": 38.75265
+  },
+  "Piassa Somali Tera Block 29": {
+    "lat": 9.02672,
+    "lng": 38.75518
+  },
+  "Piassa Somali Tera Block 30": {
+    "lat": 9.03335,
+    "lng": 38.74821
+  },
+  "Piassa Somali Tera Block 31": {
+    "lat": 9.03419,
+    "lng": 38.75497
+  },
+  "Piassa Somali Tera Block 32": {
+    "lat": 9.03434,
+    "lng": 38.75285
+  },
+  "Piassa Somali Tera Block 33": {
+    "lat": 9.02787,
+    "lng": 38.75622
+  },
+  "Piassa Somali Tera Block 34": {
+    "lat": 9.03615,
+    "lng": 38.75130
+  },
+  "Piassa Somali Tera Block 35": {
+    "lat": 9.03144,
+    "lng": 38.75301
+  },
+  "Piassa Somali Tera Block 36": {
+    "lat": 9.02939,
+    "lng": 38.75064
+  },
+  "Piassa Somali Tera Block 37": {
+    "lat": 9.02863,
+    "lng": 38.74949
+  },
+  "Piassa Somali Tera Block 38": {
+    "lat": 9.02884,
+    "lng": 38.75083
+  },
+  "Piassa Somali Tera Block 39": {
+    "lat": 9.03215,
+    "lng": 38.75727
+  },
+  "Piassa Somali Tera Block 40": {
+    "lat": 9.02716,
+    "lng": 38.75422
+  },
+  "Piassa Somali Tera Block 41": {
+    "lat": 9.02909,
+    "lng": 38.75470
+  },
+  "Piassa Somali Tera Block 42": {
+    "lat": 9.02713,
+    "lng": 38.75616
+  },
+  "Piassa Somali Tera Block 43": {
+    "lat": 9.02989,
+    "lng": 38.74997
+  },
+  "Piassa Somali Tera Block 44": {
+    "lat": 9.02965,
+    "lng": 38.75334
+  },
+  "Piassa Somali Tera Block 45": {
+    "lat": 9.03646,
+    "lng": 38.74831
+  },
+  "Piassa Somali Tera Block 46": {
+    "lat": 9.03123,
+    "lng": 38.75480
+  },
+  "Piassa Somali Tera Block 47": {
+    "lat": 9.03288,
+    "lng": 38.75508
+  },
+  "Piassa Somali Tera Block 48": {
+    "lat": 9.02786,
+    "lng": 38.75491
+  },
+  "Piassa Somali Tera Block 49": {
+    "lat": 9.03103,
+    "lng": 38.74733
+  },
+  "Piassa Somali Tera Block 50": {
+    "lat": 9.03319,
+    "lng": 38.75541
+  },
+  "Piassa Somali Tera Block 51": {
+    "lat": 9.03636,
+    "lng": 38.75105
+  },
+  "Piassa Somali Tera Block 52": {
+    "lat": 9.02917,
+    "lng": 38.74888
+  },
+  "Piassa Somali Tera Block 53": {
+    "lat": 9.03176,
+    "lng": 38.75408
+  },
+  "Piassa Somali Tera Block 54": {
+    "lat": 9.03231,
+    "lng": 38.75004
+  },
+  "Piassa Somali Tera Block 55": {
+    "lat": 9.02928,
+    "lng": 38.75423
+  },
+  "Piassa Somali Tera Block 56": {
+    "lat": 9.03608,
+    "lng": 38.74992
+  },
+  "Piassa Somali Tera Block 57": {
+    "lat": 9.02909,
+    "lng": 38.74974
+  },
+  "Piassa Somali Tera Block 58": {
+    "lat": 9.02971,
+    "lng": 38.75005
+  },
+  "Piassa Somali Tera Block 59": {
+    "lat": 9.03137,
+    "lng": 38.75142
+  },
+  "Piassa Somali Tera Block 60": {
+    "lat": 9.02950,
+    "lng": 38.74911
+  },
+  "Piassa Somali Tera Block 61": {
+    "lat": 9.03128,
+    "lng": 38.74970
+  },
+  "Piassa Somali Tera Block 62": {
+    "lat": 9.02710,
+    "lng": 38.74743
+  },
+  "Piassa Somali Tera Block 63": {
+    "lat": 9.02887,
+    "lng": 38.74799
+  },
+  "Piassa Somali Tera Block 64": {
+    "lat": 9.03486,
+    "lng": 38.74878
+  },
+  "Piassa Somali Tera Block 65": {
+    "lat": 9.02701,
+    "lng": 38.75620
+  },
+  "Piassa Somali Tera Block 66": {
+    "lat": 9.03159,
+    "lng": 38.75402
+  },
+  "Piassa Somali Tera Block 67": {
+    "lat": 9.03610,
+    "lng": 38.74934
+  },
+  "Piassa Somali Tera Block 68": {
+    "lat": 9.03010,
+    "lng": 38.75078
+  },
+  "Piassa Somali Tera Block 69": {
+    "lat": 9.03145,
+    "lng": 38.75246
+  },
+  "Piassa Somali Tera Block 70": {
+    "lat": 9.03478,
+    "lng": 38.75233
+  },
+  "Piassa Somali Tera Block 71": {
+    "lat": 9.03529,
+    "lng": 38.75712
+  },
+  "Piassa Somali Tera Block 72": {
+    "lat": 9.02785,
+    "lng": 38.75209
+  },
+  "Piassa Somali Tera Block 73": {
+    "lat": 9.03578,
+    "lng": 38.75214
+  },
+  "Piassa Somali Tera Block 74": {
+    "lat": 9.03555,
+    "lng": 38.75442
+  },
+  "Piassa Somali Tera Block 75": {
+    "lat": 9.02758,
+    "lng": 38.75690
+  },
+  "Piassa Somali Tera Block 76": {
+    "lat": 9.02936,
+    "lng": 38.75669
+  },
+  "Piassa Somali Tera Block 77": {
+    "lat": 9.02820,
+    "lng": 38.75530
+  },
+  "Piassa Somali Tera Block 78": {
+    "lat": 9.02849,
+    "lng": 38.75192
+  },
+  "Piassa Somali Tera Block 79": {
+    "lat": 9.02658,
+    "lng": 38.75143
+  },
+  "Piassa Somali Tera Block 80": {
+    "lat": 9.03303,
+    "lng": 38.75669
+  },
+  "Piassa Somali Tera Block 81": {
+    "lat": 9.02803,
+    "lng": 38.75288
+  },
+  "Piassa Somali Tera Block 82": {
+    "lat": 9.02933,
+    "lng": 38.74751
+  },
+  "Piassa Somali Tera Block 83": {
+    "lat": 9.02709,
+    "lng": 38.75583
+  },
+  "Piassa Somali Tera Block 84": {
+    "lat": 9.03617,
+    "lng": 38.74755
+  },
+  "Piassa Somali Tera Block 85": {
+    "lat": 9.03128,
+    "lng": 38.75016
+  },
+  "Piassa Somali Tera Block 86": {
+    "lat": 9.03417,
+    "lng": 38.75220
+  },
+  "Piassa Somali Tera Block 87": {
+    "lat": 9.02988,
+    "lng": 38.75274
+  },
+  "Piassa Somali Tera Block 88": {
+    "lat": 9.03547,
+    "lng": 38.75308
+  },
+  "Piassa Somali Tera Block 89": {
+    "lat": 9.03567,
+    "lng": 38.75057
+  },
+  "Piassa Somali Tera Block 90": {
+    "lat": 9.02896,
+    "lng": 38.75145
+  },
+  "Piassa Somali Tera Block 91": {
+    "lat": 9.03053,
+    "lng": 38.75560
+  },
+  "Piassa Somali Tera Block 92": {
+    "lat": 9.02783,
+    "lng": 38.74876
+  },
+  "Piassa Somali Tera Block 93": {
+    "lat": 9.03335,
+    "lng": 38.75565
+  },
+  "Piassa Somali Tera Block 94": {
+    "lat": 9.03480,
+    "lng": 38.75450
+  },
+  "Piassa Somali Tera Block 95": {
+    "lat": 9.03124,
+    "lng": 38.75570
+  },
+  "Piassa Somali Tera Block 96": {
+    "lat": 9.02808,
+    "lng": 38.74903
+  },
+  "Piassa Somali Tera Block 97": {
+    "lat": 9.02760,
+    "lng": 38.75656
+  },
+  "Piassa Somali Tera Block 98": {
+    "lat": 9.03124,
+    "lng": 38.75631
+  },
+  "Piassa Somali Tera Block 99": {
+    "lat": 9.02853,
+    "lng": 38.74858
+  },
+  "Piassa Somali Tera Block 100": {
+    "lat": 9.03143,
+    "lng": 38.74820
+  },
+  "Piassa Atekelt Tera Block 1": {
+    "lat": 9.03112,
+    "lng": 38.75552
+  },
+  "Piassa Atekelt Tera Block 2": {
+    "lat": 9.02740,
+    "lng": 38.75728
+  },
+  "Piassa Atekelt Tera Block 3": {
+    "lat": 9.03052,
+    "lng": 38.75233
+  },
+  "Piassa Atekelt Tera Block 4": {
+    "lat": 9.02926,
+    "lng": 38.75377
+  },
+  "Piassa Atekelt Tera Block 5": {
+    "lat": 9.02713,
+    "lng": 38.75414
+  },
+  "Piassa Atekelt Tera Block 6": {
+    "lat": 9.03263,
+    "lng": 38.75481
+  },
+  "Piassa Atekelt Tera Block 7": {
+    "lat": 9.02865,
+    "lng": 38.74822
+  },
+  "Piassa Atekelt Tera Block 8": {
+    "lat": 9.02771,
+    "lng": 38.74734
+  },
+  "Piassa Atekelt Tera Block 9": {
+    "lat": 9.02742,
+    "lng": 38.75236
+  },
+  "Piassa Atekelt Tera Block 10": {
+    "lat": 9.03576,
+    "lng": 38.75684
+  },
+  "Piassa Atekelt Tera Block 11": {
+    "lat": 9.02685,
+    "lng": 38.74893
+  },
+  "Piassa Atekelt Tera Block 12": {
+    "lat": 9.03367,
+    "lng": 38.74753
+  },
+  "Piassa Atekelt Tera Block 13": {
+    "lat": 9.02975,
+    "lng": 38.75636
+  },
+  "Piassa Atekelt Tera Block 14": {
+    "lat": 9.02712,
+    "lng": 38.75021
+  },
+  "Piassa Atekelt Tera Block 15": {
+    "lat": 9.02881,
+    "lng": 38.74828
+  },
+  "Piassa Atekelt Tera Block 16": {
+    "lat": 9.03184,
+    "lng": 38.75388
+  },
+  "Piassa Atekelt Tera Block 17": {
+    "lat": 9.02826,
+    "lng": 38.75282
+  },
+  "Piassa Atekelt Tera Block 18": {
+    "lat": 9.03646,
+    "lng": 38.74955
+  },
+  "Piassa Atekelt Tera Block 19": {
+    "lat": 9.02720,
+    "lng": 38.75380
+  },
+  "Piassa Atekelt Tera Block 20": {
+    "lat": 9.02899,
+    "lng": 38.75724
+  },
+  "Piassa Atekelt Tera Block 21": {
+    "lat": 9.02695,
+    "lng": 38.74923
+  },
+  "Piassa Atekelt Tera Block 22": {
+    "lat": 9.02972,
+    "lng": 38.75351
+  },
+  "Piassa Atekelt Tera Block 23": {
+    "lat": 9.03334,
+    "lng": 38.75392
+  },
+  "Piassa Atekelt Tera Block 24": {
+    "lat": 9.03308,
+    "lng": 38.75373
+  },
+  "Piassa Atekelt Tera Block 25": {
+    "lat": 9.03598,
+    "lng": 38.75135
+  },
+  "Piassa Atekelt Tera Block 26": {
+    "lat": 9.03527,
+    "lng": 38.75057
+  },
+  "Piassa Atekelt Tera Block 27": {
+    "lat": 9.03301,
+    "lng": 38.75505
+  },
+  "Piassa Atekelt Tera Block 28": {
+    "lat": 9.03429,
+    "lng": 38.75662
+  },
+  "Piassa Atekelt Tera Block 29": {
+    "lat": 9.02671,
+    "lng": 38.74864
+  },
+  "Piassa Atekelt Tera Block 30": {
+    "lat": 9.03209,
+    "lng": 38.75681
+  },
+  "Piassa Atekelt Tera Block 31": {
+    "lat": 9.03107,
+    "lng": 38.75706
+  },
+  "Piassa Atekelt Tera Block 32": {
+    "lat": 9.02765,
+    "lng": 38.75105
+  },
+  "Piassa Atekelt Tera Block 33": {
+    "lat": 9.02771,
+    "lng": 38.75283
+  },
+  "Piassa Atekelt Tera Block 34": {
+    "lat": 9.02937,
+    "lng": 38.75641
+  },
+  "Piassa Atekelt Tera Block 35": {
+    "lat": 9.03181,
+    "lng": 38.75103
+  },
+  "Piassa Atekelt Tera Block 36": {
+    "lat": 9.03299,
+    "lng": 38.75383
+  },
+  "Piassa Atekelt Tera Block 37": {
+    "lat": 9.03332,
+    "lng": 38.74755
+  },
+  "Piassa Atekelt Tera Block 38": {
+    "lat": 9.03222,
+    "lng": 38.75221
+  },
+  "Piassa Atekelt Tera Block 39": {
+    "lat": 9.03162,
+    "lng": 38.74763
+  },
+  "Piassa Atekelt Tera Block 40": {
+    "lat": 9.03184,
+    "lng": 38.74967
+  },
+  "Piassa Atekelt Tera Block 41": {
+    "lat": 9.02938,
+    "lng": 38.75317
+  },
+  "Piassa Atekelt Tera Block 42": {
+    "lat": 9.03301,
+    "lng": 38.75079
+  },
+  "Piassa Atekelt Tera Block 43": {
+    "lat": 9.03058,
+    "lng": 38.75309
+  },
+  "Piassa Atekelt Tera Block 44": {
+    "lat": 9.03433,
+    "lng": 38.75444
+  },
+  "Piassa Atekelt Tera Block 45": {
+    "lat": 9.02986,
+    "lng": 38.75295
+  },
+  "Piassa Atekelt Tera Block 46": {
+    "lat": 9.03597,
+    "lng": 38.74992
+  },
+  "Piassa Atekelt Tera Block 47": {
+    "lat": 9.03025,
+    "lng": 38.75174
+  },
+  "Piassa Atekelt Tera Block 48": {
+    "lat": 9.03291,
+    "lng": 38.74946
+  },
+  "Piassa Atekelt Tera Block 49": {
+    "lat": 9.03010,
+    "lng": 38.75372
+  },
+  "Piassa Atekelt Tera Block 50": {
+    "lat": 9.02653,
+    "lng": 38.75073
+  },
+  "Piassa Atekelt Tera Block 51": {
+    "lat": 9.02708,
+    "lng": 38.74831
+  },
+  "Piassa Atekelt Tera Block 52": {
+    "lat": 9.03241,
+    "lng": 38.75719
+  },
+  "Piassa Atekelt Tera Block 53": {
+    "lat": 9.03417,
+    "lng": 38.75244
+  },
+  "Piassa Atekelt Tera Block 54": {
+    "lat": 9.02867,
+    "lng": 38.74785
+  },
+  "Piassa Atekelt Tera Block 55": {
+    "lat": 9.02703,
+    "lng": 38.75406
+  },
+  "Piassa Atekelt Tera Block 56": {
+    "lat": 9.03543,
+    "lng": 38.75538
+  },
+  "Piassa Atekelt Tera Block 57": {
+    "lat": 9.02651,
+    "lng": 38.74974
+  },
+  "Piassa Atekelt Tera Block 58": {
+    "lat": 9.03557,
+    "lng": 38.75584
+  },
+  "Piassa Atekelt Tera Block 59": {
+    "lat": 9.02718,
+    "lng": 38.75309
+  },
+  "Piassa Atekelt Tera Block 60": {
+    "lat": 9.03280,
+    "lng": 38.75456
+  },
+  "Piassa Atekelt Tera Block 61": {
+    "lat": 9.02776,
+    "lng": 38.75708
+  },
+  "Piassa Atekelt Tera Block 62": {
+    "lat": 9.03553,
+    "lng": 38.75326
+  },
+  "Piassa Atekelt Tera Block 63": {
+    "lat": 9.03217,
+    "lng": 38.75633
+  },
+  "Piassa Atekelt Tera Block 64": {
+    "lat": 9.03237,
+    "lng": 38.75385
+  },
+  "Piassa Atekelt Tera Block 65": {
+    "lat": 9.02811,
+    "lng": 38.75387
+  },
+  "Piassa Atekelt Tera Block 66": {
+    "lat": 9.03115,
+    "lng": 38.75072
+  },
+  "Piassa Atekelt Tera Block 67": {
+    "lat": 9.02895,
+    "lng": 38.75105
+  },
+  "Piassa Atekelt Tera Block 68": {
+    "lat": 9.02960,
+    "lng": 38.75304
+  },
+  "Piassa Atekelt Tera Block 69": {
+    "lat": 9.02823,
+    "lng": 38.75166
+  },
+  "Piassa Atekelt Tera Block 70": {
+    "lat": 9.03230,
+    "lng": 38.75608
+  },
+  "Piassa Atekelt Tera Block 71": {
+    "lat": 9.03532,
+    "lng": 38.75440
+  },
+  "Piassa Atekelt Tera Block 72": {
+    "lat": 9.03334,
+    "lng": 38.75284
+  },
+  "Piassa Atekelt Tera Block 73": {
+    "lat": 9.02947,
+    "lng": 38.75410
+  },
+  "Piassa Atekelt Tera Block 74": {
+    "lat": 9.02767,
+    "lng": 38.75310
+  },
+  "Piassa Atekelt Tera Block 75": {
+    "lat": 9.02789,
+    "lng": 38.75094
+  },
+  "Piassa Atekelt Tera Block 76": {
+    "lat": 9.03587,
+    "lng": 38.75384
+  },
+  "Piassa Atekelt Tera Block 77": {
+    "lat": 9.02946,
+    "lng": 38.74775
+  },
+  "Piassa Atekelt Tera Block 78": {
+    "lat": 9.02861,
+    "lng": 38.75130
+  },
+  "Piassa Atekelt Tera Block 79": {
+    "lat": 9.03407,
+    "lng": 38.74930
+  },
+  "Piassa Atekelt Tera Block 80": {
+    "lat": 9.03091,
+    "lng": 38.75008
+  },
+  "Piassa Atekelt Tera Block 81": {
+    "lat": 9.03457,
+    "lng": 38.75275
+  },
+  "Piassa Atekelt Tera Block 82": {
+    "lat": 9.03050,
+    "lng": 38.75125
+  },
+  "Piassa Atekelt Tera Block 83": {
+    "lat": 9.03156,
+    "lng": 38.75709
+  },
+  "Piassa Atekelt Tera Block 84": {
+    "lat": 9.03145,
+    "lng": 38.75208
+  },
+  "Piassa Atekelt Tera Block 85": {
+    "lat": 9.03439,
+    "lng": 38.75116
+  },
+  "Piassa Atekelt Tera Block 86": {
+    "lat": 9.03338,
+    "lng": 38.75296
+  },
+  "Piassa Atekelt Tera Block 87": {
+    "lat": 9.03264,
+    "lng": 38.75420
+  },
+  "Piassa Atekelt Tera Block 88": {
+    "lat": 9.03635,
+    "lng": 38.75262
+  },
+  "Piassa Atekelt Tera Block 89": {
+    "lat": 9.03392,
+    "lng": 38.75502
+  },
+  "Piassa Atekelt Tera Block 90": {
+    "lat": 9.02764,
+    "lng": 38.75372
+  },
+  "Piassa Atekelt Tera Block 91": {
+    "lat": 9.02986,
+    "lng": 38.75595
+  },
+  "Piassa Atekelt Tera Block 92": {
+    "lat": 9.03526,
+    "lng": 38.75228
+  },
+  "Piassa Atekelt Tera Block 93": {
+    "lat": 9.02826,
+    "lng": 38.75340
+  },
+  "Piassa Atekelt Tera Block 94": {
+    "lat": 9.03494,
+    "lng": 38.75062
+  },
+  "Piassa Atekelt Tera Block 95": {
+    "lat": 9.03330,
+    "lng": 38.74800
+  },
+  "Piassa Atekelt Tera Block 96": {
+    "lat": 9.03525,
+    "lng": 38.75482
+  },
+  "Piassa Atekelt Tera Block 97": {
+    "lat": 9.03640,
+    "lng": 38.74742
+  },
+  "Piassa Atekelt Tera Block 98": {
+    "lat": 9.03506,
+    "lng": 38.74805
+  },
+  "Piassa Atekelt Tera Block 99": {
+    "lat": 9.02791,
+    "lng": 38.75419
+  },
+  "Piassa Atekelt Tera Block 100": {
+    "lat": 9.02855,
+    "lng": 38.75183
+  },
+  "Piassa Seba Dereja Block 1": {
+    "lat": 9.02881,
+    "lng": 38.75622
+  },
+  "Piassa Seba Dereja Block 2": {
+    "lat": 9.02931,
+    "lng": 38.74916
+  },
+  "Piassa Seba Dereja Block 3": {
+    "lat": 9.03156,
+    "lng": 38.75217
+  },
+  "Piassa Seba Dereja Block 4": {
+    "lat": 9.03199,
+    "lng": 38.74788
+  },
+  "Piassa Seba Dereja Block 5": {
+    "lat": 9.03132,
+    "lng": 38.75222
+  },
+  "Piassa Seba Dereja Block 6": {
+    "lat": 9.03321,
+    "lng": 38.75284
+  },
+  "Piassa Seba Dereja Block 7": {
+    "lat": 9.03497,
+    "lng": 38.75011
+  },
+  "Piassa Seba Dereja Block 8": {
+    "lat": 9.03552,
+    "lng": 38.74996
+  },
+  "Piassa Seba Dereja Block 9": {
+    "lat": 9.03083,
+    "lng": 38.74921
+  },
+  "Piassa Seba Dereja Block 10": {
+    "lat": 9.02920,
+    "lng": 38.75252
+  },
+  "Piassa Seba Dereja Block 11": {
+    "lat": 9.03573,
+    "lng": 38.75421
+  },
+  "Piassa Seba Dereja Block 12": {
+    "lat": 9.03555,
+    "lng": 38.75626
+  },
+  "Piassa Seba Dereja Block 13": {
+    "lat": 9.03423,
+    "lng": 38.75103
+  },
+  "Piassa Seba Dereja Block 14": {
+    "lat": 9.03103,
+    "lng": 38.75090
+  },
+  "Piassa Seba Dereja Block 15": {
+    "lat": 9.03603,
+    "lng": 38.74998
+  },
+  "Piassa Seba Dereja Block 16": {
+    "lat": 9.03142,
+    "lng": 38.75042
+  },
+  "Piassa Seba Dereja Block 17": {
+    "lat": 9.03068,
+    "lng": 38.75659
+  },
+  "Piassa Seba Dereja Block 18": {
+    "lat": 9.02915,
+    "lng": 38.75140
+  },
+  "Piassa Seba Dereja Block 19": {
+    "lat": 9.03173,
+    "lng": 38.75692
+  },
+  "Piassa Seba Dereja Block 20": {
+    "lat": 9.02878,
+    "lng": 38.74779
+  },
+  "Piassa Seba Dereja Block 21": {
+    "lat": 9.02784,
+    "lng": 38.75268
+  },
+  "Piassa Seba Dereja Block 22": {
+    "lat": 9.03453,
+    "lng": 38.74864
+  },
+  "Piassa Seba Dereja Block 23": {
+    "lat": 9.03473,
+    "lng": 38.75261
+  },
+  "Piassa Seba Dereja Block 24": {
+    "lat": 9.03630,
+    "lng": 38.75669
+  },
+  "Piassa Seba Dereja Block 25": {
+    "lat": 9.03612,
+    "lng": 38.75233
+  },
+  "Piassa Seba Dereja Block 26": {
+    "lat": 9.02900,
+    "lng": 38.74894
+  },
+  "Piassa Seba Dereja Block 27": {
+    "lat": 9.03271,
+    "lng": 38.74797
+  },
+  "Piassa Seba Dereja Block 28": {
+    "lat": 9.03550,
+    "lng": 38.75587
+  },
+  "Piassa Seba Dereja Block 29": {
+    "lat": 9.02966,
+    "lng": 38.75587
+  },
+  "Piassa Seba Dereja Block 30": {
+    "lat": 9.02692,
+    "lng": 38.75674
+  },
+  "Piassa Seba Dereja Block 31": {
+    "lat": 9.02859,
+    "lng": 38.75628
+  },
+  "Piassa Seba Dereja Block 32": {
+    "lat": 9.02936,
+    "lng": 38.75490
+  },
+  "Piassa Seba Dereja Block 33": {
+    "lat": 9.02905,
+    "lng": 38.75372
+  },
+  "Piassa Seba Dereja Block 34": {
+    "lat": 9.03441,
+    "lng": 38.75626
+  },
+  "Piassa Seba Dereja Block 35": {
+    "lat": 9.02939,
+    "lng": 38.75319
+  },
+  "Piassa Seba Dereja Block 36": {
+    "lat": 9.02777,
+    "lng": 38.74851
+  },
+  "Piassa Seba Dereja Block 37": {
+    "lat": 9.03247,
+    "lng": 38.75501
+  },
+  "Piassa Seba Dereja Block 38": {
+    "lat": 9.03640,
+    "lng": 38.75141
+  },
+  "Piassa Seba Dereja Block 39": {
+    "lat": 9.03633,
+    "lng": 38.75559
+  },
+  "Piassa Seba Dereja Block 40": {
+    "lat": 9.02955,
+    "lng": 38.75697
+  },
+  "Piassa Seba Dereja Block 41": {
+    "lat": 9.03231,
+    "lng": 38.75200
+  },
+  "Piassa Seba Dereja Block 42": {
+    "lat": 9.03218,
+    "lng": 38.74743
+  },
+  "Piassa Seba Dereja Block 43": {
+    "lat": 9.02950,
+    "lng": 38.74970
+  },
+  "Piassa Seba Dereja Block 44": {
+    "lat": 9.03458,
+    "lng": 38.75097
+  },
+  "Piassa Seba Dereja Block 45": {
+    "lat": 9.02832,
+    "lng": 38.75247
+  },
+  "Piassa Seba Dereja Block 46": {
+    "lat": 9.03347,
+    "lng": 38.75204
+  },
+  "Piassa Seba Dereja Block 47": {
+    "lat": 9.03030,
+    "lng": 38.75341
+  },
+  "Piassa Seba Dereja Block 48": {
+    "lat": 9.03169,
+    "lng": 38.74749
+  },
+  "Piassa Seba Dereja Block 49": {
+    "lat": 9.03228,
+    "lng": 38.75699
+  },
+  "Piassa Seba Dereja Block 50": {
+    "lat": 9.03005,
+    "lng": 38.75187
+  },
+  "Piassa Seba Dereja Block 51": {
+    "lat": 9.03360,
+    "lng": 38.75597
+  },
+  "Piassa Seba Dereja Block 52": {
+    "lat": 9.03574,
+    "lng": 38.75509
+  },
+  "Piassa Seba Dereja Block 53": {
+    "lat": 9.02836,
+    "lng": 38.75328
+  },
+  "Piassa Seba Dereja Block 54": {
+    "lat": 9.03297,
+    "lng": 38.75343
+  },
+  "Piassa Seba Dereja Block 55": {
+    "lat": 9.02851,
+    "lng": 38.75153
+  },
+  "Piassa Seba Dereja Block 56": {
+    "lat": 9.02923,
+    "lng": 38.75153
+  },
+  "Piassa Seba Dereja Block 57": {
+    "lat": 9.03481,
+    "lng": 38.75180
+  },
+  "Piassa Seba Dereja Block 58": {
+    "lat": 9.03342,
+    "lng": 38.75310
+  },
+  "Piassa Seba Dereja Block 59": {
+    "lat": 9.03228,
+    "lng": 38.75271
+  },
+  "Piassa Seba Dereja Block 60": {
+    "lat": 9.03246,
+    "lng": 38.74816
+  },
+  "Piassa Seba Dereja Block 61": {
+    "lat": 9.02683,
+    "lng": 38.74849
+  },
+  "Piassa Seba Dereja Block 62": {
+    "lat": 9.03319,
+    "lng": 38.75323
+  },
+  "Piassa Seba Dereja Block 63": {
+    "lat": 9.02975,
+    "lng": 38.74875
+  },
+  "Piassa Seba Dereja Block 64": {
+    "lat": 9.03422,
+    "lng": 38.75129
+  },
+  "Piassa Seba Dereja Block 65": {
+    "lat": 9.03422,
+    "lng": 38.74903
+  },
+  "Piassa Seba Dereja Block 66": {
+    "lat": 9.03403,
+    "lng": 38.75340
+  },
+  "Piassa Seba Dereja Block 67": {
+    "lat": 9.02692,
+    "lng": 38.75116
+  },
+  "Piassa Seba Dereja Block 68": {
+    "lat": 9.02657,
+    "lng": 38.75631
+  },
+  "Piassa Seba Dereja Block 69": {
+    "lat": 9.03372,
+    "lng": 38.74875
+  },
+  "Piassa Seba Dereja Block 70": {
+    "lat": 9.03374,
+    "lng": 38.74875
+  },
+  "Piassa Seba Dereja Block 71": {
+    "lat": 9.03375,
+    "lng": 38.75338
+  },
+  "Piassa Seba Dereja Block 72": {
+    "lat": 9.03023,
+    "lng": 38.74931
+  },
+  "Piassa Seba Dereja Block 73": {
+    "lat": 9.03594,
+    "lng": 38.75705
+  },
+  "Piassa Seba Dereja Block 74": {
+    "lat": 9.02812,
+    "lng": 38.75131
+  },
+  "Piassa Seba Dereja Block 75": {
+    "lat": 9.03610,
+    "lng": 38.75296
+  },
+  "Piassa Seba Dereja Block 76": {
+    "lat": 9.03311,
+    "lng": 38.75468
+  },
+  "Piassa Seba Dereja Block 77": {
+    "lat": 9.02782,
+    "lng": 38.75433
+  },
+  "Piassa Seba Dereja Block 78": {
+    "lat": 9.03312,
+    "lng": 38.75270
+  },
+  "Piassa Seba Dereja Block 79": {
+    "lat": 9.02959,
+    "lng": 38.75150
+  },
+  "Piassa Seba Dereja Block 80": {
+    "lat": 9.03088,
+    "lng": 38.74854
+  },
+  "Piassa Seba Dereja Block 81": {
+    "lat": 9.03466,
+    "lng": 38.75599
+  },
+  "Piassa Seba Dereja Block 82": {
+    "lat": 9.03213,
+    "lng": 38.74894
+  },
+  "Piassa Seba Dereja Block 83": {
+    "lat": 9.03326,
+    "lng": 38.75690
+  },
+  "Piassa Seba Dereja Block 84": {
+    "lat": 9.03099,
+    "lng": 38.75285
+  },
+  "Piassa Seba Dereja Block 85": {
+    "lat": 9.03018,
+    "lng": 38.75363
+  },
+  "Piassa Seba Dereja Block 86": {
+    "lat": 9.02914,
+    "lng": 38.75212
+  },
+  "Piassa Seba Dereja Block 87": {
+    "lat": 9.03238,
+    "lng": 38.75079
+  },
+  "Piassa Seba Dereja Block 88": {
+    "lat": 9.02654,
+    "lng": 38.75685
+  },
+  "Piassa Seba Dereja Block 89": {
+    "lat": 9.03303,
+    "lng": 38.75453
+  },
+  "Piassa Seba Dereja Block 90": {
+    "lat": 9.03172,
+    "lng": 38.75635
+  },
+  "Piassa Seba Dereja Block 91": {
+    "lat": 9.03372,
+    "lng": 38.75486
+  },
+  "Piassa Seba Dereja Block 92": {
+    "lat": 9.03531,
+    "lng": 38.75647
+  },
+  "Piassa Seba Dereja Block 93": {
+    "lat": 9.03458,
+    "lng": 38.74924
+  },
+  "Piassa Seba Dereja Block 94": {
+    "lat": 9.03461,
+    "lng": 38.75067
+  },
+  "Piassa Seba Dereja Block 95": {
+    "lat": 9.02812,
+    "lng": 38.74886
+  },
+  "Piassa Seba Dereja Block 96": {
+    "lat": 9.03487,
+    "lng": 38.74995
+  },
+  "Piassa Seba Dereja Block 97": {
+    "lat": 9.03456,
+    "lng": 38.74937
+  },
+  "Piassa Seba Dereja Block 98": {
+    "lat": 9.03152,
+    "lng": 38.75310
+  },
+  "Piassa Seba Dereja Block 99": {
+    "lat": 9.02922,
+    "lng": 38.75726
+  },
+  "Piassa Seba Dereja Block 100": {
+    "lat": 9.03250,
+    "lng": 38.75136
+  },
+  "Piassa Mahmud Music Shop Block 1": {
+    "lat": 9.03340,
+    "lng": 38.75580
+  },
+  "Piassa Mahmud Music Shop Block 2": {
+    "lat": 9.03626,
+    "lng": 38.74907
+  },
+  "Piassa Mahmud Music Shop Block 3": {
+    "lat": 9.02996,
+    "lng": 38.75539
+  },
+  "Piassa Mahmud Music Shop Block 4": {
+    "lat": 9.02699,
+    "lng": 38.75216
+  },
+  "Piassa Mahmud Music Shop Block 5": {
+    "lat": 9.03005,
+    "lng": 38.75479
+  },
+  "Piassa Mahmud Music Shop Block 6": {
+    "lat": 9.03443,
+    "lng": 38.74756
+  },
+  "Piassa Mahmud Music Shop Block 7": {
+    "lat": 9.02931,
+    "lng": 38.74973
+  },
+  "Piassa Mahmud Music Shop Block 8": {
+    "lat": 9.02923,
+    "lng": 38.75418
+  },
+  "Piassa Mahmud Music Shop Block 9": {
+    "lat": 9.03053,
+    "lng": 38.74851
+  },
+  "Piassa Mahmud Music Shop Block 10": {
+    "lat": 9.02973,
+    "lng": 38.75311
+  },
+  "Piassa Mahmud Music Shop Block 11": {
+    "lat": 9.03414,
+    "lng": 38.74913
+  },
+  "Piassa Mahmud Music Shop Block 12": {
+    "lat": 9.03386,
+    "lng": 38.75282
+  },
+  "Piassa Mahmud Music Shop Block 13": {
+    "lat": 9.02907,
+    "lng": 38.75642
+  },
+  "Piassa Mahmud Music Shop Block 14": {
+    "lat": 9.03041,
+    "lng": 38.75299
+  },
+  "Piassa Mahmud Music Shop Block 15": {
+    "lat": 9.02991,
+    "lng": 38.75262
+  },
+  "Piassa Mahmud Music Shop Block 16": {
+    "lat": 9.03556,
+    "lng": 38.75131
+  },
+  "Piassa Mahmud Music Shop Block 17": {
+    "lat": 9.02765,
+    "lng": 38.75670
+  },
+  "Piassa Mahmud Music Shop Block 18": {
+    "lat": 9.03012,
+    "lng": 38.75015
+  },
+  "Piassa Mahmud Music Shop Block 19": {
+    "lat": 9.02734,
+    "lng": 38.75601
+  },
+  "Piassa Mahmud Music Shop Block 20": {
+    "lat": 9.03222,
+    "lng": 38.74751
+  },
+  "Piassa Mahmud Music Shop Block 21": {
+    "lat": 9.02766,
+    "lng": 38.75356
+  },
+  "Piassa Mahmud Music Shop Block 22": {
+    "lat": 9.02657,
+    "lng": 38.75149
+  },
+  "Piassa Mahmud Music Shop Block 23": {
+    "lat": 9.02707,
+    "lng": 38.75504
+  },
+  "Piassa Mahmud Music Shop Block 24": {
+    "lat": 9.03148,
+    "lng": 38.75197
+  },
+  "Piassa Mahmud Music Shop Block 25": {
+    "lat": 9.02813,
+    "lng": 38.75270
+  },
+  "Piassa Mahmud Music Shop Block 26": {
+    "lat": 9.03364,
+    "lng": 38.74986
+  },
+  "Piassa Mahmud Music Shop Block 27": {
+    "lat": 9.02674,
+    "lng": 38.74996
+  },
+  "Piassa Mahmud Music Shop Block 28": {
+    "lat": 9.03540,
+    "lng": 38.75700
+  },
+  "Piassa Mahmud Music Shop Block 29": {
+    "lat": 9.03153,
+    "lng": 38.74947
+  },
+  "Piassa Mahmud Music Shop Block 30": {
+    "lat": 9.02943,
+    "lng": 38.74949
+  },
+  "Piassa Mahmud Music Shop Block 31": {
+    "lat": 9.03563,
+    "lng": 38.75604
+  },
+  "Piassa Mahmud Music Shop Block 32": {
+    "lat": 9.03593,
+    "lng": 38.75421
+  },
+  "Piassa Mahmud Music Shop Block 33": {
+    "lat": 9.03117,
+    "lng": 38.74759
+  },
+  "Piassa Mahmud Music Shop Block 34": {
+    "lat": 9.02838,
+    "lng": 38.75583
+  },
+  "Piassa Mahmud Music Shop Block 35": {
+    "lat": 9.03306,
+    "lng": 38.75351
+  },
+  "Piassa Mahmud Music Shop Block 36": {
+    "lat": 9.03232,
+    "lng": 38.75625
+  },
+  "Piassa Mahmud Music Shop Block 37": {
+    "lat": 9.03609,
+    "lng": 38.74744
+  },
+  "Piassa Mahmud Music Shop Block 38": {
+    "lat": 9.03626,
+    "lng": 38.74894
+  },
+  "Piassa Mahmud Music Shop Block 39": {
+    "lat": 9.03311,
+    "lng": 38.75664
+  },
+  "Piassa Mahmud Music Shop Block 40": {
+    "lat": 9.03141,
+    "lng": 38.74907
+  },
+  "Piassa Mahmud Music Shop Block 41": {
+    "lat": 9.03625,
+    "lng": 38.75511
+  },
+  "Piassa Mahmud Music Shop Block 42": {
+    "lat": 9.03419,
+    "lng": 38.75440
+  },
+  "Piassa Mahmud Music Shop Block 43": {
+    "lat": 9.02683,
+    "lng": 38.75083
+  },
+  "Piassa Mahmud Music Shop Block 44": {
+    "lat": 9.03359,
+    "lng": 38.75712
+  },
+  "Piassa Mahmud Music Shop Block 45": {
+    "lat": 9.02716,
+    "lng": 38.75150
+  },
+  "Piassa Mahmud Music Shop Block 46": {
+    "lat": 9.02893,
+    "lng": 38.75581
+  },
+  "Piassa Mahmud Music Shop Block 47": {
+    "lat": 9.03341,
+    "lng": 38.74912
+  },
+  "Piassa Mahmud Music Shop Block 48": {
+    "lat": 9.03038,
+    "lng": 38.74783
+  },
+  "Piassa Mahmud Music Shop Block 49": {
+    "lat": 9.03239,
+    "lng": 38.75329
+  },
+  "Piassa Mahmud Music Shop Block 50": {
+    "lat": 9.03581,
+    "lng": 38.75596
+  },
+  "Piassa Mahmud Music Shop Block 51": {
+    "lat": 9.03269,
+    "lng": 38.75098
+  },
+  "Piassa Mahmud Music Shop Block 52": {
+    "lat": 9.03594,
+    "lng": 38.75010
+  },
+  "Piassa Mahmud Music Shop Block 53": {
+    "lat": 9.02946,
+    "lng": 38.75699
+  },
+  "Piassa Mahmud Music Shop Block 54": {
+    "lat": 9.02796,
+    "lng": 38.75013
+  },
+  "Piassa Mahmud Music Shop Block 55": {
+    "lat": 9.03543,
+    "lng": 38.75583
+  },
+  "Piassa Mahmud Music Shop Block 56": {
+    "lat": 9.03516,
+    "lng": 38.75494
+  },
+  "Piassa Mahmud Music Shop Block 57": {
+    "lat": 9.02653,
+    "lng": 38.75676
+  },
+  "Piassa Mahmud Music Shop Block 58": {
+    "lat": 9.03083,
+    "lng": 38.75385
+  },
+  "Piassa Mahmud Music Shop Block 59": {
+    "lat": 9.03379,
+    "lng": 38.75245
+  },
+  "Piassa Mahmud Music Shop Block 60": {
+    "lat": 9.03441,
+    "lng": 38.74846
+  },
+  "Piassa Mahmud Music Shop Block 61": {
+    "lat": 9.02823,
+    "lng": 38.75386
+  },
+  "Piassa Mahmud Music Shop Block 62": {
+    "lat": 9.02969,
+    "lng": 38.75108
+  },
+  "Piassa Mahmud Music Shop Block 63": {
+    "lat": 9.03273,
+    "lng": 38.75375
+  },
+  "Piassa Mahmud Music Shop Block 64": {
+    "lat": 9.02790,
+    "lng": 38.75572
+  },
+  "Piassa Mahmud Music Shop Block 65": {
+    "lat": 9.03110,
+    "lng": 38.75555
+  },
+  "Piassa Mahmud Music Shop Block 66": {
+    "lat": 9.03170,
+    "lng": 38.75443
+  },
+  "Piassa Mahmud Music Shop Block 67": {
+    "lat": 9.03193,
+    "lng": 38.75322
+  },
+  "Piassa Mahmud Music Shop Block 68": {
+    "lat": 9.03165,
+    "lng": 38.74953
+  },
+  "Piassa Mahmud Music Shop Block 69": {
+    "lat": 9.02687,
+    "lng": 38.75243
+  },
+  "Piassa Mahmud Music Shop Block 70": {
+    "lat": 9.02797,
+    "lng": 38.75574
+  },
+  "Piassa Mahmud Music Shop Block 71": {
+    "lat": 9.03053,
+    "lng": 38.74996
+  },
+  "Piassa Mahmud Music Shop Block 72": {
+    "lat": 9.02815,
+    "lng": 38.75700
+  },
+  "Piassa Mahmud Music Shop Block 73": {
+    "lat": 9.03263,
+    "lng": 38.74815
+  },
+  "Piassa Mahmud Music Shop Block 74": {
+    "lat": 9.03167,
+    "lng": 38.74910
+  },
+  "Piassa Mahmud Music Shop Block 75": {
+    "lat": 9.03608,
+    "lng": 38.75552
+  },
+  "Piassa Mahmud Music Shop Block 76": {
+    "lat": 9.02883,
+    "lng": 38.75409
+  },
+  "Piassa Mahmud Music Shop Block 77": {
+    "lat": 9.03596,
+    "lng": 38.75061
+  },
+  "Piassa Mahmud Music Shop Block 78": {
+    "lat": 9.03605,
+    "lng": 38.74956
+  },
+  "Piassa Mahmud Music Shop Block 79": {
+    "lat": 9.02992,
+    "lng": 38.74802
+  },
+  "Piassa Mahmud Music Shop Block 80": {
+    "lat": 9.03371,
+    "lng": 38.75247
+  },
+  "Piassa Mahmud Music Shop Block 81": {
+    "lat": 9.03553,
+    "lng": 38.74887
+  },
+  "Piassa Mahmud Music Shop Block 82": {
+    "lat": 9.03258,
+    "lng": 38.75279
+  },
+  "Piassa Mahmud Music Shop Block 83": {
+    "lat": 9.02753,
+    "lng": 38.75047
+  },
+  "Piassa Mahmud Music Shop Block 84": {
+    "lat": 9.03169,
+    "lng": 38.75133
+  },
+  "Piassa Mahmud Music Shop Block 85": {
+    "lat": 9.03059,
+    "lng": 38.75164
+  },
+  "Piassa Mahmud Music Shop Block 86": {
+    "lat": 9.02738,
+    "lng": 38.75454
+  },
+  "Piassa Mahmud Music Shop Block 87": {
+    "lat": 9.02979,
+    "lng": 38.75311
+  },
+  "Piassa Mahmud Music Shop Block 88": {
+    "lat": 9.02654,
+    "lng": 38.75001
+  },
+  "Piassa Mahmud Music Shop Block 89": {
+    "lat": 9.02782,
+    "lng": 38.75231
+  },
+  "Piassa Mahmud Music Shop Block 90": {
+    "lat": 9.02838,
+    "lng": 38.74808
+  },
+  "Piassa Mahmud Music Shop Block 91": {
+    "lat": 9.02772,
+    "lng": 38.75133
+  },
+  "Piassa Mahmud Music Shop Block 92": {
+    "lat": 9.02984,
+    "lng": 38.75677
+  },
+  "Piassa Mahmud Music Shop Block 93": {
+    "lat": 9.03169,
+    "lng": 38.74974
+  },
+  "Piassa Mahmud Music Shop Block 94": {
+    "lat": 9.03408,
+    "lng": 38.75007
+  },
+  "Piassa Mahmud Music Shop Block 95": {
+    "lat": 9.03064,
+    "lng": 38.75419
+  },
+  "Piassa Mahmud Music Shop Block 96": {
+    "lat": 9.02908,
+    "lng": 38.75038
+  },
+  "Piassa Mahmud Music Shop Block 97": {
+    "lat": 9.03283,
+    "lng": 38.74900
+  },
+  "Piassa Mahmud Music Shop Block 98": {
+    "lat": 9.03566,
+    "lng": 38.75304
+  },
+  "Piassa Mahmud Music Shop Block 99": {
+    "lat": 9.03216,
+    "lng": 38.75572
+  },
+  "Piassa Mahmud Music Shop Block 100": {
+    "lat": 9.02684,
+    "lng": 38.74934
+  },
+  "Piassa Taytu Hotel Area Block 1": {
+    "lat": 9.03144,
+    "lng": 38.74813
+  },
+  "Piassa Taytu Hotel Area Block 2": {
+    "lat": 9.02735,
+    "lng": 38.75689
+  },
+  "Piassa Taytu Hotel Area Block 3": {
+    "lat": 9.03041,
+    "lng": 38.75671
+  },
+  "Piassa Taytu Hotel Area Block 4": {
+    "lat": 9.03444,
+    "lng": 38.75128
+  },
+  "Piassa Taytu Hotel Area Block 5": {
+    "lat": 9.02683,
+    "lng": 38.75114
+  },
+  "Piassa Taytu Hotel Area Block 6": {
+    "lat": 9.03517,
+    "lng": 38.75691
+  },
+  "Piassa Taytu Hotel Area Block 7": {
+    "lat": 9.03282,
+    "lng": 38.74882
+  },
+  "Piassa Taytu Hotel Area Block 8": {
+    "lat": 9.03501,
+    "lng": 38.75485
+  },
+  "Piassa Taytu Hotel Area Block 9": {
+    "lat": 9.03474,
+    "lng": 38.75514
+  },
+  "Piassa Taytu Hotel Area Block 10": {
+    "lat": 9.03622,
+    "lng": 38.75100
+  },
+  "Piassa Taytu Hotel Area Block 11": {
+    "lat": 9.03148,
+    "lng": 38.74983
+  },
+  "Piassa Taytu Hotel Area Block 12": {
+    "lat": 9.03439,
+    "lng": 38.75315
+  },
+  "Piassa Taytu Hotel Area Block 13": {
+    "lat": 9.03117,
+    "lng": 38.75638
+  },
+  "Piassa Taytu Hotel Area Block 14": {
+    "lat": 9.02944,
+    "lng": 38.75420
+  },
+  "Piassa Taytu Hotel Area Block 15": {
+    "lat": 9.02891,
+    "lng": 38.75421
+  },
+  "Piassa Taytu Hotel Area Block 16": {
+    "lat": 9.03013,
+    "lng": 38.75034
+  },
+  "Piassa Taytu Hotel Area Block 17": {
+    "lat": 9.03120,
+    "lng": 38.75190
+  },
+  "Piassa Taytu Hotel Area Block 18": {
+    "lat": 9.02807,
+    "lng": 38.75464
+  },
+  "Piassa Taytu Hotel Area Block 19": {
+    "lat": 9.03344,
+    "lng": 38.75454
+  },
+  "Piassa Taytu Hotel Area Block 20": {
+    "lat": 9.03294,
+    "lng": 38.75450
+  },
+  "Piassa Taytu Hotel Area Block 21": {
+    "lat": 9.03252,
+    "lng": 38.75644
+  },
+  "Piassa Taytu Hotel Area Block 22": {
+    "lat": 9.02860,
+    "lng": 38.74781
+  },
+  "Piassa Taytu Hotel Area Block 23": {
+    "lat": 9.02832,
+    "lng": 38.75128
+  },
+  "Piassa Taytu Hotel Area Block 24": {
+    "lat": 9.02868,
+    "lng": 38.75138
+  },
+  "Piassa Taytu Hotel Area Block 25": {
+    "lat": 9.03131,
+    "lng": 38.74868
+  },
+  "Piassa Taytu Hotel Area Block 26": {
+    "lat": 9.03506,
+    "lng": 38.74845
+  },
+  "Piassa Taytu Hotel Area Block 27": {
+    "lat": 9.03598,
+    "lng": 38.75502
+  },
+  "Piassa Taytu Hotel Area Block 28": {
+    "lat": 9.02659,
+    "lng": 38.75589
+  },
+  "Piassa Taytu Hotel Area Block 29": {
+    "lat": 9.02967,
+    "lng": 38.75603
+  },
+  "Piassa Taytu Hotel Area Block 30": {
+    "lat": 9.03244,
+    "lng": 38.75683
+  },
+  "Piassa Taytu Hotel Area Block 31": {
+    "lat": 9.03638,
+    "lng": 38.75302
+  },
+  "Piassa Taytu Hotel Area Block 32": {
+    "lat": 9.02930,
+    "lng": 38.75176
+  },
+  "Piassa Taytu Hotel Area Block 33": {
+    "lat": 9.02699,
+    "lng": 38.75613
+  },
+  "Piassa Taytu Hotel Area Block 34": {
+    "lat": 9.03160,
+    "lng": 38.75498
+  },
+  "Piassa Taytu Hotel Area Block 35": {
+    "lat": 9.03544,
+    "lng": 38.75296
+  },
+  "Piassa Taytu Hotel Area Block 36": {
+    "lat": 9.03370,
+    "lng": 38.75486
+  },
+  "Piassa Taytu Hotel Area Block 37": {
+    "lat": 9.02731,
+    "lng": 38.74988
+  },
+  "Piassa Taytu Hotel Area Block 38": {
+    "lat": 9.03274,
+    "lng": 38.74930
+  },
+  "Piassa Taytu Hotel Area Block 39": {
+    "lat": 9.03618,
+    "lng": 38.74922
+  },
+  "Piassa Taytu Hotel Area Block 40": {
+    "lat": 9.03047,
+    "lng": 38.74900
+  },
+  "Piassa Taytu Hotel Area Block 41": {
+    "lat": 9.02756,
+    "lng": 38.75092
+  },
+  "Piassa Taytu Hotel Area Block 42": {
+    "lat": 9.02703,
+    "lng": 38.74933
+  },
+  "Piassa Taytu Hotel Area Block 43": {
+    "lat": 9.03052,
+    "lng": 38.75327
+  },
+  "Piassa Taytu Hotel Area Block 44": {
+    "lat": 9.03235,
+    "lng": 38.75708
+  },
+  "Piassa Taytu Hotel Area Block 45": {
+    "lat": 9.03179,
+    "lng": 38.74783
+  },
+  "Piassa Taytu Hotel Area Block 46": {
+    "lat": 9.02995,
+    "lng": 38.75097
+  },
+  "Piassa Taytu Hotel Area Block 47": {
+    "lat": 9.03058,
+    "lng": 38.75429
+  },
+  "Piassa Taytu Hotel Area Block 48": {
+    "lat": 9.03307,
+    "lng": 38.74959
+  },
+  "Piassa Taytu Hotel Area Block 49": {
+    "lat": 9.03423,
+    "lng": 38.74951
+  },
+  "Piassa Taytu Hotel Area Block 50": {
+    "lat": 9.02810,
+    "lng": 38.75441
+  },
+  "Piassa Taytu Hotel Area Block 51": {
+    "lat": 9.03205,
+    "lng": 38.75159
+  },
+  "Piassa Taytu Hotel Area Block 52": {
+    "lat": 9.03579,
+    "lng": 38.75483
+  },
+  "Piassa Taytu Hotel Area Block 53": {
+    "lat": 9.02978,
+    "lng": 38.75341
+  },
+  "Piassa Taytu Hotel Area Block 54": {
+    "lat": 9.03503,
+    "lng": 38.75391
+  },
+  "Piassa Taytu Hotel Area Block 55": {
+    "lat": 9.03189,
+    "lng": 38.75230
+  },
+  "Piassa Taytu Hotel Area Block 56": {
+    "lat": 9.03609,
+    "lng": 38.74876
+  },
+  "Piassa Taytu Hotel Area Block 57": {
+    "lat": 9.02877,
+    "lng": 38.74993
+  },
+  "Piassa Taytu Hotel Area Block 58": {
+    "lat": 9.02812,
+    "lng": 38.75075
+  },
+  "Piassa Taytu Hotel Area Block 59": {
+    "lat": 9.02780,
+    "lng": 38.75491
+  },
+  "Piassa Taytu Hotel Area Block 60": {
+    "lat": 9.02915,
+    "lng": 38.75047
+  },
+  "Piassa Taytu Hotel Area Block 61": {
+    "lat": 9.03392,
+    "lng": 38.75366
+  },
+  "Piassa Taytu Hotel Area Block 62": {
+    "lat": 9.03063,
+    "lng": 38.75002
+  },
+  "Piassa Taytu Hotel Area Block 63": {
+    "lat": 9.03171,
+    "lng": 38.74742
+  },
+  "Piassa Taytu Hotel Area Block 64": {
+    "lat": 9.03342,
+    "lng": 38.75075
+  },
+  "Piassa Taytu Hotel Area Block 65": {
+    "lat": 9.03490,
+    "lng": 38.74846
+  },
+  "Piassa Taytu Hotel Area Block 66": {
+    "lat": 9.03644,
+    "lng": 38.75238
+  },
+  "Piassa Taytu Hotel Area Block 67": {
+    "lat": 9.03612,
+    "lng": 38.75626
+  },
+  "Piassa Taytu Hotel Area Block 68": {
+    "lat": 9.02976,
+    "lng": 38.75395
+  },
+  "Piassa Taytu Hotel Area Block 69": {
+    "lat": 9.02864,
+    "lng": 38.75122
+  },
+  "Piassa Taytu Hotel Area Block 70": {
+    "lat": 9.03562,
+    "lng": 38.75728
+  },
+  "Piassa Taytu Hotel Area Block 71": {
+    "lat": 9.03482,
+    "lng": 38.75382
+  },
+  "Piassa Taytu Hotel Area Block 72": {
+    "lat": 9.03234,
+    "lng": 38.75007
+  },
+  "Piassa Taytu Hotel Area Block 73": {
+    "lat": 9.03414,
+    "lng": 38.74761
+  },
+  "Piassa Taytu Hotel Area Block 74": {
+    "lat": 9.02944,
+    "lng": 38.75365
+  },
+  "Piassa Taytu Hotel Area Block 75": {
+    "lat": 9.03196,
+    "lng": 38.74812
+  },
+  "Piassa Taytu Hotel Area Block 76": {
+    "lat": 9.03224,
+    "lng": 38.74918
+  },
+  "Piassa Taytu Hotel Area Block 77": {
+    "lat": 9.03310,
+    "lng": 38.75572
+  },
+  "Piassa Taytu Hotel Area Block 78": {
+    "lat": 9.03540,
+    "lng": 38.74768
+  },
+  "Piassa Taytu Hotel Area Block 79": {
+    "lat": 9.02932,
+    "lng": 38.74814
+  },
+  "Piassa Taytu Hotel Area Block 80": {
+    "lat": 9.03534,
+    "lng": 38.75121
+  },
+  "Piassa Taytu Hotel Area Block 81": {
+    "lat": 9.03107,
+    "lng": 38.75144
+  },
+  "Piassa Taytu Hotel Area Block 82": {
+    "lat": 9.02717,
+    "lng": 38.75622
+  },
+  "Piassa Taytu Hotel Area Block 83": {
+    "lat": 9.03098,
+    "lng": 38.75113
+  },
+  "Piassa Taytu Hotel Area Block 84": {
+    "lat": 9.03253,
+    "lng": 38.75354
+  },
+  "Piassa Taytu Hotel Area Block 85": {
+    "lat": 9.03235,
+    "lng": 38.75495
+  },
+  "Piassa Taytu Hotel Area Block 86": {
+    "lat": 9.02910,
+    "lng": 38.75701
+  },
+  "Piassa Taytu Hotel Area Block 87": {
+    "lat": 9.03242,
+    "lng": 38.74985
+  },
+  "Piassa Taytu Hotel Area Block 88": {
+    "lat": 9.03433,
+    "lng": 38.75289
+  },
+  "Piassa Taytu Hotel Area Block 89": {
+    "lat": 9.02807,
+    "lng": 38.74820
+  },
+  "Piassa Taytu Hotel Area Block 90": {
+    "lat": 9.03641,
+    "lng": 38.75606
+  },
+  "Piassa Taytu Hotel Area Block 91": {
+    "lat": 9.02693,
+    "lng": 38.75541
+  },
+  "Piassa Taytu Hotel Area Block 92": {
+    "lat": 9.03515,
+    "lng": 38.75550
+  },
+  "Piassa Taytu Hotel Area Block 93": {
+    "lat": 9.03427,
+    "lng": 38.74742
+  },
+  "Piassa Taytu Hotel Area Block 94": {
+    "lat": 9.03049,
+    "lng": 38.74800
+  },
+  "Piassa Taytu Hotel Area Block 95": {
+    "lat": 9.03390,
+    "lng": 38.75208
+  },
+  "Piassa Taytu Hotel Area Block 96": {
+    "lat": 9.02759,
+    "lng": 38.75128
+  },
+  "Piassa Taytu Hotel Area Block 97": {
+    "lat": 9.02921,
+    "lng": 38.75455
+  },
+  "Piassa Taytu Hotel Area Block 98": {
+    "lat": 9.03104,
+    "lng": 38.75626
+  },
+  "Piassa Taytu Hotel Area Block 99": {
+    "lat": 9.03466,
+    "lng": 38.75320
+  },
+  "Piassa Taytu Hotel Area Block 100": {
+    "lat": 9.03258,
+    "lng": 38.75243
+  },
+  "Piassa Arada Giorgis Block 1": {
+    "lat": 9.02728,
+    "lng": 38.75325
+  },
+  "Piassa Arada Giorgis Block 2": {
+    "lat": 9.03545,
+    "lng": 38.74957
+  },
+  "Piassa Arada Giorgis Block 3": {
+    "lat": 9.03163,
+    "lng": 38.75331
+  },
+  "Piassa Arada Giorgis Block 4": {
+    "lat": 9.03410,
+    "lng": 38.74807
+  },
+  "Piassa Arada Giorgis Block 5": {
+    "lat": 9.02818,
+    "lng": 38.75568
+  },
+  "Piassa Arada Giorgis Block 6": {
+    "lat": 9.02800,
+    "lng": 38.75471
+  },
+  "Piassa Arada Giorgis Block 7": {
+    "lat": 9.02716,
+    "lng": 38.75627
+  },
+  "Piassa Arada Giorgis Block 8": {
+    "lat": 9.03062,
+    "lng": 38.75479
+  },
+  "Piassa Arada Giorgis Block 9": {
+    "lat": 9.02931,
+    "lng": 38.74759
+  },
+  "Piassa Arada Giorgis Block 10": {
+    "lat": 9.02665,
+    "lng": 38.75674
+  },
+  "Piassa Arada Giorgis Block 11": {
+    "lat": 9.02877,
+    "lng": 38.74785
+  },
+  "Piassa Arada Giorgis Block 12": {
+    "lat": 9.03088,
+    "lng": 38.74929
+  },
+  "Piassa Arada Giorgis Block 13": {
+    "lat": 9.02799,
+    "lng": 38.75465
+  },
+  "Piassa Arada Giorgis Block 14": {
+    "lat": 9.02783,
+    "lng": 38.74961
+  },
+  "Piassa Arada Giorgis Block 15": {
+    "lat": 9.02894,
+    "lng": 38.74871
+  },
+  "Piassa Arada Giorgis Block 16": {
+    "lat": 9.02813,
+    "lng": 38.75501
+  },
+  "Piassa Arada Giorgis Block 17": {
+    "lat": 9.03278,
+    "lng": 38.75510
+  },
+  "Piassa Arada Giorgis Block 18": {
+    "lat": 9.02949,
+    "lng": 38.75272
+  },
+  "Piassa Arada Giorgis Block 19": {
+    "lat": 9.02763,
+    "lng": 38.75670
+  },
+  "Piassa Arada Giorgis Block 20": {
+    "lat": 9.03537,
+    "lng": 38.75588
+  },
+  "Piassa Arada Giorgis Block 21": {
+    "lat": 9.03306,
+    "lng": 38.74786
+  },
+  "Piassa Arada Giorgis Block 22": {
+    "lat": 9.03529,
+    "lng": 38.75146
+  },
+  "Piassa Arada Giorgis Block 23": {
+    "lat": 9.03394,
+    "lng": 38.75520
+  },
+  "Piassa Arada Giorgis Block 24": {
+    "lat": 9.02820,
+    "lng": 38.75717
+  },
+  "Piassa Arada Giorgis Block 25": {
+    "lat": 9.03621,
+    "lng": 38.75406
+  },
+  "Piassa Arada Giorgis Block 26": {
+    "lat": 9.02868,
+    "lng": 38.75460
+  },
+  "Piassa Arada Giorgis Block 27": {
+    "lat": 9.02941,
+    "lng": 38.75379
+  },
+  "Piassa Arada Giorgis Block 28": {
+    "lat": 9.03397,
+    "lng": 38.74877
+  },
+  "Piassa Arada Giorgis Block 29": {
+    "lat": 9.02685,
+    "lng": 38.75093
+  },
+  "Piassa Arada Giorgis Block 30": {
+    "lat": 9.03417,
+    "lng": 38.75459
+  },
+  "Piassa Arada Giorgis Block 31": {
+    "lat": 9.03295,
+    "lng": 38.75693
+  },
+  "Piassa Arada Giorgis Block 32": {
+    "lat": 9.03590,
+    "lng": 38.74866
+  },
+  "Piassa Arada Giorgis Block 33": {
+    "lat": 9.03502,
+    "lng": 38.75069
+  },
+  "Piassa Arada Giorgis Block 34": {
+    "lat": 9.03149,
+    "lng": 38.74887
+  },
+  "Piassa Arada Giorgis Block 35": {
+    "lat": 9.03395,
+    "lng": 38.75116
+  },
+  "Piassa Arada Giorgis Block 36": {
+    "lat": 9.03381,
+    "lng": 38.75309
+  },
+  "Piassa Arada Giorgis Block 37": {
+    "lat": 9.02964,
+    "lng": 38.75641
+  },
+  "Piassa Arada Giorgis Block 38": {
+    "lat": 9.02871,
+    "lng": 38.75577
+  },
+  "Piassa Arada Giorgis Block 39": {
+    "lat": 9.03101,
+    "lng": 38.75621
+  },
+  "Piassa Arada Giorgis Block 40": {
+    "lat": 9.03098,
+    "lng": 38.75561
+  },
+  "Piassa Arada Giorgis Block 41": {
+    "lat": 9.02812,
+    "lng": 38.75467
+  },
+  "Piassa Arada Giorgis Block 42": {
+    "lat": 9.02961,
+    "lng": 38.75705
+  },
+  "Piassa Arada Giorgis Block 43": {
+    "lat": 9.03558,
+    "lng": 38.75367
+  },
+  "Piassa Arada Giorgis Block 44": {
+    "lat": 9.02762,
+    "lng": 38.75600
+  },
+  "Piassa Arada Giorgis Block 45": {
+    "lat": 9.03197,
+    "lng": 38.75110
+  },
+  "Piassa Arada Giorgis Block 46": {
+    "lat": 9.03381,
+    "lng": 38.75246
+  },
+  "Piassa Arada Giorgis Block 47": {
+    "lat": 9.02845,
+    "lng": 38.75384
+  },
+  "Piassa Arada Giorgis Block 48": {
+    "lat": 9.03444,
+    "lng": 38.74885
+  },
+  "Piassa Arada Giorgis Block 49": {
+    "lat": 9.02920,
+    "lng": 38.75420
+  },
+  "Piassa Arada Giorgis Block 50": {
+    "lat": 9.02816,
+    "lng": 38.75165
+  },
+  "Piassa Arada Giorgis Block 51": {
+    "lat": 9.03460,
+    "lng": 38.75520
+  },
+  "Piassa Arada Giorgis Block 52": {
+    "lat": 9.03288,
+    "lng": 38.75437
+  },
+  "Piassa Arada Giorgis Block 53": {
+    "lat": 9.03136,
+    "lng": 38.75628
+  },
+  "Piassa Arada Giorgis Block 54": {
+    "lat": 9.02963,
+    "lng": 38.74811
+  },
+  "Piassa Arada Giorgis Block 55": {
+    "lat": 9.03170,
+    "lng": 38.75081
+  },
+  "Piassa Arada Giorgis Block 56": {
+    "lat": 9.02979,
+    "lng": 38.75675
+  },
+  "Piassa Arada Giorgis Block 57": {
+    "lat": 9.03647,
+    "lng": 38.75280
+  },
+  "Piassa Arada Giorgis Block 58": {
+    "lat": 9.02746,
+    "lng": 38.75211
+  },
+  "Piassa Arada Giorgis Block 59": {
+    "lat": 9.03293,
+    "lng": 38.74861
+  },
+  "Piassa Arada Giorgis Block 60": {
+    "lat": 9.03153,
+    "lng": 38.75366
+  },
+  "Piassa Arada Giorgis Block 61": {
+    "lat": 9.03054,
+    "lng": 38.74989
+  },
+  "Piassa Arada Giorgis Block 62": {
+    "lat": 9.03273,
+    "lng": 38.75033
+  },
+  "Piassa Arada Giorgis Block 63": {
+    "lat": 9.02802,
+    "lng": 38.74792
+  },
+  "Piassa Arada Giorgis Block 64": {
+    "lat": 9.03076,
+    "lng": 38.75446
+  },
+  "Piassa Arada Giorgis Block 65": {
+    "lat": 9.03495,
+    "lng": 38.75246
+  },
+  "Piassa Arada Giorgis Block 66": {
+    "lat": 9.02652,
+    "lng": 38.75425
+  },
+  "Piassa Arada Giorgis Block 67": {
+    "lat": 9.02685,
+    "lng": 38.74881
+  },
+  "Piassa Arada Giorgis Block 68": {
+    "lat": 9.03044,
+    "lng": 38.74797
+  },
+  "Piassa Arada Giorgis Block 69": {
+    "lat": 9.02768,
+    "lng": 38.75027
+  },
+  "Piassa Arada Giorgis Block 70": {
+    "lat": 9.02892,
+    "lng": 38.74848
+  },
+  "Piassa Arada Giorgis Block 71": {
+    "lat": 9.02866,
+    "lng": 38.75018
+  },
+  "Piassa Arada Giorgis Block 72": {
+    "lat": 9.03284,
+    "lng": 38.75607
+  },
+  "Piassa Arada Giorgis Block 73": {
+    "lat": 9.03014,
+    "lng": 38.75701
+  },
+  "Piassa Arada Giorgis Block 74": {
+    "lat": 9.03182,
+    "lng": 38.75290
+  },
+  "Piassa Arada Giorgis Block 75": {
+    "lat": 9.03523,
+    "lng": 38.75376
+  },
+  "Piassa Arada Giorgis Block 76": {
+    "lat": 9.02980,
+    "lng": 38.74762
+  },
+  "Piassa Arada Giorgis Block 77": {
+    "lat": 9.03242,
+    "lng": 38.75452
+  },
+  "Piassa Arada Giorgis Block 78": {
+    "lat": 9.03513,
+    "lng": 38.75373
+  },
+  "Piassa Arada Giorgis Block 79": {
+    "lat": 9.03139,
+    "lng": 38.75108
+  },
+  "Piassa Arada Giorgis Block 80": {
+    "lat": 9.03090,
+    "lng": 38.74922
+  },
+  "Piassa Arada Giorgis Block 81": {
+    "lat": 9.03456,
+    "lng": 38.74861
+  },
+  "Piassa Arada Giorgis Block 82": {
+    "lat": 9.02835,
+    "lng": 38.74923
+  },
+  "Piassa Arada Giorgis Block 83": {
+    "lat": 9.03444,
+    "lng": 38.74754
+  },
+  "Piassa Arada Giorgis Block 84": {
+    "lat": 9.03250,
+    "lng": 38.75297
+  },
+  "Piassa Arada Giorgis Block 85": {
+    "lat": 9.03451,
+    "lng": 38.74847
+  },
+  "Piassa Arada Giorgis Block 86": {
+    "lat": 9.03521,
+    "lng": 38.75481
+  },
+  "Piassa Arada Giorgis Block 87": {
+    "lat": 9.03218,
+    "lng": 38.75432
+  },
+  "Piassa Arada Giorgis Block 88": {
+    "lat": 9.02881,
+    "lng": 38.74964
+  },
+  "Piassa Arada Giorgis Block 89": {
+    "lat": 9.02898,
+    "lng": 38.74840
+  },
+  "Piassa Arada Giorgis Block 90": {
+    "lat": 9.03297,
+    "lng": 38.75425
+  },
+  "Piassa Arada Giorgis Block 91": {
+    "lat": 9.02779,
+    "lng": 38.75581
+  },
+  "Piassa Arada Giorgis Block 92": {
+    "lat": 9.03174,
+    "lng": 38.75672
+  },
+  "Piassa Arada Giorgis Block 93": {
+    "lat": 9.02726,
+    "lng": 38.75709
+  },
+  "Piassa Arada Giorgis Block 94": {
+    "lat": 9.03112,
+    "lng": 38.75081
+  },
+  "Piassa Arada Giorgis Block 95": {
+    "lat": 9.03199,
+    "lng": 38.75094
+  },
+  "Piassa Arada Giorgis Block 96": {
+    "lat": 9.02832,
+    "lng": 38.75072
+  },
+  "Piassa Arada Giorgis Block 97": {
+    "lat": 9.02851,
+    "lng": 38.75686
+  },
+  "Piassa Arada Giorgis Block 98": {
+    "lat": 9.02718,
+    "lng": 38.74914
+  },
+  "Piassa Arada Giorgis Block 99": {
+    "lat": 9.02941,
+    "lng": 38.75623
+  },
+  "Piassa Arada Giorgis Block 100": {
+    "lat": 9.02711,
+    "lng": 38.74740
+  },
+  "Piassa Chilot Block 1": {
+    "lat": 9.03124,
+    "lng": 38.75262
+  },
+  "Piassa Chilot Block 2": {
+    "lat": 9.03204,
+    "lng": 38.75472
+  },
+  "Piassa Chilot Block 3": {
+    "lat": 9.03610,
+    "lng": 38.75012
+  },
+  "Piassa Chilot Block 4": {
+    "lat": 9.03127,
+    "lng": 38.75134
+  },
+  "Piassa Chilot Block 5": {
+    "lat": 9.03507,
+    "lng": 38.75700
+  },
+  "Piassa Chilot Block 6": {
+    "lat": 9.03021,
+    "lng": 38.75251
+  },
+  "Piassa Chilot Block 7": {
+    "lat": 9.02664,
+    "lng": 38.75120
+  },
+  "Piassa Chilot Block 8": {
+    "lat": 9.02869,
+    "lng": 38.75597
+  },
+  "Piassa Chilot Block 9": {
+    "lat": 9.02947,
+    "lng": 38.75057
+  },
+  "Piassa Chilot Block 10": {
+    "lat": 9.03293,
+    "lng": 38.75662
+  },
+  "Piassa Chilot Block 11": {
+    "lat": 9.03059,
+    "lng": 38.75570
+  },
+  "Piassa Chilot Block 12": {
+    "lat": 9.03487,
+    "lng": 38.74967
+  },
+  "Piassa Chilot Block 13": {
+    "lat": 9.03035,
+    "lng": 38.74848
+  },
+  "Piassa Chilot Block 14": {
+    "lat": 9.03347,
+    "lng": 38.75462
+  },
+  "Piassa Chilot Block 15": {
+    "lat": 9.03165,
+    "lng": 38.75310
+  },
+  "Piassa Chilot Block 16": {
+    "lat": 9.02949,
+    "lng": 38.75454
+  },
+  "Piassa Chilot Block 17": {
+    "lat": 9.02931,
+    "lng": 38.75644
+  },
+  "Piassa Chilot Block 18": {
+    "lat": 9.03500,
+    "lng": 38.74911
+  },
+  "Piassa Chilot Block 19": {
+    "lat": 9.03306,
+    "lng": 38.75288
+  },
+  "Piassa Chilot Block 20": {
+    "lat": 9.02892,
+    "lng": 38.75608
+  },
+  "Piassa Chilot Block 21": {
+    "lat": 9.03370,
+    "lng": 38.74961
+  },
+  "Piassa Chilot Block 22": {
+    "lat": 9.02730,
+    "lng": 38.75623
+  },
+  "Piassa Chilot Block 23": {
+    "lat": 9.03441,
+    "lng": 38.75533
+  },
+  "Piassa Chilot Block 24": {
+    "lat": 9.02651,
+    "lng": 38.75501
+  },
+  "Piassa Chilot Block 25": {
+    "lat": 9.02995,
+    "lng": 38.75101
+  },
+  "Piassa Chilot Block 26": {
+    "lat": 9.02822,
+    "lng": 38.75089
+  },
+  "Piassa Chilot Block 27": {
+    "lat": 9.03159,
+    "lng": 38.75613
+  },
+  "Piassa Chilot Block 28": {
+    "lat": 9.03093,
+    "lng": 38.75172
+  },
+  "Piassa Chilot Block 29": {
+    "lat": 9.02674,
+    "lng": 38.75462
+  },
+  "Piassa Chilot Block 30": {
+    "lat": 9.02684,
+    "lng": 38.75180
+  },
+  "Piassa Chilot Block 31": {
+    "lat": 9.03074,
+    "lng": 38.75370
+  },
+  "Piassa Chilot Block 32": {
+    "lat": 9.02728,
+    "lng": 38.75257
+  },
+  "Piassa Chilot Block 33": {
+    "lat": 9.02759,
+    "lng": 38.75245
+  },
+  "Piassa Chilot Block 34": {
+    "lat": 9.02755,
+    "lng": 38.74838
+  },
+  "Piassa Chilot Block 35": {
+    "lat": 9.03149,
+    "lng": 38.75602
+  },
+  "Piassa Chilot Block 36": {
+    "lat": 9.02947,
+    "lng": 38.75011
+  },
+  "Piassa Chilot Block 37": {
+    "lat": 9.03124,
+    "lng": 38.75722
+  },
+  "Piassa Chilot Block 38": {
+    "lat": 9.03025,
+    "lng": 38.74785
+  },
+  "Piassa Chilot Block 39": {
+    "lat": 9.03245,
+    "lng": 38.74990
+  },
+  "Piassa Chilot Block 40": {
+    "lat": 9.02906,
+    "lng": 38.75511
+  },
+  "Piassa Chilot Block 41": {
+    "lat": 9.03099,
+    "lng": 38.75545
+  },
+  "Piassa Chilot Block 42": {
+    "lat": 9.02798,
+    "lng": 38.75675
+  },
+  "Piassa Chilot Block 43": {
+    "lat": 9.03154,
+    "lng": 38.74819
+  },
+  "Piassa Chilot Block 44": {
+    "lat": 9.03447,
+    "lng": 38.75410
+  },
+  "Piassa Chilot Block 45": {
+    "lat": 9.02978,
+    "lng": 38.74914
+  },
+  "Piassa Chilot Block 46": {
+    "lat": 9.03415,
+    "lng": 38.75059
+  },
+  "Piassa Chilot Block 47": {
+    "lat": 9.02944,
+    "lng": 38.75214
+  },
+  "Piassa Chilot Block 48": {
+    "lat": 9.03630,
+    "lng": 38.75161
+  },
+  "Piassa Chilot Block 49": {
+    "lat": 9.02982,
+    "lng": 38.75302
+  },
+  "Piassa Chilot Block 50": {
+    "lat": 9.02918,
+    "lng": 38.74950
+  },
+  "Piassa Chilot Block 51": {
+    "lat": 9.02717,
+    "lng": 38.74888
+  },
+  "Piassa Chilot Block 52": {
+    "lat": 9.03290,
+    "lng": 38.74782
+  },
+  "Piassa Chilot Block 53": {
+    "lat": 9.03133,
+    "lng": 38.75590
+  },
+  "Piassa Chilot Block 54": {
+    "lat": 9.02692,
+    "lng": 38.75443
+  },
+  "Piassa Chilot Block 55": {
+    "lat": 9.03020,
+    "lng": 38.74925
+  },
+  "Piassa Chilot Block 56": {
+    "lat": 9.02652,
+    "lng": 38.75258
+  },
+  "Piassa Chilot Block 57": {
+    "lat": 9.03077,
+    "lng": 38.74958
+  },
+  "Piassa Chilot Block 58": {
+    "lat": 9.02746,
+    "lng": 38.75291
+  },
+  "Piassa Chilot Block 59": {
+    "lat": 9.03294,
+    "lng": 38.75162
+  },
+  "Piassa Chilot Block 60": {
+    "lat": 9.03143,
+    "lng": 38.75292
+  },
+  "Piassa Chilot Block 61": {
+    "lat": 9.03050,
+    "lng": 38.75325
+  },
+  "Piassa Chilot Block 62": {
+    "lat": 9.03642,
+    "lng": 38.75611
+  },
+  "Piassa Chilot Block 63": {
+    "lat": 9.03565,
+    "lng": 38.75539
+  },
+  "Piassa Chilot Block 64": {
+    "lat": 9.03386,
+    "lng": 38.75707
+  },
+  "Piassa Chilot Block 65": {
+    "lat": 9.03183,
+    "lng": 38.75090
+  },
+  "Piassa Chilot Block 66": {
+    "lat": 9.03477,
+    "lng": 38.75640
+  },
+  "Piassa Chilot Block 67": {
+    "lat": 9.03580,
+    "lng": 38.75419
+  },
+  "Piassa Chilot Block 68": {
+    "lat": 9.03212,
+    "lng": 38.75426
+  },
+  "Piassa Chilot Block 69": {
+    "lat": 9.03549,
+    "lng": 38.74891
+  },
+  "Piassa Chilot Block 70": {
+    "lat": 9.03251,
+    "lng": 38.75155
+  },
+  "Piassa Chilot Block 71": {
+    "lat": 9.03269,
+    "lng": 38.75452
+  },
+  "Piassa Chilot Block 72": {
+    "lat": 9.03607,
+    "lng": 38.75292
+  },
+  "Piassa Chilot Block 73": {
+    "lat": 9.03459,
+    "lng": 38.74788
+  },
+  "Piassa Chilot Block 74": {
+    "lat": 9.02663,
+    "lng": 38.75096
+  },
+  "Piassa Chilot Block 75": {
+    "lat": 9.02983,
+    "lng": 38.75667
+  },
+  "Piassa Chilot Block 76": {
+    "lat": 9.03531,
+    "lng": 38.75313
+  },
+  "Piassa Chilot Block 77": {
+    "lat": 9.02708,
+    "lng": 38.74739
+  },
+  "Piassa Chilot Block 78": {
+    "lat": 9.03107,
+    "lng": 38.74873
+  },
+  "Piassa Chilot Block 79": {
+    "lat": 9.02725,
+    "lng": 38.75486
+  },
+  "Piassa Chilot Block 80": {
+    "lat": 9.03090,
+    "lng": 38.74860
+  },
+  "Piassa Chilot Block 81": {
+    "lat": 9.03544,
+    "lng": 38.75204
+  },
+  "Piassa Chilot Block 82": {
+    "lat": 9.02950,
+    "lng": 38.74876
+  },
+  "Piassa Chilot Block 83": {
+    "lat": 9.03365,
+    "lng": 38.74830
+  },
+  "Piassa Chilot Block 84": {
+    "lat": 9.02865,
+    "lng": 38.75281
+  },
+  "Piassa Chilot Block 85": {
+    "lat": 9.03045,
+    "lng": 38.75644
+  },
+  "Piassa Chilot Block 86": {
+    "lat": 9.02913,
+    "lng": 38.75085
+  },
+  "Piassa Chilot Block 87": {
+    "lat": 9.02794,
+    "lng": 38.75015
+  },
+  "Piassa Chilot Block 88": {
+    "lat": 9.03307,
+    "lng": 38.75010
+  },
+  "Piassa Chilot Block 89": {
+    "lat": 9.03016,
+    "lng": 38.75672
+  },
+  "Piassa Chilot Block 90": {
+    "lat": 9.03602,
+    "lng": 38.75408
+  },
+  "Piassa Chilot Block 91": {
+    "lat": 9.03313,
+    "lng": 38.75477
+  },
+  "Piassa Chilot Block 92": {
+    "lat": 9.03303,
+    "lng": 38.74805
+  },
+  "Piassa Chilot Block 93": {
+    "lat": 9.03335,
+    "lng": 38.75516
+  },
+  "Piassa Chilot Block 94": {
+    "lat": 9.02848,
+    "lng": 38.74990
+  },
+  "Piassa Chilot Block 95": {
+    "lat": 9.02693,
+    "lng": 38.75430
+  },
+  "Piassa Chilot Block 96": {
+    "lat": 9.03249,
+    "lng": 38.75285
+  },
+  "Piassa Chilot Block 97": {
+    "lat": 9.02963,
+    "lng": 38.75002
+  },
+  "Piassa Chilot Block 98": {
+    "lat": 9.02892,
+    "lng": 38.75373
+  },
+  "Piassa Chilot Block 99": {
+    "lat": 9.03441,
+    "lng": 38.75402
+  },
+  "Piassa Chilot Block 100": {
+    "lat": 9.02695,
+    "lng": 38.74976
+  },
+  "Piassa Serategna Sefer Block 1": {
+    "lat": 9.02725,
+    "lng": 38.75104
+  },
+  "Piassa Serategna Sefer Block 2": {
+    "lat": 9.02761,
+    "lng": 38.75242
+  },
+  "Piassa Serategna Sefer Block 3": {
+    "lat": 9.03287,
+    "lng": 38.75717
+  },
+  "Piassa Serategna Sefer Block 4": {
+    "lat": 9.02887,
+    "lng": 38.75204
+  },
+  "Piassa Serategna Sefer Block 5": {
+    "lat": 9.03279,
+    "lng": 38.75637
+  },
+  "Piassa Serategna Sefer Block 6": {
+    "lat": 9.02689,
+    "lng": 38.75128
+  },
+  "Piassa Serategna Sefer Block 7": {
+    "lat": 9.03572,
+    "lng": 38.75530
+  },
+  "Piassa Serategna Sefer Block 8": {
+    "lat": 9.03306,
+    "lng": 38.75545
+  },
+  "Piassa Serategna Sefer Block 9": {
+    "lat": 9.02930,
+    "lng": 38.75329
+  },
+  "Piassa Serategna Sefer Block 10": {
+    "lat": 9.02740,
+    "lng": 38.75392
+  },
+  "Piassa Serategna Sefer Block 11": {
+    "lat": 9.03601,
+    "lng": 38.75073
+  },
+  "Piassa Serategna Sefer Block 12": {
+    "lat": 9.02829,
+    "lng": 38.75247
+  },
+  "Piassa Serategna Sefer Block 13": {
+    "lat": 9.03245,
+    "lng": 38.75502
+  },
+  "Piassa Serategna Sefer Block 14": {
+    "lat": 9.03203,
+    "lng": 38.75467
+  },
+  "Piassa Serategna Sefer Block 15": {
+    "lat": 9.03354,
+    "lng": 38.74731
+  },
+  "Piassa Serategna Sefer Block 16": {
+    "lat": 9.03481,
+    "lng": 38.75112
+  },
+  "Piassa Serategna Sefer Block 17": {
+    "lat": 9.03289,
+    "lng": 38.75593
+  },
+  "Piassa Serategna Sefer Block 18": {
+    "lat": 9.02782,
+    "lng": 38.75186
+  },
+  "Piassa Serategna Sefer Block 19": {
+    "lat": 9.03183,
+    "lng": 38.74961
+  },
+  "Piassa Serategna Sefer Block 20": {
+    "lat": 9.03182,
+    "lng": 38.75375
+  },
+  "Piassa Serategna Sefer Block 21": {
+    "lat": 9.03295,
+    "lng": 38.75125
+  },
+  "Piassa Serategna Sefer Block 22": {
+    "lat": 9.02897,
+    "lng": 38.75501
+  },
+  "Piassa Serategna Sefer Block 23": {
+    "lat": 9.02720,
+    "lng": 38.75515
+  },
+  "Piassa Serategna Sefer Block 24": {
+    "lat": 9.03551,
+    "lng": 38.75406
+  },
+  "Piassa Serategna Sefer Block 25": {
+    "lat": 9.02859,
+    "lng": 38.75087
+  },
+  "Piassa Serategna Sefer Block 26": {
+    "lat": 9.02669,
+    "lng": 38.75666
+  },
+  "Piassa Serategna Sefer Block 27": {
+    "lat": 9.03294,
+    "lng": 38.75297
+  },
+  "Piassa Serategna Sefer Block 28": {
+    "lat": 9.03262,
+    "lng": 38.75473
+  },
+  "Piassa Serategna Sefer Block 29": {
+    "lat": 9.03625,
+    "lng": 38.74771
+  },
+  "Piassa Serategna Sefer Block 30": {
+    "lat": 9.02697,
+    "lng": 38.75648
+  },
+  "Piassa Serategna Sefer Block 31": {
+    "lat": 9.03588,
+    "lng": 38.74756
+  },
+  "Piassa Serategna Sefer Block 32": {
+    "lat": 9.03028,
+    "lng": 38.74987
+  },
+  "Piassa Serategna Sefer Block 33": {
+    "lat": 9.03473,
+    "lng": 38.75489
+  },
+  "Piassa Serategna Sefer Block 34": {
+    "lat": 9.03622,
+    "lng": 38.74832
+  },
+  "Piassa Serategna Sefer Block 35": {
+    "lat": 9.03431,
+    "lng": 38.75446
+  },
+  "Piassa Serategna Sefer Block 36": {
+    "lat": 9.03160,
+    "lng": 38.75586
+  },
+  "Piassa Serategna Sefer Block 37": {
+    "lat": 9.03591,
+    "lng": 38.75071
+  },
+  "Piassa Serategna Sefer Block 38": {
+    "lat": 9.02935,
+    "lng": 38.75438
+  },
+  "Piassa Serategna Sefer Block 39": {
+    "lat": 9.03491,
+    "lng": 38.74891
+  },
+  "Piassa Serategna Sefer Block 40": {
+    "lat": 9.03451,
+    "lng": 38.74776
+  },
+  "Piassa Serategna Sefer Block 41": {
+    "lat": 9.02894,
+    "lng": 38.75345
+  },
+  "Piassa Serategna Sefer Block 42": {
+    "lat": 9.03110,
+    "lng": 38.75540
+  },
+  "Piassa Serategna Sefer Block 43": {
+    "lat": 9.02718,
+    "lng": 38.74737
+  },
+  "Piassa Serategna Sefer Block 44": {
+    "lat": 9.02815,
+    "lng": 38.75653
+  },
+  "Piassa Serategna Sefer Block 45": {
+    "lat": 9.03065,
+    "lng": 38.74765
+  },
+  "Piassa Serategna Sefer Block 46": {
+    "lat": 9.02747,
+    "lng": 38.75216
+  },
+  "Piassa Serategna Sefer Block 47": {
+    "lat": 9.03321,
+    "lng": 38.75498
+  },
+  "Piassa Serategna Sefer Block 48": {
+    "lat": 9.03546,
+    "lng": 38.75425
+  },
+  "Piassa Serategna Sefer Block 49": {
+    "lat": 9.03462,
+    "lng": 38.75699
+  },
+  "Piassa Serategna Sefer Block 50": {
+    "lat": 9.03560,
+    "lng": 38.75560
+  },
+  "Piassa Serategna Sefer Block 51": {
+    "lat": 9.03533,
+    "lng": 38.75164
+  },
+  "Piassa Serategna Sefer Block 52": {
+    "lat": 9.03343,
+    "lng": 38.75392
+  },
+  "Piassa Serategna Sefer Block 53": {
+    "lat": 9.03264,
+    "lng": 38.75235
+  },
+  "Piassa Serategna Sefer Block 54": {
+    "lat": 9.03594,
+    "lng": 38.74949
+  },
+  "Piassa Serategna Sefer Block 55": {
+    "lat": 9.02913,
+    "lng": 38.75018
+  },
+  "Piassa Serategna Sefer Block 56": {
+    "lat": 9.02846,
+    "lng": 38.75696
+  },
+  "Piassa Serategna Sefer Block 57": {
+    "lat": 9.02897,
+    "lng": 38.75619
+  },
+  "Piassa Serategna Sefer Block 58": {
+    "lat": 9.02814,
+    "lng": 38.74917
+  },
+  "Piassa Serategna Sefer Block 59": {
+    "lat": 9.02866,
+    "lng": 38.75091
+  },
+  "Piassa Serategna Sefer Block 60": {
+    "lat": 9.03631,
+    "lng": 38.75351
+  },
+  "Piassa Serategna Sefer Block 61": {
+    "lat": 9.02796,
+    "lng": 38.75354
+  },
+  "Piassa Serategna Sefer Block 62": {
+    "lat": 9.02728,
+    "lng": 38.75526
+  },
+  "Piassa Serategna Sefer Block 63": {
+    "lat": 9.03608,
+    "lng": 38.75691
+  },
+  "Piassa Serategna Sefer Block 64": {
+    "lat": 9.02705,
+    "lng": 38.74803
+  },
+  "Piassa Serategna Sefer Block 65": {
+    "lat": 9.03130,
+    "lng": 38.75609
+  },
+  "Piassa Serategna Sefer Block 66": {
+    "lat": 9.02682,
+    "lng": 38.75709
+  },
+  "Piassa Serategna Sefer Block 67": {
+    "lat": 9.02816,
+    "lng": 38.75577
+  },
+  "Piassa Serategna Sefer Block 68": {
+    "lat": 9.03558,
+    "lng": 38.75100
+  },
+  "Piassa Serategna Sefer Block 69": {
+    "lat": 9.03316,
+    "lng": 38.75405
+  },
+  "Piassa Serategna Sefer Block 70": {
+    "lat": 9.03295,
+    "lng": 38.75483
+  },
+  "Piassa Serategna Sefer Block 71": {
+    "lat": 9.03197,
+    "lng": 38.75364
+  },
+  "Piassa Serategna Sefer Block 72": {
+    "lat": 9.02838,
+    "lng": 38.75192
+  },
+  "Piassa Serategna Sefer Block 73": {
+    "lat": 9.02756,
+    "lng": 38.75527
+  },
+  "Piassa Serategna Sefer Block 74": {
+    "lat": 9.03613,
+    "lng": 38.74996
+  },
+  "Piassa Serategna Sefer Block 75": {
+    "lat": 9.03304,
+    "lng": 38.75599
+  },
+  "Piassa Serategna Sefer Block 76": {
+    "lat": 9.02796,
+    "lng": 38.74755
+  },
+  "Piassa Serategna Sefer Block 77": {
+    "lat": 9.02741,
+    "lng": 38.75153
+  },
+  "Piassa Serategna Sefer Block 78": {
+    "lat": 9.03538,
+    "lng": 38.75283
+  },
+  "Piassa Serategna Sefer Block 79": {
+    "lat": 9.02845,
+    "lng": 38.74763
+  },
+  "Piassa Serategna Sefer Block 80": {
+    "lat": 9.02746,
+    "lng": 38.75408
+  },
+  "Piassa Serategna Sefer Block 81": {
+    "lat": 9.03190,
+    "lng": 38.74799
+  },
+  "Piassa Serategna Sefer Block 82": {
+    "lat": 9.02666,
+    "lng": 38.75248
+  },
+  "Piassa Serategna Sefer Block 83": {
+    "lat": 9.03149,
+    "lng": 38.75722
+  },
+  "Piassa Serategna Sefer Block 84": {
+    "lat": 9.03455,
+    "lng": 38.75683
+  },
+  "Piassa Serategna Sefer Block 85": {
+    "lat": 9.03164,
+    "lng": 38.75295
+  },
+  "Piassa Serategna Sefer Block 86": {
+    "lat": 9.03402,
+    "lng": 38.75110
+  },
+  "Piassa Serategna Sefer Block 87": {
+    "lat": 9.03164,
+    "lng": 38.75566
+  },
+  "Piassa Serategna Sefer Block 88": {
+    "lat": 9.03374,
+    "lng": 38.75502
+  },
+  "Piassa Serategna Sefer Block 89": {
+    "lat": 9.03124,
+    "lng": 38.74735
+  },
+  "Piassa Serategna Sefer Block 90": {
+    "lat": 9.03386,
+    "lng": 38.75420
+  },
+  "Piassa Serategna Sefer Block 91": {
+    "lat": 9.03475,
+    "lng": 38.74909
+  },
+  "Piassa Serategna Sefer Block 92": {
+    "lat": 9.02815,
+    "lng": 38.75523
+  },
+  "Piassa Serategna Sefer Block 93": {
+    "lat": 9.02722,
+    "lng": 38.75238
+  },
+  "Piassa Serategna Sefer Block 94": {
+    "lat": 9.03121,
+    "lng": 38.75614
+  },
+  "Piassa Serategna Sefer Block 95": {
+    "lat": 9.03602,
+    "lng": 38.75627
+  },
+  "Piassa Serategna Sefer Block 96": {
+    "lat": 9.03225,
+    "lng": 38.74924
+  },
+  "Piassa Serategna Sefer Block 97": {
+    "lat": 9.03270,
+    "lng": 38.75622
+  },
+  "Piassa Serategna Sefer Block 98": {
+    "lat": 9.02849,
+    "lng": 38.75136
+  },
+  "Piassa Serategna Sefer Block 99": {
+    "lat": 9.03330,
+    "lng": 38.74986
+  },
+  "Piassa Serategna Sefer Block 100": {
+    "lat": 9.03353,
+    "lng": 38.74990
+  },
+  "Piassa Talian Sefer Block 1": {
+    "lat": 9.02689,
+    "lng": 38.74923
+  },
+  "Piassa Talian Sefer Block 2": {
+    "lat": 9.02750,
+    "lng": 38.75288
+  },
+  "Piassa Talian Sefer Block 3": {
+    "lat": 9.02878,
+    "lng": 38.75459
+  },
+  "Piassa Talian Sefer Block 4": {
+    "lat": 9.03617,
+    "lng": 38.75305
+  },
+  "Piassa Talian Sefer Block 5": {
+    "lat": 9.02910,
+    "lng": 38.74731
+  },
+  "Piassa Talian Sefer Block 6": {
+    "lat": 9.02917,
+    "lng": 38.75393
+  },
+  "Piassa Talian Sefer Block 7": {
+    "lat": 9.03201,
+    "lng": 38.75542
+  },
+  "Piassa Talian Sefer Block 8": {
+    "lat": 9.03534,
+    "lng": 38.75157
+  },
+  "Piassa Talian Sefer Block 9": {
+    "lat": 9.03163,
+    "lng": 38.75070
+  },
+  "Piassa Talian Sefer Block 10": {
+    "lat": 9.02701,
+    "lng": 38.74828
+  },
+  "Piassa Talian Sefer Block 11": {
+    "lat": 9.02961,
+    "lng": 38.75675
+  },
+  "Piassa Talian Sefer Block 12": {
+    "lat": 9.03623,
+    "lng": 38.75328
+  },
+  "Piassa Talian Sefer Block 13": {
+    "lat": 9.02851,
+    "lng": 38.75599
+  },
+  "Piassa Talian Sefer Block 14": {
+    "lat": 9.02971,
+    "lng": 38.75130
+  },
+  "Piassa Talian Sefer Block 15": {
+    "lat": 9.03296,
+    "lng": 38.75292
+  },
+  "Piassa Talian Sefer Block 16": {
+    "lat": 9.02728,
+    "lng": 38.75698
+  },
+  "Piassa Talian Sefer Block 17": {
+    "lat": 9.02687,
+    "lng": 38.75351
+  },
+  "Piassa Talian Sefer Block 18": {
+    "lat": 9.02776,
+    "lng": 38.75202
+  },
+  "Piassa Talian Sefer Block 19": {
+    "lat": 9.03358,
+    "lng": 38.75326
+  },
+  "Piassa Talian Sefer Block 20": {
+    "lat": 9.02900,
+    "lng": 38.75011
+  },
+  "Piassa Talian Sefer Block 21": {
+    "lat": 9.03236,
+    "lng": 38.74908
+  },
+  "Piassa Talian Sefer Block 22": {
+    "lat": 9.03027,
+    "lng": 38.74932
+  },
+  "Piassa Talian Sefer Block 23": {
+    "lat": 9.03143,
+    "lng": 38.74815
+  },
+  "Piassa Talian Sefer Block 24": {
+    "lat": 9.03611,
+    "lng": 38.74954
+  },
+  "Piassa Talian Sefer Block 25": {
+    "lat": 9.03136,
+    "lng": 38.74804
+  },
+  "Piassa Talian Sefer Block 26": {
+    "lat": 9.03100,
+    "lng": 38.75069
+  },
+  "Piassa Talian Sefer Block 27": {
+    "lat": 9.02748,
+    "lng": 38.75120
+  },
+  "Piassa Talian Sefer Block 28": {
+    "lat": 9.02769,
+    "lng": 38.74811
+  },
+  "Piassa Talian Sefer Block 29": {
+    "lat": 9.03186,
+    "lng": 38.75322
+  },
+  "Piassa Talian Sefer Block 30": {
+    "lat": 9.03289,
+    "lng": 38.75024
+  },
+  "Piassa Talian Sefer Block 31": {
+    "lat": 9.03637,
+    "lng": 38.75157
+  },
+  "Piassa Talian Sefer Block 32": {
+    "lat": 9.03276,
+    "lng": 38.75374
+  },
+  "Piassa Talian Sefer Block 33": {
+    "lat": 9.03273,
+    "lng": 38.75626
+  },
+  "Piassa Talian Sefer Block 34": {
+    "lat": 9.02756,
+    "lng": 38.75147
+  },
+  "Piassa Talian Sefer Block 35": {
+    "lat": 9.03518,
+    "lng": 38.75213
+  },
+  "Piassa Talian Sefer Block 36": {
+    "lat": 9.03308,
+    "lng": 38.75049
+  },
+  "Piassa Talian Sefer Block 37": {
+    "lat": 9.02716,
+    "lng": 38.75141
+  },
+  "Piassa Talian Sefer Block 38": {
+    "lat": 9.02718,
+    "lng": 38.75133
+  },
+  "Piassa Talian Sefer Block 39": {
+    "lat": 9.03255,
+    "lng": 38.75294
+  },
+  "Piassa Talian Sefer Block 40": {
+    "lat": 9.03084,
+    "lng": 38.75645
+  },
+  "Piassa Talian Sefer Block 41": {
+    "lat": 9.02860,
+    "lng": 38.75273
+  },
+  "Piassa Talian Sefer Block 42": {
+    "lat": 9.02929,
+    "lng": 38.75342
+  },
+  "Piassa Talian Sefer Block 43": {
+    "lat": 9.03214,
+    "lng": 38.75309
+  },
+  "Piassa Talian Sefer Block 44": {
+    "lat": 9.03074,
+    "lng": 38.75208
+  },
+  "Piassa Talian Sefer Block 45": {
+    "lat": 9.03619,
+    "lng": 38.75434
+  },
+  "Piassa Talian Sefer Block 46": {
+    "lat": 9.02842,
+    "lng": 38.75465
+  },
+  "Piassa Talian Sefer Block 47": {
+    "lat": 9.03438,
+    "lng": 38.74938
+  },
+  "Piassa Talian Sefer Block 48": {
+    "lat": 9.02865,
+    "lng": 38.74975
+  },
+  "Piassa Talian Sefer Block 49": {
+    "lat": 9.03531,
+    "lng": 38.75292
+  },
+  "Piassa Talian Sefer Block 50": {
+    "lat": 9.03189,
+    "lng": 38.75375
+  },
+  "Piassa Talian Sefer Block 51": {
+    "lat": 9.03142,
+    "lng": 38.75569
+  },
+  "Piassa Talian Sefer Block 52": {
+    "lat": 9.03174,
+    "lng": 38.75029
+  },
+  "Piassa Talian Sefer Block 53": {
+    "lat": 9.02954,
+    "lng": 38.75408
+  },
+  "Piassa Talian Sefer Block 54": {
+    "lat": 9.03575,
+    "lng": 38.74808
+  },
+  "Piassa Talian Sefer Block 55": {
+    "lat": 9.03587,
+    "lng": 38.75710
+  },
+  "Piassa Talian Sefer Block 56": {
+    "lat": 9.03591,
+    "lng": 38.75250
+  },
+  "Piassa Talian Sefer Block 57": {
+    "lat": 9.02657,
+    "lng": 38.75510
+  },
+  "Piassa Talian Sefer Block 58": {
+    "lat": 9.02811,
+    "lng": 38.75559
+  },
+  "Piassa Talian Sefer Block 59": {
+    "lat": 9.03252,
+    "lng": 38.75008
+  },
+  "Piassa Talian Sefer Block 60": {
+    "lat": 9.03435,
+    "lng": 38.75683
+  },
+  "Piassa Talian Sefer Block 61": {
+    "lat": 9.03107,
+    "lng": 38.75554
+  },
+  "Piassa Talian Sefer Block 62": {
+    "lat": 9.02900,
+    "lng": 38.75363
+  },
+  "Piassa Talian Sefer Block 63": {
+    "lat": 9.02933,
+    "lng": 38.74779
+  },
+  "Piassa Talian Sefer Block 64": {
+    "lat": 9.02916,
+    "lng": 38.75110
+  },
+  "Piassa Talian Sefer Block 65": {
+    "lat": 9.03532,
+    "lng": 38.74968
+  },
+  "Piassa Talian Sefer Block 66": {
+    "lat": 9.03134,
+    "lng": 38.75697
+  },
+  "Piassa Talian Sefer Block 67": {
+    "lat": 9.02768,
+    "lng": 38.75328
+  },
+  "Piassa Talian Sefer Block 68": {
+    "lat": 9.02757,
+    "lng": 38.75256
+  },
+  "Piassa Talian Sefer Block 69": {
+    "lat": 9.03308,
+    "lng": 38.74864
+  },
+  "Piassa Talian Sefer Block 70": {
+    "lat": 9.03216,
+    "lng": 38.75032
+  },
+  "Piassa Talian Sefer Block 71": {
+    "lat": 9.03595,
+    "lng": 38.74924
+  },
+  "Piassa Talian Sefer Block 72": {
+    "lat": 9.02694,
+    "lng": 38.75154
+  },
+  "Piassa Talian Sefer Block 73": {
+    "lat": 9.03389,
+    "lng": 38.75577
+  },
+  "Piassa Talian Sefer Block 74": {
+    "lat": 9.02718,
+    "lng": 38.75426
+  },
+  "Piassa Talian Sefer Block 75": {
+    "lat": 9.03610,
+    "lng": 38.75330
+  },
+  "Piassa Talian Sefer Block 76": {
+    "lat": 9.02960,
+    "lng": 38.75413
+  },
+  "Piassa Talian Sefer Block 77": {
+    "lat": 9.03566,
+    "lng": 38.74871
+  },
+  "Piassa Talian Sefer Block 78": {
+    "lat": 9.03168,
+    "lng": 38.75231
+  },
+  "Piassa Talian Sefer Block 79": {
+    "lat": 9.02728,
+    "lng": 38.75493
+  },
+  "Piassa Talian Sefer Block 80": {
+    "lat": 9.03433,
+    "lng": 38.75290
+  },
+  "Piassa Talian Sefer Block 81": {
+    "lat": 9.03468,
+    "lng": 38.75654
+  },
+  "Piassa Talian Sefer Block 82": {
+    "lat": 9.02687,
+    "lng": 38.75669
+  },
+  "Piassa Talian Sefer Block 83": {
+    "lat": 9.02955,
+    "lng": 38.74938
+  },
+  "Piassa Talian Sefer Block 84": {
+    "lat": 9.02787,
+    "lng": 38.75666
+  },
+  "Piassa Talian Sefer Block 85": {
+    "lat": 9.03577,
+    "lng": 38.75509
+  },
+  "Piassa Talian Sefer Block 86": {
+    "lat": 9.03108,
+    "lng": 38.75390
+  },
+  "Piassa Talian Sefer Block 87": {
+    "lat": 9.03039,
+    "lng": 38.75438
+  },
+  "Piassa Talian Sefer Block 88": {
+    "lat": 9.03283,
+    "lng": 38.75420
+  },
+  "Piassa Talian Sefer Block 89": {
+    "lat": 9.03379,
+    "lng": 38.75487
+  },
+  "Piassa Talian Sefer Block 90": {
+    "lat": 9.03620,
+    "lng": 38.75172
+  },
+  "Piassa Talian Sefer Block 91": {
+    "lat": 9.03395,
+    "lng": 38.74740
+  },
+  "Piassa Talian Sefer Block 92": {
+    "lat": 9.03335,
+    "lng": 38.74863
+  },
+  "Piassa Talian Sefer Block 93": {
+    "lat": 9.03258,
+    "lng": 38.74901
+  },
+  "Piassa Talian Sefer Block 94": {
+    "lat": 9.02943,
+    "lng": 38.74889
+  },
+  "Piassa Talian Sefer Block 95": {
+    "lat": 9.02803,
+    "lng": 38.75605
+  },
+  "Piassa Talian Sefer Block 96": {
+    "lat": 9.03353,
+    "lng": 38.74755
+  },
+  "Piassa Talian Sefer Block 97": {
+    "lat": 9.03293,
+    "lng": 38.75191
+  },
+  "Piassa Talian Sefer Block 98": {
+    "lat": 9.03540,
+    "lng": 38.75423
+  },
+  "Piassa Talian Sefer Block 99": {
+    "lat": 9.03190,
+    "lng": 38.75536
+  },
+  "Piassa Talian Sefer Block 100": {
+    "lat": 9.02795,
+    "lng": 38.75221
+  },
+  "Merkato Bomb Tera Block 1": {
+    "lat": 9.03141,
+    "lng": 38.74245
+  },
+  "Merkato Bomb Tera Block 2": {
+    "lat": 9.02871,
+    "lng": 38.73541
+  },
+  "Merkato Bomb Tera Block 3": {
+    "lat": 9.03231,
+    "lng": 38.73595
+  },
+  "Merkato Bomb Tera Block 4": {
+    "lat": 9.03139,
+    "lng": 38.74310
+  },
+  "Merkato Bomb Tera Block 5": {
+    "lat": 9.02926,
+    "lng": 38.74044
+  },
+  "Merkato Bomb Tera Block 6": {
+    "lat": 9.02874,
+    "lng": 38.73446
+  },
+  "Merkato Bomb Tera Block 7": {
+    "lat": 9.03159,
+    "lng": 38.73516
+  },
+  "Merkato Bomb Tera Block 8": {
+    "lat": 9.03122,
+    "lng": 38.73890
+  },
+  "Merkato Bomb Tera Block 9": {
+    "lat": 9.03073,
+    "lng": 38.73641
+  },
+  "Merkato Bomb Tera Block 10": {
+    "lat": 9.02477,
+    "lng": 38.74199
+  },
+  "Merkato Bomb Tera Block 11": {
+    "lat": 9.03042,
+    "lng": 38.73998
+  },
+  "Merkato Bomb Tera Block 12": {
+    "lat": 9.02555,
+    "lng": 38.74185
+  },
+  "Merkato Bomb Tera Block 13": {
+    "lat": 9.02882,
+    "lng": 38.74001
+  },
+  "Merkato Bomb Tera Block 14": {
+    "lat": 9.02792,
+    "lng": 38.74130
+  },
+  "Merkato Bomb Tera Block 15": {
+    "lat": 9.02673,
+    "lng": 38.73408
+  },
+  "Merkato Bomb Tera Block 16": {
+    "lat": 9.02956,
+    "lng": 38.74329
+  },
+  "Merkato Bomb Tera Block 17": {
+    "lat": 9.03242,
+    "lng": 38.73696
+  },
+  "Merkato Bomb Tera Block 18": {
+    "lat": 9.02854,
+    "lng": 38.74207
+  },
+  "Merkato Bomb Tera Block 19": {
+    "lat": 9.02569,
+    "lng": 38.73640
+  },
+  "Merkato Bomb Tera Block 20": {
+    "lat": 9.03026,
+    "lng": 38.74089
+  },
+  "Merkato Bomb Tera Block 21": {
+    "lat": 9.03049,
+    "lng": 38.73965
+  },
+  "Merkato Bomb Tera Block 22": {
+    "lat": 9.02689,
+    "lng": 38.73871
+  },
+  "Merkato Bomb Tera Block 23": {
+    "lat": 9.02477,
+    "lng": 38.74080
+  },
+  "Merkato Bomb Tera Block 24": {
+    "lat": 9.03107,
+    "lng": 38.73834
+  },
+  "Merkato Bomb Tera Block 25": {
+    "lat": 9.02954,
+    "lng": 38.74137
+  },
+  "Merkato Bomb Tera Block 26": {
+    "lat": 9.02860,
+    "lng": 38.74127
+  },
+  "Merkato Bomb Tera Block 27": {
+    "lat": 9.02803,
+    "lng": 38.74090
+  },
+  "Merkato Bomb Tera Block 28": {
+    "lat": 9.03244,
+    "lng": 38.73936
+  },
+  "Merkato Bomb Tera Block 29": {
+    "lat": 9.02997,
+    "lng": 38.74032
+  },
+  "Merkato Bomb Tera Block 30": {
+    "lat": 9.02652,
+    "lng": 38.73575
+  },
+  "Merkato Bomb Tera Block 31": {
+    "lat": 9.02696,
+    "lng": 38.74291
+  },
+  "Merkato Bomb Tera Block 32": {
+    "lat": 9.02745,
+    "lng": 38.74026
+  },
+  "Merkato Bomb Tera Block 33": {
+    "lat": 9.02907,
+    "lng": 38.73518
+  },
+  "Merkato Bomb Tera Block 34": {
+    "lat": 9.02889,
+    "lng": 38.74353
+  },
+  "Merkato Bomb Tera Block 35": {
+    "lat": 9.02627,
+    "lng": 38.73813
+  },
+  "Merkato Bomb Tera Block 36": {
+    "lat": 9.02987,
+    "lng": 38.73479
+  },
+  "Merkato Bomb Tera Block 37": {
+    "lat": 9.03202,
+    "lng": 38.73490
+  },
+  "Merkato Bomb Tera Block 38": {
+    "lat": 9.02792,
+    "lng": 38.73900
+  },
+  "Merkato Bomb Tera Block 39": {
+    "lat": 9.02898,
+    "lng": 38.74262
+  },
+  "Merkato Bomb Tera Block 40": {
+    "lat": 9.02622,
+    "lng": 38.73946
+  },
+  "Merkato Bomb Tera Block 41": {
+    "lat": 9.02847,
+    "lng": 38.74072
+  },
+  "Merkato Bomb Tera Block 42": {
+    "lat": 9.02695,
+    "lng": 38.73435
+  },
+  "Merkato Bomb Tera Block 43": {
+    "lat": 9.03186,
+    "lng": 38.74008
+  },
+  "Merkato Bomb Tera Block 44": {
+    "lat": 9.02341,
+    "lng": 38.73566
+  },
+  "Merkato Bomb Tera Block 45": {
+    "lat": 9.02910,
+    "lng": 38.74268
+  },
+  "Merkato Bomb Tera Block 46": {
+    "lat": 9.02576,
+    "lng": 38.73524
+  },
+  "Merkato Bomb Tera Block 47": {
+    "lat": 9.03057,
+    "lng": 38.73392
+  },
+  "Merkato Bomb Tera Block 48": {
+    "lat": 9.02291,
+    "lng": 38.73942
+  },
+  "Merkato Bomb Tera Block 49": {
+    "lat": 9.03154,
+    "lng": 38.74009
+  },
+  "Merkato Bomb Tera Block 50": {
+    "lat": 9.03144,
+    "lng": 38.74079
+  },
+  "Merkato Bomb Tera Block 51": {
+    "lat": 9.03255,
+    "lng": 38.74190
+  },
+  "Merkato Bomb Tera Block 52": {
+    "lat": 9.02940,
+    "lng": 38.74303
+  },
+  "Merkato Bomb Tera Block 53": {
+    "lat": 9.02848,
+    "lng": 38.74219
+  },
+  "Merkato Bomb Tera Block 54": {
+    "lat": 9.02522,
+    "lng": 38.74260
+  },
+  "Merkato Bomb Tera Block 55": {
+    "lat": 9.02958,
+    "lng": 38.73699
+  },
+  "Merkato Bomb Tera Block 56": {
+    "lat": 9.03255,
+    "lng": 38.74245
+  },
+  "Merkato Bomb Tera Block 57": {
+    "lat": 9.02889,
+    "lng": 38.73721
+  },
+  "Merkato Bomb Tera Block 58": {
+    "lat": 9.02365,
+    "lng": 38.74176
+  },
+  "Merkato Bomb Tera Block 59": {
+    "lat": 9.02482,
+    "lng": 38.73731
+  },
+  "Merkato Bomb Tera Block 60": {
+    "lat": 9.02407,
+    "lng": 38.73675
+  },
+  "Merkato Bomb Tera Block 61": {
+    "lat": 9.02571,
+    "lng": 38.73742
+  },
+  "Merkato Bomb Tera Block 62": {
+    "lat": 9.02826,
+    "lng": 38.73779
+  },
+  "Merkato Bomb Tera Block 63": {
+    "lat": 9.02647,
+    "lng": 38.73501
+  },
+  "Merkato Bomb Tera Block 64": {
+    "lat": 9.02326,
+    "lng": 38.74080
+  },
+  "Merkato Bomb Tera Block 65": {
+    "lat": 9.02280,
+    "lng": 38.74213
+  },
+  "Merkato Bomb Tera Block 66": {
+    "lat": 9.03259,
+    "lng": 38.73926
+  },
+  "Merkato Bomb Tera Block 67": {
+    "lat": 9.03164,
+    "lng": 38.74312
+  },
+  "Merkato Bomb Tera Block 68": {
+    "lat": 9.02452,
+    "lng": 38.73952
+  },
+  "Merkato Bomb Tera Block 69": {
+    "lat": 9.03043,
+    "lng": 38.74252
+  },
+  "Merkato Bomb Tera Block 70": {
+    "lat": 9.02976,
+    "lng": 38.74216
+  },
+  "Merkato Bomb Tera Block 71": {
+    "lat": 9.03101,
+    "lng": 38.73813
+  },
+  "Merkato Bomb Tera Block 72": {
+    "lat": 9.02766,
+    "lng": 38.73480
+  },
+  "Merkato Bomb Tera Block 73": {
+    "lat": 9.03199,
+    "lng": 38.74205
+  },
+  "Merkato Bomb Tera Block 74": {
+    "lat": 9.02288,
+    "lng": 38.73516
+  },
+  "Merkato Bomb Tera Block 75": {
+    "lat": 9.03122,
+    "lng": 38.73890
+  },
+  "Merkato Bomb Tera Block 76": {
+    "lat": 9.02896,
+    "lng": 38.73686
+  },
+  "Merkato Bomb Tera Block 77": {
+    "lat": 9.02607,
+    "lng": 38.74340
+  },
+  "Merkato Bomb Tera Block 78": {
+    "lat": 9.02372,
+    "lng": 38.74248
+  },
+  "Merkato Bomb Tera Block 79": {
+    "lat": 9.03160,
+    "lng": 38.74307
+  },
+  "Merkato Bomb Tera Block 80": {
+    "lat": 9.02993,
+    "lng": 38.74367
+  },
+  "Merkato Bomb Tera Block 81": {
+    "lat": 9.03224,
+    "lng": 38.73611
+  },
+  "Merkato Bomb Tera Block 82": {
+    "lat": 9.02883,
+    "lng": 38.73837
+  },
+  "Merkato Bomb Tera Block 83": {
+    "lat": 9.02614,
+    "lng": 38.73626
+  },
+  "Merkato Bomb Tera Block 84": {
+    "lat": 9.02325,
+    "lng": 38.73534
+  },
+  "Merkato Bomb Tera Block 85": {
+    "lat": 9.02376,
+    "lng": 38.73884
+  },
+  "Merkato Bomb Tera Block 86": {
+    "lat": 9.02868,
+    "lng": 38.73445
+  },
+  "Merkato Bomb Tera Block 87": {
+    "lat": 9.03070,
+    "lng": 38.74184
+  },
+  "Merkato Bomb Tera Block 88": {
+    "lat": 9.03225,
+    "lng": 38.74343
+  },
+  "Merkato Bomb Tera Block 89": {
+    "lat": 9.02639,
+    "lng": 38.74283
+  },
+  "Merkato Bomb Tera Block 90": {
+    "lat": 9.02425,
+    "lng": 38.73449
+  },
+  "Merkato Bomb Tera Block 91": {
+    "lat": 9.02543,
+    "lng": 38.73970
+  },
+  "Merkato Bomb Tera Block 92": {
+    "lat": 9.02742,
+    "lng": 38.73992
+  },
+  "Merkato Bomb Tera Block 93": {
+    "lat": 9.02943,
+    "lng": 38.73902
+  },
+  "Merkato Bomb Tera Block 94": {
+    "lat": 9.03034,
+    "lng": 38.74342
+  },
+  "Merkato Bomb Tera Block 95": {
+    "lat": 9.02747,
+    "lng": 38.74181
+  },
+  "Merkato Bomb Tera Block 96": {
+    "lat": 9.02888,
+    "lng": 38.73474
+  },
+  "Merkato Bomb Tera Block 97": {
+    "lat": 9.02465,
+    "lng": 38.74057
+  },
+  "Merkato Bomb Tera Block 98": {
+    "lat": 9.03135,
+    "lng": 38.73851
+  },
+  "Merkato Bomb Tera Block 99": {
+    "lat": 9.03156,
+    "lng": 38.73409
+  },
+  "Merkato Bomb Tera Block 100": {
+    "lat": 9.02489,
+    "lng": 38.73805
+  },
+  "Merkato Satin Tera Block 1": {
+    "lat": 9.02833,
+    "lng": 38.73935
+  },
+  "Merkato Satin Tera Block 2": {
+    "lat": 9.03089,
+    "lng": 38.74092
+  },
+  "Merkato Satin Tera Block 3": {
+    "lat": 9.03029,
+    "lng": 38.73388
+  },
+  "Merkato Satin Tera Block 4": {
+    "lat": 9.02404,
+    "lng": 38.74101
+  },
+  "Merkato Satin Tera Block 5": {
+    "lat": 9.02811,
+    "lng": 38.73627
+  },
+  "Merkato Satin Tera Block 6": {
+    "lat": 9.03161,
+    "lng": 38.73928
+  },
+  "Merkato Satin Tera Block 7": {
+    "lat": 9.02411,
+    "lng": 38.73980
+  },
+  "Merkato Satin Tera Block 8": {
+    "lat": 9.03233,
+    "lng": 38.74367
+  },
+  "Merkato Satin Tera Block 9": {
+    "lat": 9.02963,
+    "lng": 38.73684
+  },
+  "Merkato Satin Tera Block 10": {
+    "lat": 9.03103,
+    "lng": 38.73653
+  },
+  "Merkato Satin Tera Block 11": {
+    "lat": 9.02713,
+    "lng": 38.73953
+  },
+  "Merkato Satin Tera Block 12": {
+    "lat": 9.02870,
+    "lng": 38.74268
+  },
+  "Merkato Satin Tera Block 13": {
+    "lat": 9.03189,
+    "lng": 38.73546
+  },
+  "Merkato Satin Tera Block 14": {
+    "lat": 9.02676,
+    "lng": 38.74254
+  },
+  "Merkato Satin Tera Block 15": {
+    "lat": 9.02359,
+    "lng": 38.73737
+  },
+  "Merkato Satin Tera Block 16": {
+    "lat": 9.03161,
+    "lng": 38.73897
+  },
+  "Merkato Satin Tera Block 17": {
+    "lat": 9.02827,
+    "lng": 38.73607
+  },
+  "Merkato Satin Tera Block 18": {
+    "lat": 9.02393,
+    "lng": 38.74064
+  },
+  "Merkato Satin Tera Block 19": {
+    "lat": 9.02990,
+    "lng": 38.74107
+  },
+  "Merkato Satin Tera Block 20": {
+    "lat": 9.02293,
+    "lng": 38.74306
+  },
+  "Merkato Satin Tera Block 21": {
+    "lat": 9.02410,
+    "lng": 38.73941
+  },
+  "Merkato Satin Tera Block 22": {
+    "lat": 9.02361,
+    "lng": 38.73596
+  },
+  "Merkato Satin Tera Block 23": {
+    "lat": 9.03270,
+    "lng": 38.73676
+  },
+  "Merkato Satin Tera Block 24": {
+    "lat": 9.02501,
+    "lng": 38.73415
+  },
+  "Merkato Satin Tera Block 25": {
+    "lat": 9.02885,
+    "lng": 38.74378
+  },
+  "Merkato Satin Tera Block 26": {
+    "lat": 9.02830,
+    "lng": 38.74172
+  },
+  "Merkato Satin Tera Block 27": {
+    "lat": 9.02583,
+    "lng": 38.74018
+  },
+  "Merkato Satin Tera Block 28": {
+    "lat": 9.02642,
+    "lng": 38.74078
+  },
+  "Merkato Satin Tera Block 29": {
+    "lat": 9.02391,
+    "lng": 38.73422
+  },
+  "Merkato Satin Tera Block 30": {
+    "lat": 9.03196,
+    "lng": 38.73461
+  },
+  "Merkato Satin Tera Block 31": {
+    "lat": 9.02816,
+    "lng": 38.73550
+  },
+  "Merkato Satin Tera Block 32": {
+    "lat": 9.03111,
+    "lng": 38.74111
+  },
+  "Merkato Satin Tera Block 33": {
+    "lat": 9.03256,
+    "lng": 38.74118
+  },
+  "Merkato Satin Tera Block 34": {
+    "lat": 9.03060,
+    "lng": 38.73839
+  },
+  "Merkato Satin Tera Block 35": {
+    "lat": 9.02554,
+    "lng": 38.74154
+  },
+  "Merkato Satin Tera Block 36": {
+    "lat": 9.03201,
+    "lng": 38.74101
+  },
+  "Merkato Satin Tera Block 37": {
+    "lat": 9.02886,
+    "lng": 38.74038
+  },
+  "Merkato Satin Tera Block 38": {
+    "lat": 9.03053,
+    "lng": 38.74029
+  },
+  "Merkato Satin Tera Block 39": {
+    "lat": 9.02540,
+    "lng": 38.74101
+  },
+  "Merkato Satin Tera Block 40": {
+    "lat": 9.02984,
+    "lng": 38.74364
+  },
+  "Merkato Satin Tera Block 41": {
+    "lat": 9.02355,
+    "lng": 38.73879
+  },
+  "Merkato Satin Tera Block 42": {
+    "lat": 9.02629,
+    "lng": 38.74355
+  },
+  "Merkato Satin Tera Block 43": {
+    "lat": 9.02769,
+    "lng": 38.73487
+  },
+  "Merkato Satin Tera Block 44": {
+    "lat": 9.02988,
+    "lng": 38.73513
+  },
+  "Merkato Satin Tera Block 45": {
+    "lat": 9.03205,
+    "lng": 38.73560
+  },
+  "Merkato Satin Tera Block 46": {
+    "lat": 9.02609,
+    "lng": 38.74079
+  },
+  "Merkato Satin Tera Block 47": {
+    "lat": 9.02321,
+    "lng": 38.73386
+  },
+  "Merkato Satin Tera Block 48": {
+    "lat": 9.02693,
+    "lng": 38.73779
+  },
+  "Merkato Satin Tera Block 49": {
+    "lat": 9.02353,
+    "lng": 38.73413
+  },
+  "Merkato Satin Tera Block 50": {
+    "lat": 9.03041,
+    "lng": 38.73973
+  },
+  "Merkato Satin Tera Block 51": {
+    "lat": 9.03254,
+    "lng": 38.74371
+  },
+  "Merkato Satin Tera Block 52": {
+    "lat": 9.03134,
+    "lng": 38.73414
+  },
+  "Merkato Satin Tera Block 53": {
+    "lat": 9.03081,
+    "lng": 38.74109
+  },
+  "Merkato Satin Tera Block 54": {
+    "lat": 9.02939,
+    "lng": 38.74126
+  },
+  "Merkato Satin Tera Block 55": {
+    "lat": 9.02908,
+    "lng": 38.73887
+  },
+  "Merkato Satin Tera Block 56": {
+    "lat": 9.03184,
+    "lng": 38.73412
+  },
+  "Merkato Satin Tera Block 57": {
+    "lat": 9.02446,
+    "lng": 38.74128
+  },
+  "Merkato Satin Tera Block 58": {
+    "lat": 9.02978,
+    "lng": 38.73915
+  },
+  "Merkato Satin Tera Block 59": {
+    "lat": 9.03130,
+    "lng": 38.73935
+  },
+  "Merkato Satin Tera Block 60": {
+    "lat": 9.02898,
+    "lng": 38.73839
+  },
+  "Merkato Satin Tera Block 61": {
+    "lat": 9.02946,
+    "lng": 38.73459
+  },
+  "Merkato Satin Tera Block 62": {
+    "lat": 9.03183,
+    "lng": 38.73860
+  },
+  "Merkato Satin Tera Block 63": {
+    "lat": 9.03186,
+    "lng": 38.74206
+  },
+  "Merkato Satin Tera Block 64": {
+    "lat": 9.02616,
+    "lng": 38.73586
+  },
+  "Merkato Satin Tera Block 65": {
+    "lat": 9.02644,
+    "lng": 38.74332
+  },
+  "Merkato Satin Tera Block 66": {
+    "lat": 9.02686,
+    "lng": 38.73725
+  },
+  "Merkato Satin Tera Block 67": {
+    "lat": 9.03210,
+    "lng": 38.73913
+  },
+  "Merkato Satin Tera Block 68": {
+    "lat": 9.02583,
+    "lng": 38.74343
+  },
+  "Merkato Satin Tera Block 69": {
+    "lat": 9.02788,
+    "lng": 38.73644
+  },
+  "Merkato Satin Tera Block 70": {
+    "lat": 9.02571,
+    "lng": 38.74005
+  },
+  "Merkato Satin Tera Block 71": {
+    "lat": 9.03218,
+    "lng": 38.73391
+  },
+  "Merkato Satin Tera Block 72": {
+    "lat": 9.02810,
+    "lng": 38.73756
+  },
+  "Merkato Satin Tera Block 73": {
+    "lat": 9.02667,
+    "lng": 38.73867
+  },
+  "Merkato Satin Tera Block 74": {
+    "lat": 9.03091,
+    "lng": 38.73824
+  },
+  "Merkato Satin Tera Block 75": {
+    "lat": 9.02909,
+    "lng": 38.74363
+  },
+  "Merkato Satin Tera Block 76": {
+    "lat": 9.02408,
+    "lng": 38.73980
+  },
+  "Merkato Satin Tera Block 77": {
+    "lat": 9.03219,
+    "lng": 38.74201
+  },
+  "Merkato Satin Tera Block 78": {
+    "lat": 9.02668,
+    "lng": 38.74177
+  },
+  "Merkato Satin Tera Block 79": {
+    "lat": 9.02484,
+    "lng": 38.74020
+  },
+  "Merkato Satin Tera Block 80": {
+    "lat": 9.02844,
+    "lng": 38.73836
+  },
+  "Merkato Satin Tera Block 81": {
+    "lat": 9.02772,
+    "lng": 38.73690
+  },
+  "Merkato Satin Tera Block 82": {
+    "lat": 9.02710,
+    "lng": 38.73964
+  },
+  "Merkato Satin Tera Block 83": {
+    "lat": 9.02306,
+    "lng": 38.73915
+  },
+  "Merkato Satin Tera Block 84": {
+    "lat": 9.02987,
+    "lng": 38.73460
+  },
+  "Merkato Satin Tera Block 85": {
+    "lat": 9.03090,
+    "lng": 38.74356
+  },
+  "Merkato Satin Tera Block 86": {
+    "lat": 9.03126,
+    "lng": 38.73683
+  },
+  "Merkato Satin Tera Block 87": {
+    "lat": 9.03243,
+    "lng": 38.74224
+  },
+  "Merkato Satin Tera Block 88": {
+    "lat": 9.02940,
+    "lng": 38.74256
+  },
+  "Merkato Satin Tera Block 89": {
+    "lat": 9.02837,
+    "lng": 38.73510
+  },
+  "Merkato Satin Tera Block 90": {
+    "lat": 9.02713,
+    "lng": 38.74133
+  },
+  "Merkato Satin Tera Block 91": {
+    "lat": 9.02286,
+    "lng": 38.73389
+  },
+  "Merkato Satin Tera Block 92": {
+    "lat": 9.03030,
+    "lng": 38.74302
+  },
+  "Merkato Satin Tera Block 93": {
+    "lat": 9.02586,
+    "lng": 38.73806
+  },
+  "Merkato Satin Tera Block 94": {
+    "lat": 9.02358,
+    "lng": 38.74227
+  },
+  "Merkato Satin Tera Block 95": {
+    "lat": 9.02628,
+    "lng": 38.73822
+  },
+  "Merkato Satin Tera Block 96": {
+    "lat": 9.02642,
+    "lng": 38.73607
+  },
+  "Merkato Satin Tera Block 97": {
+    "lat": 9.02691,
+    "lng": 38.74170
+  },
+  "Merkato Satin Tera Block 98": {
+    "lat": 9.02679,
+    "lng": 38.73902
+  },
+  "Merkato Satin Tera Block 99": {
+    "lat": 9.03009,
+    "lng": 38.73846
+  },
+  "Merkato Satin Tera Block 100": {
+    "lat": 9.02512,
+    "lng": 38.73687
+  },
+  "Merkato Goma Tera Block 1": {
+    "lat": 9.02490,
+    "lng": 38.73504
+  },
+  "Merkato Goma Tera Block 2": {
+    "lat": 9.02300,
+    "lng": 38.73894
+  },
+  "Merkato Goma Tera Block 3": {
+    "lat": 9.02522,
+    "lng": 38.73573
+  },
+  "Merkato Goma Tera Block 4": {
+    "lat": 9.02561,
+    "lng": 38.73939
+  },
+  "Merkato Goma Tera Block 5": {
+    "lat": 9.02959,
+    "lng": 38.74330
+  },
+  "Merkato Goma Tera Block 6": {
+    "lat": 9.02656,
+    "lng": 38.73817
+  },
+  "Merkato Goma Tera Block 7": {
+    "lat": 9.02860,
+    "lng": 38.73983
+  },
+  "Merkato Goma Tera Block 8": {
+    "lat": 9.02671,
+    "lng": 38.74332
+  },
+  "Merkato Goma Tera Block 9": {
+    "lat": 9.02645,
+    "lng": 38.73921
+  },
+  "Merkato Goma Tera Block 10": {
+    "lat": 9.02984,
+    "lng": 38.73489
+  },
+  "Merkato Goma Tera Block 11": {
+    "lat": 9.03063,
+    "lng": 38.74164
+  },
+  "Merkato Goma Tera Block 12": {
+    "lat": 9.02588,
+    "lng": 38.74258
+  },
+  "Merkato Goma Tera Block 13": {
+    "lat": 9.02958,
+    "lng": 38.73861
+  },
+  "Merkato Goma Tera Block 14": {
+    "lat": 9.02325,
+    "lng": 38.73579
+  },
+  "Merkato Goma Tera Block 15": {
+    "lat": 9.02645,
+    "lng": 38.73519
+  },
+  "Merkato Goma Tera Block 16": {
+    "lat": 9.02546,
+    "lng": 38.74093
+  },
+  "Merkato Goma Tera Block 17": {
+    "lat": 9.03094,
+    "lng": 38.73390
+  },
+  "Merkato Goma Tera Block 18": {
+    "lat": 9.02623,
+    "lng": 38.73864
+  },
+  "Merkato Goma Tera Block 19": {
+    "lat": 9.02691,
+    "lng": 38.73802
+  },
+  "Merkato Goma Tera Block 20": {
+    "lat": 9.03211,
+    "lng": 38.74368
+  },
+  "Merkato Goma Tera Block 21": {
+    "lat": 9.03011,
+    "lng": 38.74322
+  },
+  "Merkato Goma Tera Block 22": {
+    "lat": 9.02625,
+    "lng": 38.74134
+  },
+  "Merkato Goma Tera Block 23": {
+    "lat": 9.02366,
+    "lng": 38.73783
+  },
+  "Merkato Goma Tera Block 24": {
+    "lat": 9.02947,
+    "lng": 38.74318
+  },
+  "Merkato Goma Tera Block 25": {
+    "lat": 9.02732,
+    "lng": 38.73878
+  },
+  "Merkato Goma Tera Block 26": {
+    "lat": 9.02317,
+    "lng": 38.73941
+  },
+  "Merkato Goma Tera Block 27": {
+    "lat": 9.02371,
+    "lng": 38.73980
+  },
+  "Merkato Goma Tera Block 28": {
+    "lat": 9.02483,
+    "lng": 38.73768
+  },
+  "Merkato Goma Tera Block 29": {
+    "lat": 9.02395,
+    "lng": 38.73839
+  },
+  "Merkato Goma Tera Block 30": {
+    "lat": 9.02929,
+    "lng": 38.73843
+  },
+  "Merkato Goma Tera Block 31": {
+    "lat": 9.02488,
+    "lng": 38.74042
+  },
+  "Merkato Goma Tera Block 32": {
+    "lat": 9.03127,
+    "lng": 38.73992
+  },
+  "Merkato Goma Tera Block 33": {
+    "lat": 9.02540,
+    "lng": 38.74054
+  },
+  "Merkato Goma Tera Block 34": {
+    "lat": 9.02716,
+    "lng": 38.74025
+  },
+  "Merkato Goma Tera Block 35": {
+    "lat": 9.02437,
+    "lng": 38.73828
+  },
+  "Merkato Goma Tera Block 36": {
+    "lat": 9.02571,
+    "lng": 38.74306
+  },
+  "Merkato Goma Tera Block 37": {
+    "lat": 9.03046,
+    "lng": 38.73679
+  },
+  "Merkato Goma Tera Block 38": {
+    "lat": 9.03228,
+    "lng": 38.73671
+  },
+  "Merkato Goma Tera Block 39": {
+    "lat": 9.02527,
+    "lng": 38.73706
+  },
+  "Merkato Goma Tera Block 40": {
+    "lat": 9.02690,
+    "lng": 38.74287
+  },
+  "Merkato Goma Tera Block 41": {
+    "lat": 9.02976,
+    "lng": 38.74038
+  },
+  "Merkato Goma Tera Block 42": {
+    "lat": 9.02870,
+    "lng": 38.73615
+  },
+  "Merkato Goma Tera Block 43": {
+    "lat": 9.02470,
+    "lng": 38.74324
+  },
+  "Merkato Goma Tera Block 44": {
+    "lat": 9.02694,
+    "lng": 38.73682
+  },
+  "Merkato Goma Tera Block 45": {
+    "lat": 9.02366,
+    "lng": 38.74043
+  },
+  "Merkato Goma Tera Block 46": {
+    "lat": 9.02397,
+    "lng": 38.74360
+  },
+  "Merkato Goma Tera Block 47": {
+    "lat": 9.03081,
+    "lng": 38.74329
+  },
+  "Merkato Goma Tera Block 48": {
+    "lat": 9.02404,
+    "lng": 38.74058
+  },
+  "Merkato Goma Tera Block 49": {
+    "lat": 9.02969,
+    "lng": 38.73649
+  },
+  "Merkato Goma Tera Block 50": {
+    "lat": 9.03015,
+    "lng": 38.73866
+  },
+  "Merkato Goma Tera Block 51": {
+    "lat": 9.02700,
+    "lng": 38.73455
+  },
+  "Merkato Goma Tera Block 52": {
+    "lat": 9.02670,
+    "lng": 38.73779
+  },
+  "Merkato Goma Tera Block 53": {
+    "lat": 9.03079,
+    "lng": 38.74086
+  },
+  "Merkato Goma Tera Block 54": {
+    "lat": 9.03140,
+    "lng": 38.74175
+  },
+  "Merkato Goma Tera Block 55": {
+    "lat": 9.02491,
+    "lng": 38.74092
+  },
+  "Merkato Goma Tera Block 56": {
+    "lat": 9.02501,
+    "lng": 38.73840
+  },
+  "Merkato Goma Tera Block 57": {
+    "lat": 9.02735,
+    "lng": 38.74152
+  },
+  "Merkato Goma Tera Block 58": {
+    "lat": 9.02485,
+    "lng": 38.73794
+  },
+  "Merkato Goma Tera Block 59": {
+    "lat": 9.02500,
+    "lng": 38.73697
+  },
+  "Merkato Goma Tera Block 60": {
+    "lat": 9.02278,
+    "lng": 38.74289
+  },
+  "Merkato Goma Tera Block 61": {
+    "lat": 9.02373,
+    "lng": 38.73959
+  },
+  "Merkato Goma Tera Block 62": {
+    "lat": 9.02467,
+    "lng": 38.73711
+  },
+  "Merkato Goma Tera Block 63": {
+    "lat": 9.03043,
+    "lng": 38.73391
+  },
+  "Merkato Goma Tera Block 64": {
+    "lat": 9.02774,
+    "lng": 38.73461
+  },
+  "Merkato Goma Tera Block 65": {
+    "lat": 9.03043,
+    "lng": 38.73512
+  },
+  "Merkato Goma Tera Block 66": {
+    "lat": 9.02752,
+    "lng": 38.73603
+  },
+  "Merkato Goma Tera Block 67": {
+    "lat": 9.02669,
+    "lng": 38.73641
+  },
+  "Merkato Goma Tera Block 68": {
+    "lat": 9.02372,
+    "lng": 38.74100
+  },
+  "Merkato Goma Tera Block 69": {
+    "lat": 9.02900,
+    "lng": 38.73384
+  },
+  "Merkato Goma Tera Block 70": {
+    "lat": 9.02418,
+    "lng": 38.73639
+  },
+  "Merkato Goma Tera Block 71": {
+    "lat": 9.02982,
+    "lng": 38.73714
+  },
+  "Merkato Goma Tera Block 72": {
+    "lat": 9.02847,
+    "lng": 38.73909
+  },
+  "Merkato Goma Tera Block 73": {
+    "lat": 9.02951,
+    "lng": 38.73809
+  },
+  "Merkato Goma Tera Block 74": {
+    "lat": 9.03066,
+    "lng": 38.74051
+  },
+  "Merkato Goma Tera Block 75": {
+    "lat": 9.02997,
+    "lng": 38.73517
+  },
+  "Merkato Goma Tera Block 76": {
+    "lat": 9.02597,
+    "lng": 38.73769
+  },
+  "Merkato Goma Tera Block 77": {
+    "lat": 9.02611,
+    "lng": 38.73794
+  },
+  "Merkato Goma Tera Block 78": {
+    "lat": 9.02452,
+    "lng": 38.74270
+  },
+  "Merkato Goma Tera Block 79": {
+    "lat": 9.02943,
+    "lng": 38.73392
+  },
+  "Merkato Goma Tera Block 80": {
+    "lat": 9.02638,
+    "lng": 38.74303
+  },
+  "Merkato Goma Tera Block 81": {
+    "lat": 9.02777,
+    "lng": 38.73868
+  },
+  "Merkato Goma Tera Block 82": {
+    "lat": 9.02991,
+    "lng": 38.73526
+  },
+  "Merkato Goma Tera Block 83": {
+    "lat": 9.02305,
+    "lng": 38.74011
+  },
+  "Merkato Goma Tera Block 84": {
+    "lat": 9.02891,
+    "lng": 38.74096
+  },
+  "Merkato Goma Tera Block 85": {
+    "lat": 9.02771,
+    "lng": 38.73602
+  },
+  "Merkato Goma Tera Block 86": {
+    "lat": 9.03045,
+    "lng": 38.74144
+  },
+  "Merkato Goma Tera Block 87": {
+    "lat": 9.03148,
+    "lng": 38.73801
+  },
+  "Merkato Goma Tera Block 88": {
+    "lat": 9.03056,
+    "lng": 38.73650
+  },
+  "Merkato Goma Tera Block 89": {
+    "lat": 9.03014,
+    "lng": 38.73980
+  },
+  "Merkato Goma Tera Block 90": {
+    "lat": 9.02959,
+    "lng": 38.73724
+  },
+  "Merkato Goma Tera Block 91": {
+    "lat": 9.02294,
+    "lng": 38.73875
+  },
+  "Merkato Goma Tera Block 92": {
+    "lat": 9.02586,
+    "lng": 38.74250
+  },
+  "Merkato Goma Tera Block 93": {
+    "lat": 9.02689,
+    "lng": 38.73543
+  },
+  "Merkato Goma Tera Block 94": {
+    "lat": 9.02783,
+    "lng": 38.73575
+  },
+  "Merkato Goma Tera Block 95": {
+    "lat": 9.02673,
+    "lng": 38.74198
+  },
+  "Merkato Goma Tera Block 96": {
+    "lat": 9.02314,
+    "lng": 38.74356
+  },
+  "Merkato Goma Tera Block 97": {
+    "lat": 9.02600,
+    "lng": 38.74268
+  },
+  "Merkato Goma Tera Block 98": {
+    "lat": 9.02566,
+    "lng": 38.74110
+  },
+  "Merkato Goma Tera Block 99": {
+    "lat": 9.03138,
+    "lng": 38.73414
+  },
+  "Merkato Goma Tera Block 100": {
+    "lat": 9.02649,
+    "lng": 38.73449
+  },
+  "Merkato Dubai Tera Block 1": {
+    "lat": 9.02728,
+    "lng": 38.73748
+  },
+  "Merkato Dubai Tera Block 2": {
+    "lat": 9.03252,
+    "lng": 38.73922
+  },
+  "Merkato Dubai Tera Block 3": {
+    "lat": 9.02511,
+    "lng": 38.74149
+  },
+  "Merkato Dubai Tera Block 4": {
+    "lat": 9.02349,
+    "lng": 38.73790
+  },
+  "Merkato Dubai Tera Block 5": {
+    "lat": 9.03149,
+    "lng": 38.74041
+  },
+  "Merkato Dubai Tera Block 6": {
+    "lat": 9.02316,
+    "lng": 38.73550
+  },
+  "Merkato Dubai Tera Block 7": {
+    "lat": 9.02872,
+    "lng": 38.74262
+  },
+  "Merkato Dubai Tera Block 8": {
+    "lat": 9.02978,
+    "lng": 38.73825
+  },
+  "Merkato Dubai Tera Block 9": {
+    "lat": 9.02710,
+    "lng": 38.73753
+  },
+  "Merkato Dubai Tera Block 10": {
+    "lat": 9.02896,
+    "lng": 38.73504
+  },
+  "Merkato Dubai Tera Block 11": {
+    "lat": 9.02902,
+    "lng": 38.73833
+  },
+  "Merkato Dubai Tera Block 12": {
+    "lat": 9.02321,
+    "lng": 38.74129
+  },
+  "Merkato Dubai Tera Block 13": {
+    "lat": 9.02302,
+    "lng": 38.74119
+  },
+  "Merkato Dubai Tera Block 14": {
+    "lat": 9.02557,
+    "lng": 38.74226
+  },
+  "Merkato Dubai Tera Block 15": {
+    "lat": 9.03007,
+    "lng": 38.74239
+  },
+  "Merkato Dubai Tera Block 16": {
+    "lat": 9.02754,
+    "lng": 38.73981
+  },
+  "Merkato Dubai Tera Block 17": {
+    "lat": 9.02931,
+    "lng": 38.74083
+  },
+  "Merkato Dubai Tera Block 18": {
+    "lat": 9.02444,
+    "lng": 38.74125
+  },
+  "Merkato Dubai Tera Block 19": {
+    "lat": 9.02374,
+    "lng": 38.74021
+  },
+  "Merkato Dubai Tera Block 20": {
+    "lat": 9.02477,
+    "lng": 38.73498
+  },
+  "Merkato Dubai Tera Block 21": {
+    "lat": 9.02539,
+    "lng": 38.73911
+  },
+  "Merkato Dubai Tera Block 22": {
+    "lat": 9.02564,
+    "lng": 38.73612
+  },
+  "Merkato Dubai Tera Block 23": {
+    "lat": 9.02318,
+    "lng": 38.73991
+  },
+  "Merkato Dubai Tera Block 24": {
+    "lat": 9.02437,
+    "lng": 38.74037
+  },
+  "Merkato Dubai Tera Block 25": {
+    "lat": 9.02379,
+    "lng": 38.73774
+  },
+  "Merkato Dubai Tera Block 26": {
+    "lat": 9.03239,
+    "lng": 38.73506
+  },
+  "Merkato Dubai Tera Block 27": {
+    "lat": 9.02523,
+    "lng": 38.73971
+  },
+  "Merkato Dubai Tera Block 28": {
+    "lat": 9.02990,
+    "lng": 38.73651
+  },
+  "Merkato Dubai Tera Block 29": {
+    "lat": 9.02692,
+    "lng": 38.73595
+  },
+  "Merkato Dubai Tera Block 30": {
+    "lat": 9.03183,
+    "lng": 38.73799
+  },
+  "Merkato Dubai Tera Block 31": {
+    "lat": 9.02819,
+    "lng": 38.73797
+  },
+  "Merkato Dubai Tera Block 32": {
+    "lat": 9.03253,
+    "lng": 38.73667
+  },
+  "Merkato Dubai Tera Block 33": {
+    "lat": 9.03207,
+    "lng": 38.73550
+  },
+  "Merkato Dubai Tera Block 34": {
+    "lat": 9.03140,
+    "lng": 38.73564
+  },
+  "Merkato Dubai Tera Block 35": {
+    "lat": 9.02299,
+    "lng": 38.74063
+  },
+  "Merkato Dubai Tera Block 36": {
+    "lat": 9.02496,
+    "lng": 38.73877
+  },
+  "Merkato Dubai Tera Block 37": {
+    "lat": 9.02908,
+    "lng": 38.73902
+  },
+  "Merkato Dubai Tera Block 38": {
+    "lat": 9.02566,
+    "lng": 38.74318
+  },
+  "Merkato Dubai Tera Block 39": {
+    "lat": 9.03234,
+    "lng": 38.73819
+  },
+  "Merkato Dubai Tera Block 40": {
+    "lat": 9.02937,
+    "lng": 38.74271
+  },
+  "Merkato Dubai Tera Block 41": {
+    "lat": 9.03037,
+    "lng": 38.73784
+  },
+  "Merkato Dubai Tera Block 42": {
+    "lat": 9.02354,
+    "lng": 38.73617
+  },
+  "Merkato Dubai Tera Block 43": {
+    "lat": 9.02746,
+    "lng": 38.73907
+  },
+  "Merkato Dubai Tera Block 44": {
+    "lat": 9.03084,
+    "lng": 38.73774
+  },
+  "Merkato Dubai Tera Block 45": {
+    "lat": 9.03025,
+    "lng": 38.73735
+  },
+  "Merkato Dubai Tera Block 46": {
+    "lat": 9.02386,
+    "lng": 38.73841
+  },
+  "Merkato Dubai Tera Block 47": {
+    "lat": 9.03141,
+    "lng": 38.74071
+  },
+  "Merkato Dubai Tera Block 48": {
+    "lat": 9.02327,
+    "lng": 38.73620
+  },
+  "Merkato Dubai Tera Block 49": {
+    "lat": 9.03202,
+    "lng": 38.73708
+  },
+  "Merkato Dubai Tera Block 50": {
+    "lat": 9.02789,
+    "lng": 38.73662
+  },
+  "Merkato Dubai Tera Block 51": {
+    "lat": 9.03042,
+    "lng": 38.74337
+  },
+  "Merkato Dubai Tera Block 52": {
+    "lat": 9.02529,
+    "lng": 38.73686
+  },
+  "Merkato Dubai Tera Block 53": {
+    "lat": 9.02698,
+    "lng": 38.73817
+  },
+  "Merkato Dubai Tera Block 54": {
+    "lat": 9.02934,
+    "lng": 38.73761
+  },
+  "Merkato Dubai Tera Block 55": {
+    "lat": 9.02880,
+    "lng": 38.73434
+  },
+  "Merkato Dubai Tera Block 56": {
+    "lat": 9.02756,
+    "lng": 38.74314
+  },
+  "Merkato Dubai Tera Block 57": {
+    "lat": 9.02683,
+    "lng": 38.74344
+  },
+  "Merkato Dubai Tera Block 58": {
+    "lat": 9.03240,
+    "lng": 38.74298
+  },
+  "Merkato Dubai Tera Block 59": {
+    "lat": 9.02746,
+    "lng": 38.73780
+  },
+  "Merkato Dubai Tera Block 60": {
+    "lat": 9.02704,
+    "lng": 38.73767
+  },
+  "Merkato Dubai Tera Block 61": {
+    "lat": 9.02576,
+    "lng": 38.73519
+  },
+  "Merkato Dubai Tera Block 62": {
+    "lat": 9.02775,
+    "lng": 38.74135
+  },
+  "Merkato Dubai Tera Block 63": {
+    "lat": 9.03094,
+    "lng": 38.73802
+  },
+  "Merkato Dubai Tera Block 64": {
+    "lat": 9.03162,
+    "lng": 38.73940
+  },
+  "Merkato Dubai Tera Block 65": {
+    "lat": 9.02997,
+    "lng": 38.73518
+  },
+  "Merkato Dubai Tera Block 66": {
+    "lat": 9.03051,
+    "lng": 38.73640
+  },
+  "Merkato Dubai Tera Block 67": {
+    "lat": 9.02944,
+    "lng": 38.73970
+  },
+  "Merkato Dubai Tera Block 68": {
+    "lat": 9.02953,
+    "lng": 38.74116
+  },
+  "Merkato Dubai Tera Block 69": {
+    "lat": 9.03209,
+    "lng": 38.73814
+  },
+  "Merkato Dubai Tera Block 70": {
+    "lat": 9.02328,
+    "lng": 38.74307
+  },
+  "Merkato Dubai Tera Block 71": {
+    "lat": 9.02353,
+    "lng": 38.74028
+  },
+  "Merkato Dubai Tera Block 72": {
+    "lat": 9.02342,
+    "lng": 38.73389
+  },
+  "Merkato Dubai Tera Block 73": {
+    "lat": 9.02373,
+    "lng": 38.73943
+  },
+  "Merkato Dubai Tera Block 74": {
+    "lat": 9.02632,
+    "lng": 38.73578
+  },
+  "Merkato Dubai Tera Block 75": {
+    "lat": 9.02703,
+    "lng": 38.73817
+  },
+  "Merkato Dubai Tera Block 76": {
+    "lat": 9.02337,
+    "lng": 38.73749
+  },
+  "Merkato Dubai Tera Block 77": {
+    "lat": 9.02594,
+    "lng": 38.73418
+  },
+  "Merkato Dubai Tera Block 78": {
+    "lat": 9.02589,
+    "lng": 38.73619
+  },
+  "Merkato Dubai Tera Block 79": {
+    "lat": 9.02499,
+    "lng": 38.73803
+  },
+  "Merkato Dubai Tera Block 80": {
+    "lat": 9.02487,
+    "lng": 38.74115
+  },
+  "Merkato Dubai Tera Block 81": {
+    "lat": 9.02521,
+    "lng": 38.73798
+  },
+  "Merkato Dubai Tera Block 82": {
+    "lat": 9.02312,
+    "lng": 38.73729
+  },
+  "Merkato Dubai Tera Block 83": {
+    "lat": 9.02496,
+    "lng": 38.73924
+  },
+  "Merkato Dubai Tera Block 84": {
+    "lat": 9.02497,
+    "lng": 38.74380
+  },
+  "Merkato Dubai Tera Block 85": {
+    "lat": 9.02550,
+    "lng": 38.74093
+  },
+  "Merkato Dubai Tera Block 86": {
+    "lat": 9.02745,
+    "lng": 38.73786
+  },
+  "Merkato Dubai Tera Block 87": {
+    "lat": 9.03142,
+    "lng": 38.73687
+  },
+  "Merkato Dubai Tera Block 88": {
+    "lat": 9.02491,
+    "lng": 38.73776
+  },
+  "Merkato Dubai Tera Block 89": {
+    "lat": 9.02657,
+    "lng": 38.73910
+  },
+  "Merkato Dubai Tera Block 90": {
+    "lat": 9.03026,
+    "lng": 38.73840
+  },
+  "Merkato Dubai Tera Block 91": {
+    "lat": 9.02417,
+    "lng": 38.73388
+  },
+  "Merkato Dubai Tera Block 92": {
+    "lat": 9.02468,
+    "lng": 38.73513
+  },
+  "Merkato Dubai Tera Block 93": {
+    "lat": 9.02950,
+    "lng": 38.74338
+  },
+  "Merkato Dubai Tera Block 94": {
+    "lat": 9.02441,
+    "lng": 38.73852
+  },
+  "Merkato Dubai Tera Block 95": {
+    "lat": 9.02714,
+    "lng": 38.73455
+  },
+  "Merkato Dubai Tera Block 96": {
+    "lat": 9.03088,
+    "lng": 38.73479
+  },
+  "Merkato Dubai Tera Block 97": {
+    "lat": 9.02610,
+    "lng": 38.73964
+  },
+  "Merkato Dubai Tera Block 98": {
+    "lat": 9.02452,
+    "lng": 38.73455
+  },
+  "Merkato Dubai Tera Block 99": {
+    "lat": 9.02323,
+    "lng": 38.73870
+  },
+  "Merkato Dubai Tera Block 100": {
+    "lat": 9.02697,
+    "lng": 38.74229
+  },
+  "Merkato Korkoro Tera Block 1": {
+    "lat": 9.03224,
+    "lng": 38.74289
+  },
+  "Merkato Korkoro Tera Block 2": {
+    "lat": 9.03120,
+    "lng": 38.73731
+  },
+  "Merkato Korkoro Tera Block 3": {
+    "lat": 9.03222,
+    "lng": 38.73583
+  },
+  "Merkato Korkoro Tera Block 4": {
+    "lat": 9.02296,
+    "lng": 38.73903
+  },
+  "Merkato Korkoro Tera Block 5": {
+    "lat": 9.03152,
+    "lng": 38.74025
+  },
+  "Merkato Korkoro Tera Block 6": {
+    "lat": 9.03080,
+    "lng": 38.74301
+  },
+  "Merkato Korkoro Tera Block 7": {
+    "lat": 9.03199,
+    "lng": 38.74122
+  },
+  "Merkato Korkoro Tera Block 8": {
+    "lat": 9.02560,
+    "lng": 38.73433
+  },
+  "Merkato Korkoro Tera Block 9": {
+    "lat": 9.02842,
+    "lng": 38.73659
+  },
+  "Merkato Korkoro Tera Block 10": {
+    "lat": 9.03250,
+    "lng": 38.73468
+  },
+  "Merkato Korkoro Tera Block 11": {
+    "lat": 9.02349,
+    "lng": 38.73737
+  },
+  "Merkato Korkoro Tera Block 12": {
+    "lat": 9.03073,
+    "lng": 38.73818
+  },
+  "Merkato Korkoro Tera Block 13": {
+    "lat": 9.02632,
+    "lng": 38.73774
+  },
+  "Merkato Korkoro Tera Block 14": {
+    "lat": 9.02481,
+    "lng": 38.74178
+  },
+  "Merkato Korkoro Tera Block 15": {
+    "lat": 9.02679,
+    "lng": 38.73638
+  },
+  "Merkato Korkoro Tera Block 16": {
+    "lat": 9.03188,
+    "lng": 38.73617
+  },
+  "Merkato Korkoro Tera Block 17": {
+    "lat": 9.02828,
+    "lng": 38.73735
+  },
+  "Merkato Korkoro Tera Block 18": {
+    "lat": 9.02395,
+    "lng": 38.73655
+  },
+  "Merkato Korkoro Tera Block 19": {
+    "lat": 9.02310,
+    "lng": 38.74273
+  },
+  "Merkato Korkoro Tera Block 20": {
+    "lat": 9.02330,
+    "lng": 38.73957
+  },
+  "Merkato Korkoro Tera Block 21": {
+    "lat": 9.02674,
+    "lng": 38.74370
+  },
+  "Merkato Korkoro Tera Block 22": {
+    "lat": 9.02787,
+    "lng": 38.73723
+  },
+  "Merkato Korkoro Tera Block 23": {
+    "lat": 9.02527,
+    "lng": 38.73509
+  },
+  "Merkato Korkoro Tera Block 24": {
+    "lat": 9.02434,
+    "lng": 38.73424
+  },
+  "Merkato Korkoro Tera Block 25": {
+    "lat": 9.02556,
+    "lng": 38.74318
+  },
+  "Merkato Korkoro Tera Block 26": {
+    "lat": 9.02761,
+    "lng": 38.74102
+  },
+  "Merkato Korkoro Tera Block 27": {
+    "lat": 9.02423,
+    "lng": 38.74155
+  },
+  "Merkato Korkoro Tera Block 28": {
+    "lat": 9.03184,
+    "lng": 38.73960
+  },
+  "Merkato Korkoro Tera Block 29": {
+    "lat": 9.03037,
+    "lng": 38.74283
+  },
+  "Merkato Korkoro Tera Block 30": {
+    "lat": 9.02545,
+    "lng": 38.74340
+  },
+  "Merkato Korkoro Tera Block 31": {
+    "lat": 9.02557,
+    "lng": 38.73536
+  },
+  "Merkato Korkoro Tera Block 32": {
+    "lat": 9.02677,
+    "lng": 38.73392
+  },
+  "Merkato Korkoro Tera Block 33": {
+    "lat": 9.03204,
+    "lng": 38.73785
+  },
+  "Merkato Korkoro Tera Block 34": {
+    "lat": 9.03166,
+    "lng": 38.73577
+  },
+  "Merkato Korkoro Tera Block 35": {
+    "lat": 9.02539,
+    "lng": 38.74352
+  },
+  "Merkato Korkoro Tera Block 36": {
+    "lat": 9.02813,
+    "lng": 38.73445
+  },
+  "Merkato Korkoro Tera Block 37": {
+    "lat": 9.02435,
+    "lng": 38.73503
+  },
+  "Merkato Korkoro Tera Block 38": {
+    "lat": 9.02999,
+    "lng": 38.74170
+  },
+  "Merkato Korkoro Tera Block 39": {
+    "lat": 9.03159,
+    "lng": 38.73647
+  },
+  "Merkato Korkoro Tera Block 40": {
+    "lat": 9.03262,
+    "lng": 38.74098
+  },
+  "Merkato Korkoro Tera Block 41": {
+    "lat": 9.03115,
+    "lng": 38.74155
+  },
+  "Merkato Korkoro Tera Block 42": {
+    "lat": 9.02383,
+    "lng": 38.73716
+  },
+  "Merkato Korkoro Tera Block 43": {
+    "lat": 9.02411,
+    "lng": 38.74342
+  },
+  "Merkato Korkoro Tera Block 44": {
+    "lat": 9.02938,
+    "lng": 38.73469
+  },
+  "Merkato Korkoro Tera Block 45": {
+    "lat": 9.02563,
+    "lng": 38.74005
+  },
+  "Merkato Korkoro Tera Block 46": {
+    "lat": 9.02862,
+    "lng": 38.73415
+  },
+  "Merkato Korkoro Tera Block 47": {
+    "lat": 9.02493,
+    "lng": 38.74031
+  },
+  "Merkato Korkoro Tera Block 48": {
+    "lat": 9.03210,
+    "lng": 38.73445
+  },
+  "Merkato Korkoro Tera Block 49": {
+    "lat": 9.02360,
+    "lng": 38.73618
+  },
+  "Merkato Korkoro Tera Block 50": {
+    "lat": 9.02799,
+    "lng": 38.73554
+  },
+  "Merkato Korkoro Tera Block 51": {
+    "lat": 9.02995,
+    "lng": 38.73845
+  },
+  "Merkato Korkoro Tera Block 52": {
+    "lat": 9.02575,
+    "lng": 38.73602
+  },
+  "Merkato Korkoro Tera Block 53": {
+    "lat": 9.03147,
+    "lng": 38.73757
+  },
+  "Merkato Korkoro Tera Block 54": {
+    "lat": 9.03128,
+    "lng": 38.74038
+  },
+  "Merkato Korkoro Tera Block 55": {
+    "lat": 9.02863,
+    "lng": 38.73785
+  },
+  "Merkato Korkoro Tera Block 56": {
+    "lat": 9.02665,
+    "lng": 38.73694
+  },
+  "Merkato Korkoro Tera Block 57": {
+    "lat": 9.02573,
+    "lng": 38.73661
+  },
+  "Merkato Korkoro Tera Block 58": {
+    "lat": 9.02900,
+    "lng": 38.73437
+  },
+  "Merkato Korkoro Tera Block 59": {
+    "lat": 9.02306,
+    "lng": 38.73450
+  },
+  "Merkato Korkoro Tera Block 60": {
+    "lat": 9.03018,
+    "lng": 38.74119
+  },
+  "Merkato Korkoro Tera Block 61": {
+    "lat": 9.02980,
+    "lng": 38.73816
+  },
+  "Merkato Korkoro Tera Block 62": {
+    "lat": 9.03043,
+    "lng": 38.74146
+  },
+  "Merkato Korkoro Tera Block 63": {
+    "lat": 9.02480,
+    "lng": 38.73468
+  },
+  "Merkato Korkoro Tera Block 64": {
+    "lat": 9.02995,
+    "lng": 38.73584
+  },
+  "Merkato Korkoro Tera Block 65": {
+    "lat": 9.02355,
+    "lng": 38.73427
+  },
+  "Merkato Korkoro Tera Block 66": {
+    "lat": 9.02735,
+    "lng": 38.73933
+  },
+  "Merkato Korkoro Tera Block 67": {
+    "lat": 9.02965,
+    "lng": 38.73654
+  },
+  "Merkato Korkoro Tera Block 68": {
+    "lat": 9.02568,
+    "lng": 38.73535
+  },
+  "Merkato Korkoro Tera Block 69": {
+    "lat": 9.02388,
+    "lng": 38.73670
+  },
+  "Merkato Korkoro Tera Block 70": {
+    "lat": 9.02512,
+    "lng": 38.73512
+  },
+  "Merkato Korkoro Tera Block 71": {
+    "lat": 9.02559,
+    "lng": 38.74011
+  },
+  "Merkato Korkoro Tera Block 72": {
+    "lat": 9.03150,
+    "lng": 38.73882
+  },
+  "Merkato Korkoro Tera Block 73": {
+    "lat": 9.03163,
+    "lng": 38.73916
+  },
+  "Merkato Korkoro Tera Block 74": {
+    "lat": 9.02286,
+    "lng": 38.73760
+  },
+  "Merkato Korkoro Tera Block 75": {
+    "lat": 9.03253,
+    "lng": 38.73753
+  },
+  "Merkato Korkoro Tera Block 76": {
+    "lat": 9.02813,
+    "lng": 38.74069
+  },
+  "Merkato Korkoro Tera Block 77": {
+    "lat": 9.02640,
+    "lng": 38.73934
+  },
+  "Merkato Korkoro Tera Block 78": {
+    "lat": 9.02980,
+    "lng": 38.74292
+  },
+  "Merkato Korkoro Tera Block 79": {
+    "lat": 9.02289,
+    "lng": 38.74218
+  },
+  "Merkato Korkoro Tera Block 80": {
+    "lat": 9.02777,
+    "lng": 38.74106
+  },
+  "Merkato Korkoro Tera Block 81": {
+    "lat": 9.03114,
+    "lng": 38.74045
+  },
+  "Merkato Korkoro Tera Block 82": {
+    "lat": 9.02446,
+    "lng": 38.74326
+  },
+  "Merkato Korkoro Tera Block 83": {
+    "lat": 9.02620,
+    "lng": 38.74162
+  },
+  "Merkato Korkoro Tera Block 84": {
+    "lat": 9.02360,
+    "lng": 38.73586
+  },
+  "Merkato Korkoro Tera Block 85": {
+    "lat": 9.02923,
+    "lng": 38.74159
+  },
+  "Merkato Korkoro Tera Block 86": {
+    "lat": 9.02508,
+    "lng": 38.73399
+  },
+  "Merkato Korkoro Tera Block 87": {
+    "lat": 9.02879,
+    "lng": 38.74359
+  },
+  "Merkato Korkoro Tera Block 88": {
+    "lat": 9.02985,
+    "lng": 38.74149
+  },
+  "Merkato Korkoro Tera Block 89": {
+    "lat": 9.02763,
+    "lng": 38.73707
+  },
+  "Merkato Korkoro Tera Block 90": {
+    "lat": 9.02843,
+    "lng": 38.73386
+  },
+  "Merkato Korkoro Tera Block 91": {
+    "lat": 9.02654,
+    "lng": 38.74180
+  },
+  "Merkato Korkoro Tera Block 92": {
+    "lat": 9.02326,
+    "lng": 38.74351
+  },
+  "Merkato Korkoro Tera Block 93": {
+    "lat": 9.02864,
+    "lng": 38.73401
+  },
+  "Merkato Korkoro Tera Block 94": {
+    "lat": 9.03009,
+    "lng": 38.73959
+  },
+  "Merkato Korkoro Tera Block 95": {
+    "lat": 9.02996,
+    "lng": 38.73576
+  },
+  "Merkato Korkoro Tera Block 96": {
+    "lat": 9.02753,
+    "lng": 38.73419
+  },
+  "Merkato Korkoro Tera Block 97": {
+    "lat": 9.03261,
+    "lng": 38.73895
+  },
+  "Merkato Korkoro Tera Block 98": {
+    "lat": 9.02655,
+    "lng": 38.73521
+  },
+  "Merkato Korkoro Tera Block 99": {
+    "lat": 9.02600,
+    "lng": 38.74089
+  },
+  "Merkato Korkoro Tera Block 100": {
+    "lat": 9.02601,
+    "lng": 38.74015
+  },
+  "Merkato Shema Tera Block 1": {
+    "lat": 9.03085,
+    "lng": 38.73635
+  },
+  "Merkato Shema Tera Block 2": {
+    "lat": 9.02618,
+    "lng": 38.73704
+  },
+  "Merkato Shema Tera Block 3": {
+    "lat": 9.03206,
+    "lng": 38.74213
+  },
+  "Merkato Shema Tera Block 4": {
+    "lat": 9.02868,
+    "lng": 38.73580
+  },
+  "Merkato Shema Tera Block 5": {
+    "lat": 9.03127,
+    "lng": 38.73409
+  },
+  "Merkato Shema Tera Block 6": {
+    "lat": 9.03125,
+    "lng": 38.74080
+  },
+  "Merkato Shema Tera Block 7": {
+    "lat": 9.03239,
+    "lng": 38.74162
+  },
+  "Merkato Shema Tera Block 8": {
+    "lat": 9.03028,
+    "lng": 38.74233
+  },
+  "Merkato Shema Tera Block 9": {
+    "lat": 9.02836,
+    "lng": 38.74116
+  },
+  "Merkato Shema Tera Block 10": {
+    "lat": 9.02501,
+    "lng": 38.74079
+  },
+  "Merkato Shema Tera Block 11": {
+    "lat": 9.02497,
+    "lng": 38.73447
+  },
+  "Merkato Shema Tera Block 12": {
+    "lat": 9.02725,
+    "lng": 38.73443
+  },
+  "Merkato Shema Tera Block 13": {
+    "lat": 9.02293,
+    "lng": 38.73751
+  },
+  "Merkato Shema Tera Block 14": {
+    "lat": 9.03045,
+    "lng": 38.73702
+  },
+  "Merkato Shema Tera Block 15": {
+    "lat": 9.03197,
+    "lng": 38.73395
+  },
+  "Merkato Shema Tera Block 16": {
+    "lat": 9.02314,
+    "lng": 38.73617
+  },
+  "Merkato Shema Tera Block 17": {
+    "lat": 9.02856,
+    "lng": 38.73945
+  },
+  "Merkato Shema Tera Block 18": {
+    "lat": 9.02322,
+    "lng": 38.74257
+  },
+  "Merkato Shema Tera Block 19": {
+    "lat": 9.02968,
+    "lng": 38.73890
+  },
+  "Merkato Shema Tera Block 20": {
+    "lat": 9.03155,
+    "lng": 38.74186
+  },
+  "Merkato Shema Tera Block 21": {
+    "lat": 9.03029,
+    "lng": 38.74022
+  },
+  "Merkato Shema Tera Block 22": {
+    "lat": 9.02346,
+    "lng": 38.73842
+  },
+  "Merkato Shema Tera Block 23": {
+    "lat": 9.02597,
+    "lng": 38.73904
+  },
+  "Merkato Shema Tera Block 24": {
+    "lat": 9.03258,
+    "lng": 38.74257
+  },
+  "Merkato Shema Tera Block 25": {
+    "lat": 9.02850,
+    "lng": 38.73476
+  },
+  "Merkato Shema Tera Block 26": {
+    "lat": 9.02328,
+    "lng": 38.74272
+  },
+  "Merkato Shema Tera Block 27": {
+    "lat": 9.02568,
+    "lng": 38.73481
+  },
+  "Merkato Shema Tera Block 28": {
+    "lat": 9.03215,
+    "lng": 38.73440
+  },
+  "Merkato Shema Tera Block 29": {
+    "lat": 9.02890,
+    "lng": 38.73825
+  },
+  "Merkato Shema Tera Block 30": {
+    "lat": 9.03264,
+    "lng": 38.73946
+  },
+  "Merkato Shema Tera Block 31": {
+    "lat": 9.03161,
+    "lng": 38.73754
+  },
+  "Merkato Shema Tera Block 32": {
+    "lat": 9.02286,
+    "lng": 38.74376
+  },
+  "Merkato Shema Tera Block 33": {
+    "lat": 9.03137,
+    "lng": 38.73785
+  },
+  "Merkato Shema Tera Block 34": {
+    "lat": 9.02914,
+    "lng": 38.73598
+  },
+  "Merkato Shema Tera Block 35": {
+    "lat": 9.02317,
+    "lng": 38.74049
+  },
+  "Merkato Shema Tera Block 36": {
+    "lat": 9.02281,
+    "lng": 38.73399
+  },
+  "Merkato Shema Tera Block 37": {
+    "lat": 9.02633,
+    "lng": 38.73633
+  },
+  "Merkato Shema Tera Block 38": {
+    "lat": 9.02855,
+    "lng": 38.74011
+  },
+  "Merkato Shema Tera Block 39": {
+    "lat": 9.02620,
+    "lng": 38.73961
+  },
+  "Merkato Shema Tera Block 40": {
+    "lat": 9.03257,
+    "lng": 38.74090
+  },
+  "Merkato Shema Tera Block 41": {
+    "lat": 9.02405,
+    "lng": 38.73534
+  },
+  "Merkato Shema Tera Block 42": {
+    "lat": 9.02728,
+    "lng": 38.74107
+  },
+  "Merkato Shema Tera Block 43": {
+    "lat": 9.03207,
+    "lng": 38.73797
+  },
+  "Merkato Shema Tera Block 44": {
+    "lat": 9.02800,
+    "lng": 38.73813
+  },
+  "Merkato Shema Tera Block 45": {
+    "lat": 9.03054,
+    "lng": 38.74236
+  },
+  "Merkato Shema Tera Block 46": {
+    "lat": 9.02872,
+    "lng": 38.73758
+  },
+  "Merkato Shema Tera Block 47": {
+    "lat": 9.02666,
+    "lng": 38.73543
+  },
+  "Merkato Shema Tera Block 48": {
+    "lat": 9.02632,
+    "lng": 38.73390
+  },
+  "Merkato Shema Tera Block 49": {
+    "lat": 9.02417,
+    "lng": 38.74350
+  },
+  "Merkato Shema Tera Block 50": {
+    "lat": 9.02629,
+    "lng": 38.73381
+  },
+  "Merkato Shema Tera Block 51": {
+    "lat": 9.02999,
+    "lng": 38.74334
+  },
+  "Merkato Shema Tera Block 52": {
+    "lat": 9.03244,
+    "lng": 38.73751
+  },
+  "Merkato Shema Tera Block 53": {
+    "lat": 9.02632,
+    "lng": 38.73900
+  },
+  "Merkato Shema Tera Block 54": {
+    "lat": 9.02944,
+    "lng": 38.73875
+  },
+  "Merkato Shema Tera Block 55": {
+    "lat": 9.03051,
+    "lng": 38.73458
+  },
+  "Merkato Shema Tera Block 56": {
+    "lat": 9.03187,
+    "lng": 38.73390
+  },
+  "Merkato Shema Tera Block 57": {
+    "lat": 9.02834,
+    "lng": 38.74244
+  },
+  "Merkato Shema Tera Block 58": {
+    "lat": 9.03195,
+    "lng": 38.73401
+  },
+  "Merkato Shema Tera Block 59": {
+    "lat": 9.02868,
+    "lng": 38.74201
+  },
+  "Merkato Shema Tera Block 60": {
+    "lat": 9.03211,
+    "lng": 38.74333
+  },
+  "Merkato Shema Tera Block 61": {
+    "lat": 9.02681,
+    "lng": 38.73974
+  },
+  "Merkato Shema Tera Block 62": {
+    "lat": 9.02834,
+    "lng": 38.74208
+  },
+  "Merkato Shema Tera Block 63": {
+    "lat": 9.02517,
+    "lng": 38.73474
+  },
+  "Merkato Shema Tera Block 64": {
+    "lat": 9.02934,
+    "lng": 38.73977
+  },
+  "Merkato Shema Tera Block 65": {
+    "lat": 9.02296,
+    "lng": 38.74346
+  },
+  "Merkato Shema Tera Block 66": {
+    "lat": 9.03207,
+    "lng": 38.73657
+  },
+  "Merkato Shema Tera Block 67": {
+    "lat": 9.03155,
+    "lng": 38.73781
+  },
+  "Merkato Shema Tera Block 68": {
+    "lat": 9.02892,
+    "lng": 38.73510
+  },
+  "Merkato Shema Tera Block 69": {
+    "lat": 9.02695,
+    "lng": 38.73978
+  },
+  "Merkato Shema Tera Block 70": {
+    "lat": 9.02624,
+    "lng": 38.74008
+  },
+  "Merkato Shema Tera Block 71": {
+    "lat": 9.03108,
+    "lng": 38.73753
+  },
+  "Merkato Shema Tera Block 72": {
+    "lat": 9.02789,
+    "lng": 38.73963
+  },
+  "Merkato Shema Tera Block 73": {
+    "lat": 9.02807,
+    "lng": 38.73822
+  },
+  "Merkato Shema Tera Block 74": {
+    "lat": 9.02580,
+    "lng": 38.74364
+  },
+  "Merkato Shema Tera Block 75": {
+    "lat": 9.02936,
+    "lng": 38.74125
+  },
+  "Merkato Shema Tera Block 76": {
+    "lat": 9.03174,
+    "lng": 38.74174
+  },
+  "Merkato Shema Tera Block 77": {
+    "lat": 9.02690,
+    "lng": 38.73863
+  },
+  "Merkato Shema Tera Block 78": {
+    "lat": 9.02345,
+    "lng": 38.74368
+  },
+  "Merkato Shema Tera Block 79": {
+    "lat": 9.02561,
+    "lng": 38.73957
+  },
+  "Merkato Shema Tera Block 80": {
+    "lat": 9.02311,
+    "lng": 38.73441
+  },
+  "Merkato Shema Tera Block 81": {
+    "lat": 9.03248,
+    "lng": 38.73526
+  },
+  "Merkato Shema Tera Block 82": {
+    "lat": 9.02645,
+    "lng": 38.73976
+  },
+  "Merkato Shema Tera Block 83": {
+    "lat": 9.02626,
+    "lng": 38.73580
+  },
+  "Merkato Shema Tera Block 84": {
+    "lat": 9.02558,
+    "lng": 38.73476
+  },
+  "Merkato Shema Tera Block 85": {
+    "lat": 9.02812,
+    "lng": 38.73428
+  },
+  "Merkato Shema Tera Block 86": {
+    "lat": 9.02653,
+    "lng": 38.74197
+  },
+  "Merkato Shema Tera Block 87": {
+    "lat": 9.02818,
+    "lng": 38.73989
+  },
+  "Merkato Shema Tera Block 88": {
+    "lat": 9.03173,
+    "lng": 38.74162
+  },
+  "Merkato Shema Tera Block 89": {
+    "lat": 9.02401,
+    "lng": 38.74079
+  },
+  "Merkato Shema Tera Block 90": {
+    "lat": 9.03085,
+    "lng": 38.73836
+  },
+  "Merkato Shema Tera Block 91": {
+    "lat": 9.02778,
+    "lng": 38.73744
+  },
+  "Merkato Shema Tera Block 92": {
+    "lat": 9.02422,
+    "lng": 38.73608
+  },
+  "Merkato Shema Tera Block 93": {
+    "lat": 9.03005,
+    "lng": 38.73452
+  },
+  "Merkato Shema Tera Block 94": {
+    "lat": 9.02670,
+    "lng": 38.73732
+  },
+  "Merkato Shema Tera Block 95": {
+    "lat": 9.02791,
+    "lng": 38.73878
+  },
+  "Merkato Shema Tera Block 96": {
+    "lat": 9.02285,
+    "lng": 38.74064
+  },
+  "Merkato Shema Tera Block 97": {
+    "lat": 9.03144,
+    "lng": 38.73867
+  },
+  "Merkato Shema Tera Block 98": {
+    "lat": 9.03066,
+    "lng": 38.73509
+  },
+  "Merkato Shema Tera Block 99": {
+    "lat": 9.02306,
+    "lng": 38.73672
+  },
+  "Merkato Shema Tera Block 100": {
+    "lat": 9.02906,
+    "lng": 38.74283
+  },
+  "Merkato Menalesh Tera Block 1": {
+    "lat": 9.02931,
+    "lng": 38.74076
+  },
+  "Merkato Menalesh Tera Block 2": {
+    "lat": 9.03193,
+    "lng": 38.73997
+  },
+  "Merkato Menalesh Tera Block 3": {
+    "lat": 9.02303,
+    "lng": 38.73951
+  },
+  "Merkato Menalesh Tera Block 4": {
+    "lat": 9.02303,
+    "lng": 38.74194
+  },
+  "Merkato Menalesh Tera Block 5": {
+    "lat": 9.02386,
+    "lng": 38.74182
+  },
+  "Merkato Menalesh Tera Block 6": {
+    "lat": 9.02952,
+    "lng": 38.73715
+  },
+  "Merkato Menalesh Tera Block 7": {
+    "lat": 9.02342,
+    "lng": 38.74275
+  },
+  "Merkato Menalesh Tera Block 8": {
+    "lat": 9.03255,
+    "lng": 38.73655
+  },
+  "Merkato Menalesh Tera Block 9": {
+    "lat": 9.02311,
+    "lng": 38.73743
+  },
+  "Merkato Menalesh Tera Block 10": {
+    "lat": 9.02875,
+    "lng": 38.73669
+  },
+  "Merkato Menalesh Tera Block 11": {
+    "lat": 9.02773,
+    "lng": 38.73506
+  },
+  "Merkato Menalesh Tera Block 12": {
+    "lat": 9.03007,
+    "lng": 38.73654
+  },
+  "Merkato Menalesh Tera Block 13": {
+    "lat": 9.02933,
+    "lng": 38.73425
+  },
+  "Merkato Menalesh Tera Block 14": {
+    "lat": 9.03171,
+    "lng": 38.73523
+  },
+  "Merkato Menalesh Tera Block 15": {
+    "lat": 9.02992,
+    "lng": 38.73591
+  },
+  "Merkato Menalesh Tera Block 16": {
+    "lat": 9.03097,
+    "lng": 38.74154
+  },
+  "Merkato Menalesh Tera Block 17": {
+    "lat": 9.03208,
+    "lng": 38.73823
+  },
+  "Merkato Menalesh Tera Block 18": {
+    "lat": 9.02271,
+    "lng": 38.73600
+  },
+  "Merkato Menalesh Tera Block 19": {
+    "lat": 9.02710,
+    "lng": 38.73865
+  },
+  "Merkato Menalesh Tera Block 20": {
+    "lat": 9.02672,
+    "lng": 38.73585
+  },
+  "Merkato Menalesh Tera Block 21": {
+    "lat": 9.02409,
+    "lng": 38.73658
+  },
+  "Merkato Menalesh Tera Block 22": {
+    "lat": 9.02309,
+    "lng": 38.74027
+  },
+  "Merkato Menalesh Tera Block 23": {
+    "lat": 9.02496,
+    "lng": 38.73957
+  },
+  "Merkato Menalesh Tera Block 24": {
+    "lat": 9.02562,
+    "lng": 38.74170
+  },
+  "Merkato Menalesh Tera Block 25": {
+    "lat": 9.02390,
+    "lng": 38.74112
+  },
+  "Merkato Menalesh Tera Block 26": {
+    "lat": 9.02952,
+    "lng": 38.74368
+  },
+  "Merkato Menalesh Tera Block 27": {
+    "lat": 9.02324,
+    "lng": 38.73956
+  },
+  "Merkato Menalesh Tera Block 28": {
+    "lat": 9.03068,
+    "lng": 38.73518
+  },
+  "Merkato Menalesh Tera Block 29": {
+    "lat": 9.02647,
+    "lng": 38.73555
+  },
+  "Merkato Menalesh Tera Block 30": {
+    "lat": 9.02422,
+    "lng": 38.74065
+  },
+  "Merkato Menalesh Tera Block 31": {
+    "lat": 9.02519,
+    "lng": 38.73396
+  },
+  "Merkato Menalesh Tera Block 32": {
+    "lat": 9.02545,
+    "lng": 38.74170
+  },
+  "Merkato Menalesh Tera Block 33": {
+    "lat": 9.02665,
+    "lng": 38.73408
+  },
+  "Merkato Menalesh Tera Block 34": {
+    "lat": 9.02587,
+    "lng": 38.73382
+  },
+  "Merkato Menalesh Tera Block 35": {
+    "lat": 9.02976,
+    "lng": 38.74273
+  },
+  "Merkato Menalesh Tera Block 36": {
+    "lat": 9.03184,
+    "lng": 38.73459
+  },
+  "Merkato Menalesh Tera Block 37": {
+    "lat": 9.03193,
+    "lng": 38.73497
+  },
+  "Merkato Menalesh Tera Block 38": {
+    "lat": 9.02309,
+    "lng": 38.73906
+  },
+  "Merkato Menalesh Tera Block 39": {
+    "lat": 9.02281,
+    "lng": 38.74212
+  },
+  "Merkato Menalesh Tera Block 40": {
+    "lat": 9.02835,
+    "lng": 38.73401
+  },
+  "Merkato Menalesh Tera Block 41": {
+    "lat": 9.02885,
+    "lng": 38.74145
+  },
+  "Merkato Menalesh Tera Block 42": {
+    "lat": 9.02936,
+    "lng": 38.74075
+  },
+  "Merkato Menalesh Tera Block 43": {
+    "lat": 9.03184,
+    "lng": 38.74044
+  },
+  "Merkato Menalesh Tera Block 44": {
+    "lat": 9.02376,
+    "lng": 38.73676
+  },
+  "Merkato Menalesh Tera Block 45": {
+    "lat": 9.02976,
+    "lng": 38.74263
+  },
+  "Merkato Menalesh Tera Block 46": {
+    "lat": 9.02688,
+    "lng": 38.73567
+  },
+  "Merkato Menalesh Tera Block 47": {
+    "lat": 9.02760,
+    "lng": 38.73629
+  },
+  "Merkato Menalesh Tera Block 48": {
+    "lat": 9.03095,
+    "lng": 38.73596
+  },
+  "Merkato Menalesh Tera Block 49": {
+    "lat": 9.02424,
+    "lng": 38.73774
+  },
+  "Merkato Menalesh Tera Block 50": {
+    "lat": 9.02796,
+    "lng": 38.73779
+  },
+  "Merkato Menalesh Tera Block 51": {
+    "lat": 9.02382,
+    "lng": 38.73396
+  },
+  "Merkato Menalesh Tera Block 52": {
+    "lat": 9.02580,
+    "lng": 38.73672
+  },
+  "Merkato Menalesh Tera Block 53": {
+    "lat": 9.03254,
+    "lng": 38.73422
+  },
+  "Merkato Menalesh Tera Block 54": {
+    "lat": 9.03027,
+    "lng": 38.73593
+  },
+  "Merkato Menalesh Tera Block 55": {
+    "lat": 9.02910,
+    "lng": 38.73955
+  },
+  "Merkato Menalesh Tera Block 56": {
+    "lat": 9.02281,
+    "lng": 38.74340
+  },
+  "Merkato Menalesh Tera Block 57": {
+    "lat": 9.03131,
+    "lng": 38.73423
+  },
+  "Merkato Menalesh Tera Block 58": {
+    "lat": 9.02376,
+    "lng": 38.74165
+  },
+  "Merkato Menalesh Tera Block 59": {
+    "lat": 9.03036,
+    "lng": 38.73622
+  },
+  "Merkato Menalesh Tera Block 60": {
+    "lat": 9.02347,
+    "lng": 38.73589
+  },
+  "Merkato Menalesh Tera Block 61": {
+    "lat": 9.03170,
+    "lng": 38.73988
+  },
+  "Merkato Menalesh Tera Block 62": {
+    "lat": 9.02742,
+    "lng": 38.73897
+  },
+  "Merkato Menalesh Tera Block 63": {
+    "lat": 9.02804,
+    "lng": 38.74245
+  },
+  "Merkato Menalesh Tera Block 64": {
+    "lat": 9.02978,
+    "lng": 38.73827
+  },
+  "Merkato Menalesh Tera Block 65": {
+    "lat": 9.02851,
+    "lng": 38.73463
+  },
+  "Merkato Menalesh Tera Block 66": {
+    "lat": 9.03264,
+    "lng": 38.74184
+  },
+  "Merkato Menalesh Tera Block 67": {
+    "lat": 9.02971,
+    "lng": 38.73794
+  },
+  "Merkato Menalesh Tera Block 68": {
+    "lat": 9.02734,
+    "lng": 38.74333
+  },
+  "Merkato Menalesh Tera Block 69": {
+    "lat": 9.02630,
+    "lng": 38.74166
+  },
+  "Merkato Menalesh Tera Block 70": {
+    "lat": 9.02594,
+    "lng": 38.73847
+  },
+  "Merkato Menalesh Tera Block 71": {
+    "lat": 9.02742,
+    "lng": 38.73979
+  },
+  "Merkato Menalesh Tera Block 72": {
+    "lat": 9.03102,
+    "lng": 38.73463
+  },
+  "Merkato Menalesh Tera Block 73": {
+    "lat": 9.02822,
+    "lng": 38.74203
+  },
+  "Merkato Menalesh Tera Block 74": {
+    "lat": 9.03186,
+    "lng": 38.74001
+  },
+  "Merkato Menalesh Tera Block 75": {
+    "lat": 9.02606,
+    "lng": 38.73731
+  },
+  "Merkato Menalesh Tera Block 76": {
+    "lat": 9.03032,
+    "lng": 38.73954
+  },
+  "Merkato Menalesh Tera Block 77": {
+    "lat": 9.02337,
+    "lng": 38.73915
+  },
+  "Merkato Menalesh Tera Block 78": {
+    "lat": 9.02322,
+    "lng": 38.73868
+  },
+  "Merkato Menalesh Tera Block 79": {
+    "lat": 9.02523,
+    "lng": 38.73645
+  },
+  "Merkato Menalesh Tera Block 80": {
+    "lat": 9.02959,
+    "lng": 38.73805
+  },
+  "Merkato Menalesh Tera Block 81": {
+    "lat": 9.03008,
+    "lng": 38.73654
+  },
+  "Merkato Menalesh Tera Block 82": {
+    "lat": 9.02570,
+    "lng": 38.73507
+  },
+  "Merkato Menalesh Tera Block 83": {
+    "lat": 9.02374,
+    "lng": 38.73450
+  },
+  "Merkato Menalesh Tera Block 84": {
+    "lat": 9.02711,
+    "lng": 38.73462
+  },
+  "Merkato Menalesh Tera Block 85": {
+    "lat": 9.02661,
+    "lng": 38.74150
+  },
+  "Merkato Menalesh Tera Block 86": {
+    "lat": 9.02499,
+    "lng": 38.74298
+  },
+  "Merkato Menalesh Tera Block 87": {
+    "lat": 9.02665,
+    "lng": 38.74050
+  },
+  "Merkato Menalesh Tera Block 88": {
+    "lat": 9.02950,
+    "lng": 38.74068
+  },
+  "Merkato Menalesh Tera Block 89": {
+    "lat": 9.02270,
+    "lng": 38.73562
+  },
+  "Merkato Menalesh Tera Block 90": {
+    "lat": 9.02852,
+    "lng": 38.74080
+  },
+  "Merkato Menalesh Tera Block 91": {
+    "lat": 9.02792,
+    "lng": 38.73826
+  },
+  "Merkato Menalesh Tera Block 92": {
+    "lat": 9.02899,
+    "lng": 38.73782
+  },
+  "Merkato Menalesh Tera Block 93": {
+    "lat": 9.02988,
+    "lng": 38.73431
+  },
+  "Merkato Menalesh Tera Block 94": {
+    "lat": 9.02805,
+    "lng": 38.73918
+  },
+  "Merkato Menalesh Tera Block 95": {
+    "lat": 9.02811,
+    "lng": 38.74271
+  },
+  "Merkato Menalesh Tera Block 96": {
+    "lat": 9.03130,
+    "lng": 38.73632
+  },
+  "Merkato Menalesh Tera Block 97": {
+    "lat": 9.02785,
+    "lng": 38.74041
+  },
+  "Merkato Menalesh Tera Block 98": {
+    "lat": 9.02781,
+    "lng": 38.74146
+  },
+  "Merkato Menalesh Tera Block 99": {
+    "lat": 9.02950,
+    "lng": 38.73866
+  },
+  "Merkato Menalesh Tera Block 100": {
+    "lat": 9.03157,
+    "lng": 38.73659
+  },
+  "Merkato Chat Tera Block 1": {
+    "lat": 9.02409,
+    "lng": 38.73895
+  },
+  "Merkato Chat Tera Block 2": {
+    "lat": 9.02874,
+    "lng": 38.73389
+  },
+  "Merkato Chat Tera Block 3": {
+    "lat": 9.02964,
+    "lng": 38.73921
+  },
+  "Merkato Chat Tera Block 4": {
+    "lat": 9.02989,
+    "lng": 38.73479
+  },
+  "Merkato Chat Tera Block 5": {
+    "lat": 9.02783,
+    "lng": 38.74166
+  },
+  "Merkato Chat Tera Block 6": {
+    "lat": 9.02739,
+    "lng": 38.73431
+  },
+  "Merkato Chat Tera Block 7": {
+    "lat": 9.03035,
+    "lng": 38.73739
+  },
+  "Merkato Chat Tera Block 8": {
+    "lat": 9.02698,
+    "lng": 38.74025
+  },
+  "Merkato Chat Tera Block 9": {
+    "lat": 9.02590,
+    "lng": 38.74162
+  },
+  "Merkato Chat Tera Block 10": {
+    "lat": 9.03014,
+    "lng": 38.74028
+  },
+  "Merkato Chat Tera Block 11": {
+    "lat": 9.02446,
+    "lng": 38.73434
+  },
+  "Merkato Chat Tera Block 12": {
+    "lat": 9.02517,
+    "lng": 38.74057
+  },
+  "Merkato Chat Tera Block 13": {
+    "lat": 9.02293,
+    "lng": 38.74105
+  },
+  "Merkato Chat Tera Block 14": {
+    "lat": 9.02933,
+    "lng": 38.73540
+  },
+  "Merkato Chat Tera Block 15": {
+    "lat": 9.03071,
+    "lng": 38.74118
+  },
+  "Merkato Chat Tera Block 16": {
+    "lat": 9.02711,
+    "lng": 38.73651
+  },
+  "Merkato Chat Tera Block 17": {
+    "lat": 9.02389,
+    "lng": 38.73714
+  },
+  "Merkato Chat Tera Block 18": {
+    "lat": 9.03004,
+    "lng": 38.74129
+  },
+  "Merkato Chat Tera Block 19": {
+    "lat": 9.03168,
+    "lng": 38.73956
+  },
+  "Merkato Chat Tera Block 20": {
+    "lat": 9.02472,
+    "lng": 38.73528
+  },
+  "Merkato Chat Tera Block 21": {
+    "lat": 9.02425,
+    "lng": 38.73592
+  },
+  "Merkato Chat Tera Block 22": {
+    "lat": 9.02647,
+    "lng": 38.73509
+  },
+  "Merkato Chat Tera Block 23": {
+    "lat": 9.02799,
+    "lng": 38.73779
+  },
+  "Merkato Chat Tera Block 24": {
+    "lat": 9.02849,
+    "lng": 38.74241
+  },
+  "Merkato Chat Tera Block 25": {
+    "lat": 9.02456,
+    "lng": 38.74075
+  },
+  "Merkato Chat Tera Block 26": {
+    "lat": 9.03122,
+    "lng": 38.73582
+  },
+  "Merkato Chat Tera Block 27": {
+    "lat": 9.02625,
+    "lng": 38.73964
+  },
+  "Merkato Chat Tera Block 28": {
+    "lat": 9.02534,
+    "lng": 38.74150
+  },
+  "Merkato Chat Tera Block 29": {
+    "lat": 9.02293,
+    "lng": 38.73485
+  },
+  "Merkato Chat Tera Block 30": {
+    "lat": 9.03040,
+    "lng": 38.73745
+  },
+  "Merkato Chat Tera Block 31": {
+    "lat": 9.03014,
+    "lng": 38.74235
+  },
+  "Merkato Chat Tera Block 32": {
+    "lat": 9.02947,
+    "lng": 38.73562
+  },
+  "Merkato Chat Tera Block 33": {
+    "lat": 9.03241,
+    "lng": 38.74268
+  },
+  "Merkato Chat Tera Block 34": {
+    "lat": 9.02950,
+    "lng": 38.73591
+  },
+  "Merkato Chat Tera Block 35": {
+    "lat": 9.02910,
+    "lng": 38.74104
+  },
+  "Merkato Chat Tera Block 36": {
+    "lat": 9.02712,
+    "lng": 38.74113
+  },
+  "Merkato Chat Tera Block 37": {
+    "lat": 9.02433,
+    "lng": 38.73400
+  },
+  "Merkato Chat Tera Block 38": {
+    "lat": 9.02817,
+    "lng": 38.74240
+  },
+  "Merkato Chat Tera Block 39": {
+    "lat": 9.03181,
+    "lng": 38.73823
+  },
+  "Merkato Chat Tera Block 40": {
+    "lat": 9.02622,
+    "lng": 38.74256
+  },
+  "Merkato Chat Tera Block 41": {
+    "lat": 9.03228,
+    "lng": 38.73759
+  },
+  "Merkato Chat Tera Block 42": {
+    "lat": 9.02778,
+    "lng": 38.73468
+  },
+  "Merkato Chat Tera Block 43": {
+    "lat": 9.02702,
+    "lng": 38.74097
+  },
+  "Merkato Chat Tera Block 44": {
+    "lat": 9.02310,
+    "lng": 38.73417
+  },
+  "Merkato Chat Tera Block 45": {
+    "lat": 9.02285,
+    "lng": 38.74117
+  },
+  "Merkato Chat Tera Block 46": {
+    "lat": 9.02770,
+    "lng": 38.73539
+  },
+  "Merkato Chat Tera Block 47": {
+    "lat": 9.03095,
+    "lng": 38.73768
+  },
+  "Merkato Chat Tera Block 48": {
+    "lat": 9.02524,
+    "lng": 38.73418
+  },
+  "Merkato Chat Tera Block 49": {
+    "lat": 9.02775,
+    "lng": 38.74245
+  },
+  "Merkato Chat Tera Block 50": {
+    "lat": 9.03026,
+    "lng": 38.73901
+  },
+  "Merkato Chat Tera Block 51": {
+    "lat": 9.03171,
+    "lng": 38.73598
+  },
+  "Merkato Chat Tera Block 52": {
+    "lat": 9.02967,
+    "lng": 38.73665
+  },
+  "Merkato Chat Tera Block 53": {
+    "lat": 9.02503,
+    "lng": 38.74079
+  },
+  "Merkato Chat Tera Block 54": {
+    "lat": 9.02720,
+    "lng": 38.73803
+  },
+  "Merkato Chat Tera Block 55": {
+    "lat": 9.03129,
+    "lng": 38.74309
+  },
+  "Merkato Chat Tera Block 56": {
+    "lat": 9.03056,
+    "lng": 38.73770
+  },
+  "Merkato Chat Tera Block 57": {
+    "lat": 9.02477,
+    "lng": 38.73851
+  },
+  "Merkato Chat Tera Block 58": {
+    "lat": 9.03131,
+    "lng": 38.74205
+  },
+  "Merkato Chat Tera Block 59": {
+    "lat": 9.03069,
+    "lng": 38.73403
+  },
+  "Merkato Chat Tera Block 60": {
+    "lat": 9.03215,
+    "lng": 38.74280
+  },
+  "Merkato Chat Tera Block 61": {
+    "lat": 9.03016,
+    "lng": 38.73611
+  },
+  "Merkato Chat Tera Block 62": {
+    "lat": 9.02375,
+    "lng": 38.74254
+  },
+  "Merkato Chat Tera Block 63": {
+    "lat": 9.03011,
+    "lng": 38.73653
+  },
+  "Merkato Chat Tera Block 64": {
+    "lat": 9.02621,
+    "lng": 38.74168
+  },
+  "Merkato Chat Tera Block 65": {
+    "lat": 9.02374,
+    "lng": 38.73989
+  },
+  "Merkato Chat Tera Block 66": {
+    "lat": 9.02454,
+    "lng": 38.74340
+  },
+  "Merkato Chat Tera Block 67": {
+    "lat": 9.02443,
+    "lng": 38.73614
+  },
+  "Merkato Chat Tera Block 68": {
+    "lat": 9.02313,
+    "lng": 38.73938
+  },
+  "Merkato Chat Tera Block 69": {
+    "lat": 9.02592,
+    "lng": 38.73664
+  },
+  "Merkato Chat Tera Block 70": {
+    "lat": 9.02935,
+    "lng": 38.73387
+  },
+  "Merkato Chat Tera Block 71": {
+    "lat": 9.02605,
+    "lng": 38.73552
+  },
+  "Merkato Chat Tera Block 72": {
+    "lat": 9.03204,
+    "lng": 38.74326
+  },
+  "Merkato Chat Tera Block 73": {
+    "lat": 9.03024,
+    "lng": 38.73476
+  },
+  "Merkato Chat Tera Block 74": {
+    "lat": 9.03157,
+    "lng": 38.74201
+  },
+  "Merkato Chat Tera Block 75": {
+    "lat": 9.03002,
+    "lng": 38.74205
+  },
+  "Merkato Chat Tera Block 76": {
+    "lat": 9.03078,
+    "lng": 38.73453
+  },
+  "Merkato Chat Tera Block 77": {
+    "lat": 9.02752,
+    "lng": 38.73765
+  },
+  "Merkato Chat Tera Block 78": {
+    "lat": 9.02385,
+    "lng": 38.74230
+  },
+  "Merkato Chat Tera Block 79": {
+    "lat": 9.02731,
+    "lng": 38.73891
+  },
+  "Merkato Chat Tera Block 80": {
+    "lat": 9.02717,
+    "lng": 38.73698
+  },
+  "Merkato Chat Tera Block 81": {
+    "lat": 9.03255,
+    "lng": 38.74248
+  },
+  "Merkato Chat Tera Block 82": {
+    "lat": 9.02701,
+    "lng": 38.73386
+  },
+  "Merkato Chat Tera Block 83": {
+    "lat": 9.03115,
+    "lng": 38.74111
+  },
+  "Merkato Chat Tera Block 84": {
+    "lat": 9.02558,
+    "lng": 38.74125
+  },
+  "Merkato Chat Tera Block 85": {
+    "lat": 9.02289,
+    "lng": 38.73388
+  },
+  "Merkato Chat Tera Block 86": {
+    "lat": 9.02597,
+    "lng": 38.74254
+  },
+  "Merkato Chat Tera Block 87": {
+    "lat": 9.02895,
+    "lng": 38.73515
+  },
+  "Merkato Chat Tera Block 88": {
+    "lat": 9.02502,
+    "lng": 38.74199
+  },
+  "Merkato Chat Tera Block 89": {
+    "lat": 9.02466,
+    "lng": 38.73783
+  },
+  "Merkato Chat Tera Block 90": {
+    "lat": 9.03202,
+    "lng": 38.73681
+  },
+  "Merkato Chat Tera Block 91": {
+    "lat": 9.02370,
+    "lng": 38.73500
+  },
+  "Merkato Chat Tera Block 92": {
+    "lat": 9.02674,
+    "lng": 38.73682
+  },
+  "Merkato Chat Tera Block 93": {
+    "lat": 9.03205,
+    "lng": 38.73875
+  },
+  "Merkato Chat Tera Block 94": {
+    "lat": 9.02826,
+    "lng": 38.74070
+  },
+  "Merkato Chat Tera Block 95": {
+    "lat": 9.02588,
+    "lng": 38.73887
+  },
+  "Merkato Chat Tera Block 96": {
+    "lat": 9.02835,
+    "lng": 38.73445
+  },
+  "Merkato Chat Tera Block 97": {
+    "lat": 9.02932,
+    "lng": 38.74120
+  },
+  "Merkato Chat Tera Block 98": {
+    "lat": 9.02821,
+    "lng": 38.73550
+  },
+  "Merkato Chat Tera Block 99": {
+    "lat": 9.02715,
+    "lng": 38.74265
+  },
+  "Merkato Chat Tera Block 100": {
+    "lat": 9.02456,
+    "lng": 38.73780
+  },
+  "Merkato Berbere Tera Block 1": {
+    "lat": 9.02993,
+    "lng": 38.73816
+  },
+  "Merkato Berbere Tera Block 2": {
+    "lat": 9.02379,
+    "lng": 38.73575
+  },
+  "Merkato Berbere Tera Block 3": {
+    "lat": 9.02429,
+    "lng": 38.73636
+  },
+  "Merkato Berbere Tera Block 4": {
+    "lat": 9.02454,
+    "lng": 38.73852
+  },
+  "Merkato Berbere Tera Block 5": {
+    "lat": 9.02786,
+    "lng": 38.73530
+  },
+  "Merkato Berbere Tera Block 6": {
+    "lat": 9.02884,
+    "lng": 38.73665
+  },
+  "Merkato Berbere Tera Block 7": {
+    "lat": 9.02701,
+    "lng": 38.73468
+  },
+  "Merkato Berbere Tera Block 8": {
+    "lat": 9.03171,
+    "lng": 38.73966
+  },
+  "Merkato Berbere Tera Block 9": {
+    "lat": 9.02279,
+    "lng": 38.73971
+  },
+  "Merkato Berbere Tera Block 10": {
+    "lat": 9.02497,
+    "lng": 38.74286
+  },
+  "Merkato Berbere Tera Block 11": {
+    "lat": 9.02689,
+    "lng": 38.73540
+  },
+  "Merkato Berbere Tera Block 12": {
+    "lat": 9.02421,
+    "lng": 38.73836
+  },
+  "Merkato Berbere Tera Block 13": {
+    "lat": 9.02497,
+    "lng": 38.73389
+  },
+  "Merkato Berbere Tera Block 14": {
+    "lat": 9.02487,
+    "lng": 38.74344
+  },
+  "Merkato Berbere Tera Block 15": {
+    "lat": 9.02873,
+    "lng": 38.74252
+  },
+  "Merkato Berbere Tera Block 16": {
+    "lat": 9.02738,
+    "lng": 38.73625
+  },
+  "Merkato Berbere Tera Block 17": {
+    "lat": 9.02428,
+    "lng": 38.73977
+  },
+  "Merkato Berbere Tera Block 18": {
+    "lat": 9.02873,
+    "lng": 38.74093
+  },
+  "Merkato Berbere Tera Block 19": {
+    "lat": 9.02919,
+    "lng": 38.73455
+  },
+  "Merkato Berbere Tera Block 20": {
+    "lat": 9.02276,
+    "lng": 38.74019
+  },
+  "Merkato Berbere Tera Block 21": {
+    "lat": 9.02527,
+    "lng": 38.74040
+  },
+  "Merkato Berbere Tera Block 22": {
+    "lat": 9.03200,
+    "lng": 38.73497
+  },
+  "Merkato Berbere Tera Block 23": {
+    "lat": 9.02319,
+    "lng": 38.73753
+  },
+  "Merkato Berbere Tera Block 24": {
+    "lat": 9.02585,
+    "lng": 38.73676
+  },
+  "Merkato Berbere Tera Block 25": {
+    "lat": 9.02532,
+    "lng": 38.73523
+  },
+  "Merkato Berbere Tera Block 26": {
+    "lat": 9.02659,
+    "lng": 38.74182
+  },
+  "Merkato Berbere Tera Block 27": {
+    "lat": 9.02788,
+    "lng": 38.73893
+  },
+  "Merkato Berbere Tera Block 28": {
+    "lat": 9.02574,
+    "lng": 38.74377
+  },
+  "Merkato Berbere Tera Block 29": {
+    "lat": 9.03157,
+    "lng": 38.73781
+  },
+  "Merkato Berbere Tera Block 30": {
+    "lat": 9.02534,
+    "lng": 38.73602
+  },
+  "Merkato Berbere Tera Block 31": {
+    "lat": 9.02865,
+    "lng": 38.73866
+  },
+  "Merkato Berbere Tera Block 32": {
+    "lat": 9.03088,
+    "lng": 38.74181
+  },
+  "Merkato Berbere Tera Block 33": {
+    "lat": 9.02395,
+    "lng": 38.73829
+  },
+  "Merkato Berbere Tera Block 34": {
+    "lat": 9.02701,
+    "lng": 38.74197
+  },
+  "Merkato Berbere Tera Block 35": {
+    "lat": 9.02288,
+    "lng": 38.74242
+  },
+  "Merkato Berbere Tera Block 36": {
+    "lat": 9.02933,
+    "lng": 38.74336
+  },
+  "Merkato Berbere Tera Block 37": {
+    "lat": 9.02572,
+    "lng": 38.73794
+  },
+  "Merkato Berbere Tera Block 38": {
+    "lat": 9.02933,
+    "lng": 38.74274
+  },
+  "Merkato Berbere Tera Block 39": {
+    "lat": 9.02892,
+    "lng": 38.74019
+  },
+  "Merkato Berbere Tera Block 40": {
+    "lat": 9.02371,
+    "lng": 38.74049
+  },
+  "Merkato Berbere Tera Block 41": {
+    "lat": 9.02761,
+    "lng": 38.73480
+  },
+  "Merkato Berbere Tera Block 42": {
+    "lat": 9.02945,
+    "lng": 38.74314
+  },
+  "Merkato Berbere Tera Block 43": {
+    "lat": 9.02949,
+    "lng": 38.74007
+  },
+  "Merkato Berbere Tera Block 44": {
+    "lat": 9.02662,
+    "lng": 38.74253
+  },
+  "Merkato Berbere Tera Block 45": {
+    "lat": 9.02602,
+    "lng": 38.74362
+  },
+  "Merkato Berbere Tera Block 46": {
+    "lat": 9.02995,
+    "lng": 38.73664
+  },
+  "Merkato Berbere Tera Block 47": {
+    "lat": 9.02811,
+    "lng": 38.73667
+  },
+  "Merkato Berbere Tera Block 48": {
+    "lat": 9.02562,
+    "lng": 38.73953
+  },
+  "Merkato Berbere Tera Block 49": {
+    "lat": 9.03243,
+    "lng": 38.73759
+  },
+  "Merkato Berbere Tera Block 50": {
+    "lat": 9.03036,
+    "lng": 38.74008
+  },
+  "Merkato Berbere Tera Block 51": {
+    "lat": 9.02964,
+    "lng": 38.73392
+  },
+  "Merkato Berbere Tera Block 52": {
+    "lat": 9.02794,
+    "lng": 38.73666
+  },
+  "Merkato Berbere Tera Block 53": {
+    "lat": 9.02334,
+    "lng": 38.73561
+  },
+  "Merkato Berbere Tera Block 54": {
+    "lat": 9.03033,
+    "lng": 38.73709
+  },
+  "Merkato Berbere Tera Block 55": {
+    "lat": 9.02785,
+    "lng": 38.73534
+  },
+  "Merkato Berbere Tera Block 56": {
+    "lat": 9.02832,
+    "lng": 38.73962
+  },
+  "Merkato Berbere Tera Block 57": {
+    "lat": 9.03199,
+    "lng": 38.73834
+  },
+  "Merkato Berbere Tera Block 58": {
+    "lat": 9.02471,
+    "lng": 38.74190
+  },
+  "Merkato Berbere Tera Block 59": {
+    "lat": 9.02820,
+    "lng": 38.73594
+  },
+  "Merkato Berbere Tera Block 60": {
+    "lat": 9.02809,
+    "lng": 38.73913
+  },
+  "Merkato Berbere Tera Block 61": {
+    "lat": 9.02863,
+    "lng": 38.74151
+  },
+  "Merkato Berbere Tera Block 62": {
+    "lat": 9.03070,
+    "lng": 38.73761
+  },
+  "Merkato Berbere Tera Block 63": {
+    "lat": 9.02649,
+    "lng": 38.74246
+  },
+  "Merkato Berbere Tera Block 64": {
+    "lat": 9.03018,
+    "lng": 38.73439
+  },
+  "Merkato Berbere Tera Block 65": {
+    "lat": 9.02827,
+    "lng": 38.73880
+  },
+  "Merkato Berbere Tera Block 66": {
+    "lat": 9.02609,
+    "lng": 38.74186
+  },
+  "Merkato Berbere Tera Block 67": {
+    "lat": 9.02337,
+    "lng": 38.73944
+  },
+  "Merkato Berbere Tera Block 68": {
+    "lat": 9.02905,
+    "lng": 38.73695
+  },
+  "Merkato Berbere Tera Block 69": {
+    "lat": 9.02286,
+    "lng": 38.73632
+  },
+  "Merkato Berbere Tera Block 70": {
+    "lat": 9.03126,
+    "lng": 38.74004
+  },
+  "Merkato Berbere Tera Block 71": {
+    "lat": 9.02371,
+    "lng": 38.74296
+  },
+  "Merkato Berbere Tera Block 72": {
+    "lat": 9.03184,
+    "lng": 38.73798
+  },
+  "Merkato Berbere Tera Block 73": {
+    "lat": 9.02519,
+    "lng": 38.73570
+  },
+  "Merkato Berbere Tera Block 74": {
+    "lat": 9.02284,
+    "lng": 38.74253
+  },
+  "Merkato Berbere Tera Block 75": {
+    "lat": 9.02966,
+    "lng": 38.74243
+  },
+  "Merkato Berbere Tera Block 76": {
+    "lat": 9.03042,
+    "lng": 38.73590
+  },
+  "Merkato Berbere Tera Block 77": {
+    "lat": 9.02583,
+    "lng": 38.74114
+  },
+  "Merkato Berbere Tera Block 78": {
+    "lat": 9.02287,
+    "lng": 38.73688
+  },
+  "Merkato Berbere Tera Block 79": {
+    "lat": 9.02438,
+    "lng": 38.73702
+  },
+  "Merkato Berbere Tera Block 80": {
+    "lat": 9.03170,
+    "lng": 38.73875
+  },
+  "Merkato Berbere Tera Block 81": {
+    "lat": 9.03039,
+    "lng": 38.73690
+  },
+  "Merkato Berbere Tera Block 82": {
+    "lat": 9.02429,
+    "lng": 38.74229
+  },
+  "Merkato Berbere Tera Block 83": {
+    "lat": 9.03095,
+    "lng": 38.74342
+  },
+  "Merkato Berbere Tera Block 84": {
+    "lat": 9.02937,
+    "lng": 38.74199
+  },
+  "Merkato Berbere Tera Block 85": {
+    "lat": 9.02292,
+    "lng": 38.73933
+  },
+  "Merkato Berbere Tera Block 86": {
+    "lat": 9.02591,
+    "lng": 38.74224
+  },
+  "Merkato Berbere Tera Block 87": {
+    "lat": 9.02478,
+    "lng": 38.73673
+  },
+  "Merkato Berbere Tera Block 88": {
+    "lat": 9.02953,
+    "lng": 38.73823
+  },
+  "Merkato Berbere Tera Block 89": {
+    "lat": 9.02530,
+    "lng": 38.73718
+  },
+  "Merkato Berbere Tera Block 90": {
+    "lat": 9.03217,
+    "lng": 38.73553
+  },
+  "Merkato Berbere Tera Block 91": {
+    "lat": 9.03259,
+    "lng": 38.73588
+  },
+  "Merkato Berbere Tera Block 92": {
+    "lat": 9.02599,
+    "lng": 38.74325
+  },
+  "Merkato Berbere Tera Block 93": {
+    "lat": 9.03223,
+    "lng": 38.74181
+  },
+  "Merkato Berbere Tera Block 94": {
+    "lat": 9.02889,
+    "lng": 38.73615
+  },
+  "Merkato Berbere Tera Block 95": {
+    "lat": 9.03200,
+    "lng": 38.73984
+  },
+  "Merkato Berbere Tera Block 96": {
+    "lat": 9.02825,
+    "lng": 38.73920
+  },
+  "Merkato Berbere Tera Block 97": {
+    "lat": 9.03270,
+    "lng": 38.74309
+  },
+  "Merkato Berbere Tera Block 98": {
+    "lat": 9.02945,
+    "lng": 38.73588
+  },
+  "Merkato Berbere Tera Block 99": {
+    "lat": 9.02948,
+    "lng": 38.73406
+  },
+  "Merkato Berbere Tera Block 100": {
+    "lat": 9.02606,
+    "lng": 38.73978
+  },
+  "Merkato Buna Tera Block 1": {
+    "lat": 9.02606,
+    "lng": 38.73806
+  },
+  "Merkato Buna Tera Block 2": {
+    "lat": 9.02745,
+    "lng": 38.74279
+  },
+  "Merkato Buna Tera Block 3": {
+    "lat": 9.02837,
+    "lng": 38.74002
+  },
+  "Merkato Buna Tera Block 4": {
+    "lat": 9.03215,
+    "lng": 38.73569
+  },
+  "Merkato Buna Tera Block 5": {
+    "lat": 9.02912,
+    "lng": 38.73559
+  },
+  "Merkato Buna Tera Block 6": {
+    "lat": 9.02506,
+    "lng": 38.74360
+  },
+  "Merkato Buna Tera Block 7": {
+    "lat": 9.03143,
+    "lng": 38.74250
+  },
+  "Merkato Buna Tera Block 8": {
+    "lat": 9.03208,
+    "lng": 38.74110
+  },
+  "Merkato Buna Tera Block 9": {
+    "lat": 9.02990,
+    "lng": 38.74143
+  },
+  "Merkato Buna Tera Block 10": {
+    "lat": 9.03269,
+    "lng": 38.73878
+  },
+  "Merkato Buna Tera Block 11": {
+    "lat": 9.03138,
+    "lng": 38.73567
+  },
+  "Merkato Buna Tera Block 12": {
+    "lat": 9.03232,
+    "lng": 38.74289
+  },
+  "Merkato Buna Tera Block 13": {
+    "lat": 9.02731,
+    "lng": 38.74032
+  },
+  "Merkato Buna Tera Block 14": {
+    "lat": 9.02891,
+    "lng": 38.74181
+  },
+  "Merkato Buna Tera Block 15": {
+    "lat": 9.03084,
+    "lng": 38.73964
+  },
+  "Merkato Buna Tera Block 16": {
+    "lat": 9.02861,
+    "lng": 38.74328
+  },
+  "Merkato Buna Tera Block 17": {
+    "lat": 9.02979,
+    "lng": 38.73855
+  },
+  "Merkato Buna Tera Block 18": {
+    "lat": 9.02673,
+    "lng": 38.73564
+  },
+  "Merkato Buna Tera Block 19": {
+    "lat": 9.02980,
+    "lng": 38.74263
+  },
+  "Merkato Buna Tera Block 20": {
+    "lat": 9.02805,
+    "lng": 38.73762
+  },
+  "Merkato Buna Tera Block 21": {
+    "lat": 9.02368,
+    "lng": 38.74065
+  },
+  "Merkato Buna Tera Block 22": {
+    "lat": 9.02732,
+    "lng": 38.73739
+  },
+  "Merkato Buna Tera Block 23": {
+    "lat": 9.02884,
+    "lng": 38.73466
+  },
+  "Merkato Buna Tera Block 24": {
+    "lat": 9.03141,
+    "lng": 38.74086
+  },
+  "Merkato Buna Tera Block 25": {
+    "lat": 9.02312,
+    "lng": 38.73403
+  },
+  "Merkato Buna Tera Block 26": {
+    "lat": 9.03247,
+    "lng": 38.74201
+  },
+  "Merkato Buna Tera Block 27": {
+    "lat": 9.03263,
+    "lng": 38.73590
+  },
+  "Merkato Buna Tera Block 28": {
+    "lat": 9.02699,
+    "lng": 38.73650
+  },
+  "Merkato Buna Tera Block 29": {
+    "lat": 9.02592,
+    "lng": 38.74083
+  },
+  "Merkato Buna Tera Block 30": {
+    "lat": 9.02597,
+    "lng": 38.74339
+  },
+  "Merkato Buna Tera Block 31": {
+    "lat": 9.02344,
+    "lng": 38.74065
+  },
+  "Merkato Buna Tera Block 32": {
+    "lat": 9.03118,
+    "lng": 38.73890
+  },
+  "Merkato Buna Tera Block 33": {
+    "lat": 9.03126,
+    "lng": 38.73453
+  },
+  "Merkato Buna Tera Block 34": {
+    "lat": 9.03211,
+    "lng": 38.73795
+  },
+  "Merkato Buna Tera Block 35": {
+    "lat": 9.02694,
+    "lng": 38.73512
+  },
+  "Merkato Buna Tera Block 36": {
+    "lat": 9.02381,
+    "lng": 38.74346
+  },
+  "Merkato Buna Tera Block 37": {
+    "lat": 9.02811,
+    "lng": 38.74292
+  },
+  "Merkato Buna Tera Block 38": {
+    "lat": 9.02494,
+    "lng": 38.73766
+  },
+  "Merkato Buna Tera Block 39": {
+    "lat": 9.02482,
+    "lng": 38.73810
+  },
+  "Merkato Buna Tera Block 40": {
+    "lat": 9.02847,
+    "lng": 38.73648
+  },
+  "Merkato Buna Tera Block 41": {
+    "lat": 9.02534,
+    "lng": 38.73446
+  },
+  "Merkato Buna Tera Block 42": {
+    "lat": 9.02670,
+    "lng": 38.73563
+  },
+  "Merkato Buna Tera Block 43": {
+    "lat": 9.02803,
+    "lng": 38.74112
+  },
+  "Merkato Buna Tera Block 44": {
+    "lat": 9.02649,
+    "lng": 38.74357
+  },
+  "Merkato Buna Tera Block 45": {
+    "lat": 9.02677,
+    "lng": 38.73542
+  },
+  "Merkato Buna Tera Block 46": {
+    "lat": 9.02955,
+    "lng": 38.74062
+  },
+  "Merkato Buna Tera Block 47": {
+    "lat": 9.03025,
+    "lng": 38.73612
+  },
+  "Merkato Buna Tera Block 48": {
+    "lat": 9.02453,
+    "lng": 38.73664
+  },
+  "Merkato Buna Tera Block 49": {
+    "lat": 9.03019,
+    "lng": 38.73804
+  },
+  "Merkato Buna Tera Block 50": {
+    "lat": 9.02742,
+    "lng": 38.74242
+  },
+  "Merkato Buna Tera Block 51": {
+    "lat": 9.03045,
+    "lng": 38.74057
+  },
+  "Merkato Buna Tera Block 52": {
+    "lat": 9.02393,
+    "lng": 38.74320
+  },
+  "Merkato Buna Tera Block 53": {
+    "lat": 9.02772,
+    "lng": 38.74277
+  },
+  "Merkato Buna Tera Block 54": {
+    "lat": 9.03230,
+    "lng": 38.74018
+  },
+  "Merkato Buna Tera Block 55": {
+    "lat": 9.02683,
+    "lng": 38.74365
+  },
+  "Merkato Buna Tera Block 56": {
+    "lat": 9.02645,
+    "lng": 38.73591
+  },
+  "Merkato Buna Tera Block 57": {
+    "lat": 9.02515,
+    "lng": 38.74116
+  },
+  "Merkato Buna Tera Block 58": {
+    "lat": 9.03015,
+    "lng": 38.73555
+  },
+  "Merkato Buna Tera Block 59": {
+    "lat": 9.03045,
+    "lng": 38.73914
+  },
+  "Merkato Buna Tera Block 60": {
+    "lat": 9.03118,
+    "lng": 38.73882
+  },
+  "Merkato Buna Tera Block 61": {
+    "lat": 9.02887,
+    "lng": 38.73402
+  },
+  "Merkato Buna Tera Block 62": {
+    "lat": 9.02409,
+    "lng": 38.73553
+  },
+  "Merkato Buna Tera Block 63": {
+    "lat": 9.02654,
+    "lng": 38.73651
+  },
+  "Merkato Buna Tera Block 64": {
+    "lat": 9.02576,
+    "lng": 38.73838
+  },
+  "Merkato Buna Tera Block 65": {
+    "lat": 9.02913,
+    "lng": 38.74165
+  },
+  "Merkato Buna Tera Block 66": {
+    "lat": 9.03140,
+    "lng": 38.74051
+  },
+  "Merkato Buna Tera Block 67": {
+    "lat": 9.03004,
+    "lng": 38.74102
+  },
+  "Merkato Buna Tera Block 68": {
+    "lat": 9.02529,
+    "lng": 38.73600
+  },
+  "Merkato Buna Tera Block 69": {
+    "lat": 9.02734,
+    "lng": 38.73915
+  },
+  "Merkato Buna Tera Block 70": {
+    "lat": 9.02427,
+    "lng": 38.73705
+  },
+  "Merkato Buna Tera Block 71": {
+    "lat": 9.03193,
+    "lng": 38.73753
+  },
+  "Merkato Buna Tera Block 72": {
+    "lat": 9.02902,
+    "lng": 38.74297
+  },
+  "Merkato Buna Tera Block 73": {
+    "lat": 9.02682,
+    "lng": 38.74285
+  },
+  "Merkato Buna Tera Block 74": {
+    "lat": 9.02730,
+    "lng": 38.74064
+  },
+  "Merkato Buna Tera Block 75": {
+    "lat": 9.03124,
+    "lng": 38.73556
+  },
+  "Merkato Buna Tera Block 76": {
+    "lat": 9.02791,
+    "lng": 38.74080
+  },
+  "Merkato Buna Tera Block 77": {
+    "lat": 9.02331,
+    "lng": 38.73879
+  },
+  "Merkato Buna Tera Block 78": {
+    "lat": 9.03163,
+    "lng": 38.73905
+  },
+  "Merkato Buna Tera Block 79": {
+    "lat": 9.03213,
+    "lng": 38.74145
+  },
+  "Merkato Buna Tera Block 80": {
+    "lat": 9.02535,
+    "lng": 38.74249
+  },
+  "Merkato Buna Tera Block 81": {
+    "lat": 9.03189,
+    "lng": 38.73475
+  },
+  "Merkato Buna Tera Block 82": {
+    "lat": 9.02934,
+    "lng": 38.73843
+  },
+  "Merkato Buna Tera Block 83": {
+    "lat": 9.02471,
+    "lng": 38.73707
+  },
+  "Merkato Buna Tera Block 84": {
+    "lat": 9.03161,
+    "lng": 38.73720
+  },
+  "Merkato Buna Tera Block 85": {
+    "lat": 9.02759,
+    "lng": 38.73915
+  },
+  "Merkato Buna Tera Block 86": {
+    "lat": 9.02762,
+    "lng": 38.73924
+  },
+  "Merkato Buna Tera Block 87": {
+    "lat": 9.03141,
+    "lng": 38.73435
+  },
+  "Merkato Buna Tera Block 88": {
+    "lat": 9.02502,
+    "lng": 38.73721
+  },
+  "Merkato Buna Tera Block 89": {
+    "lat": 9.03011,
+    "lng": 38.73532
+  },
+  "Merkato Buna Tera Block 90": {
+    "lat": 9.03143,
+    "lng": 38.73765
+  },
+  "Merkato Buna Tera Block 91": {
+    "lat": 9.02531,
+    "lng": 38.73530
+  },
+  "Merkato Buna Tera Block 92": {
+    "lat": 9.03253,
+    "lng": 38.73741
+  },
+  "Merkato Buna Tera Block 93": {
+    "lat": 9.02971,
+    "lng": 38.73934
+  },
+  "Merkato Buna Tera Block 94": {
+    "lat": 9.02900,
+    "lng": 38.74303
+  },
+  "Merkato Buna Tera Block 95": {
+    "lat": 9.02930,
+    "lng": 38.74260
+  },
+  "Merkato Buna Tera Block 96": {
+    "lat": 9.02983,
+    "lng": 38.73639
+  },
+  "Merkato Buna Tera Block 97": {
+    "lat": 9.02282,
+    "lng": 38.74283
+  },
+  "Merkato Buna Tera Block 98": {
+    "lat": 9.02823,
+    "lng": 38.74155
+  },
+  "Merkato Buna Tera Block 99": {
+    "lat": 9.03166,
+    "lng": 38.73507
+  },
+  "Merkato Buna Tera Block 100": {
+    "lat": 9.02510,
+    "lng": 38.73413
+  },
+  "Merkato Work Tera Block 1": {
+    "lat": 9.03256,
+    "lng": 38.73671
+  },
+  "Merkato Work Tera Block 2": {
+    "lat": 9.02532,
+    "lng": 38.73426
+  },
+  "Merkato Work Tera Block 3": {
+    "lat": 9.03191,
+    "lng": 38.74182
+  },
+  "Merkato Work Tera Block 4": {
+    "lat": 9.02672,
+    "lng": 38.74204
+  },
+  "Merkato Work Tera Block 5": {
+    "lat": 9.02579,
+    "lng": 38.74068
+  },
+  "Merkato Work Tera Block 6": {
+    "lat": 9.02348,
+    "lng": 38.73977
+  },
+  "Merkato Work Tera Block 7": {
+    "lat": 9.02607,
+    "lng": 38.74360
+  },
+  "Merkato Work Tera Block 8": {
+    "lat": 9.02407,
+    "lng": 38.73420
+  },
+  "Merkato Work Tera Block 9": {
+    "lat": 9.02903,
+    "lng": 38.73766
+  },
+  "Merkato Work Tera Block 10": {
+    "lat": 9.02582,
+    "lng": 38.74189
+  },
+  "Merkato Work Tera Block 11": {
+    "lat": 9.03133,
+    "lng": 38.74113
+  },
+  "Merkato Work Tera Block 12": {
+    "lat": 9.02884,
+    "lng": 38.73439
+  },
+  "Merkato Work Tera Block 13": {
+    "lat": 9.02452,
+    "lng": 38.74207
+  },
+  "Merkato Work Tera Block 14": {
+    "lat": 9.03103,
+    "lng": 38.73444
+  },
+  "Merkato Work Tera Block 15": {
+    "lat": 9.03193,
+    "lng": 38.73705
+  },
+  "Merkato Work Tera Block 16": {
+    "lat": 9.02422,
+    "lng": 38.73608
+  },
+  "Merkato Work Tera Block 17": {
+    "lat": 9.03058,
+    "lng": 38.73428
+  },
+  "Merkato Work Tera Block 18": {
+    "lat": 9.02842,
+    "lng": 38.73772
+  },
+  "Merkato Work Tera Block 19": {
+    "lat": 9.02338,
+    "lng": 38.73756
+  },
+  "Merkato Work Tera Block 20": {
+    "lat": 9.02973,
+    "lng": 38.74272
+  },
+  "Merkato Work Tera Block 21": {
+    "lat": 9.03069,
+    "lng": 38.73884
+  },
+  "Merkato Work Tera Block 22": {
+    "lat": 9.02878,
+    "lng": 38.73793
+  },
+  "Merkato Work Tera Block 23": {
+    "lat": 9.02422,
+    "lng": 38.74105
+  },
+  "Merkato Work Tera Block 24": {
+    "lat": 9.02810,
+    "lng": 38.74236
+  },
+  "Merkato Work Tera Block 25": {
+    "lat": 9.03134,
+    "lng": 38.73733
+  },
+  "Merkato Work Tera Block 26": {
+    "lat": 9.02580,
+    "lng": 38.73747
+  },
+  "Merkato Work Tera Block 27": {
+    "lat": 9.02664,
+    "lng": 38.74058
+  },
+  "Merkato Work Tera Block 28": {
+    "lat": 9.02809,
+    "lng": 38.73420
+  },
+  "Merkato Work Tera Block 29": {
+    "lat": 9.02730,
+    "lng": 38.73454
+  },
+  "Merkato Work Tera Block 30": {
+    "lat": 9.02651,
+    "lng": 38.73669
+  },
+  "Merkato Work Tera Block 31": {
+    "lat": 9.02654,
+    "lng": 38.73955
+  },
+  "Merkato Work Tera Block 32": {
+    "lat": 9.02815,
+    "lng": 38.73556
+  },
+  "Merkato Work Tera Block 33": {
+    "lat": 9.02596,
+    "lng": 38.73645
+  },
+  "Merkato Work Tera Block 34": {
+    "lat": 9.02848,
+    "lng": 38.73657
+  },
+  "Merkato Work Tera Block 35": {
+    "lat": 9.02949,
+    "lng": 38.73942
+  },
+  "Merkato Work Tera Block 36": {
+    "lat": 9.02841,
+    "lng": 38.73631
+  },
+  "Merkato Work Tera Block 37": {
+    "lat": 9.02665,
+    "lng": 38.73863
+  },
+  "Merkato Work Tera Block 38": {
+    "lat": 9.02867,
+    "lng": 38.74170
+  },
+  "Merkato Work Tera Block 39": {
+    "lat": 9.03176,
+    "lng": 38.73621
+  },
+  "Merkato Work Tera Block 40": {
+    "lat": 9.02814,
+    "lng": 38.73398
+  },
+  "Merkato Work Tera Block 41": {
+    "lat": 9.02721,
+    "lng": 38.73877
+  },
+  "Merkato Work Tera Block 42": {
+    "lat": 9.03260,
+    "lng": 38.74305
+  },
+  "Merkato Work Tera Block 43": {
+    "lat": 9.02382,
+    "lng": 38.74324
+  },
+  "Merkato Work Tera Block 44": {
+    "lat": 9.02986,
+    "lng": 38.73725
+  },
+  "Merkato Work Tera Block 45": {
+    "lat": 9.02326,
+    "lng": 38.73936
+  },
+  "Merkato Work Tera Block 46": {
+    "lat": 9.03120,
+    "lng": 38.73818
+  },
+  "Merkato Work Tera Block 47": {
+    "lat": 9.02535,
+    "lng": 38.73554
+  },
+  "Merkato Work Tera Block 48": {
+    "lat": 9.02380,
+    "lng": 38.73522
+  },
+  "Merkato Work Tera Block 49": {
+    "lat": 9.03155,
+    "lng": 38.73732
+  },
+  "Merkato Work Tera Block 50": {
+    "lat": 9.02620,
+    "lng": 38.73472
+  },
+  "Merkato Work Tera Block 51": {
+    "lat": 9.02532,
+    "lng": 38.73893
+  },
+  "Merkato Work Tera Block 52": {
+    "lat": 9.03150,
+    "lng": 38.73840
+  },
+  "Merkato Work Tera Block 53": {
+    "lat": 9.02574,
+    "lng": 38.74141
+  },
+  "Merkato Work Tera Block 54": {
+    "lat": 9.03170,
+    "lng": 38.73435
+  },
+  "Merkato Work Tera Block 55": {
+    "lat": 9.02619,
+    "lng": 38.73756
+  },
+  "Merkato Work Tera Block 56": {
+    "lat": 9.03046,
+    "lng": 38.73623
+  },
+  "Merkato Work Tera Block 57": {
+    "lat": 9.02946,
+    "lng": 38.73568
+  },
+  "Merkato Work Tera Block 58": {
+    "lat": 9.02455,
+    "lng": 38.74367
+  },
+  "Merkato Work Tera Block 59": {
+    "lat": 9.03085,
+    "lng": 38.74349
+  },
+  "Merkato Work Tera Block 60": {
+    "lat": 9.03172,
+    "lng": 38.74116
+  },
+  "Merkato Work Tera Block 61": {
+    "lat": 9.02788,
+    "lng": 38.73880
+  },
+  "Merkato Work Tera Block 62": {
+    "lat": 9.02449,
+    "lng": 38.73390
+  },
+  "Merkato Work Tera Block 63": {
+    "lat": 9.02812,
+    "lng": 38.74080
+  },
+  "Merkato Work Tera Block 64": {
+    "lat": 9.02824,
+    "lng": 38.73516
+  },
+  "Merkato Work Tera Block 65": {
+    "lat": 9.02539,
+    "lng": 38.74370
+  },
+  "Merkato Work Tera Block 66": {
+    "lat": 9.02299,
+    "lng": 38.73842
+  },
+  "Merkato Work Tera Block 67": {
+    "lat": 9.02998,
+    "lng": 38.73637
+  },
+  "Merkato Work Tera Block 68": {
+    "lat": 9.02914,
+    "lng": 38.73880
+  },
+  "Merkato Work Tera Block 69": {
+    "lat": 9.02894,
+    "lng": 38.73502
+  },
+  "Merkato Work Tera Block 70": {
+    "lat": 9.03195,
+    "lng": 38.73396
+  },
+  "Merkato Work Tera Block 71": {
+    "lat": 9.03222,
+    "lng": 38.73806
+  },
+  "Merkato Work Tera Block 72": {
+    "lat": 9.02924,
+    "lng": 38.74304
+  },
+  "Merkato Work Tera Block 73": {
+    "lat": 9.02947,
+    "lng": 38.73753
+  },
+  "Merkato Work Tera Block 74": {
+    "lat": 9.03083,
+    "lng": 38.74351
+  },
+  "Merkato Work Tera Block 75": {
+    "lat": 9.02933,
+    "lng": 38.74165
+  },
+  "Merkato Work Tera Block 76": {
+    "lat": 9.03067,
+    "lng": 38.74186
+  },
+  "Merkato Work Tera Block 77": {
+    "lat": 9.02941,
+    "lng": 38.73915
+  },
+  "Merkato Work Tera Block 78": {
+    "lat": 9.02592,
+    "lng": 38.73786
+  },
+  "Merkato Work Tera Block 79": {
+    "lat": 9.02745,
+    "lng": 38.74235
+  },
+  "Merkato Work Tera Block 80": {
+    "lat": 9.02913,
+    "lng": 38.73605
+  },
+  "Merkato Work Tera Block 81": {
+    "lat": 9.03175,
+    "lng": 38.73964
+  },
+  "Merkato Work Tera Block 82": {
+    "lat": 9.02787,
+    "lng": 38.73802
+  },
+  "Merkato Work Tera Block 83": {
+    "lat": 9.02394,
+    "lng": 38.73504
+  },
+  "Merkato Work Tera Block 84": {
+    "lat": 9.03064,
+    "lng": 38.73605
+  },
+  "Merkato Work Tera Block 85": {
+    "lat": 9.02764,
+    "lng": 38.73478
+  },
+  "Merkato Work Tera Block 86": {
+    "lat": 9.03080,
+    "lng": 38.74344
+  },
+  "Merkato Work Tera Block 87": {
+    "lat": 9.02427,
+    "lng": 38.74318
+  },
+  "Merkato Work Tera Block 88": {
+    "lat": 9.02776,
+    "lng": 38.74301
+  },
+  "Merkato Work Tera Block 89": {
+    "lat": 9.02414,
+    "lng": 38.73652
+  },
+  "Merkato Work Tera Block 90": {
+    "lat": 9.03132,
+    "lng": 38.73926
+  },
+  "Merkato Work Tera Block 91": {
+    "lat": 9.03063,
+    "lng": 38.73457
+  },
+  "Merkato Work Tera Block 92": {
+    "lat": 9.02998,
+    "lng": 38.74245
+  },
+  "Merkato Work Tera Block 93": {
+    "lat": 9.02591,
+    "lng": 38.74184
+  },
+  "Merkato Work Tera Block 94": {
+    "lat": 9.03123,
+    "lng": 38.73577
+  },
+  "Merkato Work Tera Block 95": {
+    "lat": 9.03270,
+    "lng": 38.74019
+  },
+  "Merkato Work Tera Block 96": {
+    "lat": 9.02578,
+    "lng": 38.73406
+  },
+  "Merkato Work Tera Block 97": {
+    "lat": 9.03266,
+    "lng": 38.74247
+  },
+  "Merkato Work Tera Block 98": {
+    "lat": 9.02607,
+    "lng": 38.73828
+  },
+  "Merkato Work Tera Block 99": {
+    "lat": 9.02977,
+    "lng": 38.74214
+  },
+  "Merkato Work Tera Block 100": {
+    "lat": 9.02394,
+    "lng": 38.74292
+  },
+  "Merkato Gojam Berenda Block 1": {
+    "lat": 9.02355,
+    "lng": 38.73609
+  },
+  "Merkato Gojam Berenda Block 2": {
+    "lat": 9.02430,
+    "lng": 38.73574
+  },
+  "Merkato Gojam Berenda Block 3": {
+    "lat": 9.02688,
+    "lng": 38.73592
+  },
+  "Merkato Gojam Berenda Block 4": {
+    "lat": 9.02422,
+    "lng": 38.74001
+  },
+  "Merkato Gojam Berenda Block 5": {
+    "lat": 9.02821,
+    "lng": 38.73576
+  },
+  "Merkato Gojam Berenda Block 6": {
+    "lat": 9.02893,
+    "lng": 38.73991
+  },
+  "Merkato Gojam Berenda Block 7": {
+    "lat": 9.02618,
+    "lng": 38.73380
+  },
+  "Merkato Gojam Berenda Block 8": {
+    "lat": 9.03121,
+    "lng": 38.73780
+  },
+  "Merkato Gojam Berenda Block 9": {
+    "lat": 9.02883,
+    "lng": 38.74331
+  },
+  "Merkato Gojam Berenda Block 10": {
+    "lat": 9.02441,
+    "lng": 38.74152
+  },
+  "Merkato Gojam Berenda Block 11": {
+    "lat": 9.02376,
+    "lng": 38.73554
+  },
+  "Merkato Gojam Berenda Block 12": {
+    "lat": 9.02822,
+    "lng": 38.74208
+  },
+  "Merkato Gojam Berenda Block 13": {
+    "lat": 9.02783,
+    "lng": 38.74358
+  },
+  "Merkato Gojam Berenda Block 14": {
+    "lat": 9.02632,
+    "lng": 38.73420
+  },
+  "Merkato Gojam Berenda Block 15": {
+    "lat": 9.03069,
+    "lng": 38.73549
+  },
+  "Merkato Gojam Berenda Block 16": {
+    "lat": 9.02768,
+    "lng": 38.73834
+  },
+  "Merkato Gojam Berenda Block 17": {
+    "lat": 9.03083,
+    "lng": 38.73995
+  },
+  "Merkato Gojam Berenda Block 18": {
+    "lat": 9.02901,
+    "lng": 38.74232
+  },
+  "Merkato Gojam Berenda Block 19": {
+    "lat": 9.02461,
+    "lng": 38.73829
+  },
+  "Merkato Gojam Berenda Block 20": {
+    "lat": 9.03012,
+    "lng": 38.74204
+  },
+  "Merkato Gojam Berenda Block 21": {
+    "lat": 9.02742,
+    "lng": 38.74059
+  },
+  "Merkato Gojam Berenda Block 22": {
+    "lat": 9.02486,
+    "lng": 38.73766
+  },
+  "Merkato Gojam Berenda Block 23": {
+    "lat": 9.02669,
+    "lng": 38.74216
+  },
+  "Merkato Gojam Berenda Block 24": {
+    "lat": 9.02345,
+    "lng": 38.74293
+  },
+  "Merkato Gojam Berenda Block 25": {
+    "lat": 9.03241,
+    "lng": 38.73627
+  },
+  "Merkato Gojam Berenda Block 26": {
+    "lat": 9.03084,
+    "lng": 38.73819
+  },
+  "Merkato Gojam Berenda Block 27": {
+    "lat": 9.03108,
+    "lng": 38.73584
+  },
+  "Merkato Gojam Berenda Block 28": {
+    "lat": 9.02458,
+    "lng": 38.73997
+  },
+  "Merkato Gojam Berenda Block 29": {
+    "lat": 9.03041,
+    "lng": 38.73535
+  },
+  "Merkato Gojam Berenda Block 30": {
+    "lat": 9.03137,
+    "lng": 38.73908
+  },
+  "Merkato Gojam Berenda Block 31": {
+    "lat": 9.02475,
+    "lng": 38.74326
+  },
+  "Merkato Gojam Berenda Block 32": {
+    "lat": 9.02961,
+    "lng": 38.73982
+  },
+  "Merkato Gojam Berenda Block 33": {
+    "lat": 9.02968,
+    "lng": 38.73912
+  },
+  "Merkato Gojam Berenda Block 34": {
+    "lat": 9.02326,
+    "lng": 38.73977
+  },
+  "Merkato Gojam Berenda Block 35": {
+    "lat": 9.02676,
+    "lng": 38.73521
+  },
+  "Merkato Gojam Berenda Block 36": {
+    "lat": 9.02345,
+    "lng": 38.73448
+  },
+  "Merkato Gojam Berenda Block 37": {
+    "lat": 9.02784,
+    "lng": 38.73456
+  },
+  "Merkato Gojam Berenda Block 38": {
+    "lat": 9.03116,
+    "lng": 38.73590
+  },
+  "Merkato Gojam Berenda Block 39": {
+    "lat": 9.02869,
+    "lng": 38.73766
+  },
+  "Merkato Gojam Berenda Block 40": {
+    "lat": 9.02699,
+    "lng": 38.73739
+  },
+  "Merkato Gojam Berenda Block 41": {
+    "lat": 9.02724,
+    "lng": 38.73559
+  },
+  "Merkato Gojam Berenda Block 42": {
+    "lat": 9.02525,
+    "lng": 38.73736
+  },
+  "Merkato Gojam Berenda Block 43": {
+    "lat": 9.02482,
+    "lng": 38.73608
+  },
+  "Merkato Gojam Berenda Block 44": {
+    "lat": 9.02310,
+    "lng": 38.73887
+  },
+  "Merkato Gojam Berenda Block 45": {
+    "lat": 9.03063,
+    "lng": 38.73937
+  },
+  "Merkato Gojam Berenda Block 46": {
+    "lat": 9.02451,
+    "lng": 38.73381
+  },
+  "Merkato Gojam Berenda Block 47": {
+    "lat": 9.02460,
+    "lng": 38.73562
+  },
+  "Merkato Gojam Berenda Block 48": {
+    "lat": 9.03086,
+    "lng": 38.74271
+  },
+  "Merkato Gojam Berenda Block 49": {
+    "lat": 9.03162,
+    "lng": 38.73870
+  },
+  "Merkato Gojam Berenda Block 50": {
+    "lat": 9.02630,
+    "lng": 38.73945
+  },
+  "Merkato Gojam Berenda Block 51": {
+    "lat": 9.02321,
+    "lng": 38.73556
+  },
+  "Merkato Gojam Berenda Block 52": {
+    "lat": 9.02885,
+    "lng": 38.73776
+  },
+  "Merkato Gojam Berenda Block 53": {
+    "lat": 9.02581,
+    "lng": 38.73569
+  },
+  "Merkato Gojam Berenda Block 54": {
+    "lat": 9.03178,
+    "lng": 38.73662
+  },
+  "Merkato Gojam Berenda Block 55": {
+    "lat": 9.03221,
+    "lng": 38.74106
+  },
+  "Merkato Gojam Berenda Block 56": {
+    "lat": 9.02364,
+    "lng": 38.73813
+  },
+  "Merkato Gojam Berenda Block 57": {
+    "lat": 9.03161,
+    "lng": 38.73440
+  },
+  "Merkato Gojam Berenda Block 58": {
+    "lat": 9.02478,
+    "lng": 38.73862
+  },
+  "Merkato Gojam Berenda Block 59": {
+    "lat": 9.03085,
+    "lng": 38.74060
+  },
+  "Merkato Gojam Berenda Block 60": {
+    "lat": 9.02979,
+    "lng": 38.73946
+  },
+  "Merkato Gojam Berenda Block 61": {
+    "lat": 9.03246,
+    "lng": 38.73417
+  },
+  "Merkato Gojam Berenda Block 62": {
+    "lat": 9.02501,
+    "lng": 38.73394
+  },
+  "Merkato Gojam Berenda Block 63": {
+    "lat": 9.03036,
+    "lng": 38.73592
+  },
+  "Merkato Gojam Berenda Block 64": {
+    "lat": 9.03058,
+    "lng": 38.73549
+  },
+  "Merkato Gojam Berenda Block 65": {
+    "lat": 9.02485,
+    "lng": 38.73721
+  },
+  "Merkato Gojam Berenda Block 66": {
+    "lat": 9.02618,
+    "lng": 38.74153
+  },
+  "Merkato Gojam Berenda Block 67": {
+    "lat": 9.02359,
+    "lng": 38.73978
+  },
+  "Merkato Gojam Berenda Block 68": {
+    "lat": 9.03186,
+    "lng": 38.73459
+  },
+  "Merkato Gojam Berenda Block 69": {
+    "lat": 9.03184,
+    "lng": 38.74176
+  },
+  "Merkato Gojam Berenda Block 70": {
+    "lat": 9.02466,
+    "lng": 38.73464
+  },
+  "Merkato Gojam Berenda Block 71": {
+    "lat": 9.02674,
+    "lng": 38.73411
+  },
+  "Merkato Gojam Berenda Block 72": {
+    "lat": 9.02687,
+    "lng": 38.73933
+  },
+  "Merkato Gojam Berenda Block 73": {
+    "lat": 9.03198,
+    "lng": 38.73993
+  },
+  "Merkato Gojam Berenda Block 74": {
+    "lat": 9.02833,
+    "lng": 38.74132
+  },
+  "Merkato Gojam Berenda Block 75": {
+    "lat": 9.02890,
+    "lng": 38.73561
+  },
+  "Merkato Gojam Berenda Block 76": {
+    "lat": 9.02429,
+    "lng": 38.73569
+  },
+  "Merkato Gojam Berenda Block 77": {
+    "lat": 9.02868,
+    "lng": 38.74134
+  },
+  "Merkato Gojam Berenda Block 78": {
+    "lat": 9.02549,
+    "lng": 38.73418
+  },
+  "Merkato Gojam Berenda Block 79": {
+    "lat": 9.02931,
+    "lng": 38.73868
+  },
+  "Merkato Gojam Berenda Block 80": {
+    "lat": 9.03094,
+    "lng": 38.74122
+  },
+  "Merkato Gojam Berenda Block 81": {
+    "lat": 9.02439,
+    "lng": 38.73753
+  },
+  "Merkato Gojam Berenda Block 82": {
+    "lat": 9.02923,
+    "lng": 38.74251
+  },
+  "Merkato Gojam Berenda Block 83": {
+    "lat": 9.02703,
+    "lng": 38.74265
+  },
+  "Merkato Gojam Berenda Block 84": {
+    "lat": 9.02351,
+    "lng": 38.74259
+  },
+  "Merkato Gojam Berenda Block 85": {
+    "lat": 9.02469,
+    "lng": 38.74061
+  },
+  "Merkato Gojam Berenda Block 86": {
+    "lat": 9.02647,
+    "lng": 38.73822
+  },
+  "Merkato Gojam Berenda Block 87": {
+    "lat": 9.03125,
+    "lng": 38.74374
+  },
+  "Merkato Gojam Berenda Block 88": {
+    "lat": 9.02850,
+    "lng": 38.73730
+  },
+  "Merkato Gojam Berenda Block 89": {
+    "lat": 9.02591,
+    "lng": 38.73854
+  },
+  "Merkato Gojam Berenda Block 90": {
+    "lat": 9.03146,
+    "lng": 38.73737
+  },
+  "Merkato Gojam Berenda Block 91": {
+    "lat": 9.02994,
+    "lng": 38.73395
+  },
+  "Merkato Gojam Berenda Block 92": {
+    "lat": 9.02535,
+    "lng": 38.74230
+  },
+  "Merkato Gojam Berenda Block 93": {
+    "lat": 9.03020,
+    "lng": 38.73483
+  },
+  "Merkato Gojam Berenda Block 94": {
+    "lat": 9.02461,
+    "lng": 38.73642
+  },
+  "Merkato Gojam Berenda Block 95": {
+    "lat": 9.02823,
+    "lng": 38.74323
+  },
+  "Merkato Gojam Berenda Block 96": {
+    "lat": 9.02401,
+    "lng": 38.73749
+  },
+  "Merkato Gojam Berenda Block 97": {
+    "lat": 9.02527,
+    "lng": 38.74231
+  },
+  "Merkato Gojam Berenda Block 98": {
+    "lat": 9.03001,
+    "lng": 38.73807
+  },
+  "Merkato Gojam Berenda Block 99": {
+    "lat": 9.02399,
+    "lng": 38.74239
+  },
+  "Merkato Gojam Berenda Block 100": {
+    "lat": 9.03072,
+    "lng": 38.74129
+  },
+  "Merkato Sebara Babur Block 1": {
+    "lat": 9.03070,
+    "lng": 38.73655
+  },
+  "Merkato Sebara Babur Block 2": {
+    "lat": 9.02377,
+    "lng": 38.73520
+  },
+  "Merkato Sebara Babur Block 3": {
+    "lat": 9.03149,
+    "lng": 38.73543
+  },
+  "Merkato Sebara Babur Block 4": {
+    "lat": 9.02761,
+    "lng": 38.73602
+  },
+  "Merkato Sebara Babur Block 5": {
+    "lat": 9.02667,
+    "lng": 38.73685
+  },
+  "Merkato Sebara Babur Block 6": {
+    "lat": 9.02705,
+    "lng": 38.74344
+  },
+  "Merkato Sebara Babur Block 7": {
+    "lat": 9.02451,
+    "lng": 38.73928
+  },
+  "Merkato Sebara Babur Block 8": {
+    "lat": 9.03064,
+    "lng": 38.74352
+  },
+  "Merkato Sebara Babur Block 9": {
+    "lat": 9.02614,
+    "lng": 38.73542
+  },
+  "Merkato Sebara Babur Block 10": {
+    "lat": 9.02578,
+    "lng": 38.73548
+  },
+  "Merkato Sebara Babur Block 11": {
+    "lat": 9.03126,
+    "lng": 38.74078
+  },
+  "Merkato Sebara Babur Block 12": {
+    "lat": 9.02420,
+    "lng": 38.73521
+  },
+  "Merkato Sebara Babur Block 13": {
+    "lat": 9.03148,
+    "lng": 38.73614
+  },
+  "Merkato Sebara Babur Block 14": {
+    "lat": 9.03017,
+    "lng": 38.73453
+  },
+  "Merkato Sebara Babur Block 15": {
+    "lat": 9.03128,
+    "lng": 38.73903
+  },
+  "Merkato Sebara Babur Block 16": {
+    "lat": 9.03125,
+    "lng": 38.73764
+  },
+  "Merkato Sebara Babur Block 17": {
+    "lat": 9.02295,
+    "lng": 38.73608
+  },
+  "Merkato Sebara Babur Block 18": {
+    "lat": 9.03098,
+    "lng": 38.73825
+  },
+  "Merkato Sebara Babur Block 19": {
+    "lat": 9.02902,
+    "lng": 38.73525
+  },
+  "Merkato Sebara Babur Block 20": {
+    "lat": 9.02351,
+    "lng": 38.74015
+  },
+  "Merkato Sebara Babur Block 21": {
+    "lat": 9.02802,
+    "lng": 38.74126
+  },
+  "Merkato Sebara Babur Block 22": {
+    "lat": 9.02305,
+    "lng": 38.74089
+  },
+  "Merkato Sebara Babur Block 23": {
+    "lat": 9.03163,
+    "lng": 38.73587
+  },
+  "Merkato Sebara Babur Block 24": {
+    "lat": 9.03023,
+    "lng": 38.74336
+  },
+  "Merkato Sebara Babur Block 25": {
+    "lat": 9.03138,
+    "lng": 38.73643
+  },
+  "Merkato Sebara Babur Block 26": {
+    "lat": 9.02920,
+    "lng": 38.74302
+  },
+  "Merkato Sebara Babur Block 27": {
+    "lat": 9.03141,
+    "lng": 38.74323
+  },
+  "Merkato Sebara Babur Block 28": {
+    "lat": 9.03147,
+    "lng": 38.74343
+  },
+  "Merkato Sebara Babur Block 29": {
+    "lat": 9.03178,
+    "lng": 38.73984
+  },
+  "Merkato Sebara Babur Block 30": {
+    "lat": 9.03054,
+    "lng": 38.74047
+  },
+  "Merkato Sebara Babur Block 31": {
+    "lat": 9.02431,
+    "lng": 38.73857
+  },
+  "Merkato Sebara Babur Block 32": {
+    "lat": 9.02853,
+    "lng": 38.73859
+  },
+  "Merkato Sebara Babur Block 33": {
+    "lat": 9.02540,
+    "lng": 38.74274
+  },
+  "Merkato Sebara Babur Block 34": {
+    "lat": 9.02618,
+    "lng": 38.74204
+  },
+  "Merkato Sebara Babur Block 35": {
+    "lat": 9.02595,
+    "lng": 38.74134
+  },
+  "Merkato Sebara Babur Block 36": {
+    "lat": 9.03221,
+    "lng": 38.73901
+  },
+  "Merkato Sebara Babur Block 37": {
+    "lat": 9.02289,
+    "lng": 38.73787
+  },
+  "Merkato Sebara Babur Block 38": {
+    "lat": 9.02472,
+    "lng": 38.73876
+  },
+  "Merkato Sebara Babur Block 39": {
+    "lat": 9.02995,
+    "lng": 38.73714
+  },
+  "Merkato Sebara Babur Block 40": {
+    "lat": 9.03257,
+    "lng": 38.73499
+  },
+  "Merkato Sebara Babur Block 41": {
+    "lat": 9.02850,
+    "lng": 38.73521
+  },
+  "Merkato Sebara Babur Block 42": {
+    "lat": 9.02942,
+    "lng": 38.73868
+  },
+  "Merkato Sebara Babur Block 43": {
+    "lat": 9.02270,
+    "lng": 38.74156
+  },
+  "Merkato Sebara Babur Block 44": {
+    "lat": 9.02366,
+    "lng": 38.73413
+  },
+  "Merkato Sebara Babur Block 45": {
+    "lat": 9.03256,
+    "lng": 38.73853
+  },
+  "Merkato Sebara Babur Block 46": {
+    "lat": 9.02809,
+    "lng": 38.74028
+  },
+  "Merkato Sebara Babur Block 47": {
+    "lat": 9.02271,
+    "lng": 38.73576
+  },
+  "Merkato Sebara Babur Block 48": {
+    "lat": 9.02381,
+    "lng": 38.74164
+  },
+  "Merkato Sebara Babur Block 49": {
+    "lat": 9.03258,
+    "lng": 38.73711
+  },
+  "Merkato Sebara Babur Block 50": {
+    "lat": 9.02747,
+    "lng": 38.73965
+  },
+  "Merkato Sebara Babur Block 51": {
+    "lat": 9.02966,
+    "lng": 38.73461
+  },
+  "Merkato Sebara Babur Block 52": {
+    "lat": 9.02783,
+    "lng": 38.73919
+  },
+  "Merkato Sebara Babur Block 53": {
+    "lat": 9.02525,
+    "lng": 38.74358
+  },
+  "Merkato Sebara Babur Block 54": {
+    "lat": 9.02649,
+    "lng": 38.74134
+  },
+  "Merkato Sebara Babur Block 55": {
+    "lat": 9.02898,
+    "lng": 38.74097
+  },
+  "Merkato Sebara Babur Block 56": {
+    "lat": 9.02372,
+    "lng": 38.73767
+  },
+  "Merkato Sebara Babur Block 57": {
+    "lat": 9.03267,
+    "lng": 38.73812
+  },
+  "Merkato Sebara Babur Block 58": {
+    "lat": 9.02679,
+    "lng": 38.73905
+  },
+  "Merkato Sebara Babur Block 59": {
+    "lat": 9.02991,
+    "lng": 38.73442
+  },
+  "Merkato Sebara Babur Block 60": {
+    "lat": 9.03001,
+    "lng": 38.73987
+  },
+  "Merkato Sebara Babur Block 61": {
+    "lat": 9.02318,
+    "lng": 38.74035
+  },
+  "Merkato Sebara Babur Block 62": {
+    "lat": 9.02402,
+    "lng": 38.73602
+  },
+  "Merkato Sebara Babur Block 63": {
+    "lat": 9.02927,
+    "lng": 38.73796
+  },
+  "Merkato Sebara Babur Block 64": {
+    "lat": 9.02453,
+    "lng": 38.74041
+  },
+  "Merkato Sebara Babur Block 65": {
+    "lat": 9.02419,
+    "lng": 38.73897
+  },
+  "Merkato Sebara Babur Block 66": {
+    "lat": 9.02816,
+    "lng": 38.73686
+  },
+  "Merkato Sebara Babur Block 67": {
+    "lat": 9.02646,
+    "lng": 38.73816
+  },
+  "Merkato Sebara Babur Block 68": {
+    "lat": 9.02896,
+    "lng": 38.74046
+  },
+  "Merkato Sebara Babur Block 69": {
+    "lat": 9.02643,
+    "lng": 38.73380
+  },
+  "Merkato Sebara Babur Block 70": {
+    "lat": 9.03082,
+    "lng": 38.73846
+  },
+  "Merkato Sebara Babur Block 71": {
+    "lat": 9.02789,
+    "lng": 38.74221
+  },
+  "Merkato Sebara Babur Block 72": {
+    "lat": 9.02705,
+    "lng": 38.73718
+  },
+  "Merkato Sebara Babur Block 73": {
+    "lat": 9.02909,
+    "lng": 38.73829
+  },
+  "Merkato Sebara Babur Block 74": {
+    "lat": 9.02800,
+    "lng": 38.74039
+  },
+  "Merkato Sebara Babur Block 75": {
+    "lat": 9.02519,
+    "lng": 38.73941
+  },
+  "Merkato Sebara Babur Block 76": {
+    "lat": 9.03059,
+    "lng": 38.74321
+  },
+  "Merkato Sebara Babur Block 77": {
+    "lat": 9.02513,
+    "lng": 38.74366
+  },
+  "Merkato Sebara Babur Block 78": {
+    "lat": 9.02569,
+    "lng": 38.73686
+  },
+  "Merkato Sebara Babur Block 79": {
+    "lat": 9.02936,
+    "lng": 38.73450
+  },
+  "Merkato Sebara Babur Block 80": {
+    "lat": 9.02418,
+    "lng": 38.74185
+  },
+  "Merkato Sebara Babur Block 81": {
+    "lat": 9.02578,
+    "lng": 38.73463
+  },
+  "Merkato Sebara Babur Block 82": {
+    "lat": 9.03033,
+    "lng": 38.73542
+  },
+  "Merkato Sebara Babur Block 83": {
+    "lat": 9.02682,
+    "lng": 38.73989
+  },
+  "Merkato Sebara Babur Block 84": {
+    "lat": 9.02756,
+    "lng": 38.73975
+  },
+  "Merkato Sebara Babur Block 85": {
+    "lat": 9.02842,
+    "lng": 38.73554
+  },
+  "Merkato Sebara Babur Block 86": {
+    "lat": 9.03119,
+    "lng": 38.74072
+  },
+  "Merkato Sebara Babur Block 87": {
+    "lat": 9.02411,
+    "lng": 38.73798
+  },
+  "Merkato Sebara Babur Block 88": {
+    "lat": 9.02996,
+    "lng": 38.74022
+  },
+  "Merkato Sebara Babur Block 89": {
+    "lat": 9.03203,
+    "lng": 38.74040
+  },
+  "Merkato Sebara Babur Block 90": {
+    "lat": 9.03206,
+    "lng": 38.73692
+  },
+  "Merkato Sebara Babur Block 91": {
+    "lat": 9.03163,
+    "lng": 38.74001
+  },
+  "Merkato Sebara Babur Block 92": {
+    "lat": 9.03262,
+    "lng": 38.73556
+  },
+  "Merkato Sebara Babur Block 93": {
+    "lat": 9.03087,
+    "lng": 38.74193
+  },
+  "Merkato Sebara Babur Block 94": {
+    "lat": 9.02778,
+    "lng": 38.74357
+  },
+  "Merkato Sebara Babur Block 95": {
+    "lat": 9.02581,
+    "lng": 38.73460
+  },
+  "Merkato Sebara Babur Block 96": {
+    "lat": 9.02489,
+    "lng": 38.73802
+  },
+  "Merkato Sebara Babur Block 97": {
+    "lat": 9.03252,
+    "lng": 38.74305
+  },
+  "Merkato Sebara Babur Block 98": {
+    "lat": 9.03114,
+    "lng": 38.74303
+  },
+  "Merkato Sebara Babur Block 99": {
+    "lat": 9.02866,
+    "lng": 38.73984
+  },
+  "Merkato Sebara Babur Block 100": {
+    "lat": 9.02289,
+    "lng": 38.74100
+  },
+  "Merkato Sindi Tera Block 1": {
+    "lat": 9.03211,
+    "lng": 38.73534
+  },
+  "Merkato Sindi Tera Block 2": {
+    "lat": 9.02338,
+    "lng": 38.73534
+  },
+  "Merkato Sindi Tera Block 3": {
+    "lat": 9.02620,
+    "lng": 38.73829
+  },
+  "Merkato Sindi Tera Block 4": {
+    "lat": 9.02556,
+    "lng": 38.73478
+  },
+  "Merkato Sindi Tera Block 5": {
+    "lat": 9.02746,
+    "lng": 38.73727
+  },
+  "Merkato Sindi Tera Block 6": {
+    "lat": 9.02640,
+    "lng": 38.73556
+  },
+  "Merkato Sindi Tera Block 7": {
+    "lat": 9.02403,
+    "lng": 38.73510
+  },
+  "Merkato Sindi Tera Block 8": {
+    "lat": 9.03242,
+    "lng": 38.73389
+  },
+  "Merkato Sindi Tera Block 9": {
+    "lat": 9.02725,
+    "lng": 38.74331
+  },
+  "Merkato Sindi Tera Block 10": {
+    "lat": 9.02884,
+    "lng": 38.74201
+  },
+  "Merkato Sindi Tera Block 11": {
+    "lat": 9.02890,
+    "lng": 38.74319
+  },
+  "Merkato Sindi Tera Block 12": {
+    "lat": 9.02391,
+    "lng": 38.74345
+  },
+  "Merkato Sindi Tera Block 13": {
+    "lat": 9.02821,
+    "lng": 38.73493
+  },
+  "Merkato Sindi Tera Block 14": {
+    "lat": 9.02763,
+    "lng": 38.73775
+  },
+  "Merkato Sindi Tera Block 15": {
+    "lat": 9.02623,
+    "lng": 38.73663
+  },
+  "Merkato Sindi Tera Block 16": {
+    "lat": 9.02913,
+    "lng": 38.74228
+  },
+  "Merkato Sindi Tera Block 17": {
+    "lat": 9.03245,
+    "lng": 38.73933
+  },
+  "Merkato Sindi Tera Block 18": {
+    "lat": 9.02475,
+    "lng": 38.74364
+  },
+  "Merkato Sindi Tera Block 19": {
+    "lat": 9.02998,
+    "lng": 38.74143
+  },
+  "Merkato Sindi Tera Block 20": {
+    "lat": 9.02594,
+    "lng": 38.73850
+  },
+  "Merkato Sindi Tera Block 21": {
+    "lat": 9.02701,
+    "lng": 38.73680
+  },
+  "Merkato Sindi Tera Block 22": {
+    "lat": 9.02652,
+    "lng": 38.73632
+  },
+  "Merkato Sindi Tera Block 23": {
+    "lat": 9.03094,
+    "lng": 38.73464
+  },
+  "Merkato Sindi Tera Block 24": {
+    "lat": 9.03138,
+    "lng": 38.74136
+  },
+  "Merkato Sindi Tera Block 25": {
+    "lat": 9.02446,
+    "lng": 38.73484
+  },
+  "Merkato Sindi Tera Block 26": {
+    "lat": 9.02703,
+    "lng": 38.74240
+  },
+  "Merkato Sindi Tera Block 27": {
+    "lat": 9.02795,
+    "lng": 38.73641
+  },
+  "Merkato Sindi Tera Block 28": {
+    "lat": 9.02400,
+    "lng": 38.74097
+  },
+  "Merkato Sindi Tera Block 29": {
+    "lat": 9.03021,
+    "lng": 38.73589
+  },
+  "Merkato Sindi Tera Block 30": {
+    "lat": 9.02311,
+    "lng": 38.74153
+  },
+  "Merkato Sindi Tera Block 31": {
+    "lat": 9.02272,
+    "lng": 38.73429
+  },
+  "Merkato Sindi Tera Block 32": {
+    "lat": 9.02329,
+    "lng": 38.73732
+  },
+  "Merkato Sindi Tera Block 33": {
+    "lat": 9.02316,
+    "lng": 38.73934
+  },
+  "Merkato Sindi Tera Block 34": {
+    "lat": 9.02870,
+    "lng": 38.74101
+  },
+  "Merkato Sindi Tera Block 35": {
+    "lat": 9.02823,
+    "lng": 38.74189
+  },
+  "Merkato Sindi Tera Block 36": {
+    "lat": 9.03261,
+    "lng": 38.74311
+  },
+  "Merkato Sindi Tera Block 37": {
+    "lat": 9.02607,
+    "lng": 38.74353
+  },
+  "Merkato Sindi Tera Block 38": {
+    "lat": 9.02778,
+    "lng": 38.73927
+  },
+  "Merkato Sindi Tera Block 39": {
+    "lat": 9.02785,
+    "lng": 38.74231
+  },
+  "Merkato Sindi Tera Block 40": {
+    "lat": 9.02274,
+    "lng": 38.73404
+  },
+  "Merkato Sindi Tera Block 41": {
+    "lat": 9.02999,
+    "lng": 38.74012
+  },
+  "Merkato Sindi Tera Block 42": {
+    "lat": 9.02467,
+    "lng": 38.73805
+  },
+  "Merkato Sindi Tera Block 43": {
+    "lat": 9.02515,
+    "lng": 38.73961
+  },
+  "Merkato Sindi Tera Block 44": {
+    "lat": 9.03233,
+    "lng": 38.73899
+  },
+  "Merkato Sindi Tera Block 45": {
+    "lat": 9.02323,
+    "lng": 38.74144
+  },
+  "Merkato Sindi Tera Block 46": {
+    "lat": 9.02848,
+    "lng": 38.74159
+  },
+  "Merkato Sindi Tera Block 47": {
+    "lat": 9.02667,
+    "lng": 38.74138
+  },
+  "Merkato Sindi Tera Block 48": {
+    "lat": 9.02613,
+    "lng": 38.73520
+  },
+  "Merkato Sindi Tera Block 49": {
+    "lat": 9.02699,
+    "lng": 38.73455
+  },
+  "Merkato Sindi Tera Block 50": {
+    "lat": 9.02411,
+    "lng": 38.73656
+  },
+  "Merkato Sindi Tera Block 51": {
+    "lat": 9.03144,
+    "lng": 38.73557
+  },
+  "Merkato Sindi Tera Block 52": {
+    "lat": 9.02733,
+    "lng": 38.73514
+  },
+  "Merkato Sindi Tera Block 53": {
+    "lat": 9.03056,
+    "lng": 38.73617
+  },
+  "Merkato Sindi Tera Block 54": {
+    "lat": 9.03012,
+    "lng": 38.73931
+  },
+  "Merkato Sindi Tera Block 55": {
+    "lat": 9.02622,
+    "lng": 38.73952
+  },
+  "Merkato Sindi Tera Block 56": {
+    "lat": 9.02350,
+    "lng": 38.73432
+  },
+  "Merkato Sindi Tera Block 57": {
+    "lat": 9.02592,
+    "lng": 38.74049
+  },
+  "Merkato Sindi Tera Block 58": {
+    "lat": 9.03175,
+    "lng": 38.74202
+  },
+  "Merkato Sindi Tera Block 59": {
+    "lat": 9.02356,
+    "lng": 38.73612
+  },
+  "Merkato Sindi Tera Block 60": {
+    "lat": 9.03040,
+    "lng": 38.74359
+  },
+  "Merkato Sindi Tera Block 61": {
+    "lat": 9.03063,
+    "lng": 38.74278
+  },
+  "Merkato Sindi Tera Block 62": {
+    "lat": 9.02795,
+    "lng": 38.73848
+  },
+  "Merkato Sindi Tera Block 63": {
+    "lat": 9.03137,
+    "lng": 38.73501
+  },
+  "Merkato Sindi Tera Block 64": {
+    "lat": 9.02329,
+    "lng": 38.74357
+  },
+  "Merkato Sindi Tera Block 65": {
+    "lat": 9.02541,
+    "lng": 38.74097
+  },
+  "Merkato Sindi Tera Block 66": {
+    "lat": 9.02759,
+    "lng": 38.74338
+  },
+  "Merkato Sindi Tera Block 67": {
+    "lat": 9.02950,
+    "lng": 38.73847
+  },
+  "Merkato Sindi Tera Block 68": {
+    "lat": 9.02866,
+    "lng": 38.73801
+  },
+  "Merkato Sindi Tera Block 69": {
+    "lat": 9.02791,
+    "lng": 38.73878
+  },
+  "Merkato Sindi Tera Block 70": {
+    "lat": 9.03233,
+    "lng": 38.73408
+  },
+  "Merkato Sindi Tera Block 71": {
+    "lat": 9.02354,
+    "lng": 38.74027
+  },
+  "Merkato Sindi Tera Block 72": {
+    "lat": 9.03148,
+    "lng": 38.73711
+  },
+  "Merkato Sindi Tera Block 73": {
+    "lat": 9.02673,
+    "lng": 38.73759
+  },
+  "Merkato Sindi Tera Block 74": {
+    "lat": 9.03216,
+    "lng": 38.73420
+  },
+  "Merkato Sindi Tera Block 75": {
+    "lat": 9.02931,
+    "lng": 38.73927
+  },
+  "Merkato Sindi Tera Block 76": {
+    "lat": 9.02360,
+    "lng": 38.74343
+  },
+  "Merkato Sindi Tera Block 77": {
+    "lat": 9.03033,
+    "lng": 38.74375
+  },
+  "Merkato Sindi Tera Block 78": {
+    "lat": 9.02593,
+    "lng": 38.73423
+  },
+  "Merkato Sindi Tera Block 79": {
+    "lat": 9.02343,
+    "lng": 38.73751
+  },
+  "Merkato Sindi Tera Block 80": {
+    "lat": 9.02744,
+    "lng": 38.74005
+  },
+  "Merkato Sindi Tera Block 81": {
+    "lat": 9.02642,
+    "lng": 38.73462
+  },
+  "Merkato Sindi Tera Block 82": {
+    "lat": 9.02804,
+    "lng": 38.73645
+  },
+  "Merkato Sindi Tera Block 83": {
+    "lat": 9.02389,
+    "lng": 38.73938
+  },
+  "Merkato Sindi Tera Block 84": {
+    "lat": 9.02729,
+    "lng": 38.74047
+  },
+  "Merkato Sindi Tera Block 85": {
+    "lat": 9.02428,
+    "lng": 38.73521
+  },
+  "Merkato Sindi Tera Block 86": {
+    "lat": 9.02561,
+    "lng": 38.73781
+  },
+  "Merkato Sindi Tera Block 87": {
+    "lat": 9.02282,
+    "lng": 38.73904
+  },
+  "Merkato Sindi Tera Block 88": {
+    "lat": 9.03265,
+    "lng": 38.73480
+  },
+  "Merkato Sindi Tera Block 89": {
+    "lat": 9.02980,
+    "lng": 38.74041
+  },
+  "Merkato Sindi Tera Block 90": {
+    "lat": 9.02755,
+    "lng": 38.73457
+  },
+  "Merkato Sindi Tera Block 91": {
+    "lat": 9.02621,
+    "lng": 38.73964
+  },
+  "Merkato Sindi Tera Block 92": {
+    "lat": 9.02954,
+    "lng": 38.73445
+  },
+  "Merkato Sindi Tera Block 93": {
+    "lat": 9.02535,
+    "lng": 38.73423
+  },
+  "Merkato Sindi Tera Block 94": {
+    "lat": 9.02304,
+    "lng": 38.73773
+  },
+  "Merkato Sindi Tera Block 95": {
+    "lat": 9.02378,
+    "lng": 38.73552
+  },
+  "Merkato Sindi Tera Block 96": {
+    "lat": 9.02928,
+    "lng": 38.73720
+  },
+  "Merkato Sindi Tera Block 97": {
+    "lat": 9.02808,
+    "lng": 38.73837
+  },
+  "Merkato Sindi Tera Block 98": {
+    "lat": 9.02660,
+    "lng": 38.73779
+  },
+  "Merkato Sindi Tera Block 99": {
+    "lat": 9.02776,
+    "lng": 38.73628
+  },
+  "Merkato Sindi Tera Block 100": {
+    "lat": 9.02626,
+    "lng": 38.73793
+  },
+  "Merkato Erteb Tera Block 1": {
+    "lat": 9.02875,
+    "lng": 38.74218
+  },
+  "Merkato Erteb Tera Block 2": {
+    "lat": 9.02954,
+    "lng": 38.73943
+  },
+  "Merkato Erteb Tera Block 3": {
+    "lat": 9.02328,
+    "lng": 38.73708
+  },
+  "Merkato Erteb Tera Block 4": {
+    "lat": 9.02877,
+    "lng": 38.74104
+  },
+  "Merkato Erteb Tera Block 5": {
+    "lat": 9.02956,
+    "lng": 38.73975
+  },
+  "Merkato Erteb Tera Block 6": {
+    "lat": 9.02637,
+    "lng": 38.73608
+  },
+  "Merkato Erteb Tera Block 7": {
+    "lat": 9.03208,
+    "lng": 38.74147
+  },
+  "Merkato Erteb Tera Block 8": {
+    "lat": 9.03194,
+    "lng": 38.73621
+  },
+  "Merkato Erteb Tera Block 9": {
+    "lat": 9.02737,
+    "lng": 38.73701
+  },
+  "Merkato Erteb Tera Block 10": {
+    "lat": 9.03113,
+    "lng": 38.74015
+  },
+  "Merkato Erteb Tera Block 11": {
+    "lat": 9.02579,
+    "lng": 38.73493
+  },
+  "Merkato Erteb Tera Block 12": {
+    "lat": 9.02444,
+    "lng": 38.73528
+  },
+  "Merkato Erteb Tera Block 13": {
+    "lat": 9.02609,
+    "lng": 38.73886
+  },
+  "Merkato Erteb Tera Block 14": {
+    "lat": 9.02845,
+    "lng": 38.74104
+  },
+  "Merkato Erteb Tera Block 15": {
+    "lat": 9.02654,
+    "lng": 38.74253
+  },
+  "Merkato Erteb Tera Block 16": {
+    "lat": 9.02356,
+    "lng": 38.74018
+  },
+  "Merkato Erteb Tera Block 17": {
+    "lat": 9.02535,
+    "lng": 38.73503
+  },
+  "Merkato Erteb Tera Block 18": {
+    "lat": 9.02329,
+    "lng": 38.74042
+  },
+  "Merkato Erteb Tera Block 19": {
+    "lat": 9.02791,
+    "lng": 38.73871
+  },
+  "Merkato Erteb Tera Block 20": {
+    "lat": 9.02703,
+    "lng": 38.73567
+  },
+  "Merkato Erteb Tera Block 21": {
+    "lat": 9.02635,
+    "lng": 38.74045
+  },
+  "Merkato Erteb Tera Block 22": {
+    "lat": 9.03132,
+    "lng": 38.74150
+  },
+  "Merkato Erteb Tera Block 23": {
+    "lat": 9.02570,
+    "lng": 38.73429
+  },
+  "Merkato Erteb Tera Block 24": {
+    "lat": 9.02943,
+    "lng": 38.73393
+  },
+  "Merkato Erteb Tera Block 25": {
+    "lat": 9.02289,
+    "lng": 38.73847
+  },
+  "Merkato Erteb Tera Block 26": {
+    "lat": 9.02447,
+    "lng": 38.73455
+  },
+  "Merkato Erteb Tera Block 27": {
+    "lat": 9.02469,
+    "lng": 38.74209
+  },
+  "Merkato Erteb Tera Block 28": {
+    "lat": 9.02594,
+    "lng": 38.74157
+  },
+  "Merkato Erteb Tera Block 29": {
+    "lat": 9.02784,
+    "lng": 38.73441
+  },
+  "Merkato Erteb Tera Block 30": {
+    "lat": 9.02332,
+    "lng": 38.73991
+  },
+  "Merkato Erteb Tera Block 31": {
+    "lat": 9.02440,
+    "lng": 38.74019
+  },
+  "Merkato Erteb Tera Block 32": {
+    "lat": 9.02507,
+    "lng": 38.73450
+  },
+  "Merkato Erteb Tera Block 33": {
+    "lat": 9.02976,
+    "lng": 38.73856
+  },
+  "Merkato Erteb Tera Block 34": {
+    "lat": 9.02643,
+    "lng": 38.73757
+  },
+  "Merkato Erteb Tera Block 35": {
+    "lat": 9.03065,
+    "lng": 38.73867
+  },
+  "Merkato Erteb Tera Block 36": {
+    "lat": 9.02372,
+    "lng": 38.73989
+  },
+  "Merkato Erteb Tera Block 37": {
+    "lat": 9.02625,
+    "lng": 38.74021
+  },
+  "Merkato Erteb Tera Block 38": {
+    "lat": 9.02997,
+    "lng": 38.73499
+  },
+  "Merkato Erteb Tera Block 39": {
+    "lat": 9.03260,
+    "lng": 38.73405
+  },
+  "Merkato Erteb Tera Block 40": {
+    "lat": 9.03083,
+    "lng": 38.73521
+  },
+  "Merkato Erteb Tera Block 41": {
+    "lat": 9.02409,
+    "lng": 38.74119
+  },
+  "Merkato Erteb Tera Block 42": {
+    "lat": 9.02835,
+    "lng": 38.73652
+  },
+  "Merkato Erteb Tera Block 43": {
+    "lat": 9.02717,
+    "lng": 38.74350
+  },
+  "Merkato Erteb Tera Block 44": {
+    "lat": 9.02643,
+    "lng": 38.74277
+  },
+  "Merkato Erteb Tera Block 45": {
+    "lat": 9.02663,
+    "lng": 38.73859
+  },
+  "Merkato Erteb Tera Block 46": {
+    "lat": 9.02539,
+    "lng": 38.73738
+  },
+  "Merkato Erteb Tera Block 47": {
+    "lat": 9.02602,
+    "lng": 38.74348
+  },
+  "Merkato Erteb Tera Block 48": {
+    "lat": 9.03207,
+    "lng": 38.73554
+  },
+  "Merkato Erteb Tera Block 49": {
+    "lat": 9.02607,
+    "lng": 38.73713
+  },
+  "Merkato Erteb Tera Block 50": {
+    "lat": 9.02823,
+    "lng": 38.74074
+  },
+  "Merkato Erteb Tera Block 51": {
+    "lat": 9.02629,
+    "lng": 38.74335
+  },
+  "Merkato Erteb Tera Block 52": {
+    "lat": 9.03089,
+    "lng": 38.74068
+  },
+  "Merkato Erteb Tera Block 53": {
+    "lat": 9.03032,
+    "lng": 38.73543
+  },
+  "Merkato Erteb Tera Block 54": {
+    "lat": 9.03257,
+    "lng": 38.74192
+  },
+  "Merkato Erteb Tera Block 55": {
+    "lat": 9.02698,
+    "lng": 38.74347
+  },
+  "Merkato Erteb Tera Block 56": {
+    "lat": 9.02398,
+    "lng": 38.73599
+  },
+  "Merkato Erteb Tera Block 57": {
+    "lat": 9.02976,
+    "lng": 38.73946
+  },
+  "Merkato Erteb Tera Block 58": {
+    "lat": 9.02498,
+    "lng": 38.73583
+  },
+  "Merkato Erteb Tera Block 59": {
+    "lat": 9.02401,
+    "lng": 38.73650
+  },
+  "Merkato Erteb Tera Block 60": {
+    "lat": 9.02303,
+    "lng": 38.73490
+  },
+  "Merkato Erteb Tera Block 61": {
+    "lat": 9.02354,
+    "lng": 38.73615
+  },
+  "Merkato Erteb Tera Block 62": {
+    "lat": 9.03023,
+    "lng": 38.73628
+  },
+  "Merkato Erteb Tera Block 63": {
+    "lat": 9.02289,
+    "lng": 38.73762
+  },
+  "Merkato Erteb Tera Block 64": {
+    "lat": 9.03022,
+    "lng": 38.73387
+  },
+  "Merkato Erteb Tera Block 65": {
+    "lat": 9.02466,
+    "lng": 38.74004
+  },
+  "Merkato Erteb Tera Block 66": {
+    "lat": 9.03258,
+    "lng": 38.74119
+  },
+  "Merkato Erteb Tera Block 67": {
+    "lat": 9.02621,
+    "lng": 38.73394
+  },
+  "Merkato Erteb Tera Block 68": {
+    "lat": 9.02627,
+    "lng": 38.73428
+  },
+  "Merkato Erteb Tera Block 69": {
+    "lat": 9.03023,
+    "lng": 38.73988
+  },
+  "Merkato Erteb Tera Block 70": {
+    "lat": 9.03173,
+    "lng": 38.74073
+  },
+  "Merkato Erteb Tera Block 71": {
+    "lat": 9.03068,
+    "lng": 38.73595
+  },
+  "Merkato Erteb Tera Block 72": {
+    "lat": 9.03154,
+    "lng": 38.73676
+  },
+  "Merkato Erteb Tera Block 73": {
+    "lat": 9.02505,
+    "lng": 38.74218
+  },
+  "Merkato Erteb Tera Block 74": {
+    "lat": 9.02639,
+    "lng": 38.73822
+  },
+  "Merkato Erteb Tera Block 75": {
+    "lat": 9.02907,
+    "lng": 38.74081
+  },
+  "Merkato Erteb Tera Block 76": {
+    "lat": 9.02314,
+    "lng": 38.73912
+  },
+  "Merkato Erteb Tera Block 77": {
+    "lat": 9.02286,
+    "lng": 38.74316
+  },
+  "Merkato Erteb Tera Block 78": {
+    "lat": 9.03072,
+    "lng": 38.74353
+  },
+  "Merkato Erteb Tera Block 79": {
+    "lat": 9.03243,
+    "lng": 38.73961
+  },
+  "Merkato Erteb Tera Block 80": {
+    "lat": 9.02986,
+    "lng": 38.74303
+  },
+  "Merkato Erteb Tera Block 81": {
+    "lat": 9.02932,
+    "lng": 38.73993
+  },
+  "Merkato Erteb Tera Block 82": {
+    "lat": 9.02414,
+    "lng": 38.74003
+  },
+  "Merkato Erteb Tera Block 83": {
+    "lat": 9.02885,
+    "lng": 38.73784
+  },
+  "Merkato Erteb Tera Block 84": {
+    "lat": 9.02623,
+    "lng": 38.73628
+  },
+  "Merkato Erteb Tera Block 85": {
+    "lat": 9.02873,
+    "lng": 38.73561
+  },
+  "Merkato Erteb Tera Block 86": {
+    "lat": 9.02608,
+    "lng": 38.73644
+  },
+  "Merkato Erteb Tera Block 87": {
+    "lat": 9.02607,
+    "lng": 38.74327
+  },
+  "Merkato Erteb Tera Block 88": {
+    "lat": 9.02340,
+    "lng": 38.73684
+  },
+  "Merkato Erteb Tera Block 89": {
+    "lat": 9.02724,
+    "lng": 38.74272
+  },
+  "Merkato Erteb Tera Block 90": {
+    "lat": 9.02661,
+    "lng": 38.73455
+  },
+  "Merkato Erteb Tera Block 91": {
+    "lat": 9.03107,
+    "lng": 38.74028
+  },
+  "Merkato Erteb Tera Block 92": {
+    "lat": 9.03155,
+    "lng": 38.73682
+  },
+  "Merkato Erteb Tera Block 93": {
+    "lat": 9.02466,
+    "lng": 38.74104
+  },
+  "Merkato Erteb Tera Block 94": {
+    "lat": 9.03172,
+    "lng": 38.74297
+  },
+  "Merkato Erteb Tera Block 95": {
+    "lat": 9.03224,
+    "lng": 38.74296
+  },
+  "Merkato Erteb Tera Block 96": {
+    "lat": 9.02846,
+    "lng": 38.73430
+  },
+  "Merkato Erteb Tera Block 97": {
+    "lat": 9.03059,
+    "lng": 38.73741
+  },
+  "Merkato Erteb Tera Block 98": {
+    "lat": 9.02536,
+    "lng": 38.73599
+  },
+  "Merkato Erteb Tera Block 99": {
+    "lat": 9.02388,
+    "lng": 38.73523
+  },
+  "Merkato Erteb Tera Block 100": {
+    "lat": 9.03141,
+    "lng": 38.74270
+  },
+  "Merkato Atena Tera Block 1": {
+    "lat": 9.02272,
+    "lng": 38.74003
+  },
+  "Merkato Atena Tera Block 2": {
+    "lat": 9.02659,
+    "lng": 38.73484
+  },
+  "Merkato Atena Tera Block 3": {
+    "lat": 9.03243,
+    "lng": 38.73817
+  },
+  "Merkato Atena Tera Block 4": {
+    "lat": 9.03207,
+    "lng": 38.73837
+  },
+  "Merkato Atena Tera Block 5": {
+    "lat": 9.02427,
+    "lng": 38.73540
+  },
+  "Merkato Atena Tera Block 6": {
+    "lat": 9.02457,
+    "lng": 38.73497
+  },
+  "Merkato Atena Tera Block 7": {
+    "lat": 9.03097,
+    "lng": 38.73949
+  },
+  "Merkato Atena Tera Block 8": {
+    "lat": 9.02477,
+    "lng": 38.74305
+  },
+  "Merkato Atena Tera Block 9": {
+    "lat": 9.02413,
+    "lng": 38.74334
+  },
+  "Merkato Atena Tera Block 10": {
+    "lat": 9.02703,
+    "lng": 38.73775
+  },
+  "Merkato Atena Tera Block 11": {
+    "lat": 9.03090,
+    "lng": 38.74009
+  },
+  "Merkato Atena Tera Block 12": {
+    "lat": 9.03065,
+    "lng": 38.73455
+  },
+  "Merkato Atena Tera Block 13": {
+    "lat": 9.02648,
+    "lng": 38.73762
+  },
+  "Merkato Atena Tera Block 14": {
+    "lat": 9.02882,
+    "lng": 38.74029
+  },
+  "Merkato Atena Tera Block 15": {
+    "lat": 9.03168,
+    "lng": 38.73978
+  },
+  "Merkato Atena Tera Block 16": {
+    "lat": 9.03157,
+    "lng": 38.74119
+  },
+  "Merkato Atena Tera Block 17": {
+    "lat": 9.03090,
+    "lng": 38.73701
+  },
+  "Merkato Atena Tera Block 18": {
+    "lat": 9.02983,
+    "lng": 38.74038
+  },
+  "Merkato Atena Tera Block 19": {
+    "lat": 9.02374,
+    "lng": 38.73995
+  },
+  "Merkato Atena Tera Block 20": {
+    "lat": 9.03006,
+    "lng": 38.73486
+  },
+  "Merkato Atena Tera Block 21": {
+    "lat": 9.02533,
+    "lng": 38.73911
+  },
+  "Merkato Atena Tera Block 22": {
+    "lat": 9.02595,
+    "lng": 38.74214
+  },
+  "Merkato Atena Tera Block 23": {
+    "lat": 9.02424,
+    "lng": 38.73926
+  },
+  "Merkato Atena Tera Block 24": {
+    "lat": 9.02787,
+    "lng": 38.74077
+  },
+  "Merkato Atena Tera Block 25": {
+    "lat": 9.02811,
+    "lng": 38.74296
+  },
+  "Merkato Atena Tera Block 26": {
+    "lat": 9.02394,
+    "lng": 38.73489
+  },
+  "Merkato Atena Tera Block 27": {
+    "lat": 9.02596,
+    "lng": 38.73395
+  },
+  "Merkato Atena Tera Block 28": {
+    "lat": 9.02773,
+    "lng": 38.73722
+  },
+  "Merkato Atena Tera Block 29": {
+    "lat": 9.02861,
+    "lng": 38.73457
+  },
+  "Merkato Atena Tera Block 30": {
+    "lat": 9.02294,
+    "lng": 38.73794
+  },
+  "Merkato Atena Tera Block 31": {
+    "lat": 9.02600,
+    "lng": 38.73696
+  },
+  "Merkato Atena Tera Block 32": {
+    "lat": 9.02903,
+    "lng": 38.74221
+  },
+  "Merkato Atena Tera Block 33": {
+    "lat": 9.02844,
+    "lng": 38.73905
+  },
+  "Merkato Atena Tera Block 34": {
+    "lat": 9.03025,
+    "lng": 38.73427
+  },
+  "Merkato Atena Tera Block 35": {
+    "lat": 9.02797,
+    "lng": 38.74332
+  },
+  "Merkato Atena Tera Block 36": {
+    "lat": 9.02752,
+    "lng": 38.74240
+  },
+  "Merkato Atena Tera Block 37": {
+    "lat": 9.02794,
+    "lng": 38.74181
+  },
+  "Merkato Atena Tera Block 38": {
+    "lat": 9.02409,
+    "lng": 38.73416
+  },
+  "Merkato Atena Tera Block 39": {
+    "lat": 9.03044,
+    "lng": 38.73547
+  },
+  "Merkato Atena Tera Block 40": {
+    "lat": 9.02968,
+    "lng": 38.73428
+  },
+  "Merkato Atena Tera Block 41": {
+    "lat": 9.03217,
+    "lng": 38.73603
+  },
+  "Merkato Atena Tera Block 42": {
+    "lat": 9.02768,
+    "lng": 38.73826
+  },
+  "Merkato Atena Tera Block 43": {
+    "lat": 9.02976,
+    "lng": 38.73858
+  },
+  "Merkato Atena Tera Block 44": {
+    "lat": 9.03158,
+    "lng": 38.74298
+  },
+  "Merkato Atena Tera Block 45": {
+    "lat": 9.02392,
+    "lng": 38.73988
+  },
+  "Merkato Atena Tera Block 46": {
+    "lat": 9.02537,
+    "lng": 38.73967
+  },
+  "Merkato Atena Tera Block 47": {
+    "lat": 9.02915,
+    "lng": 38.73596
+  },
+  "Merkato Atena Tera Block 48": {
+    "lat": 9.03247,
+    "lng": 38.74091
+  },
+  "Merkato Atena Tera Block 49": {
+    "lat": 9.02722,
+    "lng": 38.73699
+  },
+  "Merkato Atena Tera Block 50": {
+    "lat": 9.02675,
+    "lng": 38.73484
+  },
+  "Merkato Atena Tera Block 51": {
+    "lat": 9.02678,
+    "lng": 38.73565
+  },
+  "Merkato Atena Tera Block 52": {
+    "lat": 9.02742,
+    "lng": 38.73697
+  },
+  "Merkato Atena Tera Block 53": {
+    "lat": 9.02468,
+    "lng": 38.73535
+  },
+  "Merkato Atena Tera Block 54": {
+    "lat": 9.02514,
+    "lng": 38.74169
+  },
+  "Merkato Atena Tera Block 55": {
+    "lat": 9.02635,
+    "lng": 38.73587
+  },
+  "Merkato Atena Tera Block 56": {
+    "lat": 9.02754,
+    "lng": 38.73689
+  },
+  "Merkato Atena Tera Block 57": {
+    "lat": 9.03037,
+    "lng": 38.74289
+  },
+  "Merkato Atena Tera Block 58": {
+    "lat": 9.03122,
+    "lng": 38.74226
+  },
+  "Merkato Atena Tera Block 59": {
+    "lat": 9.03042,
+    "lng": 38.74059
+  },
+  "Merkato Atena Tera Block 60": {
+    "lat": 9.02691,
+    "lng": 38.74254
+  },
+  "Merkato Atena Tera Block 61": {
+    "lat": 9.03018,
+    "lng": 38.74293
+  },
+  "Merkato Atena Tera Block 62": {
+    "lat": 9.02560,
+    "lng": 38.73755
+  },
+  "Merkato Atena Tera Block 63": {
+    "lat": 9.02791,
+    "lng": 38.73610
+  },
+  "Merkato Atena Tera Block 64": {
+    "lat": 9.02709,
+    "lng": 38.74298
+  },
+  "Merkato Atena Tera Block 65": {
+    "lat": 9.02827,
+    "lng": 38.73612
+  },
+  "Merkato Atena Tera Block 66": {
+    "lat": 9.02974,
+    "lng": 38.73950
+  },
+  "Merkato Atena Tera Block 67": {
+    "lat": 9.03082,
+    "lng": 38.73734
+  },
+  "Merkato Atena Tera Block 68": {
+    "lat": 9.03106,
+    "lng": 38.73675
+  },
+  "Merkato Atena Tera Block 69": {
+    "lat": 9.03057,
+    "lng": 38.73926
+  },
+  "Merkato Atena Tera Block 70": {
+    "lat": 9.03020,
+    "lng": 38.74322
+  },
+  "Merkato Atena Tera Block 71": {
+    "lat": 9.02306,
+    "lng": 38.73450
+  },
+  "Merkato Atena Tera Block 72": {
+    "lat": 9.02639,
+    "lng": 38.74305
+  },
+  "Merkato Atena Tera Block 73": {
+    "lat": 9.02575,
+    "lng": 38.73666
+  },
+  "Merkato Atena Tera Block 74": {
+    "lat": 9.02734,
+    "lng": 38.74138
+  },
+  "Merkato Atena Tera Block 75": {
+    "lat": 9.02445,
+    "lng": 38.73884
+  },
+  "Merkato Atena Tera Block 76": {
+    "lat": 9.02670,
+    "lng": 38.73410
+  },
+  "Merkato Atena Tera Block 77": {
+    "lat": 9.02589,
+    "lng": 38.74175
+  },
+  "Merkato Atena Tera Block 78": {
+    "lat": 9.02463,
+    "lng": 38.73878
+  },
+  "Merkato Atena Tera Block 79": {
+    "lat": 9.02874,
+    "lng": 38.73888
+  },
+  "Merkato Atena Tera Block 80": {
+    "lat": 9.02440,
+    "lng": 38.73980
+  },
+  "Merkato Atena Tera Block 81": {
+    "lat": 9.02459,
+    "lng": 38.73823
+  },
+  "Merkato Atena Tera Block 82": {
+    "lat": 9.02592,
+    "lng": 38.73593
+  },
+  "Merkato Atena Tera Block 83": {
+    "lat": 9.02277,
+    "lng": 38.73815
+  },
+  "Merkato Atena Tera Block 84": {
+    "lat": 9.02977,
+    "lng": 38.73903
+  },
+  "Merkato Atena Tera Block 85": {
+    "lat": 9.02979,
+    "lng": 38.74341
+  },
+  "Merkato Atena Tera Block 86": {
+    "lat": 9.02629,
+    "lng": 38.74141
+  },
+  "Merkato Atena Tera Block 87": {
+    "lat": 9.02668,
+    "lng": 38.73447
+  },
+  "Merkato Atena Tera Block 88": {
+    "lat": 9.02875,
+    "lng": 38.74273
+  },
+  "Merkato Atena Tera Block 89": {
+    "lat": 9.03108,
+    "lng": 38.73480
+  },
+  "Merkato Atena Tera Block 90": {
+    "lat": 9.02558,
+    "lng": 38.74260
+  },
+  "Merkato Atena Tera Block 91": {
+    "lat": 9.02822,
+    "lng": 38.74147
+  },
+  "Merkato Atena Tera Block 92": {
+    "lat": 9.02939,
+    "lng": 38.74131
+  },
+  "Merkato Atena Tera Block 93": {
+    "lat": 9.03150,
+    "lng": 38.74157
+  },
+  "Merkato Atena Tera Block 94": {
+    "lat": 9.03102,
+    "lng": 38.74193
+  },
+  "Merkato Atena Tera Block 95": {
+    "lat": 9.02328,
+    "lng": 38.74096
+  },
+  "Merkato Atena Tera Block 96": {
+    "lat": 9.02900,
+    "lng": 38.73600
+  },
+  "Merkato Atena Tera Block 97": {
+    "lat": 9.02480,
+    "lng": 38.73574
+  },
+  "Merkato Atena Tera Block 98": {
+    "lat": 9.02844,
+    "lng": 38.74368
+  },
+  "Merkato Atena Tera Block 99": {
+    "lat": 9.03108,
+    "lng": 38.74127
+  },
+  "Merkato Atena Tera Block 100": {
+    "lat": 9.02484,
+    "lng": 38.73400
+  },
+  "Bole Medhanialem Block 1": {
+    "lat": 8.99849,
+    "lng": 38.78629
+  },
+  "Bole Medhanialem Block 2": {
+    "lat": 8.99426,
+    "lng": 38.78674
+  },
+  "Bole Medhanialem Block 3": {
+    "lat": 8.99548,
+    "lng": 38.79428
+  },
+  "Bole Medhanialem Block 4": {
+    "lat": 8.99021,
+    "lng": 38.78619
+  },
+  "Bole Medhanialem Block 5": {
+    "lat": 8.99775,
+    "lng": 38.78554
+  },
+  "Bole Medhanialem Block 6": {
+    "lat": 8.99027,
+    "lng": 38.78812
+  },
+  "Bole Medhanialem Block 7": {
+    "lat": 8.99147,
+    "lng": 38.78807
+  },
+  "Bole Medhanialem Block 8": {
+    "lat": 8.99519,
+    "lng": 38.79155
+  },
+  "Bole Medhanialem Block 9": {
+    "lat": 8.99762,
+    "lng": 38.79038
+  },
+  "Bole Medhanialem Block 10": {
+    "lat": 8.99506,
+    "lng": 38.78774
+  },
+  "Bole Medhanialem Block 11": {
+    "lat": 8.99036,
+    "lng": 38.78563
+  },
+  "Bole Medhanialem Block 12": {
+    "lat": 8.99457,
+    "lng": 38.78468
+  },
+  "Bole Medhanialem Block 13": {
+    "lat": 8.99961,
+    "lng": 38.79198
+  },
+  "Bole Medhanialem Block 14": {
+    "lat": 8.99614,
+    "lng": 38.78646
+  },
+  "Bole Medhanialem Block 15": {
+    "lat": 8.99535,
+    "lng": 38.78898
+  },
+  "Bole Medhanialem Block 16": {
+    "lat": 8.99256,
+    "lng": 38.79223
+  },
+  "Bole Medhanialem Block 17": {
+    "lat": 8.99252,
+    "lng": 38.78725
+  },
+  "Bole Medhanialem Block 18": {
+    "lat": 8.99297,
+    "lng": 38.79168
+  },
+  "Bole Medhanialem Block 19": {
+    "lat": 8.99486,
+    "lng": 38.79118
+  },
+  "Bole Medhanialem Block 20": {
+    "lat": 8.99321,
+    "lng": 38.78971
+  },
+  "Bole Medhanialem Block 21": {
+    "lat": 8.99990,
+    "lng": 38.78933
+  },
+  "Bole Medhanialem Block 22": {
+    "lat": 8.99047,
+    "lng": 38.79056
+  },
+  "Bole Medhanialem Block 23": {
+    "lat": 8.99542,
+    "lng": 38.79360
+  },
+  "Bole Medhanialem Block 24": {
+    "lat": 8.99442,
+    "lng": 38.78809
+  },
+  "Bole Medhanialem Block 25": {
+    "lat": 8.99699,
+    "lng": 38.78492
+  },
+  "Bole Medhanialem Block 26": {
+    "lat": 8.99405,
+    "lng": 38.78628
+  },
+  "Bole Medhanialem Block 27": {
+    "lat": 8.99613,
+    "lng": 38.79144
+  },
+  "Bole Medhanialem Block 28": {
+    "lat": 8.99389,
+    "lng": 38.79192
+  },
+  "Bole Medhanialem Block 29": {
+    "lat": 8.99116,
+    "lng": 38.78818
+  },
+  "Bole Medhanialem Block 30": {
+    "lat": 8.99766,
+    "lng": 38.78586
+  },
+  "Bole Medhanialem Block 31": {
+    "lat": 8.99650,
+    "lng": 38.78977
+  },
+  "Bole Medhanialem Block 32": {
+    "lat": 8.99974,
+    "lng": 38.78676
+  },
+  "Bole Medhanialem Block 33": {
+    "lat": 8.99151,
+    "lng": 38.79013
+  },
+  "Bole Medhanialem Block 34": {
+    "lat": 8.99240,
+    "lng": 38.79166
+  },
+  "Bole Medhanialem Block 35": {
+    "lat": 8.99332,
+    "lng": 38.78798
+  },
+  "Bole Medhanialem Block 36": {
+    "lat": 8.99863,
+    "lng": 38.79118
+  },
+  "Bole Medhanialem Block 37": {
+    "lat": 8.99068,
+    "lng": 38.79073
+  },
+  "Bole Medhanialem Block 38": {
+    "lat": 8.99789,
+    "lng": 38.79379
+  },
+  "Bole Medhanialem Block 39": {
+    "lat": 8.99119,
+    "lng": 38.78780
+  },
+  "Bole Medhanialem Block 40": {
+    "lat": 8.99427,
+    "lng": 38.78936
+  },
+  "Bole Medhanialem Block 41": {
+    "lat": 8.99332,
+    "lng": 38.79235
+  },
+  "Bole Medhanialem Block 42": {
+    "lat": 8.99349,
+    "lng": 38.79152
+  },
+  "Bole Medhanialem Block 43": {
+    "lat": 8.99927,
+    "lng": 38.79342
+  },
+  "Bole Medhanialem Block 44": {
+    "lat": 8.99277,
+    "lng": 38.78837
+  },
+  "Bole Medhanialem Block 45": {
+    "lat": 8.99559,
+    "lng": 38.79029
+  },
+  "Bole Medhanialem Block 46": {
+    "lat": 8.99360,
+    "lng": 38.78473
+  },
+  "Bole Medhanialem Block 47": {
+    "lat": 8.99378,
+    "lng": 38.79053
+  },
+  "Bole Medhanialem Block 48": {
+    "lat": 8.99158,
+    "lng": 38.78529
+  },
+  "Bole Medhanialem Block 49": {
+    "lat": 8.99929,
+    "lng": 38.78912
+  },
+  "Bole Medhanialem Block 50": {
+    "lat": 8.99383,
+    "lng": 38.78499
+  },
+  "Bole Medhanialem Block 51": {
+    "lat": 8.99510,
+    "lng": 38.78933
+  },
+  "Bole Medhanialem Block 52": {
+    "lat": 8.99789,
+    "lng": 38.78935
+  },
+  "Bole Medhanialem Block 53": {
+    "lat": 8.99312,
+    "lng": 38.78709
+  },
+  "Bole Medhanialem Block 54": {
+    "lat": 8.99174,
+    "lng": 38.79106
+  },
+  "Bole Medhanialem Block 55": {
+    "lat": 8.99864,
+    "lng": 38.79254
+  },
+  "Bole Medhanialem Block 56": {
+    "lat": 8.99417,
+    "lng": 38.79008
+  },
+  "Bole Medhanialem Block 57": {
+    "lat": 8.99538,
+    "lng": 38.78602
+  },
+  "Bole Medhanialem Block 58": {
+    "lat": 8.99400,
+    "lng": 38.78954
+  },
+  "Bole Medhanialem Block 59": {
+    "lat": 8.99257,
+    "lng": 38.79289
+  },
+  "Bole Medhanialem Block 60": {
+    "lat": 8.99701,
+    "lng": 38.78451
+  },
+  "Bole Medhanialem Block 61": {
+    "lat": 8.99727,
+    "lng": 38.79227
+  },
+  "Bole Medhanialem Block 62": {
+    "lat": 8.99379,
+    "lng": 38.79408
+  },
+  "Bole Medhanialem Block 63": {
+    "lat": 8.99065,
+    "lng": 38.79149
+  },
+  "Bole Medhanialem Block 64": {
+    "lat": 8.99591,
+    "lng": 38.79188
+  },
+  "Bole Medhanialem Block 65": {
+    "lat": 8.99442,
+    "lng": 38.78810
+  },
+  "Bole Medhanialem Block 66": {
+    "lat": 8.99803,
+    "lng": 38.79317
+  },
+  "Bole Medhanialem Block 67": {
+    "lat": 8.99446,
+    "lng": 38.79330
+  },
+  "Bole Medhanialem Block 68": {
+    "lat": 8.99058,
+    "lng": 38.78753
+  },
+  "Bole Medhanialem Block 69": {
+    "lat": 8.99825,
+    "lng": 38.78898
+  },
+  "Bole Medhanialem Block 70": {
+    "lat": 8.99961,
+    "lng": 38.79248
+  },
+  "Bole Medhanialem Block 71": {
+    "lat": 8.99822,
+    "lng": 38.78751
+  },
+  "Bole Medhanialem Block 72": {
+    "lat": 8.99755,
+    "lng": 38.78922
+  },
+  "Bole Medhanialem Block 73": {
+    "lat": 8.99981,
+    "lng": 38.79051
+  },
+  "Bole Medhanialem Block 74": {
+    "lat": 8.99783,
+    "lng": 38.78595
+  },
+  "Bole Medhanialem Block 75": {
+    "lat": 8.99158,
+    "lng": 38.78582
+  },
+  "Bole Medhanialem Block 76": {
+    "lat": 8.99644,
+    "lng": 38.78545
+  },
+  "Bole Medhanialem Block 77": {
+    "lat": 8.99734,
+    "lng": 38.78448
+  },
+  "Bole Medhanialem Block 78": {
+    "lat": 8.99601,
+    "lng": 38.78735
+  },
+  "Bole Medhanialem Block 79": {
+    "lat": 8.99110,
+    "lng": 38.79409
+  },
+  "Bole Medhanialem Block 80": {
+    "lat": 8.99408,
+    "lng": 38.78752
+  },
+  "Bole Medhanialem Block 81": {
+    "lat": 8.99185,
+    "lng": 38.78790
+  },
+  "Bole Medhanialem Block 82": {
+    "lat": 8.99991,
+    "lng": 38.79275
+  },
+  "Bole Medhanialem Block 83": {
+    "lat": 8.99765,
+    "lng": 38.79012
+  },
+  "Bole Medhanialem Block 84": {
+    "lat": 8.99732,
+    "lng": 38.78936
+  },
+  "Bole Medhanialem Block 85": {
+    "lat": 8.99955,
+    "lng": 38.78509
+  },
+  "Bole Medhanialem Block 86": {
+    "lat": 8.99347,
+    "lng": 38.78533
+  },
+  "Bole Medhanialem Block 87": {
+    "lat": 8.99979,
+    "lng": 38.79263
+  },
+  "Bole Medhanialem Block 88": {
+    "lat": 8.99903,
+    "lng": 38.78807
+  },
+  "Bole Medhanialem Block 89": {
+    "lat": 8.99135,
+    "lng": 38.79305
+  },
+  "Bole Medhanialem Block 90": {
+    "lat": 8.99336,
+    "lng": 38.79015
+  },
+  "Bole Medhanialem Block 91": {
+    "lat": 8.99054,
+    "lng": 38.78581
+  },
+  "Bole Medhanialem Block 92": {
+    "lat": 8.99036,
+    "lng": 38.78859
+  },
+  "Bole Medhanialem Block 93": {
+    "lat": 8.99124,
+    "lng": 38.78557
+  },
+  "Bole Medhanialem Block 94": {
+    "lat": 8.99386,
+    "lng": 38.78716
+  },
+  "Bole Medhanialem Block 95": {
+    "lat": 8.99177,
+    "lng": 38.78625
+  },
+  "Bole Medhanialem Block 96": {
+    "lat": 8.99825,
+    "lng": 38.79222
+  },
+  "Bole Medhanialem Block 97": {
+    "lat": 8.99725,
+    "lng": 38.79435
+  },
+  "Bole Medhanialem Block 98": {
+    "lat": 8.99886,
+    "lng": 38.78471
+  },
+  "Bole Medhanialem Block 99": {
+    "lat": 8.99442,
+    "lng": 38.78719
+  },
+  "Bole Medhanialem Block 100": {
+    "lat": 8.99850,
+    "lng": 38.78791
+  },
+  "Bole Atlas Block 1": {
+    "lat": 8.99650,
+    "lng": 38.79247
+  },
+  "Bole Atlas Block 2": {
+    "lat": 8.99036,
+    "lng": 38.79005
+  },
+  "Bole Atlas Block 3": {
+    "lat": 8.99608,
+    "lng": 38.78833
+  },
+  "Bole Atlas Block 4": {
+    "lat": 8.99794,
+    "lng": 38.78639
+  },
+  "Bole Atlas Block 5": {
+    "lat": 8.99438,
+    "lng": 38.79114
+  },
+  "Bole Atlas Block 6": {
+    "lat": 8.99110,
+    "lng": 38.79427
+  },
+  "Bole Atlas Block 7": {
+    "lat": 8.99050,
+    "lng": 38.78857
+  },
+  "Bole Atlas Block 8": {
+    "lat": 8.99215,
+    "lng": 38.79035
+  },
+  "Bole Atlas Block 9": {
+    "lat": 8.99690,
+    "lng": 38.78835
+  },
+  "Bole Atlas Block 10": {
+    "lat": 8.99689,
+    "lng": 38.79404
+  },
+  "Bole Atlas Block 11": {
+    "lat": 8.99319,
+    "lng": 38.78770
+  },
+  "Bole Atlas Block 12": {
+    "lat": 8.99423,
+    "lng": 38.78866
+  },
+  "Bole Atlas Block 13": {
+    "lat": 8.99783,
+    "lng": 38.78502
+  },
+  "Bole Atlas Block 14": {
+    "lat": 8.99179,
+    "lng": 38.78772
+  },
+  "Bole Atlas Block 15": {
+    "lat": 8.99213,
+    "lng": 38.79279
+  },
+  "Bole Atlas Block 16": {
+    "lat": 8.99129,
+    "lng": 38.78705
+  },
+  "Bole Atlas Block 17": {
+    "lat": 8.99326,
+    "lng": 38.78704
+  },
+  "Bole Atlas Block 18": {
+    "lat": 8.99440,
+    "lng": 38.79282
+  },
+  "Bole Atlas Block 19": {
+    "lat": 8.99012,
+    "lng": 38.78522
+  },
+  "Bole Atlas Block 20": {
+    "lat": 8.99998,
+    "lng": 38.78807
+  },
+  "Bole Atlas Block 21": {
+    "lat": 8.99433,
+    "lng": 38.79250
+  },
+  "Bole Atlas Block 22": {
+    "lat": 8.99668,
+    "lng": 38.79165
+  },
+  "Bole Atlas Block 23": {
+    "lat": 8.99621,
+    "lng": 38.79146
+  },
+  "Bole Atlas Block 24": {
+    "lat": 8.99454,
+    "lng": 38.79156
+  },
+  "Bole Atlas Block 25": {
+    "lat": 8.99269,
+    "lng": 38.79302
+  },
+  "Bole Atlas Block 26": {
+    "lat": 8.99016,
+    "lng": 38.78576
+  },
+  "Bole Atlas Block 27": {
+    "lat": 8.99034,
+    "lng": 38.78467
+  },
+  "Bole Atlas Block 28": {
+    "lat": 8.99228,
+    "lng": 38.78521
+  },
+  "Bole Atlas Block 29": {
+    "lat": 8.99169,
+    "lng": 38.78666
+  },
+  "Bole Atlas Block 30": {
+    "lat": 8.99458,
+    "lng": 38.78639
+  },
+  "Bole Atlas Block 31": {
+    "lat": 8.99903,
+    "lng": 38.79358
+  },
+  "Bole Atlas Block 32": {
+    "lat": 8.99277,
+    "lng": 38.79131
+  },
+  "Bole Atlas Block 33": {
+    "lat": 8.99583,
+    "lng": 38.79058
+  },
+  "Bole Atlas Block 34": {
+    "lat": 8.99700,
+    "lng": 38.79261
+  },
+  "Bole Atlas Block 35": {
+    "lat": 8.99983,
+    "lng": 38.79262
+  },
+  "Bole Atlas Block 36": {
+    "lat": 8.99760,
+    "lng": 38.79320
+  },
+  "Bole Atlas Block 37": {
+    "lat": 8.99449,
+    "lng": 38.78940
+  },
+  "Bole Atlas Block 38": {
+    "lat": 8.99603,
+    "lng": 38.79202
+  },
+  "Bole Atlas Block 39": {
+    "lat": 8.99720,
+    "lng": 38.78893
+  },
+  "Bole Atlas Block 40": {
+    "lat": 8.99984,
+    "lng": 38.78650
+  },
+  "Bole Atlas Block 41": {
+    "lat": 8.99560,
+    "lng": 38.79204
+  },
+  "Bole Atlas Block 42": {
+    "lat": 8.99530,
+    "lng": 38.78694
+  },
+  "Bole Atlas Block 43": {
+    "lat": 8.99417,
+    "lng": 38.78634
+  },
+  "Bole Atlas Block 44": {
+    "lat": 8.99705,
+    "lng": 38.79136
+  },
+  "Bole Atlas Block 45": {
+    "lat": 8.99454,
+    "lng": 38.78908
+  },
+  "Bole Atlas Block 46": {
+    "lat": 8.99725,
+    "lng": 38.78997
+  },
+  "Bole Atlas Block 47": {
+    "lat": 8.99893,
+    "lng": 38.78525
+  },
+  "Bole Atlas Block 48": {
+    "lat": 8.99191,
+    "lng": 38.78904
+  },
+  "Bole Atlas Block 49": {
+    "lat": 8.99568,
+    "lng": 38.79260
+  },
+  "Bole Atlas Block 50": {
+    "lat": 8.99904,
+    "lng": 38.79439
+  },
+  "Bole Atlas Block 51": {
+    "lat": 8.99846,
+    "lng": 38.78748
+  },
+  "Bole Atlas Block 52": {
+    "lat": 8.99013,
+    "lng": 38.78735
+  },
+  "Bole Atlas Block 53": {
+    "lat": 8.99721,
+    "lng": 38.79219
+  },
+  "Bole Atlas Block 54": {
+    "lat": 8.99530,
+    "lng": 38.78928
+  },
+  "Bole Atlas Block 55": {
+    "lat": 8.99668,
+    "lng": 38.79026
+  },
+  "Bole Atlas Block 56": {
+    "lat": 8.99090,
+    "lng": 38.78858
+  },
+  "Bole Atlas Block 57": {
+    "lat": 8.99455,
+    "lng": 38.78843
+  },
+  "Bole Atlas Block 58": {
+    "lat": 8.99138,
+    "lng": 38.79149
+  },
+  "Bole Atlas Block 59": {
+    "lat": 8.99600,
+    "lng": 38.78447
+  },
+  "Bole Atlas Block 60": {
+    "lat": 8.99954,
+    "lng": 38.79335
+  },
+  "Bole Atlas Block 61": {
+    "lat": 8.99895,
+    "lng": 38.78485
+  },
+  "Bole Atlas Block 62": {
+    "lat": 8.99303,
+    "lng": 38.79192
+  },
+  "Bole Atlas Block 63": {
+    "lat": 8.99428,
+    "lng": 38.78673
+  },
+  "Bole Atlas Block 64": {
+    "lat": 8.99883,
+    "lng": 38.78545
+  },
+  "Bole Atlas Block 65": {
+    "lat": 8.99926,
+    "lng": 38.78719
+  },
+  "Bole Atlas Block 66": {
+    "lat": 8.99673,
+    "lng": 38.78794
+  },
+  "Bole Atlas Block 67": {
+    "lat": 8.99299,
+    "lng": 38.79415
+  },
+  "Bole Atlas Block 68": {
+    "lat": 8.99837,
+    "lng": 38.79405
+  },
+  "Bole Atlas Block 69": {
+    "lat": 8.99206,
+    "lng": 38.79175
+  },
+  "Bole Atlas Block 70": {
+    "lat": 8.99888,
+    "lng": 38.78517
+  },
+  "Bole Atlas Block 71": {
+    "lat": 8.99524,
+    "lng": 38.79354
+  },
+  "Bole Atlas Block 72": {
+    "lat": 8.99216,
+    "lng": 38.78474
+  },
+  "Bole Atlas Block 73": {
+    "lat": 8.99659,
+    "lng": 38.78874
+  },
+  "Bole Atlas Block 74": {
+    "lat": 8.99277,
+    "lng": 38.79163
+  },
+  "Bole Atlas Block 75": {
+    "lat": 8.99916,
+    "lng": 38.79159
+  },
+  "Bole Atlas Block 76": {
+    "lat": 8.99130,
+    "lng": 38.78781
+  },
+  "Bole Atlas Block 77": {
+    "lat": 8.99370,
+    "lng": 38.78599
+  },
+  "Bole Atlas Block 78": {
+    "lat": 8.99113,
+    "lng": 38.79373
+  },
+  "Bole Atlas Block 79": {
+    "lat": 8.99935,
+    "lng": 38.79368
+  },
+  "Bole Atlas Block 80": {
+    "lat": 8.99392,
+    "lng": 38.78612
+  },
+  "Bole Atlas Block 81": {
+    "lat": 8.99459,
+    "lng": 38.78710
+  },
+  "Bole Atlas Block 82": {
+    "lat": 8.99718,
+    "lng": 38.78744
+  },
+  "Bole Atlas Block 83": {
+    "lat": 8.99907,
+    "lng": 38.79099
+  },
+  "Bole Atlas Block 84": {
+    "lat": 8.99881,
+    "lng": 38.79354
+  },
+  "Bole Atlas Block 85": {
+    "lat": 8.99676,
+    "lng": 38.79016
+  },
+  "Bole Atlas Block 86": {
+    "lat": 8.99666,
+    "lng": 38.79133
+  },
+  "Bole Atlas Block 87": {
+    "lat": 8.99150,
+    "lng": 38.78765
+  },
+  "Bole Atlas Block 88": {
+    "lat": 8.99156,
+    "lng": 38.79366
+  },
+  "Bole Atlas Block 89": {
+    "lat": 8.99148,
+    "lng": 38.78910
+  },
+  "Bole Atlas Block 90": {
+    "lat": 8.99641,
+    "lng": 38.79383
+  },
+  "Bole Atlas Block 91": {
+    "lat": 8.99495,
+    "lng": 38.78481
+  },
+  "Bole Atlas Block 92": {
+    "lat": 8.99251,
+    "lng": 38.78544
+  },
+  "Bole Atlas Block 93": {
+    "lat": 8.99111,
+    "lng": 38.79373
+  },
+  "Bole Atlas Block 94": {
+    "lat": 8.99791,
+    "lng": 38.78856
+  },
+  "Bole Atlas Block 95": {
+    "lat": 8.99208,
+    "lng": 38.78853
+  },
+  "Bole Atlas Block 96": {
+    "lat": 8.99616,
+    "lng": 38.79018
+  },
+  "Bole Atlas Block 97": {
+    "lat": 8.99139,
+    "lng": 38.79322
+  },
+  "Bole Atlas Block 98": {
+    "lat": 8.99549,
+    "lng": 38.79071
+  },
+  "Bole Atlas Block 99": {
+    "lat": 8.99178,
+    "lng": 38.78637
+  },
+  "Bole Atlas Block 100": {
+    "lat": 8.99033,
+    "lng": 38.78469
+  },
+  "Bole Rwanda Block 1": {
+    "lat": 8.99361,
+    "lng": 38.79247
+  },
+  "Bole Rwanda Block 2": {
+    "lat": 8.99513,
+    "lng": 38.78731
+  },
+  "Bole Rwanda Block 3": {
+    "lat": 8.99207,
+    "lng": 38.78495
+  },
+  "Bole Rwanda Block 4": {
+    "lat": 8.99629,
+    "lng": 38.78727
+  },
+  "Bole Rwanda Block 5": {
+    "lat": 8.99783,
+    "lng": 38.79197
+  },
+  "Bole Rwanda Block 6": {
+    "lat": 8.99013,
+    "lng": 38.79392
+  },
+  "Bole Rwanda Block 7": {
+    "lat": 8.99663,
+    "lng": 38.78969
+  },
+  "Bole Rwanda Block 8": {
+    "lat": 8.99975,
+    "lng": 38.78856
+  },
+  "Bole Rwanda Block 9": {
+    "lat": 8.99990,
+    "lng": 38.78843
+  },
+  "Bole Rwanda Block 10": {
+    "lat": 8.99090,
+    "lng": 38.79197
+  },
+  "Bole Rwanda Block 11": {
+    "lat": 8.99501,
+    "lng": 38.79212
+  },
+  "Bole Rwanda Block 12": {
+    "lat": 8.99783,
+    "lng": 38.79091
+  },
+  "Bole Rwanda Block 13": {
+    "lat": 8.99886,
+    "lng": 38.78672
+  },
+  "Bole Rwanda Block 14": {
+    "lat": 8.99864,
+    "lng": 38.79312
+  },
+  "Bole Rwanda Block 15": {
+    "lat": 8.99648,
+    "lng": 38.78711
+  },
+  "Bole Rwanda Block 16": {
+    "lat": 8.99422,
+    "lng": 38.79260
+  },
+  "Bole Rwanda Block 17": {
+    "lat": 8.99430,
+    "lng": 38.78818
+  },
+  "Bole Rwanda Block 18": {
+    "lat": 8.99328,
+    "lng": 38.79043
+  },
+  "Bole Rwanda Block 19": {
+    "lat": 8.99759,
+    "lng": 38.78906
+  },
+  "Bole Rwanda Block 20": {
+    "lat": 8.99650,
+    "lng": 38.78546
+  },
+  "Bole Rwanda Block 21": {
+    "lat": 8.99865,
+    "lng": 38.78787
+  },
+  "Bole Rwanda Block 22": {
+    "lat": 8.99161,
+    "lng": 38.78792
+  },
+  "Bole Rwanda Block 23": {
+    "lat": 8.99623,
+    "lng": 38.78990
+  },
+  "Bole Rwanda Block 24": {
+    "lat": 8.99999,
+    "lng": 38.79224
+  },
+  "Bole Rwanda Block 25": {
+    "lat": 8.99291,
+    "lng": 38.78589
+  },
+  "Bole Rwanda Block 26": {
+    "lat": 8.99306,
+    "lng": 38.78657
+  },
+  "Bole Rwanda Block 27": {
+    "lat": 8.99052,
+    "lng": 38.78968
+  },
+  "Bole Rwanda Block 28": {
+    "lat": 8.99729,
+    "lng": 38.78895
+  },
+  "Bole Rwanda Block 29": {
+    "lat": 8.99124,
+    "lng": 38.79236
+  },
+  "Bole Rwanda Block 30": {
+    "lat": 8.99818,
+    "lng": 38.79291
+  },
+  "Bole Rwanda Block 31": {
+    "lat": 8.99788,
+    "lng": 38.79416
+  },
+  "Bole Rwanda Block 32": {
+    "lat": 8.99679,
+    "lng": 38.78713
+  },
+  "Bole Rwanda Block 33": {
+    "lat": 8.99933,
+    "lng": 38.78477
+  },
+  "Bole Rwanda Block 34": {
+    "lat": 8.99263,
+    "lng": 38.78791
+  },
+  "Bole Rwanda Block 35": {
+    "lat": 8.99603,
+    "lng": 38.78748
+  },
+  "Bole Rwanda Block 36": {
+    "lat": 8.99345,
+    "lng": 38.78480
+  },
+  "Bole Rwanda Block 37": {
+    "lat": 8.99869,
+    "lng": 38.78534
+  },
+  "Bole Rwanda Block 38": {
+    "lat": 8.99680,
+    "lng": 38.79117
+  },
+  "Bole Rwanda Block 39": {
+    "lat": 8.99715,
+    "lng": 38.79292
+  },
+  "Bole Rwanda Block 40": {
+    "lat": 8.99255,
+    "lng": 38.78916
+  },
+  "Bole Rwanda Block 41": {
+    "lat": 8.99383,
+    "lng": 38.79015
+  },
+  "Bole Rwanda Block 42": {
+    "lat": 8.99081,
+    "lng": 38.78823
+  },
+  "Bole Rwanda Block 43": {
+    "lat": 8.99176,
+    "lng": 38.78587
+  },
+  "Bole Rwanda Block 44": {
+    "lat": 8.99369,
+    "lng": 38.79264
+  },
+  "Bole Rwanda Block 45": {
+    "lat": 8.99067,
+    "lng": 38.79381
+  },
+  "Bole Rwanda Block 46": {
+    "lat": 8.99201,
+    "lng": 38.78532
+  },
+  "Bole Rwanda Block 47": {
+    "lat": 8.99777,
+    "lng": 38.78737
+  },
+  "Bole Rwanda Block 48": {
+    "lat": 8.99765,
+    "lng": 38.78806
+  },
+  "Bole Rwanda Block 49": {
+    "lat": 8.99616,
+    "lng": 38.78651
+  },
+  "Bole Rwanda Block 50": {
+    "lat": 8.99720,
+    "lng": 38.78485
+  },
+  "Bole Rwanda Block 51": {
+    "lat": 8.99765,
+    "lng": 38.79368
+  },
+  "Bole Rwanda Block 52": {
+    "lat": 8.99224,
+    "lng": 38.79298
+  },
+  "Bole Rwanda Block 53": {
+    "lat": 8.99324,
+    "lng": 38.78729
+  },
+  "Bole Rwanda Block 54": {
+    "lat": 8.99170,
+    "lng": 38.78775
+  },
+  "Bole Rwanda Block 55": {
+    "lat": 8.99613,
+    "lng": 38.78455
+  },
+  "Bole Rwanda Block 56": {
+    "lat": 8.99282,
+    "lng": 38.78495
+  },
+  "Bole Rwanda Block 57": {
+    "lat": 8.99571,
+    "lng": 38.79130
+  },
+  "Bole Rwanda Block 58": {
+    "lat": 8.99963,
+    "lng": 38.78991
+  },
+  "Bole Rwanda Block 59": {
+    "lat": 8.99335,
+    "lng": 38.79042
+  },
+  "Bole Rwanda Block 60": {
+    "lat": 8.99767,
+    "lng": 38.78925
+  },
+  "Bole Rwanda Block 61": {
+    "lat": 8.99180,
+    "lng": 38.78914
+  },
+  "Bole Rwanda Block 62": {
+    "lat": 8.99661,
+    "lng": 38.79090
+  },
+  "Bole Rwanda Block 63": {
+    "lat": 8.99972,
+    "lng": 38.79369
+  },
+  "Bole Rwanda Block 64": {
+    "lat": 8.99936,
+    "lng": 38.78821
+  },
+  "Bole Rwanda Block 65": {
+    "lat": 8.99419,
+    "lng": 38.78453
+  },
+  "Bole Rwanda Block 66": {
+    "lat": 8.99824,
+    "lng": 38.78909
+  },
+  "Bole Rwanda Block 67": {
+    "lat": 8.99935,
+    "lng": 38.78803
+  },
+  "Bole Rwanda Block 68": {
+    "lat": 8.99108,
+    "lng": 38.79323
+  },
+  "Bole Rwanda Block 69": {
+    "lat": 8.99293,
+    "lng": 38.79275
+  },
+  "Bole Rwanda Block 70": {
+    "lat": 8.99327,
+    "lng": 38.79207
+  },
+  "Bole Rwanda Block 71": {
+    "lat": 8.99641,
+    "lng": 38.78519
+  },
+  "Bole Rwanda Block 72": {
+    "lat": 8.99233,
+    "lng": 38.79342
+  },
+  "Bole Rwanda Block 73": {
+    "lat": 8.99817,
+    "lng": 38.79385
+  },
+  "Bole Rwanda Block 74": {
+    "lat": 8.99750,
+    "lng": 38.78603
+  },
+  "Bole Rwanda Block 75": {
+    "lat": 8.99102,
+    "lng": 38.79184
+  },
+  "Bole Rwanda Block 76": {
+    "lat": 8.99768,
+    "lng": 38.78476
+  },
+  "Bole Rwanda Block 77": {
+    "lat": 8.99276,
+    "lng": 38.78449
+  },
+  "Bole Rwanda Block 78": {
+    "lat": 8.99524,
+    "lng": 38.79293
+  },
+  "Bole Rwanda Block 79": {
+    "lat": 8.99580,
+    "lng": 38.79390
+  },
+  "Bole Rwanda Block 80": {
+    "lat": 8.99702,
+    "lng": 38.79060
+  },
+  "Bole Rwanda Block 81": {
+    "lat": 8.99954,
+    "lng": 38.79269
+  },
+  "Bole Rwanda Block 82": {
+    "lat": 8.99639,
+    "lng": 38.79211
+  },
+  "Bole Rwanda Block 83": {
+    "lat": 8.99044,
+    "lng": 38.78449
+  },
+  "Bole Rwanda Block 84": {
+    "lat": 8.99716,
+    "lng": 38.78881
+  },
+  "Bole Rwanda Block 85": {
+    "lat": 8.99368,
+    "lng": 38.78755
+  },
+  "Bole Rwanda Block 86": {
+    "lat": 8.99891,
+    "lng": 38.78573
+  },
+  "Bole Rwanda Block 87": {
+    "lat": 8.99443,
+    "lng": 38.78974
+  },
+  "Bole Rwanda Block 88": {
+    "lat": 8.99392,
+    "lng": 38.79247
+  },
+  "Bole Rwanda Block 89": {
+    "lat": 8.99093,
+    "lng": 38.79129
+  },
+  "Bole Rwanda Block 90": {
+    "lat": 8.99310,
+    "lng": 38.79257
+  },
+  "Bole Rwanda Block 91": {
+    "lat": 8.99920,
+    "lng": 38.78495
+  },
+  "Bole Rwanda Block 92": {
+    "lat": 8.99918,
+    "lng": 38.78814
+  },
+  "Bole Rwanda Block 93": {
+    "lat": 8.99992,
+    "lng": 38.79010
+  },
+  "Bole Rwanda Block 94": {
+    "lat": 8.99078,
+    "lng": 38.78455
+  },
+  "Bole Rwanda Block 95": {
+    "lat": 8.99789,
+    "lng": 38.78508
+  },
+  "Bole Rwanda Block 96": {
+    "lat": 8.99385,
+    "lng": 38.79212
+  },
+  "Bole Rwanda Block 97": {
+    "lat": 8.99794,
+    "lng": 38.79080
+  },
+  "Bole Rwanda Block 98": {
+    "lat": 8.99392,
+    "lng": 38.79241
+  },
+  "Bole Rwanda Block 99": {
+    "lat": 8.99697,
+    "lng": 38.78538
+  },
+  "Bole Rwanda Block 100": {
+    "lat": 8.99893,
+    "lng": 38.78911
+  },
+  "Bole Michael Block 1": {
+    "lat": 8.99324,
+    "lng": 38.78766
+  },
+  "Bole Michael Block 2": {
+    "lat": 8.99033,
+    "lng": 38.79171
+  },
+  "Bole Michael Block 3": {
+    "lat": 8.99827,
+    "lng": 38.78659
+  },
+  "Bole Michael Block 4": {
+    "lat": 8.99514,
+    "lng": 38.78966
+  },
+  "Bole Michael Block 5": {
+    "lat": 8.99945,
+    "lng": 38.78504
+  },
+  "Bole Michael Block 6": {
+    "lat": 8.99622,
+    "lng": 38.78570
+  },
+  "Bole Michael Block 7": {
+    "lat": 8.99220,
+    "lng": 38.78810
+  },
+  "Bole Michael Block 8": {
+    "lat": 8.99930,
+    "lng": 38.79297
+  },
+  "Bole Michael Block 9": {
+    "lat": 8.99862,
+    "lng": 38.78467
+  },
+  "Bole Michael Block 10": {
+    "lat": 8.99330,
+    "lng": 38.78848
+  },
+  "Bole Michael Block 11": {
+    "lat": 8.99076,
+    "lng": 38.78772
+  },
+  "Bole Michael Block 12": {
+    "lat": 8.99524,
+    "lng": 38.78716
+  },
+  "Bole Michael Block 13": {
+    "lat": 8.99032,
+    "lng": 38.78988
+  },
+  "Bole Michael Block 14": {
+    "lat": 8.99875,
+    "lng": 38.78926
+  },
+  "Bole Michael Block 15": {
+    "lat": 8.99119,
+    "lng": 38.79434
+  },
+  "Bole Michael Block 16": {
+    "lat": 8.99303,
+    "lng": 38.78521
+  },
+  "Bole Michael Block 17": {
+    "lat": 8.99545,
+    "lng": 38.79024
+  },
+  "Bole Michael Block 18": {
+    "lat": 8.99549,
+    "lng": 38.79148
+  },
+  "Bole Michael Block 19": {
+    "lat": 8.99558,
+    "lng": 38.78720
+  },
+  "Bole Michael Block 20": {
+    "lat": 8.99369,
+    "lng": 38.79010
+  },
+  "Bole Michael Block 21": {
+    "lat": 8.99640,
+    "lng": 38.78830
+  },
+  "Bole Michael Block 22": {
+    "lat": 8.99968,
+    "lng": 38.79140
+  },
+  "Bole Michael Block 23": {
+    "lat": 8.99977,
+    "lng": 38.79431
+  },
+  "Bole Michael Block 24": {
+    "lat": 8.99649,
+    "lng": 38.79168
+  },
+  "Bole Michael Block 25": {
+    "lat": 8.99366,
+    "lng": 38.79173
+  },
+  "Bole Michael Block 26": {
+    "lat": 8.99982,
+    "lng": 38.79021
+  },
+  "Bole Michael Block 27": {
+    "lat": 8.99256,
+    "lng": 38.78592
+  },
+  "Bole Michael Block 28": {
+    "lat": 8.99506,
+    "lng": 38.79353
+  },
+  "Bole Michael Block 29": {
+    "lat": 8.99847,
+    "lng": 38.78907
+  },
+  "Bole Michael Block 30": {
+    "lat": 8.99814,
+    "lng": 38.78579
+  },
+  "Bole Michael Block 31": {
+    "lat": 8.99247,
+    "lng": 38.78793
+  },
+  "Bole Michael Block 32": {
+    "lat": 8.99733,
+    "lng": 38.78655
+  },
+  "Bole Michael Block 33": {
+    "lat": 8.99650,
+    "lng": 38.78469
+  },
+  "Bole Michael Block 34": {
+    "lat": 8.99638,
+    "lng": 38.79007
+  },
+  "Bole Michael Block 35": {
+    "lat": 8.99753,
+    "lng": 38.78468
+  },
+  "Bole Michael Block 36": {
+    "lat": 8.99820,
+    "lng": 38.79161
+  },
+  "Bole Michael Block 37": {
+    "lat": 8.99613,
+    "lng": 38.79416
+  },
+  "Bole Michael Block 38": {
+    "lat": 8.99500,
+    "lng": 38.79338
+  },
+  "Bole Michael Block 39": {
+    "lat": 8.99645,
+    "lng": 38.79152
+  },
+  "Bole Michael Block 40": {
+    "lat": 8.99389,
+    "lng": 38.79291
+  },
+  "Bole Michael Block 41": {
+    "lat": 8.99091,
+    "lng": 38.78568
+  },
+  "Bole Michael Block 42": {
+    "lat": 8.99243,
+    "lng": 38.78770
+  },
+  "Bole Michael Block 43": {
+    "lat": 8.99032,
+    "lng": 38.78879
+  },
+  "Bole Michael Block 44": {
+    "lat": 8.99214,
+    "lng": 38.78763
+  },
+  "Bole Michael Block 45": {
+    "lat": 8.99031,
+    "lng": 38.78451
+  },
+  "Bole Michael Block 46": {
+    "lat": 8.99796,
+    "lng": 38.79343
+  },
+  "Bole Michael Block 47": {
+    "lat": 8.99110,
+    "lng": 38.78582
+  },
+  "Bole Michael Block 48": {
+    "lat": 8.99585,
+    "lng": 38.78593
+  },
+  "Bole Michael Block 49": {
+    "lat": 8.99139,
+    "lng": 38.78843
+  },
+  "Bole Michael Block 50": {
+    "lat": 8.99136,
+    "lng": 38.78893
+  },
+  "Bole Michael Block 51": {
+    "lat": 8.99447,
+    "lng": 38.79076
+  },
+  "Bole Michael Block 52": {
+    "lat": 8.99489,
+    "lng": 38.78685
+  },
+  "Bole Michael Block 53": {
+    "lat": 8.99966,
+    "lng": 38.78537
+  },
+  "Bole Michael Block 54": {
+    "lat": 8.99415,
+    "lng": 38.78632
+  },
+  "Bole Michael Block 55": {
+    "lat": 8.99689,
+    "lng": 38.79041
+  },
+  "Bole Michael Block 56": {
+    "lat": 8.99045,
+    "lng": 38.79402
+  },
+  "Bole Michael Block 57": {
+    "lat": 8.99057,
+    "lng": 38.78549
+  },
+  "Bole Michael Block 58": {
+    "lat": 8.99127,
+    "lng": 38.79375
+  },
+  "Bole Michael Block 59": {
+    "lat": 8.99108,
+    "lng": 38.79417
+  },
+  "Bole Michael Block 60": {
+    "lat": 8.99892,
+    "lng": 38.79343
+  },
+  "Bole Michael Block 61": {
+    "lat": 8.99536,
+    "lng": 38.78910
+  },
+  "Bole Michael Block 62": {
+    "lat": 8.99783,
+    "lng": 38.78773
+  },
+  "Bole Michael Block 63": {
+    "lat": 8.99346,
+    "lng": 38.78618
+  },
+  "Bole Michael Block 64": {
+    "lat": 8.99498,
+    "lng": 38.78832
+  },
+  "Bole Michael Block 65": {
+    "lat": 8.99677,
+    "lng": 38.78597
+  },
+  "Bole Michael Block 66": {
+    "lat": 8.99644,
+    "lng": 38.78578
+  },
+  "Bole Michael Block 67": {
+    "lat": 8.99369,
+    "lng": 38.78608
+  },
+  "Bole Michael Block 68": {
+    "lat": 8.99026,
+    "lng": 38.78578
+  },
+  "Bole Michael Block 69": {
+    "lat": 8.99187,
+    "lng": 38.78456
+  },
+  "Bole Michael Block 70": {
+    "lat": 8.99297,
+    "lng": 38.79026
+  },
+  "Bole Michael Block 71": {
+    "lat": 8.99485,
+    "lng": 38.79205
+  },
+  "Bole Michael Block 72": {
+    "lat": 8.99119,
+    "lng": 38.78764
+  },
+  "Bole Michael Block 73": {
+    "lat": 8.99522,
+    "lng": 38.78793
+  },
+  "Bole Michael Block 74": {
+    "lat": 8.99301,
+    "lng": 38.79209
+  },
+  "Bole Michael Block 75": {
+    "lat": 8.99400,
+    "lng": 38.79290
+  },
+  "Bole Michael Block 76": {
+    "lat": 8.99351,
+    "lng": 38.79097
+  },
+  "Bole Michael Block 77": {
+    "lat": 8.99231,
+    "lng": 38.79230
+  },
+  "Bole Michael Block 78": {
+    "lat": 8.99387,
+    "lng": 38.78553
+  },
+  "Bole Michael Block 79": {
+    "lat": 8.99265,
+    "lng": 38.78956
+  },
+  "Bole Michael Block 80": {
+    "lat": 8.99161,
+    "lng": 38.78508
+  },
+  "Bole Michael Block 81": {
+    "lat": 8.99211,
+    "lng": 38.78555
+  },
+  "Bole Michael Block 82": {
+    "lat": 8.99726,
+    "lng": 38.78942
+  },
+  "Bole Michael Block 83": {
+    "lat": 8.99263,
+    "lng": 38.79039
+  },
+  "Bole Michael Block 84": {
+    "lat": 8.99231,
+    "lng": 38.79319
+  },
+  "Bole Michael Block 85": {
+    "lat": 8.99030,
+    "lng": 38.78662
+  },
+  "Bole Michael Block 86": {
+    "lat": 8.99783,
+    "lng": 38.79099
+  },
+  "Bole Michael Block 87": {
+    "lat": 8.99228,
+    "lng": 38.79114
+  },
+  "Bole Michael Block 88": {
+    "lat": 8.99439,
+    "lng": 38.78582
+  },
+  "Bole Michael Block 89": {
+    "lat": 8.99951,
+    "lng": 38.78622
+  },
+  "Bole Michael Block 90": {
+    "lat": 8.99477,
+    "lng": 38.79425
+  },
+  "Bole Michael Block 91": {
+    "lat": 8.99154,
+    "lng": 38.78459
+  },
+  "Bole Michael Block 92": {
+    "lat": 8.99596,
+    "lng": 38.79059
+  },
+  "Bole Michael Block 93": {
+    "lat": 8.99935,
+    "lng": 38.78550
+  },
+  "Bole Michael Block 94": {
+    "lat": 8.99184,
+    "lng": 38.78802
+  },
+  "Bole Michael Block 95": {
+    "lat": 8.99598,
+    "lng": 38.78839
+  },
+  "Bole Michael Block 96": {
+    "lat": 8.99913,
+    "lng": 38.78797
+  },
+  "Bole Michael Block 97": {
+    "lat": 8.99904,
+    "lng": 38.78935
+  },
+  "Bole Michael Block 98": {
+    "lat": 8.99046,
+    "lng": 38.78831
+  },
+  "Bole Michael Block 99": {
+    "lat": 8.99828,
+    "lng": 38.78826
+  },
+  "Bole Michael Block 100": {
+    "lat": 8.99446,
+    "lng": 38.79048
+  },
+  "Bole Bulbula Block 1": {
+    "lat": 8.99292,
+    "lng": 38.78889
+  },
+  "Bole Bulbula Block 2": {
+    "lat": 8.99142,
+    "lng": 38.78731
+  },
+  "Bole Bulbula Block 3": {
+    "lat": 8.99366,
+    "lng": 38.78589
+  },
+  "Bole Bulbula Block 4": {
+    "lat": 8.99297,
+    "lng": 38.78692
+  },
+  "Bole Bulbula Block 5": {
+    "lat": 8.99550,
+    "lng": 38.79121
+  },
+  "Bole Bulbula Block 6": {
+    "lat": 8.99899,
+    "lng": 38.78830
+  },
+  "Bole Bulbula Block 7": {
+    "lat": 8.99096,
+    "lng": 38.78916
+  },
+  "Bole Bulbula Block 8": {
+    "lat": 8.99619,
+    "lng": 38.78699
+  },
+  "Bole Bulbula Block 9": {
+    "lat": 8.99339,
+    "lng": 38.78816
+  },
+  "Bole Bulbula Block 10": {
+    "lat": 8.99650,
+    "lng": 38.78956
+  },
+  "Bole Bulbula Block 11": {
+    "lat": 8.99185,
+    "lng": 38.78903
+  },
+  "Bole Bulbula Block 12": {
+    "lat": 8.99016,
+    "lng": 38.78450
+  },
+  "Bole Bulbula Block 13": {
+    "lat": 8.99534,
+    "lng": 38.78508
+  },
+  "Bole Bulbula Block 14": {
+    "lat": 8.99058,
+    "lng": 38.78585
+  },
+  "Bole Bulbula Block 15": {
+    "lat": 8.99707,
+    "lng": 38.78893
+  },
+  "Bole Bulbula Block 16": {
+    "lat": 8.99599,
+    "lng": 38.79250
+  },
+  "Bole Bulbula Block 17": {
+    "lat": 8.99691,
+    "lng": 38.78443
+  },
+  "Bole Bulbula Block 18": {
+    "lat": 8.99556,
+    "lng": 38.78663
+  },
+  "Bole Bulbula Block 19": {
+    "lat": 8.99287,
+    "lng": 38.78854
+  },
+  "Bole Bulbula Block 20": {
+    "lat": 8.99500,
+    "lng": 38.79310
+  },
+  "Bole Bulbula Block 21": {
+    "lat": 8.99896,
+    "lng": 38.78991
+  },
+  "Bole Bulbula Block 22": {
+    "lat": 8.99847,
+    "lng": 38.78854
+  },
+  "Bole Bulbula Block 23": {
+    "lat": 8.99661,
+    "lng": 38.79089
+  },
+  "Bole Bulbula Block 24": {
+    "lat": 8.99085,
+    "lng": 38.78734
+  },
+  "Bole Bulbula Block 25": {
+    "lat": 8.99014,
+    "lng": 38.78668
+  },
+  "Bole Bulbula Block 26": {
+    "lat": 8.99347,
+    "lng": 38.79150
+  },
+  "Bole Bulbula Block 27": {
+    "lat": 8.99014,
+    "lng": 38.78789
+  },
+  "Bole Bulbula Block 28": {
+    "lat": 8.99610,
+    "lng": 38.79219
+  },
+  "Bole Bulbula Block 29": {
+    "lat": 8.99107,
+    "lng": 38.78561
+  },
+  "Bole Bulbula Block 30": {
+    "lat": 8.99908,
+    "lng": 38.79025
+  },
+  "Bole Bulbula Block 31": {
+    "lat": 8.99781,
+    "lng": 38.78476
+  },
+  "Bole Bulbula Block 32": {
+    "lat": 8.99335,
+    "lng": 38.78482
+  },
+  "Bole Bulbula Block 33": {
+    "lat": 8.99377,
+    "lng": 38.79095
+  },
+  "Bole Bulbula Block 34": {
+    "lat": 8.99125,
+    "lng": 38.79365
+  },
+  "Bole Bulbula Block 35": {
+    "lat": 8.99462,
+    "lng": 38.78878
+  },
+  "Bole Bulbula Block 36": {
+    "lat": 8.99957,
+    "lng": 38.79046
+  },
+  "Bole Bulbula Block 37": {
+    "lat": 8.99242,
+    "lng": 38.78989
+  },
+  "Bole Bulbula Block 38": {
+    "lat": 8.99246,
+    "lng": 38.79135
+  },
+  "Bole Bulbula Block 39": {
+    "lat": 8.99366,
+    "lng": 38.79418
+  },
+  "Bole Bulbula Block 40": {
+    "lat": 8.99502,
+    "lng": 38.79278
+  },
+  "Bole Bulbula Block 41": {
+    "lat": 8.99768,
+    "lng": 38.78452
+  },
+  "Bole Bulbula Block 42": {
+    "lat": 8.99895,
+    "lng": 38.78847
+  },
+  "Bole Bulbula Block 43": {
+    "lat": 8.99765,
+    "lng": 38.78925
+  },
+  "Bole Bulbula Block 44": {
+    "lat": 8.99576,
+    "lng": 38.79222
+  },
+  "Bole Bulbula Block 45": {
+    "lat": 8.99921,
+    "lng": 38.79440
+  },
+  "Bole Bulbula Block 46": {
+    "lat": 8.99544,
+    "lng": 38.78485
+  },
+  "Bole Bulbula Block 47": {
+    "lat": 8.99816,
+    "lng": 38.79308
+  },
+  "Bole Bulbula Block 48": {
+    "lat": 8.99593,
+    "lng": 38.78987
+  },
+  "Bole Bulbula Block 49": {
+    "lat": 8.99124,
+    "lng": 38.78734
+  },
+  "Bole Bulbula Block 50": {
+    "lat": 8.99123,
+    "lng": 38.79342
+  },
+  "Bole Bulbula Block 51": {
+    "lat": 8.99981,
+    "lng": 38.79414
+  },
+  "Bole Bulbula Block 52": {
+    "lat": 8.99705,
+    "lng": 38.78948
+  },
+  "Bole Bulbula Block 53": {
+    "lat": 8.99904,
+    "lng": 38.79306
+  },
+  "Bole Bulbula Block 54": {
+    "lat": 8.99858,
+    "lng": 38.79389
+  },
+  "Bole Bulbula Block 55": {
+    "lat": 8.99780,
+    "lng": 38.78985
+  },
+  "Bole Bulbula Block 56": {
+    "lat": 8.99086,
+    "lng": 38.78651
+  },
+  "Bole Bulbula Block 57": {
+    "lat": 8.99592,
+    "lng": 38.78753
+  },
+  "Bole Bulbula Block 58": {
+    "lat": 8.99870,
+    "lng": 38.79304
+  },
+  "Bole Bulbula Block 59": {
+    "lat": 8.99223,
+    "lng": 38.79091
+  },
+  "Bole Bulbula Block 60": {
+    "lat": 8.99892,
+    "lng": 38.79341
+  },
+  "Bole Bulbula Block 61": {
+    "lat": 8.99289,
+    "lng": 38.78495
+  },
+  "Bole Bulbula Block 62": {
+    "lat": 8.99197,
+    "lng": 38.79412
+  },
+  "Bole Bulbula Block 63": {
+    "lat": 8.99352,
+    "lng": 38.78832
+  },
+  "Bole Bulbula Block 64": {
+    "lat": 8.99822,
+    "lng": 38.79231
+  },
+  "Bole Bulbula Block 65": {
+    "lat": 8.99201,
+    "lng": 38.78818
+  },
+  "Bole Bulbula Block 66": {
+    "lat": 8.99599,
+    "lng": 38.78893
+  },
+  "Bole Bulbula Block 67": {
+    "lat": 8.99928,
+    "lng": 38.79259
+  },
+  "Bole Bulbula Block 68": {
+    "lat": 8.99715,
+    "lng": 38.78849
+  },
+  "Bole Bulbula Block 69": {
+    "lat": 8.99026,
+    "lng": 38.78636
+  },
+  "Bole Bulbula Block 70": {
+    "lat": 8.99377,
+    "lng": 38.79354
+  },
+  "Bole Bulbula Block 71": {
+    "lat": 8.99381,
+    "lng": 38.79092
+  },
+  "Bole Bulbula Block 72": {
+    "lat": 8.99277,
+    "lng": 38.78841
+  },
+  "Bole Bulbula Block 73": {
+    "lat": 8.99187,
+    "lng": 38.78618
+  },
+  "Bole Bulbula Block 74": {
+    "lat": 8.99349,
+    "lng": 38.79076
+  },
+  "Bole Bulbula Block 75": {
+    "lat": 8.99581,
+    "lng": 38.78498
+  },
+  "Bole Bulbula Block 76": {
+    "lat": 8.99030,
+    "lng": 38.79230
+  },
+  "Bole Bulbula Block 77": {
+    "lat": 8.99377,
+    "lng": 38.79138
+  },
+  "Bole Bulbula Block 78": {
+    "lat": 8.99264,
+    "lng": 38.78517
+  },
+  "Bole Bulbula Block 79": {
+    "lat": 8.99688,
+    "lng": 38.79243
+  },
+  "Bole Bulbula Block 80": {
+    "lat": 8.99958,
+    "lng": 38.79012
+  },
+  "Bole Bulbula Block 81": {
+    "lat": 8.99129,
+    "lng": 38.78755
+  },
+  "Bole Bulbula Block 82": {
+    "lat": 8.99307,
+    "lng": 38.78993
+  },
+  "Bole Bulbula Block 83": {
+    "lat": 8.99471,
+    "lng": 38.79108
+  },
+  "Bole Bulbula Block 84": {
+    "lat": 8.99818,
+    "lng": 38.79253
+  },
+  "Bole Bulbula Block 85": {
+    "lat": 8.99974,
+    "lng": 38.79429
+  },
+  "Bole Bulbula Block 86": {
+    "lat": 8.99989,
+    "lng": 38.78760
+  },
+  "Bole Bulbula Block 87": {
+    "lat": 8.99832,
+    "lng": 38.79401
+  },
+  "Bole Bulbula Block 88": {
+    "lat": 8.99191,
+    "lng": 38.78562
+  },
+  "Bole Bulbula Block 89": {
+    "lat": 8.99730,
+    "lng": 38.78590
+  },
+  "Bole Bulbula Block 90": {
+    "lat": 8.99503,
+    "lng": 38.79304
+  },
+  "Bole Bulbula Block 91": {
+    "lat": 8.99082,
+    "lng": 38.79088
+  },
+  "Bole Bulbula Block 92": {
+    "lat": 8.99138,
+    "lng": 38.78749
+  },
+  "Bole Bulbula Block 93": {
+    "lat": 8.99804,
+    "lng": 38.78568
+  },
+  "Bole Bulbula Block 94": {
+    "lat": 8.99813,
+    "lng": 38.78565
+  },
+  "Bole Bulbula Block 95": {
+    "lat": 8.99965,
+    "lng": 38.79356
+  },
+  "Bole Bulbula Block 96": {
+    "lat": 8.99960,
+    "lng": 38.78901
+  },
+  "Bole Bulbula Block 97": {
+    "lat": 8.99366,
+    "lng": 38.79314
+  },
+  "Bole Bulbula Block 98": {
+    "lat": 8.99153,
+    "lng": 38.78661
+  },
+  "Bole Bulbula Block 99": {
+    "lat": 8.99804,
+    "lng": 38.78508
+  },
+  "Bole Bulbula Block 100": {
+    "lat": 8.99693,
+    "lng": 38.79017
+  },
+  "Bole Arabsa Block 1": {
+    "lat": 8.99431,
+    "lng": 38.78453
+  },
+  "Bole Arabsa Block 2": {
+    "lat": 8.99670,
+    "lng": 38.79354
+  },
+  "Bole Arabsa Block 3": {
+    "lat": 8.99938,
+    "lng": 38.78781
+  },
+  "Bole Arabsa Block 4": {
+    "lat": 8.99950,
+    "lng": 38.78976
+  },
+  "Bole Arabsa Block 5": {
+    "lat": 8.99394,
+    "lng": 38.79190
+  },
+  "Bole Arabsa Block 6": {
+    "lat": 8.99158,
+    "lng": 38.79013
+  },
+  "Bole Arabsa Block 7": {
+    "lat": 8.99262,
+    "lng": 38.78722
+  },
+  "Bole Arabsa Block 8": {
+    "lat": 8.99372,
+    "lng": 38.78957
+  },
+  "Bole Arabsa Block 9": {
+    "lat": 8.99219,
+    "lng": 38.79037
+  },
+  "Bole Arabsa Block 10": {
+    "lat": 8.99520,
+    "lng": 38.78866
+  },
+  "Bole Arabsa Block 11": {
+    "lat": 8.99861,
+    "lng": 38.79298
+  },
+  "Bole Arabsa Block 12": {
+    "lat": 8.99280,
+    "lng": 38.79082
+  },
+  "Bole Arabsa Block 13": {
+    "lat": 8.99007,
+    "lng": 38.79029
+  },
+  "Bole Arabsa Block 14": {
+    "lat": 8.99787,
+    "lng": 38.79104
+  },
+  "Bole Arabsa Block 15": {
+    "lat": 8.99451,
+    "lng": 38.78685
+  },
+  "Bole Arabsa Block 16": {
+    "lat": 8.99174,
+    "lng": 38.79194
+  },
+  "Bole Arabsa Block 17": {
+    "lat": 8.99478,
+    "lng": 38.78630
+  },
+  "Bole Arabsa Block 18": {
+    "lat": 8.99560,
+    "lng": 38.78887
+  },
+  "Bole Arabsa Block 19": {
+    "lat": 8.99427,
+    "lng": 38.79380
+  },
+  "Bole Arabsa Block 20": {
+    "lat": 8.99527,
+    "lng": 38.79054
+  },
+  "Bole Arabsa Block 21": {
+    "lat": 8.99559,
+    "lng": 38.79348
+  },
+  "Bole Arabsa Block 22": {
+    "lat": 8.99903,
+    "lng": 38.78555
+  },
+  "Bole Arabsa Block 23": {
+    "lat": 8.99684,
+    "lng": 38.79320
+  },
+  "Bole Arabsa Block 24": {
+    "lat": 8.99352,
+    "lng": 38.78498
+  },
+  "Bole Arabsa Block 25": {
+    "lat": 8.99420,
+    "lng": 38.79405
+  },
+  "Bole Arabsa Block 26": {
+    "lat": 8.99716,
+    "lng": 38.78906
+  },
+  "Bole Arabsa Block 27": {
+    "lat": 8.99673,
+    "lng": 38.79302
+  },
+  "Bole Arabsa Block 28": {
+    "lat": 8.99576,
+    "lng": 38.78441
+  },
+  "Bole Arabsa Block 29": {
+    "lat": 8.99834,
+    "lng": 38.79201
+  },
+  "Bole Arabsa Block 30": {
+    "lat": 8.99657,
+    "lng": 38.79185
+  },
+  "Bole Arabsa Block 31": {
+    "lat": 8.99429,
+    "lng": 38.79237
+  },
+  "Bole Arabsa Block 32": {
+    "lat": 8.99793,
+    "lng": 38.78934
+  },
+  "Bole Arabsa Block 33": {
+    "lat": 8.99612,
+    "lng": 38.78593
+  },
+  "Bole Arabsa Block 34": {
+    "lat": 8.99330,
+    "lng": 38.78706
+  },
+  "Bole Arabsa Block 35": {
+    "lat": 8.99819,
+    "lng": 38.79195
+  },
+  "Bole Arabsa Block 36": {
+    "lat": 8.99607,
+    "lng": 38.78884
+  },
+  "Bole Arabsa Block 37": {
+    "lat": 8.99183,
+    "lng": 38.79189
+  },
+  "Bole Arabsa Block 38": {
+    "lat": 8.99274,
+    "lng": 38.79401
+  },
+  "Bole Arabsa Block 39": {
+    "lat": 8.99419,
+    "lng": 38.79141
+  },
+  "Bole Arabsa Block 40": {
+    "lat": 8.99701,
+    "lng": 38.78726
+  },
+  "Bole Arabsa Block 41": {
+    "lat": 8.99373,
+    "lng": 38.79438
+  },
+  "Bole Arabsa Block 42": {
+    "lat": 8.99071,
+    "lng": 38.78583
+  },
+  "Bole Arabsa Block 43": {
+    "lat": 8.99492,
+    "lng": 38.79062
+  },
+  "Bole Arabsa Block 44": {
+    "lat": 8.99329,
+    "lng": 38.79024
+  },
+  "Bole Arabsa Block 45": {
+    "lat": 8.99517,
+    "lng": 38.79431
+  },
+  "Bole Arabsa Block 46": {
+    "lat": 8.99285,
+    "lng": 38.79306
+  },
+  "Bole Arabsa Block 47": {
+    "lat": 8.99386,
+    "lng": 38.78584
+  },
+  "Bole Arabsa Block 48": {
+    "lat": 8.99558,
+    "lng": 38.79069
+  },
+  "Bole Arabsa Block 49": {
+    "lat": 8.99335,
+    "lng": 38.78628
+  },
+  "Bole Arabsa Block 50": {
+    "lat": 8.99672,
+    "lng": 38.79038
+  },
+  "Bole Arabsa Block 51": {
+    "lat": 8.99793,
+    "lng": 38.78841
+  },
+  "Bole Arabsa Block 52": {
+    "lat": 8.99220,
+    "lng": 38.79402
+  },
+  "Bole Arabsa Block 53": {
+    "lat": 8.99945,
+    "lng": 38.79252
+  },
+  "Bole Arabsa Block 54": {
+    "lat": 8.99092,
+    "lng": 38.79325
+  },
+  "Bole Arabsa Block 55": {
+    "lat": 8.99744,
+    "lng": 38.79105
+  },
+  "Bole Arabsa Block 56": {
+    "lat": 8.99252,
+    "lng": 38.78465
+  },
+  "Bole Arabsa Block 57": {
+    "lat": 8.99631,
+    "lng": 38.79155
+  },
+  "Bole Arabsa Block 58": {
+    "lat": 8.99913,
+    "lng": 38.78807
+  },
+  "Bole Arabsa Block 59": {
+    "lat": 8.99486,
+    "lng": 38.78698
+  },
+  "Bole Arabsa Block 60": {
+    "lat": 8.99799,
+    "lng": 38.78961
+  },
+  "Bole Arabsa Block 61": {
+    "lat": 8.99947,
+    "lng": 38.78795
+  },
+  "Bole Arabsa Block 62": {
+    "lat": 8.99664,
+    "lng": 38.78988
+  },
+  "Bole Arabsa Block 63": {
+    "lat": 8.99208,
+    "lng": 38.78474
+  },
+  "Bole Arabsa Block 64": {
+    "lat": 8.99093,
+    "lng": 38.78957
+  },
+  "Bole Arabsa Block 65": {
+    "lat": 8.99852,
+    "lng": 38.78933
+  },
+  "Bole Arabsa Block 66": {
+    "lat": 8.99501,
+    "lng": 38.78903
+  },
+  "Bole Arabsa Block 67": {
+    "lat": 8.99068,
+    "lng": 38.78571
+  },
+  "Bole Arabsa Block 68": {
+    "lat": 8.99225,
+    "lng": 38.78531
+  },
+  "Bole Arabsa Block 69": {
+    "lat": 8.99008,
+    "lng": 38.78497
+  },
+  "Bole Arabsa Block 70": {
+    "lat": 8.99567,
+    "lng": 38.78764
+  },
+  "Bole Arabsa Block 71": {
+    "lat": 8.99251,
+    "lng": 38.78450
+  },
+  "Bole Arabsa Block 72": {
+    "lat": 8.99435,
+    "lng": 38.78811
+  },
+  "Bole Arabsa Block 73": {
+    "lat": 8.99993,
+    "lng": 38.78891
+  },
+  "Bole Arabsa Block 74": {
+    "lat": 8.99828,
+    "lng": 38.78755
+  },
+  "Bole Arabsa Block 75": {
+    "lat": 8.99630,
+    "lng": 38.78574
+  },
+  "Bole Arabsa Block 76": {
+    "lat": 8.99375,
+    "lng": 38.79382
+  },
+  "Bole Arabsa Block 77": {
+    "lat": 8.99353,
+    "lng": 38.78790
+  },
+  "Bole Arabsa Block 78": {
+    "lat": 8.99783,
+    "lng": 38.78610
+  },
+  "Bole Arabsa Block 79": {
+    "lat": 8.99276,
+    "lng": 38.78554
+  },
+  "Bole Arabsa Block 80": {
+    "lat": 8.99395,
+    "lng": 38.78867
+  },
+  "Bole Arabsa Block 81": {
+    "lat": 8.99309,
+    "lng": 38.78715
+  },
+  "Bole Arabsa Block 82": {
+    "lat": 8.99304,
+    "lng": 38.79210
+  },
+  "Bole Arabsa Block 83": {
+    "lat": 8.99797,
+    "lng": 38.79247
+  },
+  "Bole Arabsa Block 84": {
+    "lat": 8.99851,
+    "lng": 38.79366
+  },
+  "Bole Arabsa Block 85": {
+    "lat": 8.99468,
+    "lng": 38.79395
+  },
+  "Bole Arabsa Block 86": {
+    "lat": 8.99306,
+    "lng": 38.79118
+  },
+  "Bole Arabsa Block 87": {
+    "lat": 8.99048,
+    "lng": 38.79265
+  },
+  "Bole Arabsa Block 88": {
+    "lat": 8.99002,
+    "lng": 38.78446
+  },
+  "Bole Arabsa Block 89": {
+    "lat": 8.99329,
+    "lng": 38.79221
+  },
+  "Bole Arabsa Block 90": {
+    "lat": 8.99508,
+    "lng": 38.78675
+  },
+  "Bole Arabsa Block 91": {
+    "lat": 8.99266,
+    "lng": 38.79149
+  },
+  "Bole Arabsa Block 92": {
+    "lat": 8.99727,
+    "lng": 38.78495
+  },
+  "Bole Arabsa Block 93": {
+    "lat": 8.99827,
+    "lng": 38.78564
+  },
+  "Bole Arabsa Block 94": {
+    "lat": 8.99533,
+    "lng": 38.78986
+  },
+  "Bole Arabsa Block 95": {
+    "lat": 8.99247,
+    "lng": 38.79226
+  },
+  "Bole Arabsa Block 96": {
+    "lat": 8.99176,
+    "lng": 38.78808
+  },
+  "Bole Arabsa Block 97": {
+    "lat": 8.99285,
+    "lng": 38.79205
+  },
+  "Bole Arabsa Block 98": {
+    "lat": 8.99136,
+    "lng": 38.78464
+  },
+  "Bole Arabsa Block 99": {
+    "lat": 8.99755,
+    "lng": 38.78739
+  },
+  "Bole Arabsa Block 100": {
+    "lat": 8.99378,
+    "lng": 38.79163
+  },
+  "Bole Deldey Block 1": {
+    "lat": 8.99174,
+    "lng": 38.78844
+  },
+  "Bole Deldey Block 2": {
+    "lat": 8.99017,
+    "lng": 38.78890
+  },
+  "Bole Deldey Block 3": {
+    "lat": 8.99013,
+    "lng": 38.78914
+  },
+  "Bole Deldey Block 4": {
+    "lat": 8.99547,
+    "lng": 38.78983
+  },
+  "Bole Deldey Block 5": {
+    "lat": 8.99197,
+    "lng": 38.78920
+  },
+  "Bole Deldey Block 6": {
+    "lat": 8.99569,
+    "lng": 38.79400
+  },
+  "Bole Deldey Block 7": {
+    "lat": 8.99744,
+    "lng": 38.79131
+  },
+  "Bole Deldey Block 8": {
+    "lat": 8.99133,
+    "lng": 38.79245
+  },
+  "Bole Deldey Block 9": {
+    "lat": 8.99197,
+    "lng": 38.79421
+  },
+  "Bole Deldey Block 10": {
+    "lat": 8.99955,
+    "lng": 38.78736
+  },
+  "Bole Deldey Block 11": {
+    "lat": 8.99995,
+    "lng": 38.79320
+  },
+  "Bole Deldey Block 12": {
+    "lat": 8.99491,
+    "lng": 38.79393
+  },
+  "Bole Deldey Block 13": {
+    "lat": 8.99700,
+    "lng": 38.78533
+  },
+  "Bole Deldey Block 14": {
+    "lat": 8.99152,
+    "lng": 38.78915
+  },
+  "Bole Deldey Block 15": {
+    "lat": 8.99322,
+    "lng": 38.78798
+  },
+  "Bole Deldey Block 16": {
+    "lat": 8.99803,
+    "lng": 38.78955
+  },
+  "Bole Deldey Block 17": {
+    "lat": 8.99269,
+    "lng": 38.79040
+  },
+  "Bole Deldey Block 18": {
+    "lat": 8.99337,
+    "lng": 38.79380
+  },
+  "Bole Deldey Block 19": {
+    "lat": 8.99118,
+    "lng": 38.79237
+  },
+  "Bole Deldey Block 20": {
+    "lat": 8.99274,
+    "lng": 38.78634
+  },
+  "Bole Deldey Block 21": {
+    "lat": 8.99458,
+    "lng": 38.78956
+  },
+  "Bole Deldey Block 22": {
+    "lat": 8.99149,
+    "lng": 38.78827
+  },
+  "Bole Deldey Block 23": {
+    "lat": 8.99543,
+    "lng": 38.78675
+  },
+  "Bole Deldey Block 24": {
+    "lat": 8.99982,
+    "lng": 38.78442
+  },
+  "Bole Deldey Block 25": {
+    "lat": 8.99707,
+    "lng": 38.78612
+  },
+  "Bole Deldey Block 26": {
+    "lat": 8.99785,
+    "lng": 38.78510
+  },
+  "Bole Deldey Block 27": {
+    "lat": 8.99959,
+    "lng": 38.78947
+  },
+  "Bole Deldey Block 28": {
+    "lat": 8.99307,
+    "lng": 38.78868
+  },
+  "Bole Deldey Block 29": {
+    "lat": 8.99717,
+    "lng": 38.78654
+  },
+  "Bole Deldey Block 30": {
+    "lat": 8.99666,
+    "lng": 38.78616
+  },
+  "Bole Deldey Block 31": {
+    "lat": 8.99784,
+    "lng": 38.79037
+  },
+  "Bole Deldey Block 32": {
+    "lat": 8.99382,
+    "lng": 38.79133
+  },
+  "Bole Deldey Block 33": {
+    "lat": 8.99591,
+    "lng": 38.79320
+  },
+  "Bole Deldey Block 34": {
+    "lat": 8.99762,
+    "lng": 38.78556
+  },
+  "Bole Deldey Block 35": {
+    "lat": 8.99623,
+    "lng": 38.79144
+  },
+  "Bole Deldey Block 36": {
+    "lat": 8.99881,
+    "lng": 38.78478
+  },
+  "Bole Deldey Block 37": {
+    "lat": 8.99830,
+    "lng": 38.78528
+  },
+  "Bole Deldey Block 38": {
+    "lat": 8.99145,
+    "lng": 38.78540
+  },
+  "Bole Deldey Block 39": {
+    "lat": 8.99672,
+    "lng": 38.78502
+  },
+  "Bole Deldey Block 40": {
+    "lat": 8.99888,
+    "lng": 38.78828
+  },
+  "Bole Deldey Block 41": {
+    "lat": 8.99934,
+    "lng": 38.79424
+  },
+  "Bole Deldey Block 42": {
+    "lat": 8.99252,
+    "lng": 38.78891
+  },
+  "Bole Deldey Block 43": {
+    "lat": 8.99213,
+    "lng": 38.78625
+  },
+  "Bole Deldey Block 44": {
+    "lat": 8.99669,
+    "lng": 38.78490
+  },
+  "Bole Deldey Block 45": {
+    "lat": 8.99034,
+    "lng": 38.79349
+  },
+  "Bole Deldey Block 46": {
+    "lat": 8.99155,
+    "lng": 38.79191
+  },
+  "Bole Deldey Block 47": {
+    "lat": 8.99615,
+    "lng": 38.78677
+  },
+  "Bole Deldey Block 48": {
+    "lat": 8.99119,
+    "lng": 38.78478
+  },
+  "Bole Deldey Block 49": {
+    "lat": 8.99686,
+    "lng": 38.79228
+  },
+  "Bole Deldey Block 50": {
+    "lat": 8.99795,
+    "lng": 38.79039
+  },
+  "Bole Deldey Block 51": {
+    "lat": 8.99516,
+    "lng": 38.79245
+  },
+  "Bole Deldey Block 52": {
+    "lat": 8.99657,
+    "lng": 38.78730
+  },
+  "Bole Deldey Block 53": {
+    "lat": 8.99825,
+    "lng": 38.79355
+  },
+  "Bole Deldey Block 54": {
+    "lat": 8.99493,
+    "lng": 38.79075
+  },
+  "Bole Deldey Block 55": {
+    "lat": 8.99213,
+    "lng": 38.79240
+  },
+  "Bole Deldey Block 56": {
+    "lat": 8.99480,
+    "lng": 38.79193
+  },
+  "Bole Deldey Block 57": {
+    "lat": 8.99164,
+    "lng": 38.78775
+  },
+  "Bole Deldey Block 58": {
+    "lat": 8.99791,
+    "lng": 38.78614
+  },
+  "Bole Deldey Block 59": {
+    "lat": 8.99350,
+    "lng": 38.79185
+  },
+  "Bole Deldey Block 60": {
+    "lat": 8.99974,
+    "lng": 38.79087
+  },
+  "Bole Deldey Block 61": {
+    "lat": 8.99731,
+    "lng": 38.78551
+  },
+  "Bole Deldey Block 62": {
+    "lat": 8.99305,
+    "lng": 38.78777
+  },
+  "Bole Deldey Block 63": {
+    "lat": 8.99821,
+    "lng": 38.79087
+  },
+  "Bole Deldey Block 64": {
+    "lat": 8.99188,
+    "lng": 38.78479
+  },
+  "Bole Deldey Block 65": {
+    "lat": 8.99890,
+    "lng": 38.79243
+  },
+  "Bole Deldey Block 66": {
+    "lat": 8.99189,
+    "lng": 38.78467
+  },
+  "Bole Deldey Block 67": {
+    "lat": 8.99769,
+    "lng": 38.78846
+  },
+  "Bole Deldey Block 68": {
+    "lat": 8.99382,
+    "lng": 38.79047
+  },
+  "Bole Deldey Block 69": {
+    "lat": 8.99418,
+    "lng": 38.78666
+  },
+  "Bole Deldey Block 70": {
+    "lat": 8.99079,
+    "lng": 38.78918
+  },
+  "Bole Deldey Block 71": {
+    "lat": 8.99354,
+    "lng": 38.79283
+  },
+  "Bole Deldey Block 72": {
+    "lat": 8.99552,
+    "lng": 38.78842
+  },
+  "Bole Deldey Block 73": {
+    "lat": 8.99504,
+    "lng": 38.78614
+  },
+  "Bole Deldey Block 74": {
+    "lat": 8.99907,
+    "lng": 38.78971
+  },
+  "Bole Deldey Block 75": {
+    "lat": 8.99142,
+    "lng": 38.79100
+  },
+  "Bole Deldey Block 76": {
+    "lat": 8.99852,
+    "lng": 38.78892
+  },
+  "Bole Deldey Block 77": {
+    "lat": 8.99687,
+    "lng": 38.78620
+  },
+  "Bole Deldey Block 78": {
+    "lat": 8.99751,
+    "lng": 38.78918
+  },
+  "Bole Deldey Block 79": {
+    "lat": 8.99376,
+    "lng": 38.78920
+  },
+  "Bole Deldey Block 80": {
+    "lat": 8.99426,
+    "lng": 38.79189
+  },
+  "Bole Deldey Block 81": {
+    "lat": 8.99756,
+    "lng": 38.79151
+  },
+  "Bole Deldey Block 82": {
+    "lat": 8.99577,
+    "lng": 38.79389
+  },
+  "Bole Deldey Block 83": {
+    "lat": 8.99272,
+    "lng": 38.78461
+  },
+  "Bole Deldey Block 84": {
+    "lat": 8.99412,
+    "lng": 38.78600
+  },
+  "Bole Deldey Block 85": {
+    "lat": 8.99056,
+    "lng": 38.79381
+  },
+  "Bole Deldey Block 86": {
+    "lat": 8.99059,
+    "lng": 38.78658
+  },
+  "Bole Deldey Block 87": {
+    "lat": 8.99988,
+    "lng": 38.78946
+  },
+  "Bole Deldey Block 88": {
+    "lat": 8.99328,
+    "lng": 38.79044
+  },
+  "Bole Deldey Block 89": {
+    "lat": 8.99298,
+    "lng": 38.78917
+  },
+  "Bole Deldey Block 90": {
+    "lat": 8.99845,
+    "lng": 38.79296
+  },
+  "Bole Deldey Block 91": {
+    "lat": 8.99114,
+    "lng": 38.78479
+  },
+  "Bole Deldey Block 92": {
+    "lat": 8.99540,
+    "lng": 38.78580
+  },
+  "Bole Deldey Block 93": {
+    "lat": 8.99083,
+    "lng": 38.79238
+  },
+  "Bole Deldey Block 94": {
+    "lat": 8.99101,
+    "lng": 38.78987
+  },
+  "Bole Deldey Block 95": {
+    "lat": 8.99490,
+    "lng": 38.79115
+  },
+  "Bole Deldey Block 96": {
+    "lat": 8.99750,
+    "lng": 38.78932
+  },
+  "Bole Deldey Block 97": {
+    "lat": 8.99411,
+    "lng": 38.78944
+  },
+  "Bole Deldey Block 98": {
+    "lat": 8.99491,
+    "lng": 38.79018
+  },
+  "Bole Deldey Block 99": {
+    "lat": 8.99545,
+    "lng": 38.78812
+  },
+  "Bole Deldey Block 100": {
+    "lat": 8.99946,
+    "lng": 38.78557
+  },
+  "Bole Tele Block 1": {
+    "lat": 8.99085,
+    "lng": 38.78943
+  },
+  "Bole Tele Block 2": {
+    "lat": 8.99229,
+    "lng": 38.78625
+  },
+  "Bole Tele Block 3": {
+    "lat": 8.99245,
+    "lng": 38.78951
+  },
+  "Bole Tele Block 4": {
+    "lat": 8.99867,
+    "lng": 38.79127
+  },
+  "Bole Tele Block 5": {
+    "lat": 8.99840,
+    "lng": 38.78477
+  },
+  "Bole Tele Block 6": {
+    "lat": 8.99470,
+    "lng": 38.79079
+  },
+  "Bole Tele Block 7": {
+    "lat": 8.99961,
+    "lng": 38.78550
+  },
+  "Bole Tele Block 8": {
+    "lat": 8.99559,
+    "lng": 38.78609
+  },
+  "Bole Tele Block 9": {
+    "lat": 8.99167,
+    "lng": 38.79126
+  },
+  "Bole Tele Block 10": {
+    "lat": 8.99248,
+    "lng": 38.79066
+  },
+  "Bole Tele Block 11": {
+    "lat": 8.99184,
+    "lng": 38.78982
+  },
+  "Bole Tele Block 12": {
+    "lat": 8.99509,
+    "lng": 38.79314
+  },
+  "Bole Tele Block 13": {
+    "lat": 8.99807,
+    "lng": 38.78442
+  },
+  "Bole Tele Block 14": {
+    "lat": 8.99912,
+    "lng": 38.78958
+  },
+  "Bole Tele Block 15": {
+    "lat": 8.99703,
+    "lng": 38.78708
+  },
+  "Bole Tele Block 16": {
+    "lat": 8.99014,
+    "lng": 38.78967
+  },
+  "Bole Tele Block 17": {
+    "lat": 8.99169,
+    "lng": 38.79371
+  },
+  "Bole Tele Block 18": {
+    "lat": 9.00000,
+    "lng": 38.78879
+  },
+  "Bole Tele Block 19": {
+    "lat": 8.99161,
+    "lng": 38.79247
+  },
+  "Bole Tele Block 20": {
+    "lat": 8.99080,
+    "lng": 38.79291
+  },
+  "Bole Tele Block 21": {
+    "lat": 8.99510,
+    "lng": 38.78522
+  },
+  "Bole Tele Block 22": {
+    "lat": 8.99156,
+    "lng": 38.78852
+  },
+  "Bole Tele Block 23": {
+    "lat": 8.99390,
+    "lng": 38.78802
+  },
+  "Bole Tele Block 24": {
+    "lat": 8.99585,
+    "lng": 38.78620
+  },
+  "Bole Tele Block 25": {
+    "lat": 8.99818,
+    "lng": 38.79314
+  },
+  "Bole Tele Block 26": {
+    "lat": 8.99308,
+    "lng": 38.79188
+  },
+  "Bole Tele Block 27": {
+    "lat": 8.99966,
+    "lng": 38.79049
+  },
+  "Bole Tele Block 28": {
+    "lat": 8.99300,
+    "lng": 38.78458
+  },
+  "Bole Tele Block 29": {
+    "lat": 8.99383,
+    "lng": 38.79105
+  },
+  "Bole Tele Block 30": {
+    "lat": 8.99291,
+    "lng": 38.78562
+  },
+  "Bole Tele Block 31": {
+    "lat": 8.99334,
+    "lng": 38.79082
+  },
+  "Bole Tele Block 32": {
+    "lat": 8.99556,
+    "lng": 38.79077
+  },
+  "Bole Tele Block 33": {
+    "lat": 8.99256,
+    "lng": 38.78827
+  },
+  "Bole Tele Block 34": {
+    "lat": 8.99553,
+    "lng": 38.79073
+  },
+  "Bole Tele Block 35": {
+    "lat": 8.99074,
+    "lng": 38.78914
+  },
+  "Bole Tele Block 36": {
+    "lat": 8.99971,
+    "lng": 38.78570
+  },
+  "Bole Tele Block 37": {
+    "lat": 8.99091,
+    "lng": 38.78507
+  },
+  "Bole Tele Block 38": {
+    "lat": 8.99516,
+    "lng": 38.78499
+  },
+  "Bole Tele Block 39": {
+    "lat": 8.99322,
+    "lng": 38.78947
+  },
+  "Bole Tele Block 40": {
+    "lat": 8.99600,
+    "lng": 38.78486
+  },
+  "Bole Tele Block 41": {
+    "lat": 8.99083,
+    "lng": 38.79022
+  },
+  "Bole Tele Block 42": {
+    "lat": 8.99014,
+    "lng": 38.78771
+  },
+  "Bole Tele Block 43": {
+    "lat": 8.99042,
+    "lng": 38.79181
+  },
+  "Bole Tele Block 44": {
+    "lat": 8.99320,
+    "lng": 38.79208
+  },
+  "Bole Tele Block 45": {
+    "lat": 8.99844,
+    "lng": 38.78861
+  },
+  "Bole Tele Block 46": {
+    "lat": 8.99399,
+    "lng": 38.78843
+  },
+  "Bole Tele Block 47": {
+    "lat": 8.99427,
+    "lng": 38.79282
+  },
+  "Bole Tele Block 48": {
+    "lat": 8.99135,
+    "lng": 38.78855
+  },
+  "Bole Tele Block 49": {
+    "lat": 8.99264,
+    "lng": 38.78673
+  },
+  "Bole Tele Block 50": {
+    "lat": 8.99512,
+    "lng": 38.79195
+  },
+  "Bole Tele Block 51": {
+    "lat": 8.99879,
+    "lng": 38.79226
+  },
+  "Bole Tele Block 52": {
+    "lat": 8.99250,
+    "lng": 38.79099
+  },
+  "Bole Tele Block 53": {
+    "lat": 8.99506,
+    "lng": 38.79357
+  },
+  "Bole Tele Block 54": {
+    "lat": 8.99562,
+    "lng": 38.79198
+  },
+  "Bole Tele Block 55": {
+    "lat": 8.99940,
+    "lng": 38.78540
+  },
+  "Bole Tele Block 56": {
+    "lat": 8.99508,
+    "lng": 38.78766
+  },
+  "Bole Tele Block 57": {
+    "lat": 8.99852,
+    "lng": 38.79003
+  },
+  "Bole Tele Block 58": {
+    "lat": 8.99052,
+    "lng": 38.79239
+  },
+  "Bole Tele Block 59": {
+    "lat": 8.99587,
+    "lng": 38.78826
+  },
+  "Bole Tele Block 60": {
+    "lat": 8.99328,
+    "lng": 38.78822
+  },
+  "Bole Tele Block 61": {
+    "lat": 8.99064,
+    "lng": 38.78530
+  },
+  "Bole Tele Block 62": {
+    "lat": 8.99070,
+    "lng": 38.78971
+  },
+  "Bole Tele Block 63": {
+    "lat": 8.99189,
+    "lng": 38.79170
+  },
+  "Bole Tele Block 64": {
+    "lat": 8.99285,
+    "lng": 38.79389
+  },
+  "Bole Tele Block 65": {
+    "lat": 8.99044,
+    "lng": 38.78460
+  },
+  "Bole Tele Block 66": {
+    "lat": 8.99214,
+    "lng": 38.79151
+  },
+  "Bole Tele Block 67": {
+    "lat": 8.99552,
+    "lng": 38.78976
+  },
+  "Bole Tele Block 68": {
+    "lat": 8.99526,
+    "lng": 38.79143
+  },
+  "Bole Tele Block 69": {
+    "lat": 8.99605,
+    "lng": 38.78496
+  },
+  "Bole Tele Block 70": {
+    "lat": 8.99259,
+    "lng": 38.78613
+  },
+  "Bole Tele Block 71": {
+    "lat": 8.99448,
+    "lng": 38.79260
+  },
+  "Bole Tele Block 72": {
+    "lat": 8.99271,
+    "lng": 38.78904
+  },
+  "Bole Tele Block 73": {
+    "lat": 8.99574,
+    "lng": 38.79093
+  },
+  "Bole Tele Block 74": {
+    "lat": 8.99413,
+    "lng": 38.78566
+  },
+  "Bole Tele Block 75": {
+    "lat": 8.99616,
+    "lng": 38.79408
+  },
+  "Bole Tele Block 76": {
+    "lat": 8.99061,
+    "lng": 38.78676
+  },
+  "Bole Tele Block 77": {
+    "lat": 8.99978,
+    "lng": 38.78590
+  },
+  "Bole Tele Block 78": {
+    "lat": 8.99791,
+    "lng": 38.79095
+  },
+  "Bole Tele Block 79": {
+    "lat": 8.99006,
+    "lng": 38.78761
+  },
+  "Bole Tele Block 80": {
+    "lat": 8.99284,
+    "lng": 38.79211
+  },
+  "Bole Tele Block 81": {
+    "lat": 8.99410,
+    "lng": 38.78683
+  },
+  "Bole Tele Block 82": {
+    "lat": 8.99905,
+    "lng": 38.78805
+  },
+  "Bole Tele Block 83": {
+    "lat": 8.99602,
+    "lng": 38.79403
+  },
+  "Bole Tele Block 84": {
+    "lat": 8.99383,
+    "lng": 38.78880
+  },
+  "Bole Tele Block 85": {
+    "lat": 8.99512,
+    "lng": 38.79354
+  },
+  "Bole Tele Block 86": {
+    "lat": 8.99934,
+    "lng": 38.78935
+  },
+  "Bole Tele Block 87": {
+    "lat": 8.99904,
+    "lng": 38.78527
+  },
+  "Bole Tele Block 88": {
+    "lat": 8.99950,
+    "lng": 38.78768
+  },
+  "Bole Tele Block 89": {
+    "lat": 8.99580,
+    "lng": 38.79293
+  },
+  "Bole Tele Block 90": {
+    "lat": 8.99524,
+    "lng": 38.79284
+  },
+  "Bole Tele Block 91": {
+    "lat": 8.99641,
+    "lng": 38.79400
+  },
+  "Bole Tele Block 92": {
+    "lat": 8.99819,
+    "lng": 38.79022
+  },
+  "Bole Tele Block 93": {
+    "lat": 8.99589,
+    "lng": 38.79237
+  },
+  "Bole Tele Block 94": {
+    "lat": 8.99059,
+    "lng": 38.79006
+  },
+  "Bole Tele Block 95": {
+    "lat": 8.99628,
+    "lng": 38.79435
+  },
+  "Bole Tele Block 96": {
+    "lat": 8.99783,
+    "lng": 38.79033
+  },
+  "Bole Tele Block 97": {
+    "lat": 8.99500,
+    "lng": 38.78489
+  },
+  "Bole Tele Block 98": {
+    "lat": 8.99311,
+    "lng": 38.78701
+  },
+  "Bole Tele Block 99": {
+    "lat": 8.99549,
+    "lng": 38.79108
+  },
+  "Bole Tele Block 100": {
+    "lat": 8.99446,
+    "lng": 38.78576
+  },
+  "Bole Brass Block 1": {
+    "lat": 8.99568,
+    "lng": 38.79251
+  },
+  "Bole Brass Block 2": {
+    "lat": 8.99137,
+    "lng": 38.79305
+  },
+  "Bole Brass Block 3": {
+    "lat": 8.99065,
+    "lng": 38.79161
+  },
+  "Bole Brass Block 4": {
+    "lat": 8.99280,
+    "lng": 38.78717
+  },
+  "Bole Brass Block 5": {
+    "lat": 8.99049,
+    "lng": 38.78506
+  },
+  "Bole Brass Block 6": {
+    "lat": 8.99929,
+    "lng": 38.79420
+  },
+  "Bole Brass Block 7": {
+    "lat": 8.99513,
+    "lng": 38.78963
+  },
+  "Bole Brass Block 8": {
+    "lat": 8.99598,
+    "lng": 38.78682
+  },
+  "Bole Brass Block 9": {
+    "lat": 8.99819,
+    "lng": 38.78657
+  },
+  "Bole Brass Block 10": {
+    "lat": 8.99043,
+    "lng": 38.78474
+  },
+  "Bole Brass Block 11": {
+    "lat": 8.99388,
+    "lng": 38.79062
+  },
+  "Bole Brass Block 12": {
+    "lat": 8.99584,
+    "lng": 38.78561
+  },
+  "Bole Brass Block 13": {
+    "lat": 8.99132,
+    "lng": 38.79050
+  },
+  "Bole Brass Block 14": {
+    "lat": 8.99445,
+    "lng": 38.79281
+  },
+  "Bole Brass Block 15": {
+    "lat": 8.99835,
+    "lng": 38.79407
+  },
+  "Bole Brass Block 16": {
+    "lat": 8.99053,
+    "lng": 38.78683
+  },
+  "Bole Brass Block 17": {
+    "lat": 8.99158,
+    "lng": 38.79208
+  },
+  "Bole Brass Block 18": {
+    "lat": 8.99104,
+    "lng": 38.79069
+  },
+  "Bole Brass Block 19": {
+    "lat": 8.99033,
+    "lng": 38.78908
+  },
+  "Bole Brass Block 20": {
+    "lat": 8.99250,
+    "lng": 38.79136
+  },
+  "Bole Brass Block 21": {
+    "lat": 8.99300,
+    "lng": 38.78621
+  },
+  "Bole Brass Block 22": {
+    "lat": 8.99077,
+    "lng": 38.78534
+  },
+  "Bole Brass Block 23": {
+    "lat": 8.99354,
+    "lng": 38.78869
+  },
+  "Bole Brass Block 24": {
+    "lat": 8.99441,
+    "lng": 38.79336
+  },
+  "Bole Brass Block 25": {
+    "lat": 8.99850,
+    "lng": 38.78519
+  },
+  "Bole Brass Block 26": {
+    "lat": 8.99606,
+    "lng": 38.78839
+  },
+  "Bole Brass Block 27": {
+    "lat": 8.99870,
+    "lng": 38.79201
+  },
+  "Bole Brass Block 28": {
+    "lat": 8.99848,
+    "lng": 38.79004
+  },
+  "Bole Brass Block 29": {
+    "lat": 8.99431,
+    "lng": 38.79107
+  },
+  "Bole Brass Block 30": {
+    "lat": 8.99740,
+    "lng": 38.78700
+  },
+  "Bole Brass Block 31": {
+    "lat": 8.99686,
+    "lng": 38.78943
+  },
+  "Bole Brass Block 32": {
+    "lat": 8.99418,
+    "lng": 38.78664
+  },
+  "Bole Brass Block 33": {
+    "lat": 8.99582,
+    "lng": 38.78742
+  },
+  "Bole Brass Block 34": {
+    "lat": 8.99646,
+    "lng": 38.79293
+  },
+  "Bole Brass Block 35": {
+    "lat": 8.99484,
+    "lng": 38.78533
+  },
+  "Bole Brass Block 36": {
+    "lat": 8.99176,
+    "lng": 38.78512
+  },
+  "Bole Brass Block 37": {
+    "lat": 8.99019,
+    "lng": 38.78849
+  },
+  "Bole Brass Block 38": {
+    "lat": 8.99525,
+    "lng": 38.79281
+  },
+  "Bole Brass Block 39": {
+    "lat": 8.99022,
+    "lng": 38.79104
+  },
+  "Bole Brass Block 40": {
+    "lat": 8.99872,
+    "lng": 38.78594
+  },
+  "Bole Brass Block 41": {
+    "lat": 8.99497,
+    "lng": 38.79326
+  },
+  "Bole Brass Block 42": {
+    "lat": 8.99338,
+    "lng": 38.78740
+  },
+  "Bole Brass Block 43": {
+    "lat": 8.99739,
+    "lng": 38.79111
+  },
+  "Bole Brass Block 44": {
+    "lat": 8.99147,
+    "lng": 38.79199
+  },
+  "Bole Brass Block 45": {
+    "lat": 8.99331,
+    "lng": 38.79275
+  },
+  "Bole Brass Block 46": {
+    "lat": 8.99421,
+    "lng": 38.79009
+  },
+  "Bole Brass Block 47": {
+    "lat": 8.99263,
+    "lng": 38.78862
+  },
+  "Bole Brass Block 48": {
+    "lat": 8.99527,
+    "lng": 38.79206
+  },
+  "Bole Brass Block 49": {
+    "lat": 8.99427,
+    "lng": 38.78529
+  },
+  "Bole Brass Block 50": {
+    "lat": 8.99818,
+    "lng": 38.78611
+  },
+  "Bole Brass Block 51": {
+    "lat": 8.99696,
+    "lng": 38.78657
+  },
+  "Bole Brass Block 52": {
+    "lat": 8.99155,
+    "lng": 38.78994
+  },
+  "Bole Brass Block 53": {
+    "lat": 8.99109,
+    "lng": 38.78696
+  },
+  "Bole Brass Block 54": {
+    "lat": 8.99522,
+    "lng": 38.78638
+  },
+  "Bole Brass Block 55": {
+    "lat": 8.99565,
+    "lng": 38.78580
+  },
+  "Bole Brass Block 56": {
+    "lat": 8.99227,
+    "lng": 38.78837
+  },
+  "Bole Brass Block 57": {
+    "lat": 8.99064,
+    "lng": 38.78666
+  },
+  "Bole Brass Block 58": {
+    "lat": 8.99315,
+    "lng": 38.79391
+  },
+  "Bole Brass Block 59": {
+    "lat": 8.99192,
+    "lng": 38.78571
+  },
+  "Bole Brass Block 60": {
+    "lat": 8.99707,
+    "lng": 38.79252
+  },
+  "Bole Brass Block 61": {
+    "lat": 8.99783,
+    "lng": 38.79123
+  },
+  "Bole Brass Block 62": {
+    "lat": 8.99152,
+    "lng": 38.78781
+  },
+  "Bole Brass Block 63": {
+    "lat": 8.99219,
+    "lng": 38.79428
+  },
+  "Bole Brass Block 64": {
+    "lat": 8.99592,
+    "lng": 38.78464
+  },
+  "Bole Brass Block 65": {
+    "lat": 8.99178,
+    "lng": 38.79178
+  },
+  "Bole Brass Block 66": {
+    "lat": 8.99964,
+    "lng": 38.78868
+  },
+  "Bole Brass Block 67": {
+    "lat": 8.99694,
+    "lng": 38.79055
+  },
+  "Bole Brass Block 68": {
+    "lat": 8.99355,
+    "lng": 38.79332
+  },
+  "Bole Brass Block 69": {
+    "lat": 8.99563,
+    "lng": 38.79051
+  },
+  "Bole Brass Block 70": {
+    "lat": 8.99200,
+    "lng": 38.78836
+  },
+  "Bole Brass Block 71": {
+    "lat": 8.99059,
+    "lng": 38.78554
+  },
+  "Bole Brass Block 72": {
+    "lat": 8.99460,
+    "lng": 38.78887
+  },
+  "Bole Brass Block 73": {
+    "lat": 8.99123,
+    "lng": 38.78765
+  },
+  "Bole Brass Block 74": {
+    "lat": 8.99938,
+    "lng": 38.78681
+  },
+  "Bole Brass Block 75": {
+    "lat": 8.99980,
+    "lng": 38.79225
+  },
+  "Bole Brass Block 76": {
+    "lat": 8.99191,
+    "lng": 38.79296
+  },
+  "Bole Brass Block 77": {
+    "lat": 8.99507,
+    "lng": 38.79257
+  },
+  "Bole Brass Block 78": {
+    "lat": 8.99271,
+    "lng": 38.78632
+  },
+  "Bole Brass Block 79": {
+    "lat": 8.99668,
+    "lng": 38.78871
+  },
+  "Bole Brass Block 80": {
+    "lat": 8.99485,
+    "lng": 38.78844
+  },
+  "Bole Brass Block 81": {
+    "lat": 8.99522,
+    "lng": 38.78981
+  },
+  "Bole Brass Block 82": {
+    "lat": 8.99592,
+    "lng": 38.78994
+  },
+  "Bole Brass Block 83": {
+    "lat": 8.99942,
+    "lng": 38.78923
+  },
+  "Bole Brass Block 84": {
+    "lat": 8.99237,
+    "lng": 38.78744
+  },
+  "Bole Brass Block 85": {
+    "lat": 8.99356,
+    "lng": 38.78868
+  },
+  "Bole Brass Block 86": {
+    "lat": 8.99595,
+    "lng": 38.79011
+  },
+  "Bole Brass Block 87": {
+    "lat": 8.99772,
+    "lng": 38.79355
+  },
+  "Bole Brass Block 88": {
+    "lat": 8.99623,
+    "lng": 38.79174
+  },
+  "Bole Brass Block 89": {
+    "lat": 8.99954,
+    "lng": 38.79242
+  },
+  "Bole Brass Block 90": {
+    "lat": 8.99549,
+    "lng": 38.79320
+  },
+  "Bole Brass Block 91": {
+    "lat": 8.99507,
+    "lng": 38.78995
+  },
+  "Bole Brass Block 92": {
+    "lat": 8.99504,
+    "lng": 38.79338
+  },
+  "Bole Brass Block 93": {
+    "lat": 8.99257,
+    "lng": 38.78894
+  },
+  "Bole Brass Block 94": {
+    "lat": 8.99017,
+    "lng": 38.79393
+  },
+  "Bole Brass Block 95": {
+    "lat": 8.99728,
+    "lng": 38.78975
+  },
+  "Bole Brass Block 96": {
+    "lat": 8.99078,
+    "lng": 38.79233
+  },
+  "Bole Brass Block 97": {
+    "lat": 8.99401,
+    "lng": 38.79111
+  },
+  "Bole Brass Block 98": {
+    "lat": 8.99312,
+    "lng": 38.78830
+  },
+  "Bole Brass Block 99": {
+    "lat": 8.99605,
+    "lng": 38.79217
+  },
+  "Bole Brass Block 100": {
+    "lat": 8.99778,
+    "lng": 38.79171
+  },
+  "Bole Edna Mall Area Block 1": {
+    "lat": 8.99877,
+    "lng": 38.78582
+  },
+  "Bole Edna Mall Area Block 2": {
+    "lat": 8.99345,
+    "lng": 38.78589
+  },
+  "Bole Edna Mall Area Block 3": {
+    "lat": 8.99549,
+    "lng": 38.79093
+  },
+  "Bole Edna Mall Area Block 4": {
+    "lat": 8.99338,
+    "lng": 38.78678
+  },
+  "Bole Edna Mall Area Block 5": {
+    "lat": 8.99540,
+    "lng": 38.79266
+  },
+  "Bole Edna Mall Area Block 6": {
+    "lat": 8.99105,
+    "lng": 38.79090
+  },
+  "Bole Edna Mall Area Block 7": {
+    "lat": 8.99232,
+    "lng": 38.79051
+  },
+  "Bole Edna Mall Area Block 8": {
+    "lat": 8.99698,
+    "lng": 38.78859
+  },
+  "Bole Edna Mall Area Block 9": {
+    "lat": 8.99028,
+    "lng": 38.78527
+  },
+  "Bole Edna Mall Area Block 10": {
+    "lat": 8.99873,
+    "lng": 38.78715
+  },
+  "Bole Edna Mall Area Block 11": {
+    "lat": 8.99930,
+    "lng": 38.79325
+  },
+  "Bole Edna Mall Area Block 12": {
+    "lat": 8.99643,
+    "lng": 38.78480
+  },
+  "Bole Edna Mall Area Block 13": {
+    "lat": 8.99511,
+    "lng": 38.79397
+  },
+  "Bole Edna Mall Area Block 14": {
+    "lat": 8.99331,
+    "lng": 38.79256
+  },
+  "Bole Edna Mall Area Block 15": {
+    "lat": 8.99003,
+    "lng": 38.79425
+  },
+  "Bole Edna Mall Area Block 16": {
+    "lat": 8.99245,
+    "lng": 38.78619
+  },
+  "Bole Edna Mall Area Block 17": {
+    "lat": 8.99934,
+    "lng": 38.79181
+  },
+  "Bole Edna Mall Area Block 18": {
+    "lat": 8.99960,
+    "lng": 38.78646
+  },
+  "Bole Edna Mall Area Block 19": {
+    "lat": 8.99982,
+    "lng": 38.78682
+  },
+  "Bole Edna Mall Area Block 20": {
+    "lat": 8.99878,
+    "lng": 38.79248
+  },
+  "Bole Edna Mall Area Block 21": {
+    "lat": 8.99416,
+    "lng": 38.78700
+  },
+  "Bole Edna Mall Area Block 22": {
+    "lat": 8.99471,
+    "lng": 38.79328
+  },
+  "Bole Edna Mall Area Block 23": {
+    "lat": 8.99178,
+    "lng": 38.78507
+  },
+  "Bole Edna Mall Area Block 24": {
+    "lat": 8.99602,
+    "lng": 38.78878
+  },
+  "Bole Edna Mall Area Block 25": {
+    "lat": 8.99328,
+    "lng": 38.78922
+  },
+  "Bole Edna Mall Area Block 26": {
+    "lat": 8.99896,
+    "lng": 38.78826
+  },
+  "Bole Edna Mall Area Block 27": {
+    "lat": 8.99898,
+    "lng": 38.79410
+  },
+  "Bole Edna Mall Area Block 28": {
+    "lat": 8.99841,
+    "lng": 38.78584
+  },
+  "Bole Edna Mall Area Block 29": {
+    "lat": 8.99844,
+    "lng": 38.79297
+  },
+  "Bole Edna Mall Area Block 30": {
+    "lat": 8.99074,
+    "lng": 38.79315
+  },
+  "Bole Edna Mall Area Block 31": {
+    "lat": 8.99976,
+    "lng": 38.78981
+  },
+  "Bole Edna Mall Area Block 32": {
+    "lat": 8.99054,
+    "lng": 38.78487
+  },
+  "Bole Edna Mall Area Block 33": {
+    "lat": 8.99973,
+    "lng": 38.79202
+  },
+  "Bole Edna Mall Area Block 34": {
+    "lat": 8.99190,
+    "lng": 38.79240
+  },
+  "Bole Edna Mall Area Block 35": {
+    "lat": 8.99708,
+    "lng": 38.79018
+  },
+  "Bole Edna Mall Area Block 36": {
+    "lat": 8.99460,
+    "lng": 38.79202
+  },
+  "Bole Edna Mall Area Block 37": {
+    "lat": 8.99142,
+    "lng": 38.78656
+  },
+  "Bole Edna Mall Area Block 38": {
+    "lat": 8.99794,
+    "lng": 38.79384
+  },
+  "Bole Edna Mall Area Block 39": {
+    "lat": 8.99392,
+    "lng": 38.78892
+  },
+  "Bole Edna Mall Area Block 40": {
+    "lat": 8.99661,
+    "lng": 38.78825
+  },
+  "Bole Edna Mall Area Block 41": {
+    "lat": 8.99088,
+    "lng": 38.78992
+  },
+  "Bole Edna Mall Area Block 42": {
+    "lat": 8.99402,
+    "lng": 38.79060
+  },
+  "Bole Edna Mall Area Block 43": {
+    "lat": 8.99286,
+    "lng": 38.79031
+  },
+  "Bole Edna Mall Area Block 44": {
+    "lat": 8.99195,
+    "lng": 38.79167
+  },
+  "Bole Edna Mall Area Block 45": {
+    "lat": 8.99899,
+    "lng": 38.78614
+  },
+  "Bole Edna Mall Area Block 46": {
+    "lat": 8.99514,
+    "lng": 38.79432
+  },
+  "Bole Edna Mall Area Block 47": {
+    "lat": 8.99836,
+    "lng": 38.79257
+  },
+  "Bole Edna Mall Area Block 48": {
+    "lat": 8.99417,
+    "lng": 38.78639
+  },
+  "Bole Edna Mall Area Block 49": {
+    "lat": 8.99005,
+    "lng": 38.79422
+  },
+  "Bole Edna Mall Area Block 50": {
+    "lat": 8.99447,
+    "lng": 38.79187
+  },
+  "Bole Edna Mall Area Block 51": {
+    "lat": 8.99370,
+    "lng": 38.78808
+  },
+  "Bole Edna Mall Area Block 52": {
+    "lat": 8.99903,
+    "lng": 38.78959
+  },
+  "Bole Edna Mall Area Block 53": {
+    "lat": 8.99204,
+    "lng": 38.78672
+  },
+  "Bole Edna Mall Area Block 54": {
+    "lat": 8.99930,
+    "lng": 38.78541
+  },
+  "Bole Edna Mall Area Block 55": {
+    "lat": 8.99720,
+    "lng": 38.79409
+  },
+  "Bole Edna Mall Area Block 56": {
+    "lat": 8.99521,
+    "lng": 38.79123
+  },
+  "Bole Edna Mall Area Block 57": {
+    "lat": 8.99956,
+    "lng": 38.78748
+  },
+  "Bole Edna Mall Area Block 58": {
+    "lat": 8.99865,
+    "lng": 38.78750
+  },
+  "Bole Edna Mall Area Block 59": {
+    "lat": 8.99892,
+    "lng": 38.78564
+  },
+  "Bole Edna Mall Area Block 60": {
+    "lat": 8.99980,
+    "lng": 38.78562
+  },
+  "Bole Edna Mall Area Block 61": {
+    "lat": 8.99065,
+    "lng": 38.78544
+  },
+  "Bole Edna Mall Area Block 62": {
+    "lat": 8.99879,
+    "lng": 38.78557
+  },
+  "Bole Edna Mall Area Block 63": {
+    "lat": 8.99370,
+    "lng": 38.79125
+  },
+  "Bole Edna Mall Area Block 64": {
+    "lat": 8.99711,
+    "lng": 38.78692
+  },
+  "Bole Edna Mall Area Block 65": {
+    "lat": 8.99545,
+    "lng": 38.78861
+  },
+  "Bole Edna Mall Area Block 66": {
+    "lat": 8.99342,
+    "lng": 38.78495
+  },
+  "Bole Edna Mall Area Block 67": {
+    "lat": 8.99935,
+    "lng": 38.78511
+  },
+  "Bole Edna Mall Area Block 68": {
+    "lat": 8.99626,
+    "lng": 38.78791
+  },
+  "Bole Edna Mall Area Block 69": {
+    "lat": 8.99231,
+    "lng": 38.79339
+  },
+  "Bole Edna Mall Area Block 70": {
+    "lat": 8.99751,
+    "lng": 38.79310
+  },
+  "Bole Edna Mall Area Block 71": {
+    "lat": 8.99751,
+    "lng": 38.79218
+  },
+  "Bole Edna Mall Area Block 72": {
+    "lat": 8.99537,
+    "lng": 38.78880
+  },
+  "Bole Edna Mall Area Block 73": {
+    "lat": 8.99698,
+    "lng": 38.78834
+  },
+  "Bole Edna Mall Area Block 74": {
+    "lat": 8.99180,
+    "lng": 38.79410
+  },
+  "Bole Edna Mall Area Block 75": {
+    "lat": 8.99214,
+    "lng": 38.79284
+  },
+  "Bole Edna Mall Area Block 76": {
+    "lat": 8.99988,
+    "lng": 38.78871
+  },
+  "Bole Edna Mall Area Block 77": {
+    "lat": 8.99835,
+    "lng": 38.78822
+  },
+  "Bole Edna Mall Area Block 78": {
+    "lat": 8.99393,
+    "lng": 38.78734
+  },
+  "Bole Edna Mall Area Block 79": {
+    "lat": 8.99623,
+    "lng": 38.79092
+  },
+  "Bole Edna Mall Area Block 80": {
+    "lat": 8.99741,
+    "lng": 38.79234
+  },
+  "Bole Edna Mall Area Block 81": {
+    "lat": 8.99160,
+    "lng": 38.78947
+  },
+  "Bole Edna Mall Area Block 82": {
+    "lat": 8.99860,
+    "lng": 38.79434
+  },
+  "Bole Edna Mall Area Block 83": {
+    "lat": 8.99240,
+    "lng": 38.79055
+  },
+  "Bole Edna Mall Area Block 84": {
+    "lat": 8.99309,
+    "lng": 38.79406
+  },
+  "Bole Edna Mall Area Block 85": {
+    "lat": 8.99304,
+    "lng": 38.78933
+  },
+  "Bole Edna Mall Area Block 86": {
+    "lat": 8.99158,
+    "lng": 38.78588
+  },
+  "Bole Edna Mall Area Block 87": {
+    "lat": 8.99821,
+    "lng": 38.79366
+  },
+  "Bole Edna Mall Area Block 88": {
+    "lat": 8.99611,
+    "lng": 38.78624
+  },
+  "Bole Edna Mall Area Block 89": {
+    "lat": 8.99681,
+    "lng": 38.79093
+  },
+  "Bole Edna Mall Area Block 90": {
+    "lat": 8.99867,
+    "lng": 38.78595
+  },
+  "Bole Edna Mall Area Block 91": {
+    "lat": 8.99367,
+    "lng": 38.78983
+  },
+  "Bole Edna Mall Area Block 92": {
+    "lat": 8.99842,
+    "lng": 38.78906
+  },
+  "Bole Edna Mall Area Block 93": {
+    "lat": 8.99384,
+    "lng": 38.79395
+  },
+  "Bole Edna Mall Area Block 94": {
+    "lat": 8.99073,
+    "lng": 38.78778
+  },
+  "Bole Edna Mall Area Block 95": {
+    "lat": 8.99499,
+    "lng": 38.79169
+  },
+  "Bole Edna Mall Area Block 96": {
+    "lat": 8.99938,
+    "lng": 38.78465
+  },
+  "Bole Edna Mall Area Block 97": {
+    "lat": 8.99500,
+    "lng": 38.79263
+  },
+  "Bole Edna Mall Area Block 98": {
+    "lat": 8.99712,
+    "lng": 38.79021
+  },
+  "Bole Edna Mall Area Block 99": {
+    "lat": 8.99418,
+    "lng": 38.79302
+  },
+  "Bole Edna Mall Area Block 100": {
+    "lat": 8.99519,
+    "lng": 38.78956
+  },
+  "Megenagna Shola Block 1": {
+    "lat": 9.01593,
+    "lng": 38.80145
+  },
+  "Megenagna Shola Block 2": {
+    "lat": 9.01644,
+    "lng": 38.79609
+  },
+  "Megenagna Shola Block 3": {
+    "lat": 9.01648,
+    "lng": 38.79678
+  },
+  "Megenagna Shola Block 4": {
+    "lat": 9.01493,
+    "lng": 38.79584
+  },
+  "Megenagna Shola Block 5": {
+    "lat": 9.02109,
+    "lng": 38.79829
+  },
+  "Megenagna Shola Block 6": {
+    "lat": 9.02372,
+    "lng": 38.80273
+  },
+  "Megenagna Shola Block 7": {
+    "lat": 9.01742,
+    "lng": 38.80000
+  },
+  "Megenagna Shola Block 8": {
+    "lat": 9.02128,
+    "lng": 38.80357
+  },
+  "Megenagna Shola Block 9": {
+    "lat": 9.01556,
+    "lng": 38.80267
+  },
+  "Megenagna Shola Block 10": {
+    "lat": 9.02383,
+    "lng": 38.80162
+  },
+  "Megenagna Shola Block 11": {
+    "lat": 9.01787,
+    "lng": 38.80388
+  },
+  "Megenagna Shola Block 12": {
+    "lat": 9.01644,
+    "lng": 38.79719
+  },
+  "Megenagna Shola Block 13": {
+    "lat": 9.02079,
+    "lng": 38.80016
+  },
+  "Megenagna Shola Block 14": {
+    "lat": 9.01726,
+    "lng": 38.80148
+  },
+  "Megenagna Shola Block 15": {
+    "lat": 9.01652,
+    "lng": 38.79687
+  },
+  "Megenagna Shola Block 16": {
+    "lat": 9.02302,
+    "lng": 38.79963
+  },
+  "Megenagna Shola Block 17": {
+    "lat": 9.01982,
+    "lng": 38.79728
+  },
+  "Megenagna Shola Block 18": {
+    "lat": 9.02367,
+    "lng": 38.80016
+  },
+  "Megenagna Shola Block 19": {
+    "lat": 9.01669,
+    "lng": 38.79748
+  },
+  "Megenagna Shola Block 20": {
+    "lat": 9.01706,
+    "lng": 38.80404
+  },
+  "Megenagna Shola Block 21": {
+    "lat": 9.02162,
+    "lng": 38.80388
+  },
+  "Megenagna Shola Block 22": {
+    "lat": 9.01802,
+    "lng": 38.79860
+  },
+  "Megenagna Shola Block 23": {
+    "lat": 9.02240,
+    "lng": 38.80075
+  },
+  "Megenagna Shola Block 24": {
+    "lat": 9.01710,
+    "lng": 38.80317
+  },
+  "Megenagna Shola Block 25": {
+    "lat": 9.01882,
+    "lng": 38.80132
+  },
+  "Megenagna Shola Block 26": {
+    "lat": 9.02048,
+    "lng": 38.79840
+  },
+  "Megenagna Shola Block 27": {
+    "lat": 9.02396,
+    "lng": 38.80451
+  },
+  "Megenagna Shola Block 28": {
+    "lat": 9.01550,
+    "lng": 38.80149
+  },
+  "Megenagna Shola Block 29": {
+    "lat": 9.02432,
+    "lng": 38.79647
+  },
+  "Megenagna Shola Block 30": {
+    "lat": 9.01732,
+    "lng": 38.79605
+  },
+  "Megenagna Shola Block 31": {
+    "lat": 9.01489,
+    "lng": 38.79695
+  },
+  "Megenagna Shola Block 32": {
+    "lat": 9.02197,
+    "lng": 38.79892
+  },
+  "Megenagna Shola Block 33": {
+    "lat": 9.01868,
+    "lng": 38.79641
+  },
+  "Megenagna Shola Block 34": {
+    "lat": 9.01541,
+    "lng": 38.79715
+  },
+  "Megenagna Shola Block 35": {
+    "lat": 9.02010,
+    "lng": 38.80264
+  },
+  "Megenagna Shola Block 36": {
+    "lat": 9.02429,
+    "lng": 38.79728
+  },
+  "Megenagna Shola Block 37": {
+    "lat": 9.01705,
+    "lng": 38.79578
+  },
+  "Megenagna Shola Block 38": {
+    "lat": 9.01476,
+    "lng": 38.79761
+  },
+  "Megenagna Shola Block 39": {
+    "lat": 9.02025,
+    "lng": 38.80468
+  },
+  "Megenagna Shola Block 40": {
+    "lat": 9.01474,
+    "lng": 38.80461
+  },
+  "Megenagna Shola Block 41": {
+    "lat": 9.01930,
+    "lng": 38.79942
+  },
+  "Megenagna Shola Block 42": {
+    "lat": 9.01878,
+    "lng": 38.80525
+  },
+  "Megenagna Shola Block 43": {
+    "lat": 9.02067,
+    "lng": 38.80091
+  },
+  "Megenagna Shola Block 44": {
+    "lat": 9.02168,
+    "lng": 38.79966
+  },
+  "Megenagna Shola Block 45": {
+    "lat": 9.02134,
+    "lng": 38.79999
+  },
+  "Megenagna Shola Block 46": {
+    "lat": 9.01477,
+    "lng": 38.80003
+  },
+  "Megenagna Shola Block 47": {
+    "lat": 9.01763,
+    "lng": 38.80421
+  },
+  "Megenagna Shola Block 48": {
+    "lat": 9.02387,
+    "lng": 38.80143
+  },
+  "Megenagna Shola Block 49": {
+    "lat": 9.01685,
+    "lng": 38.80025
+  },
+  "Megenagna Shola Block 50": {
+    "lat": 9.02171,
+    "lng": 38.79590
+  },
+  "Megenagna Shola Block 51": {
+    "lat": 9.02394,
+    "lng": 38.80201
+  },
+  "Megenagna Shola Block 52": {
+    "lat": 9.02106,
+    "lng": 38.80538
+  },
+  "Megenagna Shola Block 53": {
+    "lat": 9.02336,
+    "lng": 38.80036
+  },
+  "Megenagna Shola Block 54": {
+    "lat": 9.02097,
+    "lng": 38.80105
+  },
+  "Megenagna Shola Block 55": {
+    "lat": 9.01785,
+    "lng": 38.80311
+  },
+  "Megenagna Shola Block 56": {
+    "lat": 9.02257,
+    "lng": 38.79589
+  },
+  "Megenagna Shola Block 57": {
+    "lat": 9.02354,
+    "lng": 38.79690
+  },
+  "Megenagna Shola Block 58": {
+    "lat": 9.01946,
+    "lng": 38.79600
+  },
+  "Megenagna Shola Block 59": {
+    "lat": 9.02109,
+    "lng": 38.79582
+  },
+  "Megenagna Shola Block 60": {
+    "lat": 9.02186,
+    "lng": 38.80297
+  },
+  "Megenagna Shola Block 61": {
+    "lat": 9.01756,
+    "lng": 38.80486
+  },
+  "Megenagna Shola Block 62": {
+    "lat": 9.02321,
+    "lng": 38.79935
+  },
+  "Megenagna Shola Block 63": {
+    "lat": 9.01516,
+    "lng": 38.80322
+  },
+  "Megenagna Shola Block 64": {
+    "lat": 9.01672,
+    "lng": 38.80051
+  },
+  "Megenagna Shola Block 65": {
+    "lat": 9.02029,
+    "lng": 38.80088
+  },
+  "Megenagna Shola Block 66": {
+    "lat": 9.01898,
+    "lng": 38.79710
+  },
+  "Megenagna Shola Block 67": {
+    "lat": 9.02342,
+    "lng": 38.79951
+  },
+  "Megenagna Shola Block 68": {
+    "lat": 9.01771,
+    "lng": 38.80491
+  },
+  "Megenagna Shola Block 69": {
+    "lat": 9.01645,
+    "lng": 38.79606
+  },
+  "Megenagna Shola Block 70": {
+    "lat": 9.02018,
+    "lng": 38.80025
+  },
+  "Megenagna Shola Block 71": {
+    "lat": 9.02072,
+    "lng": 38.79890
+  },
+  "Megenagna Shola Block 72": {
+    "lat": 9.01642,
+    "lng": 38.80284
+  },
+  "Megenagna Shola Block 73": {
+    "lat": 9.02213,
+    "lng": 38.80145
+  },
+  "Megenagna Shola Block 74": {
+    "lat": 9.02161,
+    "lng": 38.79802
+  },
+  "Megenagna Shola Block 75": {
+    "lat": 9.01750,
+    "lng": 38.79735
+  },
+  "Megenagna Shola Block 76": {
+    "lat": 9.02415,
+    "lng": 38.79820
+  },
+  "Megenagna Shola Block 77": {
+    "lat": 9.02081,
+    "lng": 38.80103
+  },
+  "Megenagna Shola Block 78": {
+    "lat": 9.01546,
+    "lng": 38.79883
+  },
+  "Megenagna Shola Block 79": {
+    "lat": 9.01936,
+    "lng": 38.79751
+  },
+  "Megenagna Shola Block 80": {
+    "lat": 9.02220,
+    "lng": 38.80149
+  },
+  "Megenagna Shola Block 81": {
+    "lat": 9.02343,
+    "lng": 38.80347
+  },
+  "Megenagna Shola Block 82": {
+    "lat": 9.01792,
+    "lng": 38.79911
+  },
+  "Megenagna Shola Block 83": {
+    "lat": 9.02297,
+    "lng": 38.79912
+  },
+  "Megenagna Shola Block 84": {
+    "lat": 9.02008,
+    "lng": 38.80165
+  },
+  "Megenagna Shola Block 85": {
+    "lat": 9.01819,
+    "lng": 38.80272
+  },
+  "Megenagna Shola Block 86": {
+    "lat": 9.02181,
+    "lng": 38.80472
+  },
+  "Megenagna Shola Block 87": {
+    "lat": 9.02302,
+    "lng": 38.79794
+  },
+  "Megenagna Shola Block 88": {
+    "lat": 9.01813,
+    "lng": 38.79628
+  },
+  "Megenagna Shola Block 89": {
+    "lat": 9.02427,
+    "lng": 38.80190
+  },
+  "Megenagna Shola Block 90": {
+    "lat": 9.01919,
+    "lng": 38.80541
+  },
+  "Megenagna Shola Block 91": {
+    "lat": 9.02381,
+    "lng": 38.79563
+  },
+  "Megenagna Shola Block 92": {
+    "lat": 9.01606,
+    "lng": 38.80540
+  },
+  "Megenagna Shola Block 93": {
+    "lat": 9.02233,
+    "lng": 38.79994
+  },
+  "Megenagna Shola Block 94": {
+    "lat": 9.02409,
+    "lng": 38.80337
+  },
+  "Megenagna Shola Block 95": {
+    "lat": 9.02067,
+    "lng": 38.80535
+  },
+  "Megenagna Shola Block 96": {
+    "lat": 9.02421,
+    "lng": 38.80458
+  },
+  "Megenagna Shola Block 97": {
+    "lat": 9.01528,
+    "lng": 38.80206
+  },
+  "Megenagna Shola Block 98": {
+    "lat": 9.02231,
+    "lng": 38.80185
+  },
+  "Megenagna Shola Block 99": {
+    "lat": 9.02119,
+    "lng": 38.80493
+  },
+  "Megenagna Shola Block 100": {
+    "lat": 9.02083,
+    "lng": 38.80220
+  },
+  "Megenagna Diaspora Square Block 1": {
+    "lat": 9.02269,
+    "lng": 38.80001
+  },
+  "Megenagna Diaspora Square Block 2": {
+    "lat": 9.02150,
+    "lng": 38.80230
+  },
+  "Megenagna Diaspora Square Block 3": {
+    "lat": 9.02014,
+    "lng": 38.80543
+  },
+  "Megenagna Diaspora Square Block 4": {
+    "lat": 9.01894,
+    "lng": 38.80055
+  },
+  "Megenagna Diaspora Square Block 5": {
+    "lat": 9.01699,
+    "lng": 38.79867
+  },
+  "Megenagna Diaspora Square Block 6": {
+    "lat": 9.01661,
+    "lng": 38.80089
+  },
+  "Megenagna Diaspora Square Block 7": {
+    "lat": 9.01746,
+    "lng": 38.80006
+  },
+  "Megenagna Diaspora Square Block 8": {
+    "lat": 9.02178,
+    "lng": 38.79736
+  },
+  "Megenagna Diaspora Square Block 9": {
+    "lat": 9.01960,
+    "lng": 38.80403
+  },
+  "Megenagna Diaspora Square Block 10": {
+    "lat": 9.01836,
+    "lng": 38.80133
+  },
+  "Megenagna Diaspora Square Block 11": {
+    "lat": 9.01967,
+    "lng": 38.80381
+  },
+  "Megenagna Diaspora Square Block 12": {
+    "lat": 9.01625,
+    "lng": 38.80403
+  },
+  "Megenagna Diaspora Square Block 13": {
+    "lat": 9.02029,
+    "lng": 38.79799
+  },
+  "Megenagna Diaspora Square Block 14": {
+    "lat": 9.01477,
+    "lng": 38.80349
+  },
+  "Megenagna Diaspora Square Block 15": {
+    "lat": 9.01776,
+    "lng": 38.80245
+  },
+  "Megenagna Diaspora Square Block 16": {
+    "lat": 9.01934,
+    "lng": 38.80130
+  },
+  "Megenagna Diaspora Square Block 17": {
+    "lat": 9.02321,
+    "lng": 38.79824
+  },
+  "Megenagna Diaspora Square Block 18": {
+    "lat": 9.01927,
+    "lng": 38.80052
+  },
+  "Megenagna Diaspora Square Block 19": {
+    "lat": 9.02399,
+    "lng": 38.80027
+  },
+  "Megenagna Diaspora Square Block 20": {
+    "lat": 9.01744,
+    "lng": 38.79582
+  },
+  "Megenagna Diaspora Square Block 21": {
+    "lat": 9.02192,
+    "lng": 38.80201
+  },
+  "Megenagna Diaspora Square Block 22": {
+    "lat": 9.01954,
+    "lng": 38.80085
+  },
+  "Megenagna Diaspora Square Block 23": {
+    "lat": 9.01516,
+    "lng": 38.80457
+  },
+  "Megenagna Diaspora Square Block 24": {
+    "lat": 9.01509,
+    "lng": 38.80092
+  },
+  "Megenagna Diaspora Square Block 25": {
+    "lat": 9.02261,
+    "lng": 38.79687
+  },
+  "Megenagna Diaspora Square Block 26": {
+    "lat": 9.02066,
+    "lng": 38.80438
+  },
+  "Megenagna Diaspora Square Block 27": {
+    "lat": 9.02182,
+    "lng": 38.79966
+  },
+  "Megenagna Diaspora Square Block 28": {
+    "lat": 9.01761,
+    "lng": 38.80526
+  },
+  "Megenagna Diaspora Square Block 29": {
+    "lat": 9.01739,
+    "lng": 38.79722
+  },
+  "Megenagna Diaspora Square Block 30": {
+    "lat": 9.01623,
+    "lng": 38.79868
+  },
+  "Megenagna Diaspora Square Block 31": {
+    "lat": 9.02196,
+    "lng": 38.79765
+  },
+  "Megenagna Diaspora Square Block 32": {
+    "lat": 9.01573,
+    "lng": 38.80501
+  },
+  "Megenagna Diaspora Square Block 33": {
+    "lat": 9.01454,
+    "lng": 38.80065
+  },
+  "Megenagna Diaspora Square Block 34": {
+    "lat": 9.01595,
+    "lng": 38.80255
+  },
+  "Megenagna Diaspora Square Block 35": {
+    "lat": 9.01820,
+    "lng": 38.79706
+  },
+  "Megenagna Diaspora Square Block 36": {
+    "lat": 9.01668,
+    "lng": 38.80321
+  },
+  "Megenagna Diaspora Square Block 37": {
+    "lat": 9.01817,
+    "lng": 38.79816
+  },
+  "Megenagna Diaspora Square Block 38": {
+    "lat": 9.01971,
+    "lng": 38.79555
+  },
+  "Megenagna Diaspora Square Block 39": {
+    "lat": 9.01547,
+    "lng": 38.80545
+  },
+  "Megenagna Diaspora Square Block 40": {
+    "lat": 9.01908,
+    "lng": 38.80332
+  },
+  "Megenagna Diaspora Square Block 41": {
+    "lat": 9.01734,
+    "lng": 38.80323
+  },
+  "Megenagna Diaspora Square Block 42": {
+    "lat": 9.01817,
+    "lng": 38.79910
+  },
+  "Megenagna Diaspora Square Block 43": {
+    "lat": 9.01860,
+    "lng": 38.80519
+  },
+  "Megenagna Diaspora Square Block 44": {
+    "lat": 9.02334,
+    "lng": 38.80539
+  },
+  "Megenagna Diaspora Square Block 45": {
+    "lat": 9.02385,
+    "lng": 38.80116
+  },
+  "Megenagna Diaspora Square Block 46": {
+    "lat": 9.02162,
+    "lng": 38.79627
+  },
+  "Megenagna Diaspora Square Block 47": {
+    "lat": 9.02348,
+    "lng": 38.79943
+  },
+  "Megenagna Diaspora Square Block 48": {
+    "lat": 9.01921,
+    "lng": 38.79971
+  },
+  "Megenagna Diaspora Square Block 49": {
+    "lat": 9.02359,
+    "lng": 38.79876
+  },
+  "Megenagna Diaspora Square Block 50": {
+    "lat": 9.01945,
+    "lng": 38.80323
+  },
+  "Megenagna Diaspora Square Block 51": {
+    "lat": 9.01597,
+    "lng": 38.80455
+  },
+  "Megenagna Diaspora Square Block 52": {
+    "lat": 9.01799,
+    "lng": 38.80287
+  },
+  "Megenagna Diaspora Square Block 53": {
+    "lat": 9.01826,
+    "lng": 38.80462
+  },
+  "Megenagna Diaspora Square Block 54": {
+    "lat": 9.01450,
+    "lng": 38.80270
+  },
+  "Megenagna Diaspora Square Block 55": {
+    "lat": 9.02159,
+    "lng": 38.79631
+  },
+  "Megenagna Diaspora Square Block 56": {
+    "lat": 9.01573,
+    "lng": 38.79721
+  },
+  "Megenagna Diaspora Square Block 57": {
+    "lat": 9.01578,
+    "lng": 38.79568
+  },
+  "Megenagna Diaspora Square Block 58": {
+    "lat": 9.01508,
+    "lng": 38.79892
+  },
+  "Megenagna Diaspora Square Block 59": {
+    "lat": 9.01498,
+    "lng": 38.79967
+  },
+  "Megenagna Diaspora Square Block 60": {
+    "lat": 9.02431,
+    "lng": 38.80035
+  },
+  "Megenagna Diaspora Square Block 61": {
+    "lat": 9.02148,
+    "lng": 38.80515
+  },
+  "Megenagna Diaspora Square Block 62": {
+    "lat": 9.02011,
+    "lng": 38.79732
+  },
+  "Megenagna Diaspora Square Block 63": {
+    "lat": 9.02061,
+    "lng": 38.79703
+  },
+  "Megenagna Diaspora Square Block 64": {
+    "lat": 9.02086,
+    "lng": 38.80185
+  },
+  "Megenagna Diaspora Square Block 65": {
+    "lat": 9.02199,
+    "lng": 38.79929
+  },
+  "Megenagna Diaspora Square Block 66": {
+    "lat": 9.02139,
+    "lng": 38.79825
+  },
+  "Megenagna Diaspora Square Block 67": {
+    "lat": 9.01950,
+    "lng": 38.80293
+  },
+  "Megenagna Diaspora Square Block 68": {
+    "lat": 9.01827,
+    "lng": 38.79674
+  },
+  "Megenagna Diaspora Square Block 69": {
+    "lat": 9.01788,
+    "lng": 38.80253
+  },
+  "Megenagna Diaspora Square Block 70": {
+    "lat": 9.01794,
+    "lng": 38.80296
+  },
+  "Megenagna Diaspora Square Block 71": {
+    "lat": 9.02034,
+    "lng": 38.80038
+  },
+  "Megenagna Diaspora Square Block 72": {
+    "lat": 9.01711,
+    "lng": 38.80445
+  },
+  "Megenagna Diaspora Square Block 73": {
+    "lat": 9.01751,
+    "lng": 38.80508
+  },
+  "Megenagna Diaspora Square Block 74": {
+    "lat": 9.01645,
+    "lng": 38.79629
+  },
+  "Megenagna Diaspora Square Block 75": {
+    "lat": 9.02103,
+    "lng": 38.80101
+  },
+  "Megenagna Diaspora Square Block 76": {
+    "lat": 9.01688,
+    "lng": 38.79670
+  },
+  "Megenagna Diaspora Square Block 77": {
+    "lat": 9.02192,
+    "lng": 38.79803
+  },
+  "Megenagna Diaspora Square Block 78": {
+    "lat": 9.02200,
+    "lng": 38.80181
+  },
+  "Megenagna Diaspora Square Block 79": {
+    "lat": 9.01508,
+    "lng": 38.80527
+  },
+  "Megenagna Diaspora Square Block 80": {
+    "lat": 9.02312,
+    "lng": 38.80066
+  },
+  "Megenagna Diaspora Square Block 81": {
+    "lat": 9.02382,
+    "lng": 38.80458
+  },
+  "Megenagna Diaspora Square Block 82": {
+    "lat": 9.02426,
+    "lng": 38.80520
+  },
+  "Megenagna Diaspora Square Block 83": {
+    "lat": 9.01944,
+    "lng": 38.79676
+  },
+  "Megenagna Diaspora Square Block 84": {
+    "lat": 9.02069,
+    "lng": 38.79765
+  },
+  "Megenagna Diaspora Square Block 85": {
+    "lat": 9.01845,
+    "lng": 38.80390
+  },
+  "Megenagna Diaspora Square Block 86": {
+    "lat": 9.01639,
+    "lng": 38.80426
+  },
+  "Megenagna Diaspora Square Block 87": {
+    "lat": 9.01920,
+    "lng": 38.79632
+  },
+  "Megenagna Diaspora Square Block 88": {
+    "lat": 9.01500,
+    "lng": 38.80350
+  },
+  "Megenagna Diaspora Square Block 89": {
+    "lat": 9.01632,
+    "lng": 38.80285
+  },
+  "Megenagna Diaspora Square Block 90": {
+    "lat": 9.02222,
+    "lng": 38.80472
+  },
+  "Megenagna Diaspora Square Block 91": {
+    "lat": 9.01441,
+    "lng": 38.79850
+  },
+  "Megenagna Diaspora Square Block 92": {
+    "lat": 9.02335,
+    "lng": 38.80298
+  },
+  "Megenagna Diaspora Square Block 93": {
+    "lat": 9.02055,
+    "lng": 38.80476
+  },
+  "Megenagna Diaspora Square Block 94": {
+    "lat": 9.01931,
+    "lng": 38.79726
+  },
+  "Megenagna Diaspora Square Block 95": {
+    "lat": 9.02213,
+    "lng": 38.79576
+  },
+  "Megenagna Diaspora Square Block 96": {
+    "lat": 9.02351,
+    "lng": 38.80058
+  },
+  "Megenagna Diaspora Square Block 97": {
+    "lat": 9.02161,
+    "lng": 38.80156
+  },
+  "Megenagna Diaspora Square Block 98": {
+    "lat": 9.02309,
+    "lng": 38.79752
+  },
+  "Megenagna Diaspora Square Block 99": {
+    "lat": 9.01894,
+    "lng": 38.80188
+  },
+  "Megenagna Diaspora Square Block 100": {
+    "lat": 9.02377,
+    "lng": 38.80362
+  },
+  "Megenagna Zefmesh Block 1": {
+    "lat": 9.01767,
+    "lng": 38.79564
+  },
+  "Megenagna Zefmesh Block 2": {
+    "lat": 9.01741,
+    "lng": 38.79935
+  },
+  "Megenagna Zefmesh Block 3": {
+    "lat": 9.01868,
+    "lng": 38.80189
+  },
+  "Megenagna Zefmesh Block 4": {
+    "lat": 9.02110,
+    "lng": 38.79858
+  },
+  "Megenagna Zefmesh Block 5": {
+    "lat": 9.02262,
+    "lng": 38.80219
+  },
+  "Megenagna Zefmesh Block 6": {
+    "lat": 9.01959,
+    "lng": 38.79703
+  },
+  "Megenagna Zefmesh Block 7": {
+    "lat": 9.02052,
+    "lng": 38.79836
+  },
+  "Megenagna Zefmesh Block 8": {
+    "lat": 9.01955,
+    "lng": 38.80113
+  },
+  "Megenagna Zefmesh Block 9": {
+    "lat": 9.01478,
+    "lng": 38.79809
+  },
+  "Megenagna Zefmesh Block 10": {
+    "lat": 9.01459,
+    "lng": 38.79618
+  },
+  "Megenagna Zefmesh Block 11": {
+    "lat": 9.01891,
+    "lng": 38.80242
+  },
+  "Megenagna Zefmesh Block 12": {
+    "lat": 9.01896,
+    "lng": 38.80326
+  },
+  "Megenagna Zefmesh Block 13": {
+    "lat": 9.02257,
+    "lng": 38.79757
+  },
+  "Megenagna Zefmesh Block 14": {
+    "lat": 9.02420,
+    "lng": 38.80461
+  },
+  "Megenagna Zefmesh Block 15": {
+    "lat": 9.01979,
+    "lng": 38.80078
+  },
+  "Megenagna Zefmesh Block 16": {
+    "lat": 9.01764,
+    "lng": 38.79725
+  },
+  "Megenagna Zefmesh Block 17": {
+    "lat": 9.02028,
+    "lng": 38.80541
+  },
+  "Megenagna Zefmesh Block 18": {
+    "lat": 9.01923,
+    "lng": 38.79894
+  },
+  "Megenagna Zefmesh Block 19": {
+    "lat": 9.01558,
+    "lng": 38.80316
+  },
+  "Megenagna Zefmesh Block 20": {
+    "lat": 9.02276,
+    "lng": 38.79621
+  },
+  "Megenagna Zefmesh Block 21": {
+    "lat": 9.02281,
+    "lng": 38.80382
+  },
+  "Megenagna Zefmesh Block 22": {
+    "lat": 9.01611,
+    "lng": 38.80299
+  },
+  "Megenagna Zefmesh Block 23": {
+    "lat": 9.02079,
+    "lng": 38.80387
+  },
+  "Megenagna Zefmesh Block 24": {
+    "lat": 9.01776,
+    "lng": 38.79692
+  },
+  "Megenagna Zefmesh Block 25": {
+    "lat": 9.01772,
+    "lng": 38.79557
+  },
+  "Megenagna Zefmesh Block 26": {
+    "lat": 9.02412,
+    "lng": 38.79690
+  },
+  "Megenagna Zefmesh Block 27": {
+    "lat": 9.01642,
+    "lng": 38.80382
+  },
+  "Megenagna Zefmesh Block 28": {
+    "lat": 9.02349,
+    "lng": 38.80009
+  },
+  "Megenagna Zefmesh Block 29": {
+    "lat": 9.02405,
+    "lng": 38.80130
+  },
+  "Megenagna Zefmesh Block 30": {
+    "lat": 9.01749,
+    "lng": 38.80462
+  },
+  "Megenagna Zefmesh Block 31": {
+    "lat": 9.01483,
+    "lng": 38.80260
+  },
+  "Megenagna Zefmesh Block 32": {
+    "lat": 9.01619,
+    "lng": 38.79630
+  },
+  "Megenagna Zefmesh Block 33": {
+    "lat": 9.01888,
+    "lng": 38.79985
+  },
+  "Megenagna Zefmesh Block 34": {
+    "lat": 9.01572,
+    "lng": 38.79749
+  },
+  "Megenagna Zefmesh Block 35": {
+    "lat": 9.01787,
+    "lng": 38.80318
+  },
+  "Megenagna Zefmesh Block 36": {
+    "lat": 9.01685,
+    "lng": 38.79835
+  },
+  "Megenagna Zefmesh Block 37": {
+    "lat": 9.01474,
+    "lng": 38.80089
+  },
+  "Megenagna Zefmesh Block 38": {
+    "lat": 9.01640,
+    "lng": 38.80094
+  },
+  "Megenagna Zefmesh Block 39": {
+    "lat": 9.02239,
+    "lng": 38.79645
+  },
+  "Megenagna Zefmesh Block 40": {
+    "lat": 9.02426,
+    "lng": 38.79559
+  },
+  "Megenagna Zefmesh Block 41": {
+    "lat": 9.02394,
+    "lng": 38.79686
+  },
+  "Megenagna Zefmesh Block 42": {
+    "lat": 9.02221,
+    "lng": 38.80493
+  },
+  "Megenagna Zefmesh Block 43": {
+    "lat": 9.01894,
+    "lng": 38.80420
+  },
+  "Megenagna Zefmesh Block 44": {
+    "lat": 9.01885,
+    "lng": 38.80225
+  },
+  "Megenagna Zefmesh Block 45": {
+    "lat": 9.01829,
+    "lng": 38.80044
+  },
+  "Megenagna Zefmesh Block 46": {
+    "lat": 9.01482,
+    "lng": 38.79888
+  },
+  "Megenagna Zefmesh Block 47": {
+    "lat": 9.02126,
+    "lng": 38.80514
+  },
+  "Megenagna Zefmesh Block 48": {
+    "lat": 9.02089,
+    "lng": 38.80071
+  },
+  "Megenagna Zefmesh Block 49": {
+    "lat": 9.01923,
+    "lng": 38.79950
+  },
+  "Megenagna Zefmesh Block 50": {
+    "lat": 9.02127,
+    "lng": 38.80054
+  },
+  "Megenagna Zefmesh Block 51": {
+    "lat": 9.02235,
+    "lng": 38.80451
+  },
+  "Megenagna Zefmesh Block 52": {
+    "lat": 9.02078,
+    "lng": 38.79821
+  },
+  "Megenagna Zefmesh Block 53": {
+    "lat": 9.02021,
+    "lng": 38.79976
+  },
+  "Megenagna Zefmesh Block 54": {
+    "lat": 9.01784,
+    "lng": 38.80219
+  },
+  "Megenagna Zefmesh Block 55": {
+    "lat": 9.01559,
+    "lng": 38.80057
+  },
+  "Megenagna Zefmesh Block 56": {
+    "lat": 9.01660,
+    "lng": 38.80337
+  },
+  "Megenagna Zefmesh Block 57": {
+    "lat": 9.01518,
+    "lng": 38.80148
+  },
+  "Megenagna Zefmesh Block 58": {
+    "lat": 9.01825,
+    "lng": 38.79624
+  },
+  "Megenagna Zefmesh Block 59": {
+    "lat": 9.02256,
+    "lng": 38.79806
+  },
+  "Megenagna Zefmesh Block 60": {
+    "lat": 9.01883,
+    "lng": 38.80143
+  },
+  "Megenagna Zefmesh Block 61": {
+    "lat": 9.01495,
+    "lng": 38.79900
+  },
+  "Megenagna Zefmesh Block 62": {
+    "lat": 9.01678,
+    "lng": 38.79569
+  },
+  "Megenagna Zefmesh Block 63": {
+    "lat": 9.02055,
+    "lng": 38.80172
+  },
+  "Megenagna Zefmesh Block 64": {
+    "lat": 9.01830,
+    "lng": 38.79593
+  },
+  "Megenagna Zefmesh Block 65": {
+    "lat": 9.01984,
+    "lng": 38.79571
+  },
+  "Megenagna Zefmesh Block 66": {
+    "lat": 9.02266,
+    "lng": 38.80180
+  },
+  "Megenagna Zefmesh Block 67": {
+    "lat": 9.01852,
+    "lng": 38.79802
+  },
+  "Megenagna Zefmesh Block 68": {
+    "lat": 9.02061,
+    "lng": 38.80199
+  },
+  "Megenagna Zefmesh Block 69": {
+    "lat": 9.02094,
+    "lng": 38.80128
+  },
+  "Megenagna Zefmesh Block 70": {
+    "lat": 9.02182,
+    "lng": 38.80117
+  },
+  "Megenagna Zefmesh Block 71": {
+    "lat": 9.02228,
+    "lng": 38.79584
+  },
+  "Megenagna Zefmesh Block 72": {
+    "lat": 9.02180,
+    "lng": 38.80113
+  },
+  "Megenagna Zefmesh Block 73": {
+    "lat": 9.01590,
+    "lng": 38.80380
+  },
+  "Megenagna Zefmesh Block 74": {
+    "lat": 9.01960,
+    "lng": 38.79745
+  },
+  "Megenagna Zefmesh Block 75": {
+    "lat": 9.02177,
+    "lng": 38.79961
+  },
+  "Megenagna Zefmesh Block 76": {
+    "lat": 9.01683,
+    "lng": 38.79845
+  },
+  "Megenagna Zefmesh Block 77": {
+    "lat": 9.01527,
+    "lng": 38.80008
+  },
+  "Megenagna Zefmesh Block 78": {
+    "lat": 9.02406,
+    "lng": 38.79687
+  },
+  "Megenagna Zefmesh Block 79": {
+    "lat": 9.02261,
+    "lng": 38.80191
+  },
+  "Megenagna Zefmesh Block 80": {
+    "lat": 9.02278,
+    "lng": 38.79794
+  },
+  "Megenagna Zefmesh Block 81": {
+    "lat": 9.02017,
+    "lng": 38.79623
+  },
+  "Megenagna Zefmesh Block 82": {
+    "lat": 9.02263,
+    "lng": 38.80447
+  },
+  "Megenagna Zefmesh Block 83": {
+    "lat": 9.02290,
+    "lng": 38.79812
+  },
+  "Megenagna Zefmesh Block 84": {
+    "lat": 9.01870,
+    "lng": 38.79992
+  },
+  "Megenagna Zefmesh Block 85": {
+    "lat": 9.02136,
+    "lng": 38.79764
+  },
+  "Megenagna Zefmesh Block 86": {
+    "lat": 9.01890,
+    "lng": 38.79936
+  },
+  "Megenagna Zefmesh Block 87": {
+    "lat": 9.01577,
+    "lng": 38.80336
+  },
+  "Megenagna Zefmesh Block 88": {
+    "lat": 9.02389,
+    "lng": 38.80172
+  },
+  "Megenagna Zefmesh Block 89": {
+    "lat": 9.01844,
+    "lng": 38.80493
+  },
+  "Megenagna Zefmesh Block 90": {
+    "lat": 9.02137,
+    "lng": 38.79949
+  },
+  "Megenagna Zefmesh Block 91": {
+    "lat": 9.01816,
+    "lng": 38.80100
+  },
+  "Megenagna Zefmesh Block 92": {
+    "lat": 9.01508,
+    "lng": 38.80278
+  },
+  "Megenagna Zefmesh Block 93": {
+    "lat": 9.01890,
+    "lng": 38.80465
+  },
+  "Megenagna Zefmesh Block 94": {
+    "lat": 9.01996,
+    "lng": 38.79998
+  },
+  "Megenagna Zefmesh Block 95": {
+    "lat": 9.02037,
+    "lng": 38.80091
+  },
+  "Megenagna Zefmesh Block 96": {
+    "lat": 9.01728,
+    "lng": 38.79671
+  },
+  "Megenagna Zefmesh Block 97": {
+    "lat": 9.01698,
+    "lng": 38.80371
+  },
+  "Megenagna Zefmesh Block 98": {
+    "lat": 9.01910,
+    "lng": 38.80454
+  },
+  "Megenagna Zefmesh Block 99": {
+    "lat": 9.01983,
+    "lng": 38.79764
+  },
+  "Megenagna Zefmesh Block 100": {
+    "lat": 9.01706,
+    "lng": 38.79580
+  },
+  "Megenagna Marathon Block 1": {
+    "lat": 9.02388,
+    "lng": 38.79605
+  },
+  "Megenagna Marathon Block 2": {
+    "lat": 9.02315,
+    "lng": 38.79924
+  },
+  "Megenagna Marathon Block 3": {
+    "lat": 9.02262,
+    "lng": 38.79747
+  },
+  "Megenagna Marathon Block 4": {
+    "lat": 9.02383,
+    "lng": 38.79848
+  },
+  "Megenagna Marathon Block 5": {
+    "lat": 9.01723,
+    "lng": 38.80143
+  },
+  "Megenagna Marathon Block 6": {
+    "lat": 9.01621,
+    "lng": 38.80436
+  },
+  "Megenagna Marathon Block 7": {
+    "lat": 9.02366,
+    "lng": 38.80223
+  },
+  "Megenagna Marathon Block 8": {
+    "lat": 9.01982,
+    "lng": 38.79814
+  },
+  "Megenagna Marathon Block 9": {
+    "lat": 9.01912,
+    "lng": 38.80419
+  },
+  "Megenagna Marathon Block 10": {
+    "lat": 9.01820,
+    "lng": 38.80539
+  },
+  "Megenagna Marathon Block 11": {
+    "lat": 9.01466,
+    "lng": 38.80369
+  },
+  "Megenagna Marathon Block 12": {
+    "lat": 9.02150,
+    "lng": 38.80035
+  },
+  "Megenagna Marathon Block 13": {
+    "lat": 9.02121,
+    "lng": 38.80311
+  },
+  "Megenagna Marathon Block 14": {
+    "lat": 9.01778,
+    "lng": 38.80223
+  },
+  "Megenagna Marathon Block 15": {
+    "lat": 9.01787,
+    "lng": 38.79684
+  },
+  "Megenagna Marathon Block 16": {
+    "lat": 9.01522,
+    "lng": 38.79739
+  },
+  "Megenagna Marathon Block 17": {
+    "lat": 9.02147,
+    "lng": 38.80520
+  },
+  "Megenagna Marathon Block 18": {
+    "lat": 9.02204,
+    "lng": 38.80464
+  },
+  "Megenagna Marathon Block 19": {
+    "lat": 9.02436,
+    "lng": 38.80069
+  },
+  "Megenagna Marathon Block 20": {
+    "lat": 9.01486,
+    "lng": 38.80123
+  },
+  "Megenagna Marathon Block 21": {
+    "lat": 9.02287,
+    "lng": 38.79701
+  },
+  "Megenagna Marathon Block 22": {
+    "lat": 9.01656,
+    "lng": 38.79649
+  },
+  "Megenagna Marathon Block 23": {
+    "lat": 9.01744,
+    "lng": 38.80426
+  },
+  "Megenagna Marathon Block 24": {
+    "lat": 9.01905,
+    "lng": 38.79740
+  },
+  "Megenagna Marathon Block 25": {
+    "lat": 9.01473,
+    "lng": 38.80411
+  },
+  "Megenagna Marathon Block 26": {
+    "lat": 9.01699,
+    "lng": 38.80478
+  },
+  "Megenagna Marathon Block 27": {
+    "lat": 9.02143,
+    "lng": 38.79601
+  },
+  "Megenagna Marathon Block 28": {
+    "lat": 9.01904,
+    "lng": 38.79717
+  },
+  "Megenagna Marathon Block 29": {
+    "lat": 9.02367,
+    "lng": 38.79879
+  },
+  "Megenagna Marathon Block 30": {
+    "lat": 9.01658,
+    "lng": 38.79800
+  },
+  "Megenagna Marathon Block 31": {
+    "lat": 9.01941,
+    "lng": 38.79842
+  },
+  "Megenagna Marathon Block 32": {
+    "lat": 9.02382,
+    "lng": 38.80199
+  },
+  "Megenagna Marathon Block 33": {
+    "lat": 9.01815,
+    "lng": 38.80337
+  },
+  "Megenagna Marathon Block 34": {
+    "lat": 9.01568,
+    "lng": 38.80208
+  },
+  "Megenagna Marathon Block 35": {
+    "lat": 9.02089,
+    "lng": 38.80350
+  },
+  "Megenagna Marathon Block 36": {
+    "lat": 9.01513,
+    "lng": 38.79867
+  },
+  "Megenagna Marathon Block 37": {
+    "lat": 9.02205,
+    "lng": 38.80228
+  },
+  "Megenagna Marathon Block 38": {
+    "lat": 9.01562,
+    "lng": 38.79992
+  },
+  "Megenagna Marathon Block 39": {
+    "lat": 9.01905,
+    "lng": 38.80332
+  },
+  "Megenagna Marathon Block 40": {
+    "lat": 9.02089,
+    "lng": 38.79896
+  },
+  "Megenagna Marathon Block 41": {
+    "lat": 9.02265,
+    "lng": 38.80195
+  },
+  "Megenagna Marathon Block 42": {
+    "lat": 9.02384,
+    "lng": 38.79665
+  },
+  "Megenagna Marathon Block 43": {
+    "lat": 9.01761,
+    "lng": 38.79629
+  },
+  "Megenagna Marathon Block 44": {
+    "lat": 9.02236,
+    "lng": 38.79901
+  },
+  "Megenagna Marathon Block 45": {
+    "lat": 9.01851,
+    "lng": 38.80522
+  },
+  "Megenagna Marathon Block 46": {
+    "lat": 9.01791,
+    "lng": 38.80323
+  },
+  "Megenagna Marathon Block 47": {
+    "lat": 9.01941,
+    "lng": 38.79810
+  },
+  "Megenagna Marathon Block 48": {
+    "lat": 9.01558,
+    "lng": 38.80108
+  },
+  "Megenagna Marathon Block 49": {
+    "lat": 9.02269,
+    "lng": 38.80476
+  },
+  "Megenagna Marathon Block 50": {
+    "lat": 9.02436,
+    "lng": 38.80314
+  },
+  "Megenagna Marathon Block 51": {
+    "lat": 9.01494,
+    "lng": 38.80296
+  },
+  "Megenagna Marathon Block 52": {
+    "lat": 9.02002,
+    "lng": 38.80181
+  },
+  "Megenagna Marathon Block 53": {
+    "lat": 9.02290,
+    "lng": 38.80508
+  },
+  "Megenagna Marathon Block 54": {
+    "lat": 9.01875,
+    "lng": 38.80163
+  },
+  "Megenagna Marathon Block 55": {
+    "lat": 9.01851,
+    "lng": 38.80323
+  },
+  "Megenagna Marathon Block 56": {
+    "lat": 9.01566,
+    "lng": 38.79917
+  },
+  "Megenagna Marathon Block 57": {
+    "lat": 9.02162,
+    "lng": 38.80189
+  },
+  "Megenagna Marathon Block 58": {
+    "lat": 9.02063,
+    "lng": 38.80283
+  },
+  "Megenagna Marathon Block 59": {
+    "lat": 9.02004,
+    "lng": 38.79659
+  },
+  "Megenagna Marathon Block 60": {
+    "lat": 9.02181,
+    "lng": 38.79961
+  },
+  "Megenagna Marathon Block 61": {
+    "lat": 9.02011,
+    "lng": 38.79841
+  },
+  "Megenagna Marathon Block 62": {
+    "lat": 9.02242,
+    "lng": 38.80175
+  },
+  "Megenagna Marathon Block 63": {
+    "lat": 9.02296,
+    "lng": 38.79808
+  },
+  "Megenagna Marathon Block 64": {
+    "lat": 9.02303,
+    "lng": 38.80117
+  },
+  "Megenagna Marathon Block 65": {
+    "lat": 9.02358,
+    "lng": 38.79591
+  },
+  "Megenagna Marathon Block 66": {
+    "lat": 9.01650,
+    "lng": 38.80437
+  },
+  "Megenagna Marathon Block 67": {
+    "lat": 9.02130,
+    "lng": 38.79602
+  },
+  "Megenagna Marathon Block 68": {
+    "lat": 9.02312,
+    "lng": 38.79589
+  },
+  "Megenagna Marathon Block 69": {
+    "lat": 9.02115,
+    "lng": 38.79874
+  },
+  "Megenagna Marathon Block 70": {
+    "lat": 9.01632,
+    "lng": 38.80292
+  },
+  "Megenagna Marathon Block 71": {
+    "lat": 9.01827,
+    "lng": 38.79566
+  },
+  "Megenagna Marathon Block 72": {
+    "lat": 9.02193,
+    "lng": 38.80489
+  },
+  "Megenagna Marathon Block 73": {
+    "lat": 9.02067,
+    "lng": 38.79997
+  },
+  "Megenagna Marathon Block 74": {
+    "lat": 9.02238,
+    "lng": 38.79565
+  },
+  "Megenagna Marathon Block 75": {
+    "lat": 9.01541,
+    "lng": 38.80146
+  },
+  "Megenagna Marathon Block 76": {
+    "lat": 9.02191,
+    "lng": 38.80347
+  },
+  "Megenagna Marathon Block 77": {
+    "lat": 9.01726,
+    "lng": 38.80030
+  },
+  "Megenagna Marathon Block 78": {
+    "lat": 9.02311,
+    "lng": 38.80108
+  },
+  "Megenagna Marathon Block 79": {
+    "lat": 9.01653,
+    "lng": 38.80204
+  },
+  "Megenagna Marathon Block 80": {
+    "lat": 9.01960,
+    "lng": 38.80326
+  },
+  "Megenagna Marathon Block 81": {
+    "lat": 9.01845,
+    "lng": 38.80014
+  },
+  "Megenagna Marathon Block 82": {
+    "lat": 9.01997,
+    "lng": 38.79922
+  },
+  "Megenagna Marathon Block 83": {
+    "lat": 9.01999,
+    "lng": 38.79738
+  },
+  "Megenagna Marathon Block 84": {
+    "lat": 9.01464,
+    "lng": 38.80244
+  },
+  "Megenagna Marathon Block 85": {
+    "lat": 9.01735,
+    "lng": 38.80546
+  },
+  "Megenagna Marathon Block 86": {
+    "lat": 9.02347,
+    "lng": 38.80453
+  },
+  "Megenagna Marathon Block 87": {
+    "lat": 9.02360,
+    "lng": 38.80349
+  },
+  "Megenagna Marathon Block 88": {
+    "lat": 9.01476,
+    "lng": 38.80108
+  },
+  "Megenagna Marathon Block 89": {
+    "lat": 9.02188,
+    "lng": 38.80370
+  },
+  "Megenagna Marathon Block 90": {
+    "lat": 9.02222,
+    "lng": 38.79557
+  },
+  "Megenagna Marathon Block 91": {
+    "lat": 9.02090,
+    "lng": 38.79910
+  },
+  "Megenagna Marathon Block 92": {
+    "lat": 9.01628,
+    "lng": 38.80452
+  },
+  "Megenagna Marathon Block 93": {
+    "lat": 9.02113,
+    "lng": 38.79809
+  },
+  "Megenagna Marathon Block 94": {
+    "lat": 9.02224,
+    "lng": 38.79885
+  },
+  "Megenagna Marathon Block 95": {
+    "lat": 9.02183,
+    "lng": 38.80527
+  },
+  "Megenagna Marathon Block 96": {
+    "lat": 9.01864,
+    "lng": 38.80353
+  },
+  "Megenagna Marathon Block 97": {
+    "lat": 9.01566,
+    "lng": 38.80012
+  },
+  "Megenagna Marathon Block 98": {
+    "lat": 9.01467,
+    "lng": 38.79908
+  },
+  "Megenagna Marathon Block 99": {
+    "lat": 9.02359,
+    "lng": 38.79837
+  },
+  "Megenagna Marathon Block 100": {
+    "lat": 9.01517,
+    "lng": 38.80545
+  },
+  "Megenagna Lem Hotel Block 1": {
+    "lat": 9.02339,
+    "lng": 38.79637
+  },
+  "Megenagna Lem Hotel Block 2": {
+    "lat": 9.01787,
+    "lng": 38.80012
+  },
+  "Megenagna Lem Hotel Block 3": {
+    "lat": 9.01671,
+    "lng": 38.79992
+  },
+  "Megenagna Lem Hotel Block 4": {
+    "lat": 9.01560,
+    "lng": 38.80252
+  },
+  "Megenagna Lem Hotel Block 5": {
+    "lat": 9.01832,
+    "lng": 38.80436
+  },
+  "Megenagna Lem Hotel Block 6": {
+    "lat": 9.02029,
+    "lng": 38.79558
+  },
+  "Megenagna Lem Hotel Block 7": {
+    "lat": 9.01617,
+    "lng": 38.79969
+  },
+  "Megenagna Lem Hotel Block 8": {
+    "lat": 9.01554,
+    "lng": 38.79552
+  },
+  "Megenagna Lem Hotel Block 9": {
+    "lat": 9.01585,
+    "lng": 38.80328
+  },
+  "Megenagna Lem Hotel Block 10": {
+    "lat": 9.01659,
+    "lng": 38.80458
+  },
+  "Megenagna Lem Hotel Block 11": {
+    "lat": 9.01847,
+    "lng": 38.79757
+  },
+  "Megenagna Lem Hotel Block 12": {
+    "lat": 9.01857,
+    "lng": 38.79793
+  },
+  "Megenagna Lem Hotel Block 13": {
+    "lat": 9.02407,
+    "lng": 38.79712
+  },
+  "Megenagna Lem Hotel Block 14": {
+    "lat": 9.01676,
+    "lng": 38.79917
+  },
+  "Megenagna Lem Hotel Block 15": {
+    "lat": 9.01977,
+    "lng": 38.80245
+  },
+  "Megenagna Lem Hotel Block 16": {
+    "lat": 9.02081,
+    "lng": 38.80124
+  },
+  "Megenagna Lem Hotel Block 17": {
+    "lat": 9.01514,
+    "lng": 38.80001
+  },
+  "Megenagna Lem Hotel Block 18": {
+    "lat": 9.01841,
+    "lng": 38.79793
+  },
+  "Megenagna Lem Hotel Block 19": {
+    "lat": 9.02085,
+    "lng": 38.79615
+  },
+  "Megenagna Lem Hotel Block 20": {
+    "lat": 9.02073,
+    "lng": 38.80279
+  },
+  "Megenagna Lem Hotel Block 21": {
+    "lat": 9.01915,
+    "lng": 38.80536
+  },
+  "Megenagna Lem Hotel Block 22": {
+    "lat": 9.02245,
+    "lng": 38.79663
+  },
+  "Megenagna Lem Hotel Block 23": {
+    "lat": 9.01732,
+    "lng": 38.79794
+  },
+  "Megenagna Lem Hotel Block 24": {
+    "lat": 9.01569,
+    "lng": 38.80178
+  },
+  "Megenagna Lem Hotel Block 25": {
+    "lat": 9.01687,
+    "lng": 38.79632
+  },
+  "Megenagna Lem Hotel Block 26": {
+    "lat": 9.01561,
+    "lng": 38.80246
+  },
+  "Megenagna Lem Hotel Block 27": {
+    "lat": 9.02198,
+    "lng": 38.80260
+  },
+  "Megenagna Lem Hotel Block 28": {
+    "lat": 9.02188,
+    "lng": 38.79825
+  },
+  "Megenagna Lem Hotel Block 29": {
+    "lat": 9.02118,
+    "lng": 38.80341
+  },
+  "Megenagna Lem Hotel Block 30": {
+    "lat": 9.01599,
+    "lng": 38.79559
+  },
+  "Megenagna Lem Hotel Block 31": {
+    "lat": 9.02190,
+    "lng": 38.80075
+  },
+  "Megenagna Lem Hotel Block 32": {
+    "lat": 9.02388,
+    "lng": 38.79561
+  },
+  "Megenagna Lem Hotel Block 33": {
+    "lat": 9.02068,
+    "lng": 38.80479
+  },
+  "Megenagna Lem Hotel Block 34": {
+    "lat": 9.01741,
+    "lng": 38.79633
+  },
+  "Megenagna Lem Hotel Block 35": {
+    "lat": 9.01932,
+    "lng": 38.79665
+  },
+  "Megenagna Lem Hotel Block 36": {
+    "lat": 9.01612,
+    "lng": 38.79577
+  },
+  "Megenagna Lem Hotel Block 37": {
+    "lat": 9.02191,
+    "lng": 38.79704
+  },
+  "Megenagna Lem Hotel Block 38": {
+    "lat": 9.02306,
+    "lng": 38.79683
+  },
+  "Megenagna Lem Hotel Block 39": {
+    "lat": 9.01512,
+    "lng": 38.79683
+  },
+  "Megenagna Lem Hotel Block 40": {
+    "lat": 9.02107,
+    "lng": 38.79592
+  },
+  "Megenagna Lem Hotel Block 41": {
+    "lat": 9.01589,
+    "lng": 38.80498
+  },
+  "Megenagna Lem Hotel Block 42": {
+    "lat": 9.01848,
+    "lng": 38.80455
+  },
+  "Megenagna Lem Hotel Block 43": {
+    "lat": 9.02359,
+    "lng": 38.79988
+  },
+  "Megenagna Lem Hotel Block 44": {
+    "lat": 9.01864,
+    "lng": 38.79828
+  },
+  "Megenagna Lem Hotel Block 45": {
+    "lat": 9.01745,
+    "lng": 38.80388
+  },
+  "Megenagna Lem Hotel Block 46": {
+    "lat": 9.01639,
+    "lng": 38.79827
+  },
+  "Megenagna Lem Hotel Block 47": {
+    "lat": 9.01860,
+    "lng": 38.80289
+  },
+  "Megenagna Lem Hotel Block 48": {
+    "lat": 9.02291,
+    "lng": 38.79857
+  },
+  "Megenagna Lem Hotel Block 49": {
+    "lat": 9.01710,
+    "lng": 38.79575
+  },
+  "Megenagna Lem Hotel Block 50": {
+    "lat": 9.01747,
+    "lng": 38.80182
+  },
+  "Megenagna Lem Hotel Block 51": {
+    "lat": 9.01477,
+    "lng": 38.80334
+  },
+  "Megenagna Lem Hotel Block 52": {
+    "lat": 9.02175,
+    "lng": 38.80530
+  },
+  "Megenagna Lem Hotel Block 53": {
+    "lat": 9.02318,
+    "lng": 38.80037
+  },
+  "Megenagna Lem Hotel Block 54": {
+    "lat": 9.01963,
+    "lng": 38.79989
+  },
+  "Megenagna Lem Hotel Block 55": {
+    "lat": 9.02176,
+    "lng": 38.80459
+  },
+  "Megenagna Lem Hotel Block 56": {
+    "lat": 9.01871,
+    "lng": 38.79774
+  },
+  "Megenagna Lem Hotel Block 57": {
+    "lat": 9.02402,
+    "lng": 38.79705
+  },
+  "Megenagna Lem Hotel Block 58": {
+    "lat": 9.01641,
+    "lng": 38.80379
+  },
+  "Megenagna Lem Hotel Block 59": {
+    "lat": 9.01458,
+    "lng": 38.80197
+  },
+  "Megenagna Lem Hotel Block 60": {
+    "lat": 9.02271,
+    "lng": 38.79838
+  },
+  "Megenagna Lem Hotel Block 61": {
+    "lat": 9.01544,
+    "lng": 38.79985
+  },
+  "Megenagna Lem Hotel Block 62": {
+    "lat": 9.01720,
+    "lng": 38.79665
+  },
+  "Megenagna Lem Hotel Block 63": {
+    "lat": 9.01544,
+    "lng": 38.80005
+  },
+  "Megenagna Lem Hotel Block 64": {
+    "lat": 9.02251,
+    "lng": 38.80121
+  },
+  "Megenagna Lem Hotel Block 65": {
+    "lat": 9.01750,
+    "lng": 38.80250
+  },
+  "Megenagna Lem Hotel Block 66": {
+    "lat": 9.01493,
+    "lng": 38.80344
+  },
+  "Megenagna Lem Hotel Block 67": {
+    "lat": 9.02270,
+    "lng": 38.80405
+  },
+  "Megenagna Lem Hotel Block 68": {
+    "lat": 9.02053,
+    "lng": 38.80021
+  },
+  "Megenagna Lem Hotel Block 69": {
+    "lat": 9.02072,
+    "lng": 38.79753
+  },
+  "Megenagna Lem Hotel Block 70": {
+    "lat": 9.02220,
+    "lng": 38.80354
+  },
+  "Megenagna Lem Hotel Block 71": {
+    "lat": 9.01790,
+    "lng": 38.80208
+  },
+  "Megenagna Lem Hotel Block 72": {
+    "lat": 9.01777,
+    "lng": 38.79783
+  },
+  "Megenagna Lem Hotel Block 73": {
+    "lat": 9.02324,
+    "lng": 38.80015
+  },
+  "Megenagna Lem Hotel Block 74": {
+    "lat": 9.02051,
+    "lng": 38.80140
+  },
+  "Megenagna Lem Hotel Block 75": {
+    "lat": 9.01543,
+    "lng": 38.80145
+  },
+  "Megenagna Lem Hotel Block 76": {
+    "lat": 9.01926,
+    "lng": 38.79899
+  },
+  "Megenagna Lem Hotel Block 77": {
+    "lat": 9.01536,
+    "lng": 38.79656
+  },
+  "Megenagna Lem Hotel Block 78": {
+    "lat": 9.01860,
+    "lng": 38.79617
+  },
+  "Megenagna Lem Hotel Block 79": {
+    "lat": 9.01950,
+    "lng": 38.79844
+  },
+  "Megenagna Lem Hotel Block 80": {
+    "lat": 9.02195,
+    "lng": 38.80043
+  },
+  "Megenagna Lem Hotel Block 81": {
+    "lat": 9.01731,
+    "lng": 38.80505
+  },
+  "Megenagna Lem Hotel Block 82": {
+    "lat": 9.02267,
+    "lng": 38.80063
+  },
+  "Megenagna Lem Hotel Block 83": {
+    "lat": 9.02188,
+    "lng": 38.80440
+  },
+  "Megenagna Lem Hotel Block 84": {
+    "lat": 9.02192,
+    "lng": 38.80365
+  },
+  "Megenagna Lem Hotel Block 85": {
+    "lat": 9.01896,
+    "lng": 38.80489
+  },
+  "Megenagna Lem Hotel Block 86": {
+    "lat": 9.01963,
+    "lng": 38.79964
+  },
+  "Megenagna Lem Hotel Block 87": {
+    "lat": 9.01978,
+    "lng": 38.80032
+  },
+  "Megenagna Lem Hotel Block 88": {
+    "lat": 9.01606,
+    "lng": 38.79851
+  },
+  "Megenagna Lem Hotel Block 89": {
+    "lat": 9.02256,
+    "lng": 38.79648
+  },
+  "Megenagna Lem Hotel Block 90": {
+    "lat": 9.02295,
+    "lng": 38.79724
+  },
+  "Megenagna Lem Hotel Block 91": {
+    "lat": 9.01690,
+    "lng": 38.80231
+  },
+  "Megenagna Lem Hotel Block 92": {
+    "lat": 9.02019,
+    "lng": 38.79885
+  },
+  "Megenagna Lem Hotel Block 93": {
+    "lat": 9.02336,
+    "lng": 38.79717
+  },
+  "Megenagna Lem Hotel Block 94": {
+    "lat": 9.02155,
+    "lng": 38.79876
+  },
+  "Megenagna Lem Hotel Block 95": {
+    "lat": 9.01708,
+    "lng": 38.80247
+  },
+  "Megenagna Lem Hotel Block 96": {
+    "lat": 9.01803,
+    "lng": 38.79621
+  },
+  "Megenagna Lem Hotel Block 97": {
+    "lat": 9.02421,
+    "lng": 38.80330
+  },
+  "Megenagna Lem Hotel Block 98": {
+    "lat": 9.01632,
+    "lng": 38.79963
+  },
+  "Megenagna Lem Hotel Block 99": {
+    "lat": 9.02220,
+    "lng": 38.79977
+  },
+  "Megenagna Lem Hotel Block 100": {
+    "lat": 9.02394,
+    "lng": 38.80470
+  },
+  "Megenagna Gurd Shola Block 1": {
+    "lat": 9.02292,
+    "lng": 38.80180
+  },
+  "Megenagna Gurd Shola Block 2": {
+    "lat": 9.01877,
+    "lng": 38.80097
+  },
+  "Megenagna Gurd Shola Block 3": {
+    "lat": 9.01691,
+    "lng": 38.79777
+  },
+  "Megenagna Gurd Shola Block 4": {
+    "lat": 9.02420,
+    "lng": 38.80005
+  },
+  "Megenagna Gurd Shola Block 5": {
+    "lat": 9.02084,
+    "lng": 38.80515
+  },
+  "Megenagna Gurd Shola Block 6": {
+    "lat": 9.02200,
+    "lng": 38.80348
+  },
+  "Megenagna Gurd Shola Block 7": {
+    "lat": 9.02111,
+    "lng": 38.80110
+  },
+  "Megenagna Gurd Shola Block 8": {
+    "lat": 9.01729,
+    "lng": 38.79734
+  },
+  "Megenagna Gurd Shola Block 9": {
+    "lat": 9.01968,
+    "lng": 38.80010
+  },
+  "Megenagna Gurd Shola Block 10": {
+    "lat": 9.01891,
+    "lng": 38.80338
+  },
+  "Megenagna Gurd Shola Block 11": {
+    "lat": 9.02352,
+    "lng": 38.80297
+  },
+  "Megenagna Gurd Shola Block 12": {
+    "lat": 9.02205,
+    "lng": 38.80447
+  },
+  "Megenagna Gurd Shola Block 13": {
+    "lat": 9.02407,
+    "lng": 38.80348
+  },
+  "Megenagna Gurd Shola Block 14": {
+    "lat": 9.01453,
+    "lng": 38.80122
+  },
+  "Megenagna Gurd Shola Block 15": {
+    "lat": 9.02260,
+    "lng": 38.80329
+  },
+  "Megenagna Gurd Shola Block 16": {
+    "lat": 9.02064,
+    "lng": 38.80011
+  },
+  "Megenagna Gurd Shola Block 17": {
+    "lat": 9.02309,
+    "lng": 38.79617
+  },
+  "Megenagna Gurd Shola Block 18": {
+    "lat": 9.01458,
+    "lng": 38.80083
+  },
+  "Megenagna Gurd Shola Block 19": {
+    "lat": 9.02317,
+    "lng": 38.79591
+  },
+  "Megenagna Gurd Shola Block 20": {
+    "lat": 9.02176,
+    "lng": 38.79761
+  },
+  "Megenagna Gurd Shola Block 21": {
+    "lat": 9.01922,
+    "lng": 38.80274
+  },
+  "Megenagna Gurd Shola Block 22": {
+    "lat": 9.02068,
+    "lng": 38.79583
+  },
+  "Megenagna Gurd Shola Block 23": {
+    "lat": 9.01674,
+    "lng": 38.80069
+  },
+  "Megenagna Gurd Shola Block 24": {
+    "lat": 9.01562,
+    "lng": 38.79681
+  },
+  "Megenagna Gurd Shola Block 25": {
+    "lat": 9.01550,
+    "lng": 38.79823
+  },
+  "Megenagna Gurd Shola Block 26": {
+    "lat": 9.02024,
+    "lng": 38.80017
+  },
+  "Megenagna Gurd Shola Block 27": {
+    "lat": 9.01822,
+    "lng": 38.79937
+  },
+  "Megenagna Gurd Shola Block 28": {
+    "lat": 9.01726,
+    "lng": 38.80352
+  },
+  "Megenagna Gurd Shola Block 29": {
+    "lat": 9.01529,
+    "lng": 38.79982
+  },
+  "Megenagna Gurd Shola Block 30": {
+    "lat": 9.02179,
+    "lng": 38.80002
+  },
+  "Megenagna Gurd Shola Block 31": {
+    "lat": 9.02117,
+    "lng": 38.80474
+  },
+  "Megenagna Gurd Shola Block 32": {
+    "lat": 9.01493,
+    "lng": 38.80370
+  },
+  "Megenagna Gurd Shola Block 33": {
+    "lat": 9.02166,
+    "lng": 38.79889
+  },
+  "Megenagna Gurd Shola Block 34": {
+    "lat": 9.01636,
+    "lng": 38.80473
+  },
+  "Megenagna Gurd Shola Block 35": {
+    "lat": 9.01824,
+    "lng": 38.79945
+  },
+  "Megenagna Gurd Shola Block 36": {
+    "lat": 9.01631,
+    "lng": 38.80069
+  },
+  "Megenagna Gurd Shola Block 37": {
+    "lat": 9.01804,
+    "lng": 38.80365
+  },
+  "Megenagna Gurd Shola Block 38": {
+    "lat": 9.02128,
+    "lng": 38.80158
+  },
+  "Megenagna Gurd Shola Block 39": {
+    "lat": 9.02162,
+    "lng": 38.80092
+  },
+  "Megenagna Gurd Shola Block 40": {
+    "lat": 9.01512,
+    "lng": 38.80364
+  },
+  "Megenagna Gurd Shola Block 41": {
+    "lat": 9.01866,
+    "lng": 38.80291
+  },
+  "Megenagna Gurd Shola Block 42": {
+    "lat": 9.01752,
+    "lng": 38.79663
+  },
+  "Megenagna Gurd Shola Block 43": {
+    "lat": 9.01922,
+    "lng": 38.80426
+  },
+  "Megenagna Gurd Shola Block 44": {
+    "lat": 9.01999,
+    "lng": 38.79622
+  },
+  "Megenagna Gurd Shola Block 45": {
+    "lat": 9.01468,
+    "lng": 38.79654
+  },
+  "Megenagna Gurd Shola Block 46": {
+    "lat": 9.01527,
+    "lng": 38.80511
+  },
+  "Megenagna Gurd Shola Block 47": {
+    "lat": 9.01564,
+    "lng": 38.80122
+  },
+  "Megenagna Gurd Shola Block 48": {
+    "lat": 9.02283,
+    "lng": 38.80202
+  },
+  "Megenagna Gurd Shola Block 49": {
+    "lat": 9.01553,
+    "lng": 38.79993
+  },
+  "Megenagna Gurd Shola Block 50": {
+    "lat": 9.02008,
+    "lng": 38.79923
+  },
+  "Megenagna Gurd Shola Block 51": {
+    "lat": 9.01787,
+    "lng": 38.80229
+  },
+  "Megenagna Gurd Shola Block 52": {
+    "lat": 9.02369,
+    "lng": 38.79577
+  },
+  "Megenagna Gurd Shola Block 53": {
+    "lat": 9.02111,
+    "lng": 38.79652
+  },
+  "Megenagna Gurd Shola Block 54": {
+    "lat": 9.01990,
+    "lng": 38.80365
+  },
+  "Megenagna Gurd Shola Block 55": {
+    "lat": 9.02387,
+    "lng": 38.80279
+  },
+  "Megenagna Gurd Shola Block 56": {
+    "lat": 9.01947,
+    "lng": 38.80100
+  },
+  "Megenagna Gurd Shola Block 57": {
+    "lat": 9.01880,
+    "lng": 38.79632
+  },
+  "Megenagna Gurd Shola Block 58": {
+    "lat": 9.02108,
+    "lng": 38.79894
+  },
+  "Megenagna Gurd Shola Block 59": {
+    "lat": 9.01872,
+    "lng": 38.79900
+  },
+  "Megenagna Gurd Shola Block 60": {
+    "lat": 9.02244,
+    "lng": 38.79830
+  },
+  "Megenagna Gurd Shola Block 61": {
+    "lat": 9.02348,
+    "lng": 38.80352
+  },
+  "Megenagna Gurd Shola Block 62": {
+    "lat": 9.02241,
+    "lng": 38.80258
+  },
+  "Megenagna Gurd Shola Block 63": {
+    "lat": 9.02051,
+    "lng": 38.79743
+  },
+  "Megenagna Gurd Shola Block 64": {
+    "lat": 9.01674,
+    "lng": 38.79867
+  },
+  "Megenagna Gurd Shola Block 65": {
+    "lat": 9.02288,
+    "lng": 38.80511
+  },
+  "Megenagna Gurd Shola Block 66": {
+    "lat": 9.02219,
+    "lng": 38.80437
+  },
+  "Megenagna Gurd Shola Block 67": {
+    "lat": 9.01761,
+    "lng": 38.79917
+  },
+  "Megenagna Gurd Shola Block 68": {
+    "lat": 9.01445,
+    "lng": 38.79719
+  },
+  "Megenagna Gurd Shola Block 69": {
+    "lat": 9.02115,
+    "lng": 38.79669
+  },
+  "Megenagna Gurd Shola Block 70": {
+    "lat": 9.01873,
+    "lng": 38.79602
+  },
+  "Megenagna Gurd Shola Block 71": {
+    "lat": 9.02301,
+    "lng": 38.79880
+  },
+  "Megenagna Gurd Shola Block 72": {
+    "lat": 9.01736,
+    "lng": 38.80412
+  },
+  "Megenagna Gurd Shola Block 73": {
+    "lat": 9.02079,
+    "lng": 38.80439
+  },
+  "Megenagna Gurd Shola Block 74": {
+    "lat": 9.01688,
+    "lng": 38.80296
+  },
+  "Megenagna Gurd Shola Block 75": {
+    "lat": 9.01952,
+    "lng": 38.80309
+  },
+  "Megenagna Gurd Shola Block 76": {
+    "lat": 9.02210,
+    "lng": 38.79923
+  },
+  "Megenagna Gurd Shola Block 77": {
+    "lat": 9.01743,
+    "lng": 38.79555
+  },
+  "Megenagna Gurd Shola Block 78": {
+    "lat": 9.02240,
+    "lng": 38.79935
+  },
+  "Megenagna Gurd Shola Block 79": {
+    "lat": 9.01859,
+    "lng": 38.80274
+  },
+  "Megenagna Gurd Shola Block 80": {
+    "lat": 9.02255,
+    "lng": 38.80345
+  },
+  "Megenagna Gurd Shola Block 81": {
+    "lat": 9.01915,
+    "lng": 38.80368
+  },
+  "Megenagna Gurd Shola Block 82": {
+    "lat": 9.01882,
+    "lng": 38.80335
+  },
+  "Megenagna Gurd Shola Block 83": {
+    "lat": 9.01514,
+    "lng": 38.80228
+  },
+  "Megenagna Gurd Shola Block 84": {
+    "lat": 9.02170,
+    "lng": 38.79627
+  },
+  "Megenagna Gurd Shola Block 85": {
+    "lat": 9.02248,
+    "lng": 38.79755
+  },
+  "Megenagna Gurd Shola Block 86": {
+    "lat": 9.02284,
+    "lng": 38.79996
+  },
+  "Megenagna Gurd Shola Block 87": {
+    "lat": 9.02152,
+    "lng": 38.80521
+  },
+  "Megenagna Gurd Shola Block 88": {
+    "lat": 9.01622,
+    "lng": 38.80049
+  },
+  "Megenagna Gurd Shola Block 89": {
+    "lat": 9.01519,
+    "lng": 38.79653
+  },
+  "Megenagna Gurd Shola Block 90": {
+    "lat": 9.01619,
+    "lng": 38.80497
+  },
+  "Megenagna Gurd Shola Block 91": {
+    "lat": 9.02164,
+    "lng": 38.80088
+  },
+  "Megenagna Gurd Shola Block 92": {
+    "lat": 9.01464,
+    "lng": 38.79720
+  },
+  "Megenagna Gurd Shola Block 93": {
+    "lat": 9.01694,
+    "lng": 38.79885
+  },
+  "Megenagna Gurd Shola Block 94": {
+    "lat": 9.02132,
+    "lng": 38.79684
+  },
+  "Megenagna Gurd Shola Block 95": {
+    "lat": 9.02261,
+    "lng": 38.79991
+  },
+  "Megenagna Gurd Shola Block 96": {
+    "lat": 9.02178,
+    "lng": 38.79844
+  },
+  "Megenagna Gurd Shola Block 97": {
+    "lat": 9.02058,
+    "lng": 38.80050
+  },
+  "Megenagna Gurd Shola Block 98": {
+    "lat": 9.01725,
+    "lng": 38.79764
+  },
+  "Megenagna Gurd Shola Block 99": {
+    "lat": 9.02085,
+    "lng": 38.80310
+  },
+  "Megenagna Gurd Shola Block 100": {
+    "lat": 9.01715,
+    "lng": 38.80138
+  },
+  "Megenagna Salite Mihret Block 1": {
+    "lat": 9.02394,
+    "lng": 38.79692
+  },
+  "Megenagna Salite Mihret Block 2": {
+    "lat": 9.02184,
+    "lng": 38.80089
+  },
+  "Megenagna Salite Mihret Block 3": {
+    "lat": 9.01786,
+    "lng": 38.80265
+  },
+  "Megenagna Salite Mihret Block 4": {
+    "lat": 9.01787,
+    "lng": 38.80085
+  },
+  "Megenagna Salite Mihret Block 5": {
+    "lat": 9.02118,
+    "lng": 38.79863
+  },
+  "Megenagna Salite Mihret Block 6": {
+    "lat": 9.02159,
+    "lng": 38.80303
+  },
+  "Megenagna Salite Mihret Block 7": {
+    "lat": 9.02202,
+    "lng": 38.80494
+  },
+  "Megenagna Salite Mihret Block 8": {
+    "lat": 9.02065,
+    "lng": 38.79792
+  },
+  "Megenagna Salite Mihret Block 9": {
+    "lat": 9.02357,
+    "lng": 38.79610
+  },
+  "Megenagna Salite Mihret Block 10": {
+    "lat": 9.02410,
+    "lng": 38.79828
+  },
+  "Megenagna Salite Mihret Block 11": {
+    "lat": 9.01710,
+    "lng": 38.79881
+  },
+  "Megenagna Salite Mihret Block 12": {
+    "lat": 9.02024,
+    "lng": 38.80361
+  },
+  "Megenagna Salite Mihret Block 13": {
+    "lat": 9.02000,
+    "lng": 38.80294
+  },
+  "Megenagna Salite Mihret Block 14": {
+    "lat": 9.01696,
+    "lng": 38.79769
+  },
+  "Megenagna Salite Mihret Block 15": {
+    "lat": 9.02181,
+    "lng": 38.79971
+  },
+  "Megenagna Salite Mihret Block 16": {
+    "lat": 9.01866,
+    "lng": 38.79726
+  },
+  "Megenagna Salite Mihret Block 17": {
+    "lat": 9.02235,
+    "lng": 38.79908
+  },
+  "Megenagna Salite Mihret Block 18": {
+    "lat": 9.01922,
+    "lng": 38.79941
+  },
+  "Megenagna Salite Mihret Block 19": {
+    "lat": 9.01593,
+    "lng": 38.80006
+  },
+  "Megenagna Salite Mihret Block 20": {
+    "lat": 9.01814,
+    "lng": 38.80523
+  },
+  "Megenagna Salite Mihret Block 21": {
+    "lat": 9.01928,
+    "lng": 38.79714
+  },
+  "Megenagna Salite Mihret Block 22": {
+    "lat": 9.02225,
+    "lng": 38.80015
+  },
+  "Megenagna Salite Mihret Block 23": {
+    "lat": 9.01741,
+    "lng": 38.79970
+  },
+  "Megenagna Salite Mihret Block 24": {
+    "lat": 9.02414,
+    "lng": 38.79643
+  },
+  "Megenagna Salite Mihret Block 25": {
+    "lat": 9.01640,
+    "lng": 38.80347
+  },
+  "Megenagna Salite Mihret Block 26": {
+    "lat": 9.02203,
+    "lng": 38.79705
+  },
+  "Megenagna Salite Mihret Block 27": {
+    "lat": 9.01800,
+    "lng": 38.80274
+  },
+  "Megenagna Salite Mihret Block 28": {
+    "lat": 9.02395,
+    "lng": 38.79968
+  },
+  "Megenagna Salite Mihret Block 29": {
+    "lat": 9.02076,
+    "lng": 38.79980
+  },
+  "Megenagna Salite Mihret Block 30": {
+    "lat": 9.02015,
+    "lng": 38.79773
+  },
+  "Megenagna Salite Mihret Block 31": {
+    "lat": 9.02390,
+    "lng": 38.79935
+  },
+  "Megenagna Salite Mihret Block 32": {
+    "lat": 9.02214,
+    "lng": 38.80044
+  },
+  "Megenagna Salite Mihret Block 33": {
+    "lat": 9.02376,
+    "lng": 38.80137
+  },
+  "Megenagna Salite Mihret Block 34": {
+    "lat": 9.01900,
+    "lng": 38.80051
+  },
+  "Megenagna Salite Mihret Block 35": {
+    "lat": 9.01577,
+    "lng": 38.79599
+  },
+  "Megenagna Salite Mihret Block 36": {
+    "lat": 9.01497,
+    "lng": 38.80210
+  },
+  "Megenagna Salite Mihret Block 37": {
+    "lat": 9.02109,
+    "lng": 38.80444
+  },
+  "Megenagna Salite Mihret Block 38": {
+    "lat": 9.02188,
+    "lng": 38.80300
+  },
+  "Megenagna Salite Mihret Block 39": {
+    "lat": 9.01440,
+    "lng": 38.79984
+  },
+  "Megenagna Salite Mihret Block 40": {
+    "lat": 9.02230,
+    "lng": 38.79865
+  },
+  "Megenagna Salite Mihret Block 41": {
+    "lat": 9.01758,
+    "lng": 38.80299
+  },
+  "Megenagna Salite Mihret Block 42": {
+    "lat": 9.01542,
+    "lng": 38.79855
+  },
+  "Megenagna Salite Mihret Block 43": {
+    "lat": 9.01734,
+    "lng": 38.79865
+  },
+  "Megenagna Salite Mihret Block 44": {
+    "lat": 9.01940,
+    "lng": 38.79724
+  },
+  "Megenagna Salite Mihret Block 45": {
+    "lat": 9.02081,
+    "lng": 38.80428
+  },
+  "Megenagna Salite Mihret Block 46": {
+    "lat": 9.02209,
+    "lng": 38.80308
+  },
+  "Megenagna Salite Mihret Block 47": {
+    "lat": 9.01670,
+    "lng": 38.80008
+  },
+  "Megenagna Salite Mihret Block 48": {
+    "lat": 9.01850,
+    "lng": 38.80354
+  },
+  "Megenagna Salite Mihret Block 49": {
+    "lat": 9.01951,
+    "lng": 38.79731
+  },
+  "Megenagna Salite Mihret Block 50": {
+    "lat": 9.01505,
+    "lng": 38.80052
+  },
+  "Megenagna Salite Mihret Block 51": {
+    "lat": 9.01502,
+    "lng": 38.80449
+  },
+  "Megenagna Salite Mihret Block 52": {
+    "lat": 9.01504,
+    "lng": 38.80387
+  },
+  "Megenagna Salite Mihret Block 53": {
+    "lat": 9.01737,
+    "lng": 38.79560
+  },
+  "Megenagna Salite Mihret Block 54": {
+    "lat": 9.01568,
+    "lng": 38.79634
+  },
+  "Megenagna Salite Mihret Block 55": {
+    "lat": 9.01726,
+    "lng": 38.79848
+  },
+  "Megenagna Salite Mihret Block 56": {
+    "lat": 9.01824,
+    "lng": 38.80410
+  },
+  "Megenagna Salite Mihret Block 57": {
+    "lat": 9.02197,
+    "lng": 38.79936
+  },
+  "Megenagna Salite Mihret Block 58": {
+    "lat": 9.01719,
+    "lng": 38.79762
+  },
+  "Megenagna Salite Mihret Block 59": {
+    "lat": 9.01832,
+    "lng": 38.79747
+  },
+  "Megenagna Salite Mihret Block 60": {
+    "lat": 9.01620,
+    "lng": 38.80319
+  },
+  "Megenagna Salite Mihret Block 61": {
+    "lat": 9.01835,
+    "lng": 38.80020
+  },
+  "Megenagna Salite Mihret Block 62": {
+    "lat": 9.02165,
+    "lng": 38.80312
+  },
+  "Megenagna Salite Mihret Block 63": {
+    "lat": 9.02000,
+    "lng": 38.79629
+  },
+  "Megenagna Salite Mihret Block 64": {
+    "lat": 9.01695,
+    "lng": 38.79788
+  },
+  "Megenagna Salite Mihret Block 65": {
+    "lat": 9.02017,
+    "lng": 38.80385
+  },
+  "Megenagna Salite Mihret Block 66": {
+    "lat": 9.02195,
+    "lng": 38.79814
+  },
+  "Megenagna Salite Mihret Block 67": {
+    "lat": 9.02154,
+    "lng": 38.79765
+  },
+  "Megenagna Salite Mihret Block 68": {
+    "lat": 9.02116,
+    "lng": 38.79832
+  },
+  "Megenagna Salite Mihret Block 69": {
+    "lat": 9.02112,
+    "lng": 38.80035
+  },
+  "Megenagna Salite Mihret Block 70": {
+    "lat": 9.01462,
+    "lng": 38.80003
+  },
+  "Megenagna Salite Mihret Block 71": {
+    "lat": 9.01667,
+    "lng": 38.80122
+  },
+  "Megenagna Salite Mihret Block 72": {
+    "lat": 9.01743,
+    "lng": 38.80299
+  },
+  "Megenagna Salite Mihret Block 73": {
+    "lat": 9.01838,
+    "lng": 38.80185
+  },
+  "Megenagna Salite Mihret Block 74": {
+    "lat": 9.01680,
+    "lng": 38.80351
+  },
+  "Megenagna Salite Mihret Block 75": {
+    "lat": 9.01812,
+    "lng": 38.80210
+  },
+  "Megenagna Salite Mihret Block 76": {
+    "lat": 9.01834,
+    "lng": 38.80058
+  },
+  "Megenagna Salite Mihret Block 77": {
+    "lat": 9.02184,
+    "lng": 38.79883
+  },
+  "Megenagna Salite Mihret Block 78": {
+    "lat": 9.02029,
+    "lng": 38.79986
+  },
+  "Megenagna Salite Mihret Block 79": {
+    "lat": 9.02340,
+    "lng": 38.79681
+  },
+  "Megenagna Salite Mihret Block 80": {
+    "lat": 9.02217,
+    "lng": 38.80111
+  },
+  "Megenagna Salite Mihret Block 81": {
+    "lat": 9.01967,
+    "lng": 38.80195
+  },
+  "Megenagna Salite Mihret Block 82": {
+    "lat": 9.02327,
+    "lng": 38.79705
+  },
+  "Megenagna Salite Mihret Block 83": {
+    "lat": 9.01781,
+    "lng": 38.80380
+  },
+  "Megenagna Salite Mihret Block 84": {
+    "lat": 9.01898,
+    "lng": 38.79727
+  },
+  "Megenagna Salite Mihret Block 85": {
+    "lat": 9.01720,
+    "lng": 38.79732
+  },
+  "Megenagna Salite Mihret Block 86": {
+    "lat": 9.01666,
+    "lng": 38.80286
+  },
+  "Megenagna Salite Mihret Block 87": {
+    "lat": 9.01579,
+    "lng": 38.79669
+  },
+  "Megenagna Salite Mihret Block 88": {
+    "lat": 9.02360,
+    "lng": 38.80538
+  },
+  "Megenagna Salite Mihret Block 89": {
+    "lat": 9.02043,
+    "lng": 38.80056
+  },
+  "Megenagna Salite Mihret Block 90": {
+    "lat": 9.02039,
+    "lng": 38.80201
+  },
+  "Megenagna Salite Mihret Block 91": {
+    "lat": 9.01788,
+    "lng": 38.80270
+  },
+  "Megenagna Salite Mihret Block 92": {
+    "lat": 9.02059,
+    "lng": 38.80040
+  },
+  "Megenagna Salite Mihret Block 93": {
+    "lat": 9.01929,
+    "lng": 38.80065
+  },
+  "Megenagna Salite Mihret Block 94": {
+    "lat": 9.01842,
+    "lng": 38.80008
+  },
+  "Megenagna Salite Mihret Block 95": {
+    "lat": 9.01481,
+    "lng": 38.80147
+  },
+  "Megenagna Salite Mihret Block 96": {
+    "lat": 9.02325,
+    "lng": 38.79965
+  },
+  "Megenagna Salite Mihret Block 97": {
+    "lat": 9.02197,
+    "lng": 38.79850
+  },
+  "Megenagna Salite Mihret Block 98": {
+    "lat": 9.02234,
+    "lng": 38.80075
+  },
+  "Megenagna Salite Mihret Block 99": {
+    "lat": 9.02134,
+    "lng": 38.80268
+  },
+  "Megenagna Salite Mihret Block 100": {
+    "lat": 9.02012,
+    "lng": 38.80419
+  },
+  "Megenagna Figa Block 1": {
+    "lat": 9.01774,
+    "lng": 38.79680
+  },
+  "Megenagna Figa Block 2": {
+    "lat": 9.02206,
+    "lng": 38.80471
+  },
+  "Megenagna Figa Block 3": {
+    "lat": 9.01792,
+    "lng": 38.79618
+  },
+  "Megenagna Figa Block 4": {
+    "lat": 9.02395,
+    "lng": 38.80256
+  },
+  "Megenagna Figa Block 5": {
+    "lat": 9.01588,
+    "lng": 38.80304
+  },
+  "Megenagna Figa Block 6": {
+    "lat": 9.01678,
+    "lng": 38.80054
+  },
+  "Megenagna Figa Block 7": {
+    "lat": 9.02078,
+    "lng": 38.79987
+  },
+  "Megenagna Figa Block 8": {
+    "lat": 9.01910,
+    "lng": 38.80367
+  },
+  "Megenagna Figa Block 9": {
+    "lat": 9.02332,
+    "lng": 38.80409
+  },
+  "Megenagna Figa Block 10": {
+    "lat": 9.01851,
+    "lng": 38.79819
+  },
+  "Megenagna Figa Block 11": {
+    "lat": 9.01855,
+    "lng": 38.80376
+  },
+  "Megenagna Figa Block 12": {
+    "lat": 9.02078,
+    "lng": 38.80306
+  },
+  "Megenagna Figa Block 13": {
+    "lat": 9.02241,
+    "lng": 38.80330
+  },
+  "Megenagna Figa Block 14": {
+    "lat": 9.01606,
+    "lng": 38.80503
+  },
+  "Megenagna Figa Block 15": {
+    "lat": 9.02394,
+    "lng": 38.79703
+  },
+  "Megenagna Figa Block 16": {
+    "lat": 9.01775,
+    "lng": 38.79840
+  },
+  "Megenagna Figa Block 17": {
+    "lat": 9.02438,
+    "lng": 38.80032
+  },
+  "Megenagna Figa Block 18": {
+    "lat": 9.02102,
+    "lng": 38.79810
+  },
+  "Megenagna Figa Block 19": {
+    "lat": 9.02040,
+    "lng": 38.80019
+  },
+  "Megenagna Figa Block 20": {
+    "lat": 9.02410,
+    "lng": 38.79580
+  },
+  "Megenagna Figa Block 21": {
+    "lat": 9.01859,
+    "lng": 38.79865
+  },
+  "Megenagna Figa Block 22": {
+    "lat": 9.02129,
+    "lng": 38.80210
+  },
+  "Megenagna Figa Block 23": {
+    "lat": 9.02114,
+    "lng": 38.79984
+  },
+  "Megenagna Figa Block 24": {
+    "lat": 9.02192,
+    "lng": 38.79971
+  },
+  "Megenagna Figa Block 25": {
+    "lat": 9.02213,
+    "lng": 38.79990
+  },
+  "Megenagna Figa Block 26": {
+    "lat": 9.02127,
+    "lng": 38.80453
+  },
+  "Megenagna Figa Block 27": {
+    "lat": 9.01518,
+    "lng": 38.80419
+  },
+  "Megenagna Figa Block 28": {
+    "lat": 9.02306,
+    "lng": 38.79911
+  },
+  "Megenagna Figa Block 29": {
+    "lat": 9.01641,
+    "lng": 38.80047
+  },
+  "Megenagna Figa Block 30": {
+    "lat": 9.02367,
+    "lng": 38.79671
+  },
+  "Megenagna Figa Block 31": {
+    "lat": 9.01763,
+    "lng": 38.80053
+  },
+  "Megenagna Figa Block 32": {
+    "lat": 9.01863,
+    "lng": 38.80375
+  },
+  "Megenagna Figa Block 33": {
+    "lat": 9.01733,
+    "lng": 38.80259
+  },
+  "Megenagna Figa Block 34": {
+    "lat": 9.02366,
+    "lng": 38.80079
+  },
+  "Megenagna Figa Block 35": {
+    "lat": 9.01501,
+    "lng": 38.80023
+  },
+  "Megenagna Figa Block 36": {
+    "lat": 9.01991,
+    "lng": 38.80186
+  },
+  "Megenagna Figa Block 37": {
+    "lat": 9.01811,
+    "lng": 38.80095
+  },
+  "Megenagna Figa Block 38": {
+    "lat": 9.02039,
+    "lng": 38.80296
+  },
+  "Megenagna Figa Block 39": {
+    "lat": 9.01769,
+    "lng": 38.79966
+  },
+  "Megenagna Figa Block 40": {
+    "lat": 9.02356,
+    "lng": 38.80069
+  },
+  "Megenagna Figa Block 41": {
+    "lat": 9.02384,
+    "lng": 38.79735
+  },
+  "Megenagna Figa Block 42": {
+    "lat": 9.01945,
+    "lng": 38.80107
+  },
+  "Megenagna Figa Block 43": {
+    "lat": 9.02435,
+    "lng": 38.79704
+  },
+  "Megenagna Figa Block 44": {
+    "lat": 9.01803,
+    "lng": 38.80268
+  },
+  "Megenagna Figa Block 45": {
+    "lat": 9.02242,
+    "lng": 38.80342
+  },
+  "Megenagna Figa Block 46": {
+    "lat": 9.01767,
+    "lng": 38.79756
+  },
+  "Megenagna Figa Block 47": {
+    "lat": 9.02155,
+    "lng": 38.80459
+  },
+  "Megenagna Figa Block 48": {
+    "lat": 9.01478,
+    "lng": 38.80173
+  },
+  "Megenagna Figa Block 49": {
+    "lat": 9.02159,
+    "lng": 38.79886
+  },
+  "Megenagna Figa Block 50": {
+    "lat": 9.01713,
+    "lng": 38.80024
+  },
+  "Megenagna Figa Block 51": {
+    "lat": 9.02137,
+    "lng": 38.79647
+  },
+  "Megenagna Figa Block 52": {
+    "lat": 9.01554,
+    "lng": 38.79863
+  },
+  "Megenagna Figa Block 53": {
+    "lat": 9.01731,
+    "lng": 38.80467
+  },
+  "Megenagna Figa Block 54": {
+    "lat": 9.01670,
+    "lng": 38.80054
+  },
+  "Megenagna Figa Block 55": {
+    "lat": 9.02154,
+    "lng": 38.80109
+  },
+  "Megenagna Figa Block 56": {
+    "lat": 9.01751,
+    "lng": 38.80402
+  },
+  "Megenagna Figa Block 57": {
+    "lat": 9.02023,
+    "lng": 38.80309
+  },
+  "Megenagna Figa Block 58": {
+    "lat": 9.02422,
+    "lng": 38.80316
+  },
+  "Megenagna Figa Block 59": {
+    "lat": 9.02393,
+    "lng": 38.80071
+  },
+  "Megenagna Figa Block 60": {
+    "lat": 9.01723,
+    "lng": 38.79678
+  },
+  "Megenagna Figa Block 61": {
+    "lat": 9.01681,
+    "lng": 38.80516
+  },
+  "Megenagna Figa Block 62": {
+    "lat": 9.01440,
+    "lng": 38.80351
+  },
+  "Megenagna Figa Block 63": {
+    "lat": 9.01775,
+    "lng": 38.80527
+  },
+  "Megenagna Figa Block 64": {
+    "lat": 9.02274,
+    "lng": 38.79767
+  },
+  "Megenagna Figa Block 65": {
+    "lat": 9.01535,
+    "lng": 38.79727
+  },
+  "Megenagna Figa Block 66": {
+    "lat": 9.01571,
+    "lng": 38.80330
+  },
+  "Megenagna Figa Block 67": {
+    "lat": 9.01701,
+    "lng": 38.80493
+  },
+  "Megenagna Figa Block 68": {
+    "lat": 9.01581,
+    "lng": 38.79870
+  },
+  "Megenagna Figa Block 69": {
+    "lat": 9.01709,
+    "lng": 38.80354
+  },
+  "Megenagna Figa Block 70": {
+    "lat": 9.01683,
+    "lng": 38.80184
+  },
+  "Megenagna Figa Block 71": {
+    "lat": 9.01747,
+    "lng": 38.79780
+  },
+  "Megenagna Figa Block 72": {
+    "lat": 9.02410,
+    "lng": 38.80527
+  },
+  "Megenagna Figa Block 73": {
+    "lat": 9.02057,
+    "lng": 38.80069
+  },
+  "Megenagna Figa Block 74": {
+    "lat": 9.02283,
+    "lng": 38.79596
+  },
+  "Megenagna Figa Block 75": {
+    "lat": 9.01869,
+    "lng": 38.79644
+  },
+  "Megenagna Figa Block 76": {
+    "lat": 9.02074,
+    "lng": 38.80447
+  },
+  "Megenagna Figa Block 77": {
+    "lat": 9.02230,
+    "lng": 38.79658
+  },
+  "Megenagna Figa Block 78": {
+    "lat": 9.02413,
+    "lng": 38.80433
+  },
+  "Megenagna Figa Block 79": {
+    "lat": 9.02406,
+    "lng": 38.80126
+  },
+  "Megenagna Figa Block 80": {
+    "lat": 9.02160,
+    "lng": 38.79868
+  },
+  "Megenagna Figa Block 81": {
+    "lat": 9.02343,
+    "lng": 38.80046
+  },
+  "Megenagna Figa Block 82": {
+    "lat": 9.01814,
+    "lng": 38.80423
+  },
+  "Megenagna Figa Block 83": {
+    "lat": 9.01698,
+    "lng": 38.80398
+  },
+  "Megenagna Figa Block 84": {
+    "lat": 9.01518,
+    "lng": 38.80233
+  },
+  "Megenagna Figa Block 85": {
+    "lat": 9.01834,
+    "lng": 38.80291
+  },
+  "Megenagna Figa Block 86": {
+    "lat": 9.02005,
+    "lng": 38.80342
+  },
+  "Megenagna Figa Block 87": {
+    "lat": 9.02021,
+    "lng": 38.79663
+  },
+  "Megenagna Figa Block 88": {
+    "lat": 9.01945,
+    "lng": 38.80545
+  },
+  "Megenagna Figa Block 89": {
+    "lat": 9.01695,
+    "lng": 38.80418
+  },
+  "Megenagna Figa Block 90": {
+    "lat": 9.02383,
+    "lng": 38.79655
+  },
+  "Megenagna Figa Block 91": {
+    "lat": 9.01711,
+    "lng": 38.79746
+  },
+  "Megenagna Figa Block 92": {
+    "lat": 9.01851,
+    "lng": 38.79683
+  },
+  "Megenagna Figa Block 93": {
+    "lat": 9.01861,
+    "lng": 38.79775
+  },
+  "Megenagna Figa Block 94": {
+    "lat": 9.01720,
+    "lng": 38.80243
+  },
+  "Megenagna Figa Block 95": {
+    "lat": 9.02102,
+    "lng": 38.79794
+  },
+  "Megenagna Figa Block 96": {
+    "lat": 9.01924,
+    "lng": 38.80354
+  },
+  "Megenagna Figa Block 97": {
+    "lat": 9.02185,
+    "lng": 38.80220
+  },
+  "Megenagna Figa Block 98": {
+    "lat": 9.02243,
+    "lng": 38.80079
+  },
+  "Megenagna Figa Block 99": {
+    "lat": 9.01580,
+    "lng": 38.80483
+  },
+  "Megenagna Figa Block 100": {
+    "lat": 9.01843,
+    "lng": 38.79585
+  },
+  "Sarbet Karl Square Block 1": {
+    "lat": 8.99654,
+    "lng": 38.74449
+  },
+  "Sarbet Karl Square Block 2": {
+    "lat": 8.99705,
+    "lng": 38.73875
+  },
+  "Sarbet Karl Square Block 3": {
+    "lat": 8.98850,
+    "lng": 38.74174
+  },
+  "Sarbet Karl Square Block 4": {
+    "lat": 8.99547,
+    "lng": 38.73539
+  },
+  "Sarbet Karl Square Block 5": {
+    "lat": 8.99458,
+    "lng": 38.73892
+  },
+  "Sarbet Karl Square Block 6": {
+    "lat": 8.99358,
+    "lng": 38.74056
+  },
+  "Sarbet Karl Square Block 7": {
+    "lat": 8.99401,
+    "lng": 38.73607
+  },
+  "Sarbet Karl Square Block 8": {
+    "lat": 8.98783,
+    "lng": 38.74395
+  },
+  "Sarbet Karl Square Block 9": {
+    "lat": 8.99398,
+    "lng": 38.73701
+  },
+  "Sarbet Karl Square Block 10": {
+    "lat": 8.99241,
+    "lng": 38.73782
+  },
+  "Sarbet Karl Square Block 11": {
+    "lat": 8.98840,
+    "lng": 38.74042
+  },
+  "Sarbet Karl Square Block 12": {
+    "lat": 8.99075,
+    "lng": 38.73882
+  },
+  "Sarbet Karl Square Block 13": {
+    "lat": 8.99289,
+    "lng": 38.74008
+  },
+  "Sarbet Karl Square Block 14": {
+    "lat": 8.99361,
+    "lng": 38.73604
+  },
+  "Sarbet Karl Square Block 15": {
+    "lat": 8.99524,
+    "lng": 38.74105
+  },
+  "Sarbet Karl Square Block 16": {
+    "lat": 8.99648,
+    "lng": 38.73895
+  },
+  "Sarbet Karl Square Block 17": {
+    "lat": 8.99737,
+    "lng": 38.74055
+  },
+  "Sarbet Karl Square Block 18": {
+    "lat": 8.98829,
+    "lng": 38.74005
+  },
+  "Sarbet Karl Square Block 19": {
+    "lat": 8.98762,
+    "lng": 38.73531
+  },
+  "Sarbet Karl Square Block 20": {
+    "lat": 8.99647,
+    "lng": 38.74445
+  },
+  "Sarbet Karl Square Block 21": {
+    "lat": 8.99374,
+    "lng": 38.73558
+  },
+  "Sarbet Karl Square Block 22": {
+    "lat": 8.99446,
+    "lng": 38.73761
+  },
+  "Sarbet Karl Square Block 23": {
+    "lat": 8.99008,
+    "lng": 38.73733
+  },
+  "Sarbet Karl Square Block 24": {
+    "lat": 8.98868,
+    "lng": 38.73565
+  },
+  "Sarbet Karl Square Block 25": {
+    "lat": 8.98762,
+    "lng": 38.74061
+  },
+  "Sarbet Karl Square Block 26": {
+    "lat": 8.99632,
+    "lng": 38.73833
+  },
+  "Sarbet Karl Square Block 27": {
+    "lat": 8.99340,
+    "lng": 38.73680
+  },
+  "Sarbet Karl Square Block 28": {
+    "lat": 8.99211,
+    "lng": 38.73686
+  },
+  "Sarbet Karl Square Block 29": {
+    "lat": 8.99323,
+    "lng": 38.74424
+  },
+  "Sarbet Karl Square Block 30": {
+    "lat": 8.99237,
+    "lng": 38.74086
+  },
+  "Sarbet Karl Square Block 31": {
+    "lat": 8.99699,
+    "lng": 38.73898
+  },
+  "Sarbet Karl Square Block 32": {
+    "lat": 8.99276,
+    "lng": 38.73623
+  },
+  "Sarbet Karl Square Block 33": {
+    "lat": 8.99724,
+    "lng": 38.74230
+  },
+  "Sarbet Karl Square Block 34": {
+    "lat": 8.99021,
+    "lng": 38.74254
+  },
+  "Sarbet Karl Square Block 35": {
+    "lat": 8.99694,
+    "lng": 38.74016
+  },
+  "Sarbet Karl Square Block 36": {
+    "lat": 8.98911,
+    "lng": 38.74184
+  },
+  "Sarbet Karl Square Block 37": {
+    "lat": 8.98832,
+    "lng": 38.73500
+  },
+  "Sarbet Karl Square Block 38": {
+    "lat": 8.99240,
+    "lng": 38.73704
+  },
+  "Sarbet Karl Square Block 39": {
+    "lat": 8.98969,
+    "lng": 38.73525
+  },
+  "Sarbet Karl Square Block 40": {
+    "lat": 8.99663,
+    "lng": 38.74132
+  },
+  "Sarbet Karl Square Block 41": {
+    "lat": 8.99158,
+    "lng": 38.73776
+  },
+  "Sarbet Karl Square Block 42": {
+    "lat": 8.99253,
+    "lng": 38.74245
+  },
+  "Sarbet Karl Square Block 43": {
+    "lat": 8.99125,
+    "lng": 38.73860
+  },
+  "Sarbet Karl Square Block 44": {
+    "lat": 8.98925,
+    "lng": 38.73615
+  },
+  "Sarbet Karl Square Block 45": {
+    "lat": 8.99184,
+    "lng": 38.73947
+  },
+  "Sarbet Karl Square Block 46": {
+    "lat": 8.98809,
+    "lng": 38.73948
+  },
+  "Sarbet Karl Square Block 47": {
+    "lat": 8.99215,
+    "lng": 38.74165
+  },
+  "Sarbet Karl Square Block 48": {
+    "lat": 8.99184,
+    "lng": 38.73975
+  },
+  "Sarbet Karl Square Block 49": {
+    "lat": 8.99158,
+    "lng": 38.74328
+  },
+  "Sarbet Karl Square Block 50": {
+    "lat": 8.98766,
+    "lng": 38.74369
+  },
+  "Sarbet Karl Square Block 51": {
+    "lat": 8.99590,
+    "lng": 38.73699
+  },
+  "Sarbet Karl Square Block 52": {
+    "lat": 8.99560,
+    "lng": 38.73748
+  },
+  "Sarbet Karl Square Block 53": {
+    "lat": 8.98822,
+    "lng": 38.74139
+  },
+  "Sarbet Karl Square Block 54": {
+    "lat": 8.99456,
+    "lng": 38.74023
+  },
+  "Sarbet Karl Square Block 55": {
+    "lat": 8.99451,
+    "lng": 38.74453
+  },
+  "Sarbet Karl Square Block 56": {
+    "lat": 8.98790,
+    "lng": 38.73665
+  },
+  "Sarbet Karl Square Block 57": {
+    "lat": 8.99444,
+    "lng": 38.74283
+  },
+  "Sarbet Karl Square Block 58": {
+    "lat": 8.98997,
+    "lng": 38.73809
+  },
+  "Sarbet Karl Square Block 59": {
+    "lat": 8.99732,
+    "lng": 38.74050
+  },
+  "Sarbet Karl Square Block 60": {
+    "lat": 8.98999,
+    "lng": 38.73667
+  },
+  "Sarbet Karl Square Block 61": {
+    "lat": 8.99509,
+    "lng": 38.74459
+  },
+  "Sarbet Karl Square Block 62": {
+    "lat": 8.99085,
+    "lng": 38.74216
+  },
+  "Sarbet Karl Square Block 63": {
+    "lat": 8.99687,
+    "lng": 38.74342
+  },
+  "Sarbet Karl Square Block 64": {
+    "lat": 8.98870,
+    "lng": 38.73934
+  },
+  "Sarbet Karl Square Block 65": {
+    "lat": 8.98797,
+    "lng": 38.73736
+  },
+  "Sarbet Karl Square Block 66": {
+    "lat": 8.99407,
+    "lng": 38.74274
+  },
+  "Sarbet Karl Square Block 67": {
+    "lat": 8.99537,
+    "lng": 38.73887
+  },
+  "Sarbet Karl Square Block 68": {
+    "lat": 8.99189,
+    "lng": 38.73841
+  },
+  "Sarbet Karl Square Block 69": {
+    "lat": 8.99594,
+    "lng": 38.73973
+  },
+  "Sarbet Karl Square Block 70": {
+    "lat": 8.99515,
+    "lng": 38.74009
+  },
+  "Sarbet Karl Square Block 71": {
+    "lat": 8.98868,
+    "lng": 38.74083
+  },
+  "Sarbet Karl Square Block 72": {
+    "lat": 8.99429,
+    "lng": 38.73894
+  },
+  "Sarbet Karl Square Block 73": {
+    "lat": 8.99288,
+    "lng": 38.74388
+  },
+  "Sarbet Karl Square Block 74": {
+    "lat": 8.99075,
+    "lng": 38.73786
+  },
+  "Sarbet Karl Square Block 75": {
+    "lat": 8.98848,
+    "lng": 38.74193
+  },
+  "Sarbet Karl Square Block 76": {
+    "lat": 8.98913,
+    "lng": 38.73570
+  },
+  "Sarbet Karl Square Block 77": {
+    "lat": 8.98885,
+    "lng": 38.73663
+  },
+  "Sarbet Karl Square Block 78": {
+    "lat": 8.99151,
+    "lng": 38.74370
+  },
+  "Sarbet Karl Square Block 79": {
+    "lat": 8.99400,
+    "lng": 38.74444
+  },
+  "Sarbet Karl Square Block 80": {
+    "lat": 8.98974,
+    "lng": 38.73711
+  },
+  "Sarbet Karl Square Block 81": {
+    "lat": 8.98819,
+    "lng": 38.73738
+  },
+  "Sarbet Karl Square Block 82": {
+    "lat": 8.99594,
+    "lng": 38.74093
+  },
+  "Sarbet Karl Square Block 83": {
+    "lat": 8.98889,
+    "lng": 38.74035
+  },
+  "Sarbet Karl Square Block 84": {
+    "lat": 8.99117,
+    "lng": 38.73785
+  },
+  "Sarbet Karl Square Block 85": {
+    "lat": 8.98864,
+    "lng": 38.73590
+  },
+  "Sarbet Karl Square Block 86": {
+    "lat": 8.99445,
+    "lng": 38.74199
+  },
+  "Sarbet Karl Square Block 87": {
+    "lat": 8.99531,
+    "lng": 38.74144
+  },
+  "Sarbet Karl Square Block 88": {
+    "lat": 8.98811,
+    "lng": 38.73954
+  },
+  "Sarbet Karl Square Block 89": {
+    "lat": 8.99563,
+    "lng": 38.73901
+  },
+  "Sarbet Karl Square Block 90": {
+    "lat": 8.98852,
+    "lng": 38.73864
+  },
+  "Sarbet Karl Square Block 91": {
+    "lat": 8.98884,
+    "lng": 38.74293
+  },
+  "Sarbet Karl Square Block 92": {
+    "lat": 8.98965,
+    "lng": 38.74096
+  },
+  "Sarbet Karl Square Block 93": {
+    "lat": 8.99743,
+    "lng": 38.74110
+  },
+  "Sarbet Karl Square Block 94": {
+    "lat": 8.98855,
+    "lng": 38.74256
+  },
+  "Sarbet Karl Square Block 95": {
+    "lat": 8.98791,
+    "lng": 38.74210
+  },
+  "Sarbet Karl Square Block 96": {
+    "lat": 8.99100,
+    "lng": 38.74305
+  },
+  "Sarbet Karl Square Block 97": {
+    "lat": 8.99685,
+    "lng": 38.73506
+  },
+  "Sarbet Karl Square Block 98": {
+    "lat": 8.98798,
+    "lng": 38.73865
+  },
+  "Sarbet Karl Square Block 99": {
+    "lat": 8.99165,
+    "lng": 38.73628
+  },
+  "Sarbet Karl Square Block 100": {
+    "lat": 8.99020,
+    "lng": 38.74018
+  },
+  "Sarbet Vatican Block 1": {
+    "lat": 8.99471,
+    "lng": 38.73510
+  },
+  "Sarbet Vatican Block 2": {
+    "lat": 8.98842,
+    "lng": 38.74069
+  },
+  "Sarbet Vatican Block 3": {
+    "lat": 8.98940,
+    "lng": 38.74035
+  },
+  "Sarbet Vatican Block 4": {
+    "lat": 8.99165,
+    "lng": 38.73722
+  },
+  "Sarbet Vatican Block 5": {
+    "lat": 8.99648,
+    "lng": 38.74033
+  },
+  "Sarbet Vatican Block 6": {
+    "lat": 8.98941,
+    "lng": 38.74101
+  },
+  "Sarbet Vatican Block 7": {
+    "lat": 8.99314,
+    "lng": 38.73759
+  },
+  "Sarbet Vatican Block 8": {
+    "lat": 8.98804,
+    "lng": 38.73692
+  },
+  "Sarbet Vatican Block 9": {
+    "lat": 8.99041,
+    "lng": 38.74357
+  },
+  "Sarbet Vatican Block 10": {
+    "lat": 8.98932,
+    "lng": 38.74356
+  },
+  "Sarbet Vatican Block 11": {
+    "lat": 8.99276,
+    "lng": 38.74318
+  },
+  "Sarbet Vatican Block 12": {
+    "lat": 8.99378,
+    "lng": 38.73583
+  },
+  "Sarbet Vatican Block 13": {
+    "lat": 8.98799,
+    "lng": 38.73621
+  },
+  "Sarbet Vatican Block 14": {
+    "lat": 8.99261,
+    "lng": 38.73528
+  },
+  "Sarbet Vatican Block 15": {
+    "lat": 8.99524,
+    "lng": 38.74426
+  },
+  "Sarbet Vatican Block 16": {
+    "lat": 8.99565,
+    "lng": 38.74183
+  },
+  "Sarbet Vatican Block 17": {
+    "lat": 8.99114,
+    "lng": 38.74291
+  },
+  "Sarbet Vatican Block 18": {
+    "lat": 8.98921,
+    "lng": 38.73566
+  },
+  "Sarbet Vatican Block 19": {
+    "lat": 8.98951,
+    "lng": 38.74388
+  },
+  "Sarbet Vatican Block 20": {
+    "lat": 8.98979,
+    "lng": 38.74414
+  },
+  "Sarbet Vatican Block 21": {
+    "lat": 8.98839,
+    "lng": 38.73597
+  },
+  "Sarbet Vatican Block 22": {
+    "lat": 8.99167,
+    "lng": 38.73769
+  },
+  "Sarbet Vatican Block 23": {
+    "lat": 8.99472,
+    "lng": 38.74419
+  },
+  "Sarbet Vatican Block 24": {
+    "lat": 8.99592,
+    "lng": 38.74061
+  },
+  "Sarbet Vatican Block 25": {
+    "lat": 8.99298,
+    "lng": 38.74101
+  },
+  "Sarbet Vatican Block 26": {
+    "lat": 8.99543,
+    "lng": 38.74274
+  },
+  "Sarbet Vatican Block 27": {
+    "lat": 8.99246,
+    "lng": 38.74091
+  },
+  "Sarbet Vatican Block 28": {
+    "lat": 8.99042,
+    "lng": 38.73921
+  },
+  "Sarbet Vatican Block 29": {
+    "lat": 8.99617,
+    "lng": 38.74233
+  },
+  "Sarbet Vatican Block 30": {
+    "lat": 8.99390,
+    "lng": 38.73681
+  },
+  "Sarbet Vatican Block 31": {
+    "lat": 8.99746,
+    "lng": 38.73766
+  },
+  "Sarbet Vatican Block 32": {
+    "lat": 8.99618,
+    "lng": 38.74320
+  },
+  "Sarbet Vatican Block 33": {
+    "lat": 8.99163,
+    "lng": 38.74040
+  },
+  "Sarbet Vatican Block 34": {
+    "lat": 8.99102,
+    "lng": 38.74047
+  },
+  "Sarbet Vatican Block 35": {
+    "lat": 8.99273,
+    "lng": 38.73747
+  },
+  "Sarbet Vatican Block 36": {
+    "lat": 8.98986,
+    "lng": 38.74322
+  },
+  "Sarbet Vatican Block 37": {
+    "lat": 8.99720,
+    "lng": 38.74180
+  },
+  "Sarbet Vatican Block 38": {
+    "lat": 8.99413,
+    "lng": 38.74118
+  },
+  "Sarbet Vatican Block 39": {
+    "lat": 8.99224,
+    "lng": 38.73679
+  },
+  "Sarbet Vatican Block 40": {
+    "lat": 8.99350,
+    "lng": 38.74314
+  },
+  "Sarbet Vatican Block 41": {
+    "lat": 8.99508,
+    "lng": 38.74291
+  },
+  "Sarbet Vatican Block 42": {
+    "lat": 8.99035,
+    "lng": 38.74058
+  },
+  "Sarbet Vatican Block 43": {
+    "lat": 8.98866,
+    "lng": 38.74360
+  },
+  "Sarbet Vatican Block 44": {
+    "lat": 8.99416,
+    "lng": 38.74158
+  },
+  "Sarbet Vatican Block 45": {
+    "lat": 8.99520,
+    "lng": 38.74229
+  },
+  "Sarbet Vatican Block 46": {
+    "lat": 8.99143,
+    "lng": 38.73942
+  },
+  "Sarbet Vatican Block 47": {
+    "lat": 8.99241,
+    "lng": 38.74142
+  },
+  "Sarbet Vatican Block 48": {
+    "lat": 8.99041,
+    "lng": 38.73781
+  },
+  "Sarbet Vatican Block 49": {
+    "lat": 8.99073,
+    "lng": 38.73714
+  },
+  "Sarbet Vatican Block 50": {
+    "lat": 8.98953,
+    "lng": 38.73817
+  },
+  "Sarbet Vatican Block 51": {
+    "lat": 8.99584,
+    "lng": 38.73838
+  },
+  "Sarbet Vatican Block 52": {
+    "lat": 8.99584,
+    "lng": 38.74264
+  },
+  "Sarbet Vatican Block 53": {
+    "lat": 8.99642,
+    "lng": 38.74122
+  },
+  "Sarbet Vatican Block 54": {
+    "lat": 8.99110,
+    "lng": 38.73769
+  },
+  "Sarbet Vatican Block 55": {
+    "lat": 8.98839,
+    "lng": 38.73724
+  },
+  "Sarbet Vatican Block 56": {
+    "lat": 8.99580,
+    "lng": 38.74130
+  },
+  "Sarbet Vatican Block 57": {
+    "lat": 8.99705,
+    "lng": 38.74182
+  },
+  "Sarbet Vatican Block 58": {
+    "lat": 8.99664,
+    "lng": 38.74215
+  },
+  "Sarbet Vatican Block 59": {
+    "lat": 8.98924,
+    "lng": 38.74217
+  },
+  "Sarbet Vatican Block 60": {
+    "lat": 8.99609,
+    "lng": 38.74319
+  },
+  "Sarbet Vatican Block 61": {
+    "lat": 8.98918,
+    "lng": 38.73872
+  },
+  "Sarbet Vatican Block 62": {
+    "lat": 8.98838,
+    "lng": 38.74022
+  },
+  "Sarbet Vatican Block 63": {
+    "lat": 8.99427,
+    "lng": 38.73567
+  },
+  "Sarbet Vatican Block 64": {
+    "lat": 8.99586,
+    "lng": 38.73963
+  },
+  "Sarbet Vatican Block 65": {
+    "lat": 8.98883,
+    "lng": 38.73972
+  },
+  "Sarbet Vatican Block 66": {
+    "lat": 8.99450,
+    "lng": 38.74052
+  },
+  "Sarbet Vatican Block 67": {
+    "lat": 8.99260,
+    "lng": 38.74120
+  },
+  "Sarbet Vatican Block 68": {
+    "lat": 8.99742,
+    "lng": 38.73882
+  },
+  "Sarbet Vatican Block 69": {
+    "lat": 8.99609,
+    "lng": 38.73492
+  },
+  "Sarbet Vatican Block 70": {
+    "lat": 8.99152,
+    "lng": 38.73538
+  },
+  "Sarbet Vatican Block 71": {
+    "lat": 8.98798,
+    "lng": 38.74368
+  },
+  "Sarbet Vatican Block 72": {
+    "lat": 8.99621,
+    "lng": 38.73561
+  },
+  "Sarbet Vatican Block 73": {
+    "lat": 8.98893,
+    "lng": 38.73601
+  },
+  "Sarbet Vatican Block 74": {
+    "lat": 8.99746,
+    "lng": 38.74111
+  },
+  "Sarbet Vatican Block 75": {
+    "lat": 8.99177,
+    "lng": 38.73554
+  },
+  "Sarbet Vatican Block 76": {
+    "lat": 8.99715,
+    "lng": 38.74454
+  },
+  "Sarbet Vatican Block 77": {
+    "lat": 8.99196,
+    "lng": 38.73542
+  },
+  "Sarbet Vatican Block 78": {
+    "lat": 8.99467,
+    "lng": 38.73937
+  },
+  "Sarbet Vatican Block 79": {
+    "lat": 8.99232,
+    "lng": 38.73870
+  },
+  "Sarbet Vatican Block 80": {
+    "lat": 8.98783,
+    "lng": 38.74098
+  },
+  "Sarbet Vatican Block 81": {
+    "lat": 8.99561,
+    "lng": 38.74120
+  },
+  "Sarbet Vatican Block 82": {
+    "lat": 8.99603,
+    "lng": 38.74331
+  },
+  "Sarbet Vatican Block 83": {
+    "lat": 8.99565,
+    "lng": 38.74008
+  },
+  "Sarbet Vatican Block 84": {
+    "lat": 8.99203,
+    "lng": 38.73797
+  },
+  "Sarbet Vatican Block 85": {
+    "lat": 8.99579,
+    "lng": 38.73822
+  },
+  "Sarbet Vatican Block 86": {
+    "lat": 8.99692,
+    "lng": 38.74330
+  },
+  "Sarbet Vatican Block 87": {
+    "lat": 8.98921,
+    "lng": 38.73630
+  },
+  "Sarbet Vatican Block 88": {
+    "lat": 8.99404,
+    "lng": 38.74162
+  },
+  "Sarbet Vatican Block 89": {
+    "lat": 8.98964,
+    "lng": 38.73607
+  },
+  "Sarbet Vatican Block 90": {
+    "lat": 8.99592,
+    "lng": 38.74002
+  },
+  "Sarbet Vatican Block 91": {
+    "lat": 8.99627,
+    "lng": 38.73533
+  },
+  "Sarbet Vatican Block 92": {
+    "lat": 8.98773,
+    "lng": 38.74377
+  },
+  "Sarbet Vatican Block 93": {
+    "lat": 8.98830,
+    "lng": 38.74447
+  },
+  "Sarbet Vatican Block 94": {
+    "lat": 8.99222,
+    "lng": 38.74203
+  },
+  "Sarbet Vatican Block 95": {
+    "lat": 8.99603,
+    "lng": 38.74447
+  },
+  "Sarbet Vatican Block 96": {
+    "lat": 8.99502,
+    "lng": 38.74294
+  },
+  "Sarbet Vatican Block 97": {
+    "lat": 8.99216,
+    "lng": 38.73911
+  },
+  "Sarbet Vatican Block 98": {
+    "lat": 8.99064,
+    "lng": 38.74315
+  },
+  "Sarbet Vatican Block 99": {
+    "lat": 8.99596,
+    "lng": 38.74277
+  },
+  "Sarbet Vatican Block 100": {
+    "lat": 8.99023,
+    "lng": 38.74202
+  },
+  "Sarbet Pushkin Square Block 1": {
+    "lat": 8.99249,
+    "lng": 38.73595
+  },
+  "Sarbet Pushkin Square Block 2": {
+    "lat": 8.99550,
+    "lng": 38.73909
+  },
+  "Sarbet Pushkin Square Block 3": {
+    "lat": 8.99622,
+    "lng": 38.73790
+  },
+  "Sarbet Pushkin Square Block 4": {
+    "lat": 8.99208,
+    "lng": 38.73833
+  },
+  "Sarbet Pushkin Square Block 5": {
+    "lat": 8.99584,
+    "lng": 38.73554
+  },
+  "Sarbet Pushkin Square Block 6": {
+    "lat": 8.99588,
+    "lng": 38.74188
+  },
+  "Sarbet Pushkin Square Block 7": {
+    "lat": 8.99715,
+    "lng": 38.73643
+  },
+  "Sarbet Pushkin Square Block 8": {
+    "lat": 8.99148,
+    "lng": 38.73743
+  },
+  "Sarbet Pushkin Square Block 9": {
+    "lat": 8.98991,
+    "lng": 38.74070
+  },
+  "Sarbet Pushkin Square Block 10": {
+    "lat": 8.99098,
+    "lng": 38.73653
+  },
+  "Sarbet Pushkin Square Block 11": {
+    "lat": 8.99209,
+    "lng": 38.73620
+  },
+  "Sarbet Pushkin Square Block 12": {
+    "lat": 8.99579,
+    "lng": 38.73654
+  },
+  "Sarbet Pushkin Square Block 13": {
+    "lat": 8.99340,
+    "lng": 38.74385
+  },
+  "Sarbet Pushkin Square Block 14": {
+    "lat": 8.99482,
+    "lng": 38.73757
+  },
+  "Sarbet Pushkin Square Block 15": {
+    "lat": 8.99044,
+    "lng": 38.73699
+  },
+  "Sarbet Pushkin Square Block 16": {
+    "lat": 8.99651,
+    "lng": 38.74185
+  },
+  "Sarbet Pushkin Square Block 17": {
+    "lat": 8.99539,
+    "lng": 38.74140
+  },
+  "Sarbet Pushkin Square Block 18": {
+    "lat": 8.98802,
+    "lng": 38.74128
+  },
+  "Sarbet Pushkin Square Block 19": {
+    "lat": 8.98985,
+    "lng": 38.74086
+  },
+  "Sarbet Pushkin Square Block 20": {
+    "lat": 8.99595,
+    "lng": 38.74117
+  },
+  "Sarbet Pushkin Square Block 21": {
+    "lat": 8.98899,
+    "lng": 38.73759
+  },
+  "Sarbet Pushkin Square Block 22": {
+    "lat": 8.99152,
+    "lng": 38.73830
+  },
+  "Sarbet Pushkin Square Block 23": {
+    "lat": 8.99158,
+    "lng": 38.73606
+  },
+  "Sarbet Pushkin Square Block 24": {
+    "lat": 8.99555,
+    "lng": 38.74081
+  },
+  "Sarbet Pushkin Square Block 25": {
+    "lat": 8.99553,
+    "lng": 38.74280
+  },
+  "Sarbet Pushkin Square Block 26": {
+    "lat": 8.98770,
+    "lng": 38.73766
+  },
+  "Sarbet Pushkin Square Block 27": {
+    "lat": 8.99239,
+    "lng": 38.74363
+  },
+  "Sarbet Pushkin Square Block 28": {
+    "lat": 8.99527,
+    "lng": 38.74272
+  },
+  "Sarbet Pushkin Square Block 29": {
+    "lat": 8.99615,
+    "lng": 38.73696
+  },
+  "Sarbet Pushkin Square Block 30": {
+    "lat": 8.98807,
+    "lng": 38.73552
+  },
+  "Sarbet Pushkin Square Block 31": {
+    "lat": 8.99712,
+    "lng": 38.73785
+  },
+  "Sarbet Pushkin Square Block 32": {
+    "lat": 8.99614,
+    "lng": 38.73999
+  },
+  "Sarbet Pushkin Square Block 33": {
+    "lat": 8.98866,
+    "lng": 38.73840
+  },
+  "Sarbet Pushkin Square Block 34": {
+    "lat": 8.99529,
+    "lng": 38.73482
+  },
+  "Sarbet Pushkin Square Block 35": {
+    "lat": 8.98919,
+    "lng": 38.74244
+  },
+  "Sarbet Pushkin Square Block 36": {
+    "lat": 8.99219,
+    "lng": 38.74348
+  },
+  "Sarbet Pushkin Square Block 37": {
+    "lat": 8.99389,
+    "lng": 38.73790
+  },
+  "Sarbet Pushkin Square Block 38": {
+    "lat": 8.99519,
+    "lng": 38.73614
+  },
+  "Sarbet Pushkin Square Block 39": {
+    "lat": 8.99234,
+    "lng": 38.74362
+  },
+  "Sarbet Pushkin Square Block 40": {
+    "lat": 8.99229,
+    "lng": 38.73498
+  },
+  "Sarbet Pushkin Square Block 41": {
+    "lat": 8.99745,
+    "lng": 38.73634
+  },
+  "Sarbet Pushkin Square Block 42": {
+    "lat": 8.99117,
+    "lng": 38.73704
+  },
+  "Sarbet Pushkin Square Block 43": {
+    "lat": 8.98959,
+    "lng": 38.73972
+  },
+  "Sarbet Pushkin Square Block 44": {
+    "lat": 8.99279,
+    "lng": 38.73858
+  },
+  "Sarbet Pushkin Square Block 45": {
+    "lat": 8.98845,
+    "lng": 38.73839
+  },
+  "Sarbet Pushkin Square Block 46": {
+    "lat": 8.99344,
+    "lng": 38.74295
+  },
+  "Sarbet Pushkin Square Block 47": {
+    "lat": 8.98971,
+    "lng": 38.74305
+  },
+  "Sarbet Pushkin Square Block 48": {
+    "lat": 8.98844,
+    "lng": 38.73906
+  },
+  "Sarbet Pushkin Square Block 49": {
+    "lat": 8.99646,
+    "lng": 38.73571
+  },
+  "Sarbet Pushkin Square Block 50": {
+    "lat": 8.99232,
+    "lng": 38.73895
+  },
+  "Sarbet Pushkin Square Block 51": {
+    "lat": 8.99490,
+    "lng": 38.73557
+  },
+  "Sarbet Pushkin Square Block 52": {
+    "lat": 8.99522,
+    "lng": 38.73885
+  },
+  "Sarbet Pushkin Square Block 53": {
+    "lat": 8.99747,
+    "lng": 38.74270
+  },
+  "Sarbet Pushkin Square Block 54": {
+    "lat": 8.99528,
+    "lng": 38.73597
+  },
+  "Sarbet Pushkin Square Block 55": {
+    "lat": 8.98796,
+    "lng": 38.74425
+  },
+  "Sarbet Pushkin Square Block 56": {
+    "lat": 8.99178,
+    "lng": 38.73689
+  },
+  "Sarbet Pushkin Square Block 57": {
+    "lat": 8.99386,
+    "lng": 38.74178
+  },
+  "Sarbet Pushkin Square Block 58": {
+    "lat": 8.99480,
+    "lng": 38.73760
+  },
+  "Sarbet Pushkin Square Block 59": {
+    "lat": 8.98935,
+    "lng": 38.74057
+  },
+  "Sarbet Pushkin Square Block 60": {
+    "lat": 8.99645,
+    "lng": 38.73917
+  },
+  "Sarbet Pushkin Square Block 61": {
+    "lat": 8.98837,
+    "lng": 38.74010
+  },
+  "Sarbet Pushkin Square Block 62": {
+    "lat": 8.98999,
+    "lng": 38.74182
+  },
+  "Sarbet Pushkin Square Block 63": {
+    "lat": 8.98880,
+    "lng": 38.74356
+  },
+  "Sarbet Pushkin Square Block 64": {
+    "lat": 8.98777,
+    "lng": 38.73838
+  },
+  "Sarbet Pushkin Square Block 65": {
+    "lat": 8.99423,
+    "lng": 38.73683
+  },
+  "Sarbet Pushkin Square Block 66": {
+    "lat": 8.99281,
+    "lng": 38.74254
+  },
+  "Sarbet Pushkin Square Block 67": {
+    "lat": 8.99228,
+    "lng": 38.73689
+  },
+  "Sarbet Pushkin Square Block 68": {
+    "lat": 8.99272,
+    "lng": 38.74453
+  },
+  "Sarbet Pushkin Square Block 69": {
+    "lat": 8.99560,
+    "lng": 38.73871
+  },
+  "Sarbet Pushkin Square Block 70": {
+    "lat": 8.99408,
+    "lng": 38.74350
+  },
+  "Sarbet Pushkin Square Block 71": {
+    "lat": 8.99022,
+    "lng": 38.73524
+  },
+  "Sarbet Pushkin Square Block 72": {
+    "lat": 8.99569,
+    "lng": 38.73500
+  },
+  "Sarbet Pushkin Square Block 73": {
+    "lat": 8.99168,
+    "lng": 38.73535
+  },
+  "Sarbet Pushkin Square Block 74": {
+    "lat": 8.99729,
+    "lng": 38.73892
+  },
+  "Sarbet Pushkin Square Block 75": {
+    "lat": 8.98785,
+    "lng": 38.74296
+  },
+  "Sarbet Pushkin Square Block 76": {
+    "lat": 8.99104,
+    "lng": 38.74020
+  },
+  "Sarbet Pushkin Square Block 77": {
+    "lat": 8.98832,
+    "lng": 38.74225
+  },
+  "Sarbet Pushkin Square Block 78": {
+    "lat": 8.99311,
+    "lng": 38.73897
+  },
+  "Sarbet Pushkin Square Block 79": {
+    "lat": 8.99584,
+    "lng": 38.74278
+  },
+  "Sarbet Pushkin Square Block 80": {
+    "lat": 8.99164,
+    "lng": 38.74406
+  },
+  "Sarbet Pushkin Square Block 81": {
+    "lat": 8.98913,
+    "lng": 38.73720
+  },
+  "Sarbet Pushkin Square Block 82": {
+    "lat": 8.98836,
+    "lng": 38.73635
+  },
+  "Sarbet Pushkin Square Block 83": {
+    "lat": 8.99616,
+    "lng": 38.74093
+  },
+  "Sarbet Pushkin Square Block 84": {
+    "lat": 8.99648,
+    "lng": 38.73843
+  },
+  "Sarbet Pushkin Square Block 85": {
+    "lat": 8.99658,
+    "lng": 38.73472
+  },
+  "Sarbet Pushkin Square Block 86": {
+    "lat": 8.99544,
+    "lng": 38.73652
+  },
+  "Sarbet Pushkin Square Block 87": {
+    "lat": 8.99444,
+    "lng": 38.74300
+  },
+  "Sarbet Pushkin Square Block 88": {
+    "lat": 8.98856,
+    "lng": 38.73799
+  },
+  "Sarbet Pushkin Square Block 89": {
+    "lat": 8.99544,
+    "lng": 38.73597
+  },
+  "Sarbet Pushkin Square Block 90": {
+    "lat": 8.99156,
+    "lng": 38.74192
+  },
+  "Sarbet Pushkin Square Block 91": {
+    "lat": 8.99739,
+    "lng": 38.74261
+  },
+  "Sarbet Pushkin Square Block 92": {
+    "lat": 8.99087,
+    "lng": 38.73485
+  },
+  "Sarbet Pushkin Square Block 93": {
+    "lat": 8.99510,
+    "lng": 38.73534
+  },
+  "Sarbet Pushkin Square Block 94": {
+    "lat": 8.99152,
+    "lng": 38.73600
+  },
+  "Sarbet Pushkin Square Block 95": {
+    "lat": 8.99736,
+    "lng": 38.73802
+  },
+  "Sarbet Pushkin Square Block 96": {
+    "lat": 8.99684,
+    "lng": 38.73588
+  },
+  "Sarbet Pushkin Square Block 97": {
+    "lat": 8.99283,
+    "lng": 38.73988
+  },
+  "Sarbet Pushkin Square Block 98": {
+    "lat": 8.99296,
+    "lng": 38.74458
+  },
+  "Sarbet Pushkin Square Block 99": {
+    "lat": 8.99348,
+    "lng": 38.74230
+  },
+  "Sarbet Pushkin Square Block 100": {
+    "lat": 8.99673,
+    "lng": 38.73565
+  },
+  "Sarbet Adams Pavilion Block 1": {
+    "lat": 8.99384,
+    "lng": 38.73962
+  },
+  "Sarbet Adams Pavilion Block 2": {
+    "lat": 8.99651,
+    "lng": 38.73724
+  },
+  "Sarbet Adams Pavilion Block 3": {
+    "lat": 8.98816,
+    "lng": 38.73977
+  },
+  "Sarbet Adams Pavilion Block 4": {
+    "lat": 8.99110,
+    "lng": 38.73510
+  },
+  "Sarbet Adams Pavilion Block 5": {
+    "lat": 8.99259,
+    "lng": 38.73579
+  },
+  "Sarbet Adams Pavilion Block 6": {
+    "lat": 8.98931,
+    "lng": 38.73807
+  },
+  "Sarbet Adams Pavilion Block 7": {
+    "lat": 8.99613,
+    "lng": 38.74080
+  },
+  "Sarbet Adams Pavilion Block 8": {
+    "lat": 8.99669,
+    "lng": 38.73641
+  },
+  "Sarbet Adams Pavilion Block 9": {
+    "lat": 8.99266,
+    "lng": 38.73940
+  },
+  "Sarbet Adams Pavilion Block 10": {
+    "lat": 8.99610,
+    "lng": 38.74054
+  },
+  "Sarbet Adams Pavilion Block 11": {
+    "lat": 8.99344,
+    "lng": 38.74068
+  },
+  "Sarbet Adams Pavilion Block 12": {
+    "lat": 8.99568,
+    "lng": 38.73729
+  },
+  "Sarbet Adams Pavilion Block 13": {
+    "lat": 8.99490,
+    "lng": 38.73679
+  },
+  "Sarbet Adams Pavilion Block 14": {
+    "lat": 8.99179,
+    "lng": 38.73600
+  },
+  "Sarbet Adams Pavilion Block 15": {
+    "lat": 8.99388,
+    "lng": 38.73721
+  },
+  "Sarbet Adams Pavilion Block 16": {
+    "lat": 8.99732,
+    "lng": 38.74315
+  },
+  "Sarbet Adams Pavilion Block 17": {
+    "lat": 8.99496,
+    "lng": 38.73667
+  },
+  "Sarbet Adams Pavilion Block 18": {
+    "lat": 8.98780,
+    "lng": 38.73912
+  },
+  "Sarbet Adams Pavilion Block 19": {
+    "lat": 8.99290,
+    "lng": 38.73736
+  },
+  "Sarbet Adams Pavilion Block 20": {
+    "lat": 8.99558,
+    "lng": 38.73636
+  },
+  "Sarbet Adams Pavilion Block 21": {
+    "lat": 8.99006,
+    "lng": 38.74058
+  },
+  "Sarbet Adams Pavilion Block 22": {
+    "lat": 8.98816,
+    "lng": 38.74396
+  },
+  "Sarbet Adams Pavilion Block 23": {
+    "lat": 8.98777,
+    "lng": 38.73672
+  },
+  "Sarbet Adams Pavilion Block 24": {
+    "lat": 8.99672,
+    "lng": 38.74127
+  },
+  "Sarbet Adams Pavilion Block 25": {
+    "lat": 8.99599,
+    "lng": 38.74437
+  },
+  "Sarbet Adams Pavilion Block 26": {
+    "lat": 8.99252,
+    "lng": 38.74299
+  },
+  "Sarbet Adams Pavilion Block 27": {
+    "lat": 8.99639,
+    "lng": 38.73731
+  },
+  "Sarbet Adams Pavilion Block 28": {
+    "lat": 8.99604,
+    "lng": 38.74185
+  },
+  "Sarbet Adams Pavilion Block 29": {
+    "lat": 8.98764,
+    "lng": 38.73681
+  },
+  "Sarbet Adams Pavilion Block 30": {
+    "lat": 8.99674,
+    "lng": 38.74095
+  },
+  "Sarbet Adams Pavilion Block 31": {
+    "lat": 8.99090,
+    "lng": 38.74429
+  },
+  "Sarbet Adams Pavilion Block 32": {
+    "lat": 8.98775,
+    "lng": 38.74134
+  },
+  "Sarbet Adams Pavilion Block 33": {
+    "lat": 8.98967,
+    "lng": 38.74123
+  },
+  "Sarbet Adams Pavilion Block 34": {
+    "lat": 8.99187,
+    "lng": 38.73989
+  },
+  "Sarbet Adams Pavilion Block 35": {
+    "lat": 8.99654,
+    "lng": 38.74150
+  },
+  "Sarbet Adams Pavilion Block 36": {
+    "lat": 8.98865,
+    "lng": 38.74116
+  },
+  "Sarbet Adams Pavilion Block 37": {
+    "lat": 8.99373,
+    "lng": 38.74091
+  },
+  "Sarbet Adams Pavilion Block 38": {
+    "lat": 8.98797,
+    "lng": 38.74411
+  },
+  "Sarbet Adams Pavilion Block 39": {
+    "lat": 8.99671,
+    "lng": 38.74201
+  },
+  "Sarbet Adams Pavilion Block 40": {
+    "lat": 8.99154,
+    "lng": 38.73795
+  },
+  "Sarbet Adams Pavilion Block 41": {
+    "lat": 8.99703,
+    "lng": 38.73999
+  },
+  "Sarbet Adams Pavilion Block 42": {
+    "lat": 8.99079,
+    "lng": 38.73510
+  },
+  "Sarbet Adams Pavilion Block 43": {
+    "lat": 8.99283,
+    "lng": 38.74099
+  },
+  "Sarbet Adams Pavilion Block 44": {
+    "lat": 8.98865,
+    "lng": 38.73526
+  },
+  "Sarbet Adams Pavilion Block 45": {
+    "lat": 8.99027,
+    "lng": 38.74202
+  },
+  "Sarbet Adams Pavilion Block 46": {
+    "lat": 8.99666,
+    "lng": 38.74447
+  },
+  "Sarbet Adams Pavilion Block 47": {
+    "lat": 8.99328,
+    "lng": 38.74117
+  },
+  "Sarbet Adams Pavilion Block 48": {
+    "lat": 8.99510,
+    "lng": 38.73653
+  },
+  "Sarbet Adams Pavilion Block 49": {
+    "lat": 8.99657,
+    "lng": 38.74013
+  },
+  "Sarbet Adams Pavilion Block 50": {
+    "lat": 8.99231,
+    "lng": 38.73760
+  },
+  "Sarbet Adams Pavilion Block 51": {
+    "lat": 8.99521,
+    "lng": 38.74137
+  },
+  "Sarbet Adams Pavilion Block 52": {
+    "lat": 8.99534,
+    "lng": 38.74197
+  },
+  "Sarbet Adams Pavilion Block 53": {
+    "lat": 8.99650,
+    "lng": 38.74240
+  },
+  "Sarbet Adams Pavilion Block 54": {
+    "lat": 8.99011,
+    "lng": 38.74073
+  },
+  "Sarbet Adams Pavilion Block 55": {
+    "lat": 8.99139,
+    "lng": 38.73893
+  },
+  "Sarbet Adams Pavilion Block 56": {
+    "lat": 8.99321,
+    "lng": 38.74196
+  },
+  "Sarbet Adams Pavilion Block 57": {
+    "lat": 8.99713,
+    "lng": 38.74222
+  },
+  "Sarbet Adams Pavilion Block 58": {
+    "lat": 8.99654,
+    "lng": 38.73984
+  },
+  "Sarbet Adams Pavilion Block 59": {
+    "lat": 8.99076,
+    "lng": 38.73732
+  },
+  "Sarbet Adams Pavilion Block 60": {
+    "lat": 8.99171,
+    "lng": 38.74277
+  },
+  "Sarbet Adams Pavilion Block 61": {
+    "lat": 8.99151,
+    "lng": 38.74199
+  },
+  "Sarbet Adams Pavilion Block 62": {
+    "lat": 8.98866,
+    "lng": 38.74221
+  },
+  "Sarbet Adams Pavilion Block 63": {
+    "lat": 8.99358,
+    "lng": 38.74081
+  },
+  "Sarbet Adams Pavilion Block 64": {
+    "lat": 8.98922,
+    "lng": 38.73842
+  },
+  "Sarbet Adams Pavilion Block 65": {
+    "lat": 8.99608,
+    "lng": 38.73716
+  },
+  "Sarbet Adams Pavilion Block 66": {
+    "lat": 8.99545,
+    "lng": 38.73811
+  },
+  "Sarbet Adams Pavilion Block 67": {
+    "lat": 8.99118,
+    "lng": 38.73983
+  },
+  "Sarbet Adams Pavilion Block 68": {
+    "lat": 8.99440,
+    "lng": 38.73888
+  },
+  "Sarbet Adams Pavilion Block 69": {
+    "lat": 8.99231,
+    "lng": 38.73921
+  },
+  "Sarbet Adams Pavilion Block 70": {
+    "lat": 8.99389,
+    "lng": 38.74250
+  },
+  "Sarbet Adams Pavilion Block 71": {
+    "lat": 8.99614,
+    "lng": 38.74410
+  },
+  "Sarbet Adams Pavilion Block 72": {
+    "lat": 8.99293,
+    "lng": 38.73780
+  },
+  "Sarbet Adams Pavilion Block 73": {
+    "lat": 8.99406,
+    "lng": 38.73573
+  },
+  "Sarbet Adams Pavilion Block 74": {
+    "lat": 8.99431,
+    "lng": 38.73999
+  },
+  "Sarbet Adams Pavilion Block 75": {
+    "lat": 8.98810,
+    "lng": 38.73687
+  },
+  "Sarbet Adams Pavilion Block 76": {
+    "lat": 8.99471,
+    "lng": 38.74223
+  },
+  "Sarbet Adams Pavilion Block 77": {
+    "lat": 8.99041,
+    "lng": 38.73526
+  },
+  "Sarbet Adams Pavilion Block 78": {
+    "lat": 8.99559,
+    "lng": 38.74099
+  },
+  "Sarbet Adams Pavilion Block 79": {
+    "lat": 8.99590,
+    "lng": 38.74453
+  },
+  "Sarbet Adams Pavilion Block 80": {
+    "lat": 8.98877,
+    "lng": 38.74388
+  },
+  "Sarbet Adams Pavilion Block 81": {
+    "lat": 8.98837,
+    "lng": 38.74040
+  },
+  "Sarbet Adams Pavilion Block 82": {
+    "lat": 8.99721,
+    "lng": 38.74186
+  },
+  "Sarbet Adams Pavilion Block 83": {
+    "lat": 8.99123,
+    "lng": 38.73598
+  },
+  "Sarbet Adams Pavilion Block 84": {
+    "lat": 8.99246,
+    "lng": 38.74449
+  },
+  "Sarbet Adams Pavilion Block 85": {
+    "lat": 8.99458,
+    "lng": 38.73532
+  },
+  "Sarbet Adams Pavilion Block 86": {
+    "lat": 8.98901,
+    "lng": 38.73531
+  },
+  "Sarbet Adams Pavilion Block 87": {
+    "lat": 8.99265,
+    "lng": 38.74190
+  },
+  "Sarbet Adams Pavilion Block 88": {
+    "lat": 8.98923,
+    "lng": 38.73786
+  },
+  "Sarbet Adams Pavilion Block 89": {
+    "lat": 8.99226,
+    "lng": 38.74272
+  },
+  "Sarbet Adams Pavilion Block 90": {
+    "lat": 8.99075,
+    "lng": 38.73834
+  },
+  "Sarbet Adams Pavilion Block 91": {
+    "lat": 8.99365,
+    "lng": 38.74096
+  },
+  "Sarbet Adams Pavilion Block 92": {
+    "lat": 8.99577,
+    "lng": 38.74360
+  },
+  "Sarbet Adams Pavilion Block 93": {
+    "lat": 8.99303,
+    "lng": 38.73636
+  },
+  "Sarbet Adams Pavilion Block 94": {
+    "lat": 8.98838,
+    "lng": 38.73916
+  },
+  "Sarbet Adams Pavilion Block 95": {
+    "lat": 8.99033,
+    "lng": 38.73960
+  },
+  "Sarbet Adams Pavilion Block 96": {
+    "lat": 8.99056,
+    "lng": 38.74351
+  },
+  "Sarbet Adams Pavilion Block 97": {
+    "lat": 8.99693,
+    "lng": 38.74467
+  },
+  "Sarbet Adams Pavilion Block 98": {
+    "lat": 8.99649,
+    "lng": 38.74420
+  },
+  "Sarbet Adams Pavilion Block 99": {
+    "lat": 8.99577,
+    "lng": 38.73494
+  },
+  "Sarbet Adams Pavilion Block 100": {
+    "lat": 8.98996,
+    "lng": 38.74044
+  },
+  "Sarbet Gabriel Church Block 1": {
+    "lat": 8.99201,
+    "lng": 38.74118
+  },
+  "Sarbet Gabriel Church Block 2": {
+    "lat": 8.99456,
+    "lng": 38.73705
+  },
+  "Sarbet Gabriel Church Block 3": {
+    "lat": 8.99412,
+    "lng": 38.73558
+  },
+  "Sarbet Gabriel Church Block 4": {
+    "lat": 8.99319,
+    "lng": 38.74273
+  },
+  "Sarbet Gabriel Church Block 5": {
+    "lat": 8.99256,
+    "lng": 38.73722
+  },
+  "Sarbet Gabriel Church Block 6": {
+    "lat": 8.98864,
+    "lng": 38.74454
+  },
+  "Sarbet Gabriel Church Block 7": {
+    "lat": 8.99244,
+    "lng": 38.74107
+  },
+  "Sarbet Gabriel Church Block 8": {
+    "lat": 8.99448,
+    "lng": 38.73483
+  },
+  "Sarbet Gabriel Church Block 9": {
+    "lat": 8.99003,
+    "lng": 38.73910
+  },
+  "Sarbet Gabriel Church Block 10": {
+    "lat": 8.99625,
+    "lng": 38.74336
+  },
+  "Sarbet Gabriel Church Block 11": {
+    "lat": 8.99121,
+    "lng": 38.74205
+  },
+  "Sarbet Gabriel Church Block 12": {
+    "lat": 8.99640,
+    "lng": 38.73886
+  },
+  "Sarbet Gabriel Church Block 13": {
+    "lat": 8.99431,
+    "lng": 38.74120
+  },
+  "Sarbet Gabriel Church Block 14": {
+    "lat": 8.99037,
+    "lng": 38.73479
+  },
+  "Sarbet Gabriel Church Block 15": {
+    "lat": 8.99661,
+    "lng": 38.73858
+  },
+  "Sarbet Gabriel Church Block 16": {
+    "lat": 8.99514,
+    "lng": 38.74238
+  },
+  "Sarbet Gabriel Church Block 17": {
+    "lat": 8.99420,
+    "lng": 38.74083
+  },
+  "Sarbet Gabriel Church Block 18": {
+    "lat": 8.99272,
+    "lng": 38.74038
+  },
+  "Sarbet Gabriel Church Block 19": {
+    "lat": 8.98827,
+    "lng": 38.74319
+  },
+  "Sarbet Gabriel Church Block 20": {
+    "lat": 8.98814,
+    "lng": 38.73898
+  },
+  "Sarbet Gabriel Church Block 21": {
+    "lat": 8.99742,
+    "lng": 38.74290
+  },
+  "Sarbet Gabriel Church Block 22": {
+    "lat": 8.99276,
+    "lng": 38.73612
+  },
+  "Sarbet Gabriel Church Block 23": {
+    "lat": 8.99399,
+    "lng": 38.73763
+  },
+  "Sarbet Gabriel Church Block 24": {
+    "lat": 8.99100,
+    "lng": 38.74368
+  },
+  "Sarbet Gabriel Church Block 25": {
+    "lat": 8.99230,
+    "lng": 38.73995
+  },
+  "Sarbet Gabriel Church Block 26": {
+    "lat": 8.99407,
+    "lng": 38.74463
+  },
+  "Sarbet Gabriel Church Block 27": {
+    "lat": 8.99012,
+    "lng": 38.74018
+  },
+  "Sarbet Gabriel Church Block 28": {
+    "lat": 8.99623,
+    "lng": 38.73625
+  },
+  "Sarbet Gabriel Church Block 29": {
+    "lat": 8.98935,
+    "lng": 38.74050
+  },
+  "Sarbet Gabriel Church Block 30": {
+    "lat": 8.99467,
+    "lng": 38.74100
+  },
+  "Sarbet Gabriel Church Block 31": {
+    "lat": 8.99545,
+    "lng": 38.74083
+  },
+  "Sarbet Gabriel Church Block 32": {
+    "lat": 8.99188,
+    "lng": 38.74231
+  },
+  "Sarbet Gabriel Church Block 33": {
+    "lat": 8.99725,
+    "lng": 38.74096
+  },
+  "Sarbet Gabriel Church Block 34": {
+    "lat": 8.99173,
+    "lng": 38.73720
+  },
+  "Sarbet Gabriel Church Block 35": {
+    "lat": 8.99496,
+    "lng": 38.74281
+  },
+  "Sarbet Gabriel Church Block 36": {
+    "lat": 8.99182,
+    "lng": 38.74083
+  },
+  "Sarbet Gabriel Church Block 37": {
+    "lat": 8.98861,
+    "lng": 38.73967
+  },
+  "Sarbet Gabriel Church Block 38": {
+    "lat": 8.99366,
+    "lng": 38.74034
+  },
+  "Sarbet Gabriel Church Block 39": {
+    "lat": 8.99745,
+    "lng": 38.73601
+  },
+  "Sarbet Gabriel Church Block 40": {
+    "lat": 8.99115,
+    "lng": 38.73505
+  },
+  "Sarbet Gabriel Church Block 41": {
+    "lat": 8.99022,
+    "lng": 38.73853
+  },
+  "Sarbet Gabriel Church Block 42": {
+    "lat": 8.99314,
+    "lng": 38.73994
+  },
+  "Sarbet Gabriel Church Block 43": {
+    "lat": 8.99132,
+    "lng": 38.73934
+  },
+  "Sarbet Gabriel Church Block 44": {
+    "lat": 8.99039,
+    "lng": 38.74322
+  },
+  "Sarbet Gabriel Church Block 45": {
+    "lat": 8.99284,
+    "lng": 38.74099
+  },
+  "Sarbet Gabriel Church Block 46": {
+    "lat": 8.99320,
+    "lng": 38.73714
+  },
+  "Sarbet Gabriel Church Block 47": {
+    "lat": 8.99370,
+    "lng": 38.73796
+  },
+  "Sarbet Gabriel Church Block 48": {
+    "lat": 8.99179,
+    "lng": 38.74082
+  },
+  "Sarbet Gabriel Church Block 49": {
+    "lat": 8.99661,
+    "lng": 38.73999
+  },
+  "Sarbet Gabriel Church Block 50": {
+    "lat": 8.99471,
+    "lng": 38.74226
+  },
+  "Sarbet Gabriel Church Block 51": {
+    "lat": 8.99279,
+    "lng": 38.73965
+  },
+  "Sarbet Gabriel Church Block 52": {
+    "lat": 8.99654,
+    "lng": 38.73727
+  },
+  "Sarbet Gabriel Church Block 53": {
+    "lat": 8.99293,
+    "lng": 38.73618
+  },
+  "Sarbet Gabriel Church Block 54": {
+    "lat": 8.99562,
+    "lng": 38.74097
+  },
+  "Sarbet Gabriel Church Block 55": {
+    "lat": 8.99629,
+    "lng": 38.73839
+  },
+  "Sarbet Gabriel Church Block 56": {
+    "lat": 8.99129,
+    "lng": 38.74437
+  },
+  "Sarbet Gabriel Church Block 57": {
+    "lat": 8.99089,
+    "lng": 38.74159
+  },
+  "Sarbet Gabriel Church Block 58": {
+    "lat": 8.98867,
+    "lng": 38.74110
+  },
+  "Sarbet Gabriel Church Block 59": {
+    "lat": 8.98777,
+    "lng": 38.73730
+  },
+  "Sarbet Gabriel Church Block 60": {
+    "lat": 8.99653,
+    "lng": 38.74004
+  },
+  "Sarbet Gabriel Church Block 61": {
+    "lat": 8.99473,
+    "lng": 38.73638
+  },
+  "Sarbet Gabriel Church Block 62": {
+    "lat": 8.99158,
+    "lng": 38.74162
+  },
+  "Sarbet Gabriel Church Block 63": {
+    "lat": 8.99261,
+    "lng": 38.73801
+  },
+  "Sarbet Gabriel Church Block 64": {
+    "lat": 8.99597,
+    "lng": 38.73856
+  },
+  "Sarbet Gabriel Church Block 65": {
+    "lat": 8.99086,
+    "lng": 38.73927
+  },
+  "Sarbet Gabriel Church Block 66": {
+    "lat": 8.99431,
+    "lng": 38.73541
+  },
+  "Sarbet Gabriel Church Block 67": {
+    "lat": 8.99081,
+    "lng": 38.73602
+  },
+  "Sarbet Gabriel Church Block 68": {
+    "lat": 8.99680,
+    "lng": 38.74180
+  },
+  "Sarbet Gabriel Church Block 69": {
+    "lat": 8.98851,
+    "lng": 38.73944
+  },
+  "Sarbet Gabriel Church Block 70": {
+    "lat": 8.99667,
+    "lng": 38.74096
+  },
+  "Sarbet Gabriel Church Block 71": {
+    "lat": 8.99690,
+    "lng": 38.73505
+  },
+  "Sarbet Gabriel Church Block 72": {
+    "lat": 8.99570,
+    "lng": 38.73588
+  },
+  "Sarbet Gabriel Church Block 73": {
+    "lat": 8.99465,
+    "lng": 38.74218
+  },
+  "Sarbet Gabriel Church Block 74": {
+    "lat": 8.99529,
+    "lng": 38.74426
+  },
+  "Sarbet Gabriel Church Block 75": {
+    "lat": 8.99609,
+    "lng": 38.74149
+  },
+  "Sarbet Gabriel Church Block 76": {
+    "lat": 8.98835,
+    "lng": 38.73682
+  },
+  "Sarbet Gabriel Church Block 77": {
+    "lat": 8.99349,
+    "lng": 38.74275
+  },
+  "Sarbet Gabriel Church Block 78": {
+    "lat": 8.99343,
+    "lng": 38.74237
+  },
+  "Sarbet Gabriel Church Block 79": {
+    "lat": 8.99358,
+    "lng": 38.73553
+  },
+  "Sarbet Gabriel Church Block 80": {
+    "lat": 8.98934,
+    "lng": 38.73711
+  },
+  "Sarbet Gabriel Church Block 81": {
+    "lat": 8.99440,
+    "lng": 38.73603
+  },
+  "Sarbet Gabriel Church Block 82": {
+    "lat": 8.99404,
+    "lng": 38.74457
+  },
+  "Sarbet Gabriel Church Block 83": {
+    "lat": 8.98929,
+    "lng": 38.74226
+  },
+  "Sarbet Gabriel Church Block 84": {
+    "lat": 8.99562,
+    "lng": 38.73601
+  },
+  "Sarbet Gabriel Church Block 85": {
+    "lat": 8.99647,
+    "lng": 38.73718
+  },
+  "Sarbet Gabriel Church Block 86": {
+    "lat": 8.99613,
+    "lng": 38.73577
+  },
+  "Sarbet Gabriel Church Block 87": {
+    "lat": 8.99240,
+    "lng": 38.73867
+  },
+  "Sarbet Gabriel Church Block 88": {
+    "lat": 8.99188,
+    "lng": 38.73765
+  },
+  "Sarbet Gabriel Church Block 89": {
+    "lat": 8.99237,
+    "lng": 38.73989
+  },
+  "Sarbet Gabriel Church Block 90": {
+    "lat": 8.99307,
+    "lng": 38.74036
+  },
+  "Sarbet Gabriel Church Block 91": {
+    "lat": 8.99146,
+    "lng": 38.74461
+  },
+  "Sarbet Gabriel Church Block 92": {
+    "lat": 8.99709,
+    "lng": 38.74048
+  },
+  "Sarbet Gabriel Church Block 93": {
+    "lat": 8.98806,
+    "lng": 38.73880
+  },
+  "Sarbet Gabriel Church Block 94": {
+    "lat": 8.99521,
+    "lng": 38.73557
+  },
+  "Sarbet Gabriel Church Block 95": {
+    "lat": 8.99392,
+    "lng": 38.74135
+  },
+  "Sarbet Gabriel Church Block 96": {
+    "lat": 8.99028,
+    "lng": 38.73805
+  },
+  "Sarbet Gabriel Church Block 97": {
+    "lat": 8.99392,
+    "lng": 38.73773
+  },
+  "Sarbet Gabriel Church Block 98": {
+    "lat": 8.99713,
+    "lng": 38.74313
+  },
+  "Sarbet Gabriel Church Block 99": {
+    "lat": 8.98925,
+    "lng": 38.73949
+  },
+  "Sarbet Gabriel Church Block 100": {
+    "lat": 8.98890,
+    "lng": 38.74295
+  },
+  "Sarbet Kera Block 1": {
+    "lat": 8.98807,
+    "lng": 38.73528
+  },
+  "Sarbet Kera Block 2": {
+    "lat": 8.98949,
+    "lng": 38.73637
+  },
+  "Sarbet Kera Block 3": {
+    "lat": 8.98969,
+    "lng": 38.74052
+  },
+  "Sarbet Kera Block 4": {
+    "lat": 8.99028,
+    "lng": 38.74057
+  },
+  "Sarbet Kera Block 5": {
+    "lat": 8.98875,
+    "lng": 38.74464
+  },
+  "Sarbet Kera Block 6": {
+    "lat": 8.99378,
+    "lng": 38.73726
+  },
+  "Sarbet Kera Block 7": {
+    "lat": 8.98839,
+    "lng": 38.74089
+  },
+  "Sarbet Kera Block 8": {
+    "lat": 8.99507,
+    "lng": 38.74030
+  },
+  "Sarbet Kera Block 9": {
+    "lat": 8.99123,
+    "lng": 38.74172
+  },
+  "Sarbet Kera Block 10": {
+    "lat": 8.99504,
+    "lng": 38.74150
+  },
+  "Sarbet Kera Block 11": {
+    "lat": 8.99118,
+    "lng": 38.74455
+  },
+  "Sarbet Kera Block 12": {
+    "lat": 8.99336,
+    "lng": 38.73952
+  },
+  "Sarbet Kera Block 13": {
+    "lat": 8.98983,
+    "lng": 38.74116
+  },
+  "Sarbet Kera Block 14": {
+    "lat": 8.99415,
+    "lng": 38.73802
+  },
+  "Sarbet Kera Block 15": {
+    "lat": 8.99637,
+    "lng": 38.73850
+  },
+  "Sarbet Kera Block 16": {
+    "lat": 8.99043,
+    "lng": 38.74383
+  },
+  "Sarbet Kera Block 17": {
+    "lat": 8.99700,
+    "lng": 38.73952
+  },
+  "Sarbet Kera Block 18": {
+    "lat": 8.98862,
+    "lng": 38.74336
+  },
+  "Sarbet Kera Block 19": {
+    "lat": 8.98909,
+    "lng": 38.73482
+  },
+  "Sarbet Kera Block 20": {
+    "lat": 8.99213,
+    "lng": 38.73835
+  },
+  "Sarbet Kera Block 21": {
+    "lat": 8.99142,
+    "lng": 38.73860
+  },
+  "Sarbet Kera Block 22": {
+    "lat": 8.98996,
+    "lng": 38.73723
+  },
+  "Sarbet Kera Block 23": {
+    "lat": 8.99138,
+    "lng": 38.74399
+  },
+  "Sarbet Kera Block 24": {
+    "lat": 8.98980,
+    "lng": 38.74191
+  },
+  "Sarbet Kera Block 25": {
+    "lat": 8.99649,
+    "lng": 38.73475
+  },
+  "Sarbet Kera Block 26": {
+    "lat": 8.99605,
+    "lng": 38.74233
+  },
+  "Sarbet Kera Block 27": {
+    "lat": 8.98951,
+    "lng": 38.74416
+  },
+  "Sarbet Kera Block 28": {
+    "lat": 8.99308,
+    "lng": 38.74096
+  },
+  "Sarbet Kera Block 29": {
+    "lat": 8.99341,
+    "lng": 38.74353
+  },
+  "Sarbet Kera Block 30": {
+    "lat": 8.98851,
+    "lng": 38.73747
+  },
+  "Sarbet Kera Block 31": {
+    "lat": 8.98866,
+    "lng": 38.73786
+  },
+  "Sarbet Kera Block 32": {
+    "lat": 8.98777,
+    "lng": 38.74458
+  },
+  "Sarbet Kera Block 33": {
+    "lat": 8.99284,
+    "lng": 38.73632
+  },
+  "Sarbet Kera Block 34": {
+    "lat": 8.99386,
+    "lng": 38.74461
+  },
+  "Sarbet Kera Block 35": {
+    "lat": 8.99715,
+    "lng": 38.73792
+  },
+  "Sarbet Kera Block 36": {
+    "lat": 8.99558,
+    "lng": 38.73924
+  },
+  "Sarbet Kera Block 37": {
+    "lat": 8.99546,
+    "lng": 38.73907
+  },
+  "Sarbet Kera Block 38": {
+    "lat": 8.99272,
+    "lng": 38.73733
+  },
+  "Sarbet Kera Block 39": {
+    "lat": 8.99140,
+    "lng": 38.73999
+  },
+  "Sarbet Kera Block 40": {
+    "lat": 8.99629,
+    "lng": 38.74362
+  },
+  "Sarbet Kera Block 41": {
+    "lat": 8.99187,
+    "lng": 38.73823
+  },
+  "Sarbet Kera Block 42": {
+    "lat": 8.99463,
+    "lng": 38.74382
+  },
+  "Sarbet Kera Block 43": {
+    "lat": 8.98847,
+    "lng": 38.74194
+  },
+  "Sarbet Kera Block 44": {
+    "lat": 8.99533,
+    "lng": 38.73690
+  },
+  "Sarbet Kera Block 45": {
+    "lat": 8.99690,
+    "lng": 38.74093
+  },
+  "Sarbet Kera Block 46": {
+    "lat": 8.99627,
+    "lng": 38.74401
+  },
+  "Sarbet Kera Block 47": {
+    "lat": 8.99282,
+    "lng": 38.73844
+  },
+  "Sarbet Kera Block 48": {
+    "lat": 8.99166,
+    "lng": 38.74048
+  },
+  "Sarbet Kera Block 49": {
+    "lat": 8.99405,
+    "lng": 38.73574
+  },
+  "Sarbet Kera Block 50": {
+    "lat": 8.99019,
+    "lng": 38.73778
+  },
+  "Sarbet Kera Block 51": {
+    "lat": 8.98807,
+    "lng": 38.73686
+  },
+  "Sarbet Kera Block 52": {
+    "lat": 8.98954,
+    "lng": 38.74131
+  },
+  "Sarbet Kera Block 53": {
+    "lat": 8.99747,
+    "lng": 38.74203
+  },
+  "Sarbet Kera Block 54": {
+    "lat": 8.99433,
+    "lng": 38.74205
+  },
+  "Sarbet Kera Block 55": {
+    "lat": 8.99328,
+    "lng": 38.73694
+  },
+  "Sarbet Kera Block 56": {
+    "lat": 8.99146,
+    "lng": 38.74177
+  },
+  "Sarbet Kera Block 57": {
+    "lat": 8.99485,
+    "lng": 38.74069
+  },
+  "Sarbet Kera Block 58": {
+    "lat": 8.99693,
+    "lng": 38.73811
+  },
+  "Sarbet Kera Block 59": {
+    "lat": 8.98859,
+    "lng": 38.74450
+  },
+  "Sarbet Kera Block 60": {
+    "lat": 8.99546,
+    "lng": 38.73774
+  },
+  "Sarbet Kera Block 61": {
+    "lat": 8.98855,
+    "lng": 38.74397
+  },
+  "Sarbet Kera Block 62": {
+    "lat": 8.99248,
+    "lng": 38.73806
+  },
+  "Sarbet Kera Block 63": {
+    "lat": 8.99367,
+    "lng": 38.74238
+  },
+  "Sarbet Kera Block 64": {
+    "lat": 8.99692,
+    "lng": 38.74380
+  },
+  "Sarbet Kera Block 65": {
+    "lat": 8.99480,
+    "lng": 38.73879
+  },
+  "Sarbet Kera Block 66": {
+    "lat": 8.99207,
+    "lng": 38.74132
+  },
+  "Sarbet Kera Block 67": {
+    "lat": 8.99383,
+    "lng": 38.73682
+  },
+  "Sarbet Kera Block 68": {
+    "lat": 8.99022,
+    "lng": 38.74102
+  },
+  "Sarbet Kera Block 69": {
+    "lat": 8.99740,
+    "lng": 38.74359
+  },
+  "Sarbet Kera Block 70": {
+    "lat": 8.99687,
+    "lng": 38.73580
+  },
+  "Sarbet Kera Block 71": {
+    "lat": 8.99175,
+    "lng": 38.73999
+  },
+  "Sarbet Kera Block 72": {
+    "lat": 8.99242,
+    "lng": 38.74018
+  },
+  "Sarbet Kera Block 73": {
+    "lat": 8.99315,
+    "lng": 38.74105
+  },
+  "Sarbet Kera Block 74": {
+    "lat": 8.99320,
+    "lng": 38.73641
+  },
+  "Sarbet Kera Block 75": {
+    "lat": 8.99551,
+    "lng": 38.74083
+  },
+  "Sarbet Kera Block 76": {
+    "lat": 8.99218,
+    "lng": 38.73696
+  },
+  "Sarbet Kera Block 77": {
+    "lat": 8.98861,
+    "lng": 38.74058
+  },
+  "Sarbet Kera Block 78": {
+    "lat": 8.98759,
+    "lng": 38.73695
+  },
+  "Sarbet Kera Block 79": {
+    "lat": 8.99638,
+    "lng": 38.73690
+  },
+  "Sarbet Kera Block 80": {
+    "lat": 8.98913,
+    "lng": 38.74056
+  },
+  "Sarbet Kera Block 81": {
+    "lat": 8.99558,
+    "lng": 38.74362
+  },
+  "Sarbet Kera Block 82": {
+    "lat": 8.99433,
+    "lng": 38.74171
+  },
+  "Sarbet Kera Block 83": {
+    "lat": 8.98960,
+    "lng": 38.73683
+  },
+  "Sarbet Kera Block 84": {
+    "lat": 8.98960,
+    "lng": 38.74133
+  },
+  "Sarbet Kera Block 85": {
+    "lat": 8.99666,
+    "lng": 38.73833
+  },
+  "Sarbet Kera Block 86": {
+    "lat": 8.99263,
+    "lng": 38.74047
+  },
+  "Sarbet Kera Block 87": {
+    "lat": 8.99690,
+    "lng": 38.73839
+  },
+  "Sarbet Kera Block 88": {
+    "lat": 8.98787,
+    "lng": 38.73892
+  },
+  "Sarbet Kera Block 89": {
+    "lat": 8.99086,
+    "lng": 38.73645
+  },
+  "Sarbet Kera Block 90": {
+    "lat": 8.99243,
+    "lng": 38.74128
+  },
+  "Sarbet Kera Block 91": {
+    "lat": 8.99196,
+    "lng": 38.73701
+  },
+  "Sarbet Kera Block 92": {
+    "lat": 8.99423,
+    "lng": 38.74339
+  },
+  "Sarbet Kera Block 93": {
+    "lat": 8.99561,
+    "lng": 38.74265
+  },
+  "Sarbet Kera Block 94": {
+    "lat": 8.99533,
+    "lng": 38.73807
+  },
+  "Sarbet Kera Block 95": {
+    "lat": 8.99721,
+    "lng": 38.74441
+  },
+  "Sarbet Kera Block 96": {
+    "lat": 8.99015,
+    "lng": 38.74172
+  },
+  "Sarbet Kera Block 97": {
+    "lat": 8.99680,
+    "lng": 38.73485
+  },
+  "Sarbet Kera Block 98": {
+    "lat": 8.99044,
+    "lng": 38.73600
+  },
+  "Sarbet Kera Block 99": {
+    "lat": 8.99565,
+    "lng": 38.73758
+  },
+  "Sarbet Kera Block 100": {
+    "lat": 8.99008,
+    "lng": 38.73598
+  },
+  "Jemo Michael Block 1": {
+    "lat": 8.96249,
+    "lng": 38.72671
+  },
+  "Jemo Michael Block 2": {
+    "lat": 8.96917,
+    "lng": 38.72392
+  },
+  "Jemo Michael Block 3": {
+    "lat": 8.96299,
+    "lng": 38.72237
+  },
+  "Jemo Michael Block 4": {
+    "lat": 8.96864,
+    "lng": 38.72654
+  },
+  "Jemo Michael Block 5": {
+    "lat": 8.96643,
+    "lng": 38.72608
+  },
+  "Jemo Michael Block 6": {
+    "lat": 8.96454,
+    "lng": 38.72311
+  },
+  "Jemo Michael Block 7": {
+    "lat": 8.96763,
+    "lng": 38.72137
+  },
+  "Jemo Michael Block 8": {
+    "lat": 8.96380,
+    "lng": 38.71961
+  },
+  "Jemo Michael Block 9": {
+    "lat": 8.96603,
+    "lng": 38.72810
+  },
+  "Jemo Michael Block 10": {
+    "lat": 8.96324,
+    "lng": 38.71934
+  },
+  "Jemo Michael Block 11": {
+    "lat": 8.96407,
+    "lng": 38.71998
+  },
+  "Jemo Michael Block 12": {
+    "lat": 8.96276,
+    "lng": 38.72496
+  },
+  "Jemo Michael Block 13": {
+    "lat": 8.96853,
+    "lng": 38.72441
+  },
+  "Jemo Michael Block 14": {
+    "lat": 8.96906,
+    "lng": 38.72490
+  },
+  "Jemo Michael Block 15": {
+    "lat": 8.96502,
+    "lng": 38.72764
+  },
+  "Jemo Michael Block 16": {
+    "lat": 8.96889,
+    "lng": 38.72676
+  },
+  "Jemo Michael Block 17": {
+    "lat": 8.96580,
+    "lng": 38.71928
+  },
+  "Jemo Michael Block 18": {
+    "lat": 8.96891,
+    "lng": 38.72805
+  },
+  "Jemo Michael Block 19": {
+    "lat": 8.96626,
+    "lng": 38.72373
+  },
+  "Jemo Michael Block 20": {
+    "lat": 8.96154,
+    "lng": 38.72005
+  },
+  "Jemo Michael Block 21": {
+    "lat": 8.96744,
+    "lng": 38.72517
+  },
+  "Jemo Michael Block 22": {
+    "lat": 8.96083,
+    "lng": 38.72784
+  },
+  "Jemo Michael Block 23": {
+    "lat": 8.96455,
+    "lng": 38.72323
+  },
+  "Jemo Michael Block 24": {
+    "lat": 8.96938,
+    "lng": 38.72690
+  },
+  "Jemo Michael Block 25": {
+    "lat": 8.95956,
+    "lng": 38.72612
+  },
+  "Jemo Michael Block 26": {
+    "lat": 8.96796,
+    "lng": 38.72156
+  },
+  "Jemo Michael Block 27": {
+    "lat": 8.96877,
+    "lng": 38.71997
+  },
+  "Jemo Michael Block 28": {
+    "lat": 8.96032,
+    "lng": 38.72013
+  },
+  "Jemo Michael Block 29": {
+    "lat": 8.96056,
+    "lng": 38.72305
+  },
+  "Jemo Michael Block 30": {
+    "lat": 8.96354,
+    "lng": 38.72764
+  },
+  "Jemo Michael Block 31": {
+    "lat": 8.96090,
+    "lng": 38.71860
+  },
+  "Jemo Michael Block 32": {
+    "lat": 8.96387,
+    "lng": 38.72789
+  },
+  "Jemo Michael Block 33": {
+    "lat": 8.96850,
+    "lng": 38.72791
+  },
+  "Jemo Michael Block 34": {
+    "lat": 8.96877,
+    "lng": 38.72381
+  },
+  "Jemo Michael Block 35": {
+    "lat": 8.96940,
+    "lng": 38.71867
+  },
+  "Jemo Michael Block 36": {
+    "lat": 8.96377,
+    "lng": 38.72496
+  },
+  "Jemo Michael Block 37": {
+    "lat": 8.96730,
+    "lng": 38.72270
+  },
+  "Jemo Michael Block 38": {
+    "lat": 8.96616,
+    "lng": 38.71995
+  },
+  "Jemo Michael Block 39": {
+    "lat": 8.96787,
+    "lng": 38.72146
+  },
+  "Jemo Michael Block 40": {
+    "lat": 8.96077,
+    "lng": 38.72534
+  },
+  "Jemo Michael Block 41": {
+    "lat": 8.96526,
+    "lng": 38.72650
+  },
+  "Jemo Michael Block 42": {
+    "lat": 8.96191,
+    "lng": 38.72791
+  },
+  "Jemo Michael Block 43": {
+    "lat": 8.96638,
+    "lng": 38.72781
+  },
+  "Jemo Michael Block 44": {
+    "lat": 8.96252,
+    "lng": 38.71918
+  },
+  "Jemo Michael Block 45": {
+    "lat": 8.96854,
+    "lng": 38.72784
+  },
+  "Jemo Michael Block 46": {
+    "lat": 8.96939,
+    "lng": 38.72414
+  },
+  "Jemo Michael Block 47": {
+    "lat": 8.96029,
+    "lng": 38.72206
+  },
+  "Jemo Michael Block 48": {
+    "lat": 8.96536,
+    "lng": 38.72018
+  },
+  "Jemo Michael Block 49": {
+    "lat": 8.95989,
+    "lng": 38.72645
+  },
+  "Jemo Michael Block 50": {
+    "lat": 8.96907,
+    "lng": 38.72161
+  },
+  "Jemo Michael Block 51": {
+    "lat": 8.96136,
+    "lng": 38.72574
+  },
+  "Jemo Michael Block 52": {
+    "lat": 8.96442,
+    "lng": 38.72498
+  },
+  "Jemo Michael Block 53": {
+    "lat": 8.96752,
+    "lng": 38.72425
+  },
+  "Jemo Michael Block 54": {
+    "lat": 8.96065,
+    "lng": 38.72031
+  },
+  "Jemo Michael Block 55": {
+    "lat": 8.96252,
+    "lng": 38.72210
+  },
+  "Jemo Michael Block 56": {
+    "lat": 8.96441,
+    "lng": 38.71929
+  },
+  "Jemo Michael Block 57": {
+    "lat": 8.96180,
+    "lng": 38.72267
+  },
+  "Jemo Michael Block 58": {
+    "lat": 8.96112,
+    "lng": 38.72232
+  },
+  "Jemo Michael Block 59": {
+    "lat": 8.96346,
+    "lng": 38.72470
+  },
+  "Jemo Michael Block 60": {
+    "lat": 8.95951,
+    "lng": 38.72619
+  },
+  "Jemo Michael Block 61": {
+    "lat": 8.96794,
+    "lng": 38.72652
+  },
+  "Jemo Michael Block 62": {
+    "lat": 8.96508,
+    "lng": 38.71978
+  },
+  "Jemo Michael Block 63": {
+    "lat": 8.95963,
+    "lng": 38.71867
+  },
+  "Jemo Michael Block 64": {
+    "lat": 8.96607,
+    "lng": 38.72524
+  },
+  "Jemo Michael Block 65": {
+    "lat": 8.95964,
+    "lng": 38.72783
+  },
+  "Jemo Michael Block 66": {
+    "lat": 8.96006,
+    "lng": 38.72073
+  },
+  "Jemo Michael Block 67": {
+    "lat": 8.96341,
+    "lng": 38.72366
+  },
+  "Jemo Michael Block 68": {
+    "lat": 8.96361,
+    "lng": 38.72307
+  },
+  "Jemo Michael Block 69": {
+    "lat": 8.96827,
+    "lng": 38.71887
+  },
+  "Jemo Michael Block 70": {
+    "lat": 8.96353,
+    "lng": 38.71916
+  },
+  "Jemo Michael Block 71": {
+    "lat": 8.95986,
+    "lng": 38.72762
+  },
+  "Jemo Michael Block 72": {
+    "lat": 8.95950,
+    "lng": 38.72494
+  },
+  "Jemo Michael Block 73": {
+    "lat": 8.96003,
+    "lng": 38.72014
+  },
+  "Jemo Michael Block 74": {
+    "lat": 8.96206,
+    "lng": 38.72806
+  },
+  "Jemo Michael Block 75": {
+    "lat": 8.96703,
+    "lng": 38.72206
+  },
+  "Jemo Michael Block 76": {
+    "lat": 8.96467,
+    "lng": 38.72345
+  },
+  "Jemo Michael Block 77": {
+    "lat": 8.96166,
+    "lng": 38.72013
+  },
+  "Jemo Michael Block 78": {
+    "lat": 8.96526,
+    "lng": 38.72202
+  },
+  "Jemo Michael Block 79": {
+    "lat": 8.96194,
+    "lng": 38.71956
+  },
+  "Jemo Michael Block 80": {
+    "lat": 8.96871,
+    "lng": 38.71879
+  },
+  "Jemo Michael Block 81": {
+    "lat": 8.96666,
+    "lng": 38.72553
+  },
+  "Jemo Michael Block 82": {
+    "lat": 8.96126,
+    "lng": 38.72761
+  },
+  "Jemo Michael Block 83": {
+    "lat": 8.96351,
+    "lng": 38.71879
+  },
+  "Jemo Michael Block 84": {
+    "lat": 8.96384,
+    "lng": 38.72418
+  },
+  "Jemo Michael Block 85": {
+    "lat": 8.96304,
+    "lng": 38.72716
+  },
+  "Jemo Michael Block 86": {
+    "lat": 8.96738,
+    "lng": 38.72648
+  },
+  "Jemo Michael Block 87": {
+    "lat": 8.96898,
+    "lng": 38.72120
+  },
+  "Jemo Michael Block 88": {
+    "lat": 8.96760,
+    "lng": 38.72245
+  },
+  "Jemo Michael Block 89": {
+    "lat": 8.96854,
+    "lng": 38.72078
+  },
+  "Jemo Michael Block 90": {
+    "lat": 8.96208,
+    "lng": 38.72748
+  },
+  "Jemo Michael Block 91": {
+    "lat": 8.96018,
+    "lng": 38.72388
+  },
+  "Jemo Michael Block 92": {
+    "lat": 8.96120,
+    "lng": 38.72780
+  },
+  "Jemo Michael Block 93": {
+    "lat": 8.96817,
+    "lng": 38.71991
+  },
+  "Jemo Michael Block 94": {
+    "lat": 8.96716,
+    "lng": 38.71962
+  },
+  "Jemo Michael Block 95": {
+    "lat": 8.95989,
+    "lng": 38.72544
+  },
+  "Jemo Michael Block 96": {
+    "lat": 8.96165,
+    "lng": 38.72533
+  },
+  "Jemo Michael Block 97": {
+    "lat": 8.96439,
+    "lng": 38.72279
+  },
+  "Jemo Michael Block 98": {
+    "lat": 8.96430,
+    "lng": 38.72474
+  },
+  "Jemo Michael Block 99": {
+    "lat": 8.96755,
+    "lng": 38.72501
+  },
+  "Jemo Michael Block 100": {
+    "lat": 8.96021,
+    "lng": 38.72239
+  },
+  "Jemo Medhanialem Block 1": {
+    "lat": 8.96424,
+    "lng": 38.72677
+  },
+  "Jemo Medhanialem Block 2": {
+    "lat": 8.96406,
+    "lng": 38.72806
+  },
+  "Jemo Medhanialem Block 3": {
+    "lat": 8.96754,
+    "lng": 38.72315
+  },
+  "Jemo Medhanialem Block 4": {
+    "lat": 8.96825,
+    "lng": 38.72787
+  },
+  "Jemo Medhanialem Block 5": {
+    "lat": 8.96299,
+    "lng": 38.71935
+  },
+  "Jemo Medhanialem Block 6": {
+    "lat": 8.96549,
+    "lng": 38.72280
+  },
+  "Jemo Medhanialem Block 7": {
+    "lat": 8.96502,
+    "lng": 38.72104
+  },
+  "Jemo Medhanialem Block 8": {
+    "lat": 8.96741,
+    "lng": 38.72537
+  },
+  "Jemo Medhanialem Block 9": {
+    "lat": 8.96937,
+    "lng": 38.72200
+  },
+  "Jemo Medhanialem Block 10": {
+    "lat": 8.96350,
+    "lng": 38.72074
+  },
+  "Jemo Medhanialem Block 11": {
+    "lat": 8.96266,
+    "lng": 38.72240
+  },
+  "Jemo Medhanialem Block 12": {
+    "lat": 8.95960,
+    "lng": 38.72008
+  },
+  "Jemo Medhanialem Block 13": {
+    "lat": 8.96101,
+    "lng": 38.72639
+  },
+  "Jemo Medhanialem Block 14": {
+    "lat": 8.96357,
+    "lng": 38.72301
+  },
+  "Jemo Medhanialem Block 15": {
+    "lat": 8.96873,
+    "lng": 38.72719
+  },
+  "Jemo Medhanialem Block 16": {
+    "lat": 8.96615,
+    "lng": 38.72495
+  },
+  "Jemo Medhanialem Block 17": {
+    "lat": 8.96431,
+    "lng": 38.72711
+  },
+  "Jemo Medhanialem Block 18": {
+    "lat": 8.96721,
+    "lng": 38.72090
+  },
+  "Jemo Medhanialem Block 19": {
+    "lat": 8.96694,
+    "lng": 38.72289
+  },
+  "Jemo Medhanialem Block 20": {
+    "lat": 8.96933,
+    "lng": 38.72049
+  },
+  "Jemo Medhanialem Block 21": {
+    "lat": 8.96484,
+    "lng": 38.72263
+  },
+  "Jemo Medhanialem Block 22": {
+    "lat": 8.96574,
+    "lng": 38.72447
+  },
+  "Jemo Medhanialem Block 23": {
+    "lat": 8.96369,
+    "lng": 38.72153
+  },
+  "Jemo Medhanialem Block 24": {
+    "lat": 8.96171,
+    "lng": 38.72166
+  },
+  "Jemo Medhanialem Block 25": {
+    "lat": 8.96128,
+    "lng": 38.72013
+  },
+  "Jemo Medhanialem Block 26": {
+    "lat": 8.96770,
+    "lng": 38.72755
+  },
+  "Jemo Medhanialem Block 27": {
+    "lat": 8.96057,
+    "lng": 38.72611
+  },
+  "Jemo Medhanialem Block 28": {
+    "lat": 8.96672,
+    "lng": 38.72514
+  },
+  "Jemo Medhanialem Block 29": {
+    "lat": 8.96475,
+    "lng": 38.71938
+  },
+  "Jemo Medhanialem Block 30": {
+    "lat": 8.96604,
+    "lng": 38.72783
+  },
+  "Jemo Medhanialem Block 31": {
+    "lat": 8.96238,
+    "lng": 38.72207
+  },
+  "Jemo Medhanialem Block 32": {
+    "lat": 8.96248,
+    "lng": 38.72240
+  },
+  "Jemo Medhanialem Block 33": {
+    "lat": 8.96562,
+    "lng": 38.72698
+  },
+  "Jemo Medhanialem Block 34": {
+    "lat": 8.96107,
+    "lng": 38.72088
+  },
+  "Jemo Medhanialem Block 35": {
+    "lat": 8.96795,
+    "lng": 38.72573
+  },
+  "Jemo Medhanialem Block 36": {
+    "lat": 8.96643,
+    "lng": 38.72600
+  },
+  "Jemo Medhanialem Block 37": {
+    "lat": 8.96707,
+    "lng": 38.72749
+  },
+  "Jemo Medhanialem Block 38": {
+    "lat": 8.96846,
+    "lng": 38.72253
+  },
+  "Jemo Medhanialem Block 39": {
+    "lat": 8.96131,
+    "lng": 38.72708
+  },
+  "Jemo Medhanialem Block 40": {
+    "lat": 8.96620,
+    "lng": 38.72246
+  },
+  "Jemo Medhanialem Block 41": {
+    "lat": 8.96541,
+    "lng": 38.72480
+  },
+  "Jemo Medhanialem Block 42": {
+    "lat": 8.96001,
+    "lng": 38.72825
+  },
+  "Jemo Medhanialem Block 43": {
+    "lat": 8.95997,
+    "lng": 38.72719
+  },
+  "Jemo Medhanialem Block 44": {
+    "lat": 8.96373,
+    "lng": 38.72106
+  },
+  "Jemo Medhanialem Block 45": {
+    "lat": 8.96134,
+    "lng": 38.72247
+  },
+  "Jemo Medhanialem Block 46": {
+    "lat": 8.96747,
+    "lng": 38.71839
+  },
+  "Jemo Medhanialem Block 47": {
+    "lat": 8.96781,
+    "lng": 38.72592
+  },
+  "Jemo Medhanialem Block 48": {
+    "lat": 8.96351,
+    "lng": 38.72488
+  },
+  "Jemo Medhanialem Block 49": {
+    "lat": 8.95965,
+    "lng": 38.71833
+  },
+  "Jemo Medhanialem Block 50": {
+    "lat": 8.96773,
+    "lng": 38.72132
+  },
+  "Jemo Medhanialem Block 51": {
+    "lat": 8.96537,
+    "lng": 38.72806
+  },
+  "Jemo Medhanialem Block 52": {
+    "lat": 8.96740,
+    "lng": 38.72272
+  },
+  "Jemo Medhanialem Block 53": {
+    "lat": 8.96282,
+    "lng": 38.72054
+  },
+  "Jemo Medhanialem Block 54": {
+    "lat": 8.96378,
+    "lng": 38.72660
+  },
+  "Jemo Medhanialem Block 55": {
+    "lat": 8.96337,
+    "lng": 38.71962
+  },
+  "Jemo Medhanialem Block 56": {
+    "lat": 8.96325,
+    "lng": 38.72709
+  },
+  "Jemo Medhanialem Block 57": {
+    "lat": 8.96251,
+    "lng": 38.72423
+  },
+  "Jemo Medhanialem Block 58": {
+    "lat": 8.96532,
+    "lng": 38.71915
+  },
+  "Jemo Medhanialem Block 59": {
+    "lat": 8.96685,
+    "lng": 38.72762
+  },
+  "Jemo Medhanialem Block 60": {
+    "lat": 8.96155,
+    "lng": 38.72240
+  },
+  "Jemo Medhanialem Block 61": {
+    "lat": 8.96644,
+    "lng": 38.72681
+  },
+  "Jemo Medhanialem Block 62": {
+    "lat": 8.96488,
+    "lng": 38.72725
+  },
+  "Jemo Medhanialem Block 63": {
+    "lat": 8.96918,
+    "lng": 38.72760
+  },
+  "Jemo Medhanialem Block 64": {
+    "lat": 8.96303,
+    "lng": 38.72132
+  },
+  "Jemo Medhanialem Block 65": {
+    "lat": 8.96030,
+    "lng": 38.72015
+  },
+  "Jemo Medhanialem Block 66": {
+    "lat": 8.96695,
+    "lng": 38.72297
+  },
+  "Jemo Medhanialem Block 67": {
+    "lat": 8.96418,
+    "lng": 38.71937
+  },
+  "Jemo Medhanialem Block 68": {
+    "lat": 8.96694,
+    "lng": 38.72511
+  },
+  "Jemo Medhanialem Block 69": {
+    "lat": 8.96040,
+    "lng": 38.72615
+  },
+  "Jemo Medhanialem Block 70": {
+    "lat": 8.96386,
+    "lng": 38.72301
+  },
+  "Jemo Medhanialem Block 71": {
+    "lat": 8.96257,
+    "lng": 38.72473
+  },
+  "Jemo Medhanialem Block 72": {
+    "lat": 8.96330,
+    "lng": 38.72441
+  },
+  "Jemo Medhanialem Block 73": {
+    "lat": 8.96028,
+    "lng": 38.72276
+  },
+  "Jemo Medhanialem Block 74": {
+    "lat": 8.96213,
+    "lng": 38.72527
+  },
+  "Jemo Medhanialem Block 75": {
+    "lat": 8.96110,
+    "lng": 38.72553
+  },
+  "Jemo Medhanialem Block 76": {
+    "lat": 8.96631,
+    "lng": 38.72465
+  },
+  "Jemo Medhanialem Block 77": {
+    "lat": 8.96021,
+    "lng": 38.72216
+  },
+  "Jemo Medhanialem Block 78": {
+    "lat": 8.96531,
+    "lng": 38.72724
+  },
+  "Jemo Medhanialem Block 79": {
+    "lat": 8.96335,
+    "lng": 38.72412
+  },
+  "Jemo Medhanialem Block 80": {
+    "lat": 8.96056,
+    "lng": 38.72010
+  },
+  "Jemo Medhanialem Block 81": {
+    "lat": 8.96523,
+    "lng": 38.72625
+  },
+  "Jemo Medhanialem Block 82": {
+    "lat": 8.96475,
+    "lng": 38.72080
+  },
+  "Jemo Medhanialem Block 83": {
+    "lat": 8.96429,
+    "lng": 38.72189
+  },
+  "Jemo Medhanialem Block 84": {
+    "lat": 8.96780,
+    "lng": 38.72508
+  },
+  "Jemo Medhanialem Block 85": {
+    "lat": 8.96637,
+    "lng": 38.72041
+  },
+  "Jemo Medhanialem Block 86": {
+    "lat": 8.96197,
+    "lng": 38.72068
+  },
+  "Jemo Medhanialem Block 87": {
+    "lat": 8.95979,
+    "lng": 38.71834
+  },
+  "Jemo Medhanialem Block 88": {
+    "lat": 8.96201,
+    "lng": 38.72351
+  },
+  "Jemo Medhanialem Block 89": {
+    "lat": 8.95951,
+    "lng": 38.72374
+  },
+  "Jemo Medhanialem Block 90": {
+    "lat": 8.96019,
+    "lng": 38.72699
+  },
+  "Jemo Medhanialem Block 91": {
+    "lat": 8.96725,
+    "lng": 38.72788
+  },
+  "Jemo Medhanialem Block 92": {
+    "lat": 8.96606,
+    "lng": 38.71908
+  },
+  "Jemo Medhanialem Block 93": {
+    "lat": 8.96195,
+    "lng": 38.72063
+  },
+  "Jemo Medhanialem Block 94": {
+    "lat": 8.96645,
+    "lng": 38.72483
+  },
+  "Jemo Medhanialem Block 95": {
+    "lat": 8.95997,
+    "lng": 38.71951
+  },
+  "Jemo Medhanialem Block 96": {
+    "lat": 8.96817,
+    "lng": 38.72012
+  },
+  "Jemo Medhanialem Block 97": {
+    "lat": 8.96842,
+    "lng": 38.72478
+  },
+  "Jemo Medhanialem Block 98": {
+    "lat": 8.96253,
+    "lng": 38.72013
+  },
+  "Jemo Medhanialem Block 99": {
+    "lat": 8.96395,
+    "lng": 38.71921
+  },
+  "Jemo Medhanialem Block 100": {
+    "lat": 8.96270,
+    "lng": 38.72759
+  },
+  "Jemo Taxi Tera Block 1": {
+    "lat": 8.96848,
+    "lng": 38.72299
+  },
+  "Jemo Taxi Tera Block 2": {
+    "lat": 8.96459,
+    "lng": 38.72580
+  },
+  "Jemo Taxi Tera Block 3": {
+    "lat": 8.96401,
+    "lng": 38.72267
+  },
+  "Jemo Taxi Tera Block 4": {
+    "lat": 8.96751,
+    "lng": 38.72508
+  },
+  "Jemo Taxi Tera Block 5": {
+    "lat": 8.96471,
+    "lng": 38.72067
+  },
+  "Jemo Taxi Tera Block 6": {
+    "lat": 8.96245,
+    "lng": 38.72018
+  },
+  "Jemo Taxi Tera Block 7": {
+    "lat": 8.96735,
+    "lng": 38.72229
+  },
+  "Jemo Taxi Tera Block 8": {
+    "lat": 8.96191,
+    "lng": 38.72334
+  },
+  "Jemo Taxi Tera Block 9": {
+    "lat": 8.96799,
+    "lng": 38.72409
+  },
+  "Jemo Taxi Tera Block 10": {
+    "lat": 8.96395,
+    "lng": 38.72668
+  },
+  "Jemo Taxi Tera Block 11": {
+    "lat": 8.96272,
+    "lng": 38.72110
+  },
+  "Jemo Taxi Tera Block 12": {
+    "lat": 8.96265,
+    "lng": 38.72144
+  },
+  "Jemo Taxi Tera Block 13": {
+    "lat": 8.96326,
+    "lng": 38.72510
+  },
+  "Jemo Taxi Tera Block 14": {
+    "lat": 8.96113,
+    "lng": 38.72802
+  },
+  "Jemo Taxi Tera Block 15": {
+    "lat": 8.96076,
+    "lng": 38.72373
+  },
+  "Jemo Taxi Tera Block 16": {
+    "lat": 8.96854,
+    "lng": 38.72436
+  },
+  "Jemo Taxi Tera Block 17": {
+    "lat": 8.96501,
+    "lng": 38.72715
+  },
+  "Jemo Taxi Tera Block 18": {
+    "lat": 8.96822,
+    "lng": 38.72257
+  },
+  "Jemo Taxi Tera Block 19": {
+    "lat": 8.96170,
+    "lng": 38.72322
+  },
+  "Jemo Taxi Tera Block 20": {
+    "lat": 8.96437,
+    "lng": 38.72108
+  },
+  "Jemo Taxi Tera Block 21": {
+    "lat": 8.96517,
+    "lng": 38.72645
+  },
+  "Jemo Taxi Tera Block 22": {
+    "lat": 8.96433,
+    "lng": 38.72466
+  },
+  "Jemo Taxi Tera Block 23": {
+    "lat": 8.96145,
+    "lng": 38.72541
+  },
+  "Jemo Taxi Tera Block 24": {
+    "lat": 8.96467,
+    "lng": 38.72175
+  },
+  "Jemo Taxi Tera Block 25": {
+    "lat": 8.96208,
+    "lng": 38.71870
+  },
+  "Jemo Taxi Tera Block 26": {
+    "lat": 8.96558,
+    "lng": 38.72623
+  },
+  "Jemo Taxi Tera Block 27": {
+    "lat": 8.96049,
+    "lng": 38.72421
+  },
+  "Jemo Taxi Tera Block 28": {
+    "lat": 8.96903,
+    "lng": 38.71887
+  },
+  "Jemo Taxi Tera Block 29": {
+    "lat": 8.96228,
+    "lng": 38.71938
+  },
+  "Jemo Taxi Tera Block 30": {
+    "lat": 8.96842,
+    "lng": 38.71887
+  },
+  "Jemo Taxi Tera Block 31": {
+    "lat": 8.96128,
+    "lng": 38.72205
+  },
+  "Jemo Taxi Tera Block 32": {
+    "lat": 8.96516,
+    "lng": 38.72608
+  },
+  "Jemo Taxi Tera Block 33": {
+    "lat": 8.95959,
+    "lng": 38.71955
+  },
+  "Jemo Taxi Tera Block 34": {
+    "lat": 8.96801,
+    "lng": 38.72692
+  },
+  "Jemo Taxi Tera Block 35": {
+    "lat": 8.96180,
+    "lng": 38.72592
+  },
+  "Jemo Taxi Tera Block 36": {
+    "lat": 8.96146,
+    "lng": 38.71897
+  },
+  "Jemo Taxi Tera Block 37": {
+    "lat": 8.96764,
+    "lng": 38.72089
+  },
+  "Jemo Taxi Tera Block 38": {
+    "lat": 8.96082,
+    "lng": 38.72521
+  },
+  "Jemo Taxi Tera Block 39": {
+    "lat": 8.96692,
+    "lng": 38.72107
+  },
+  "Jemo Taxi Tera Block 40": {
+    "lat": 8.95990,
+    "lng": 38.72203
+  },
+  "Jemo Taxi Tera Block 41": {
+    "lat": 8.96930,
+    "lng": 38.71855
+  },
+  "Jemo Taxi Tera Block 42": {
+    "lat": 8.96310,
+    "lng": 38.72281
+  },
+  "Jemo Taxi Tera Block 43": {
+    "lat": 8.96588,
+    "lng": 38.72158
+  },
+  "Jemo Taxi Tera Block 44": {
+    "lat": 8.96252,
+    "lng": 38.72174
+  },
+  "Jemo Taxi Tera Block 45": {
+    "lat": 8.96161,
+    "lng": 38.72729
+  },
+  "Jemo Taxi Tera Block 46": {
+    "lat": 8.95960,
+    "lng": 38.72197
+  },
+  "Jemo Taxi Tera Block 47": {
+    "lat": 8.96264,
+    "lng": 38.72337
+  },
+  "Jemo Taxi Tera Block 48": {
+    "lat": 8.96088,
+    "lng": 38.71971
+  },
+  "Jemo Taxi Tera Block 49": {
+    "lat": 8.96767,
+    "lng": 38.72651
+  },
+  "Jemo Taxi Tera Block 50": {
+    "lat": 8.95996,
+    "lng": 38.72115
+  },
+  "Jemo Taxi Tera Block 51": {
+    "lat": 8.96717,
+    "lng": 38.71891
+  },
+  "Jemo Taxi Tera Block 52": {
+    "lat": 8.96302,
+    "lng": 38.72638
+  },
+  "Jemo Taxi Tera Block 53": {
+    "lat": 8.96698,
+    "lng": 38.72789
+  },
+  "Jemo Taxi Tera Block 54": {
+    "lat": 8.96479,
+    "lng": 38.72202
+  },
+  "Jemo Taxi Tera Block 55": {
+    "lat": 8.96859,
+    "lng": 38.72656
+  },
+  "Jemo Taxi Tera Block 56": {
+    "lat": 8.96813,
+    "lng": 38.71914
+  },
+  "Jemo Taxi Tera Block 57": {
+    "lat": 8.95954,
+    "lng": 38.72203
+  },
+  "Jemo Taxi Tera Block 58": {
+    "lat": 8.96750,
+    "lng": 38.72377
+  },
+  "Jemo Taxi Tera Block 59": {
+    "lat": 8.96780,
+    "lng": 38.71963
+  },
+  "Jemo Taxi Tera Block 60": {
+    "lat": 8.96145,
+    "lng": 38.71853
+  },
+  "Jemo Taxi Tera Block 61": {
+    "lat": 8.96800,
+    "lng": 38.72268
+  },
+  "Jemo Taxi Tera Block 62": {
+    "lat": 8.95999,
+    "lng": 38.72492
+  },
+  "Jemo Taxi Tera Block 63": {
+    "lat": 8.96478,
+    "lng": 38.71879
+  },
+  "Jemo Taxi Tera Block 64": {
+    "lat": 8.96495,
+    "lng": 38.72247
+  },
+  "Jemo Taxi Tera Block 65": {
+    "lat": 8.95961,
+    "lng": 38.72331
+  },
+  "Jemo Taxi Tera Block 66": {
+    "lat": 8.96813,
+    "lng": 38.72590
+  },
+  "Jemo Taxi Tera Block 67": {
+    "lat": 8.96553,
+    "lng": 38.72086
+  },
+  "Jemo Taxi Tera Block 68": {
+    "lat": 8.96663,
+    "lng": 38.72233
+  },
+  "Jemo Taxi Tera Block 69": {
+    "lat": 8.96605,
+    "lng": 38.72809
+  },
+  "Jemo Taxi Tera Block 70": {
+    "lat": 8.96433,
+    "lng": 38.72827
+  },
+  "Jemo Taxi Tera Block 71": {
+    "lat": 8.96508,
+    "lng": 38.72620
+  },
+  "Jemo Taxi Tera Block 72": {
+    "lat": 8.96481,
+    "lng": 38.72478
+  },
+  "Jemo Taxi Tera Block 73": {
+    "lat": 8.96675,
+    "lng": 38.72449
+  },
+  "Jemo Taxi Tera Block 74": {
+    "lat": 8.96667,
+    "lng": 38.72002
+  },
+  "Jemo Taxi Tera Block 75": {
+    "lat": 8.96407,
+    "lng": 38.72183
+  },
+  "Jemo Taxi Tera Block 76": {
+    "lat": 8.96411,
+    "lng": 38.72020
+  },
+  "Jemo Taxi Tera Block 77": {
+    "lat": 8.96245,
+    "lng": 38.72739
+  },
+  "Jemo Taxi Tera Block 78": {
+    "lat": 8.96263,
+    "lng": 38.71946
+  },
+  "Jemo Taxi Tera Block 79": {
+    "lat": 8.96786,
+    "lng": 38.71954
+  },
+  "Jemo Taxi Tera Block 80": {
+    "lat": 8.96860,
+    "lng": 38.72104
+  },
+  "Jemo Taxi Tera Block 81": {
+    "lat": 8.96932,
+    "lng": 38.72300
+  },
+  "Jemo Taxi Tera Block 82": {
+    "lat": 8.96824,
+    "lng": 38.72368
+  },
+  "Jemo Taxi Tera Block 83": {
+    "lat": 8.95999,
+    "lng": 38.72403
+  },
+  "Jemo Taxi Tera Block 84": {
+    "lat": 8.96410,
+    "lng": 38.72034
+  },
+  "Jemo Taxi Tera Block 85": {
+    "lat": 8.96571,
+    "lng": 38.72522
+  },
+  "Jemo Taxi Tera Block 86": {
+    "lat": 8.96194,
+    "lng": 38.71923
+  },
+  "Jemo Taxi Tera Block 87": {
+    "lat": 8.96485,
+    "lng": 38.72533
+  },
+  "Jemo Taxi Tera Block 88": {
+    "lat": 8.96655,
+    "lng": 38.72189
+  },
+  "Jemo Taxi Tera Block 89": {
+    "lat": 8.96077,
+    "lng": 38.72028
+  },
+  "Jemo Taxi Tera Block 90": {
+    "lat": 8.95977,
+    "lng": 38.72488
+  },
+  "Jemo Taxi Tera Block 91": {
+    "lat": 8.96771,
+    "lng": 38.72227
+  },
+  "Jemo Taxi Tera Block 92": {
+    "lat": 8.96417,
+    "lng": 38.72828
+  },
+  "Jemo Taxi Tera Block 93": {
+    "lat": 8.96301,
+    "lng": 38.72243
+  },
+  "Jemo Taxi Tera Block 94": {
+    "lat": 8.96645,
+    "lng": 38.72670
+  },
+  "Jemo Taxi Tera Block 95": {
+    "lat": 8.96060,
+    "lng": 38.72261
+  },
+  "Jemo Taxi Tera Block 96": {
+    "lat": 8.96283,
+    "lng": 38.71969
+  },
+  "Jemo Taxi Tera Block 97": {
+    "lat": 8.96161,
+    "lng": 38.72390
+  },
+  "Jemo Taxi Tera Block 98": {
+    "lat": 8.96579,
+    "lng": 38.72319
+  },
+  "Jemo Taxi Tera Block 99": {
+    "lat": 8.96626,
+    "lng": 38.72367
+  },
+  "Jemo Taxi Tera Block 100": {
+    "lat": 8.96280,
+    "lng": 38.72552
+  },
+  "Jemo Condominium Block Block 1": {
+    "lat": 8.96405,
+    "lng": 38.72198
+  },
+  "Jemo Condominium Block Block 2": {
+    "lat": 8.96553,
+    "lng": 38.71881
+  },
+  "Jemo Condominium Block Block 3": {
+    "lat": 8.96451,
+    "lng": 38.72756
+  },
+  "Jemo Condominium Block Block 4": {
+    "lat": 8.96585,
+    "lng": 38.72401
+  },
+  "Jemo Condominium Block Block 5": {
+    "lat": 8.96078,
+    "lng": 38.72312
+  },
+  "Jemo Condominium Block Block 6": {
+    "lat": 8.96163,
+    "lng": 38.71921
+  },
+  "Jemo Condominium Block Block 7": {
+    "lat": 8.96559,
+    "lng": 38.72154
+  },
+  "Jemo Condominium Block Block 8": {
+    "lat": 8.96334,
+    "lng": 38.71969
+  },
+  "Jemo Condominium Block Block 9": {
+    "lat": 8.96371,
+    "lng": 38.72327
+  },
+  "Jemo Condominium Block Block 10": {
+    "lat": 8.96627,
+    "lng": 38.72716
+  },
+  "Jemo Condominium Block Block 11": {
+    "lat": 8.96915,
+    "lng": 38.72668
+  },
+  "Jemo Condominium Block Block 12": {
+    "lat": 8.96462,
+    "lng": 38.72726
+  },
+  "Jemo Condominium Block Block 13": {
+    "lat": 8.96514,
+    "lng": 38.71883
+  },
+  "Jemo Condominium Block Block 14": {
+    "lat": 8.96052,
+    "lng": 38.72708
+  },
+  "Jemo Condominium Block Block 15": {
+    "lat": 8.96447,
+    "lng": 38.72760
+  },
+  "Jemo Condominium Block Block 16": {
+    "lat": 8.96125,
+    "lng": 38.72057
+  },
+  "Jemo Condominium Block Block 17": {
+    "lat": 8.96858,
+    "lng": 38.72773
+  },
+  "Jemo Condominium Block Block 18": {
+    "lat": 8.96772,
+    "lng": 38.72373
+  },
+  "Jemo Condominium Block Block 19": {
+    "lat": 8.96107,
+    "lng": 38.72120
+  },
+  "Jemo Condominium Block Block 20": {
+    "lat": 8.95978,
+    "lng": 38.71845
+  },
+  "Jemo Condominium Block Block 21": {
+    "lat": 8.96088,
+    "lng": 38.72048
+  },
+  "Jemo Condominium Block Block 22": {
+    "lat": 8.96923,
+    "lng": 38.72464
+  },
+  "Jemo Condominium Block Block 23": {
+    "lat": 8.96242,
+    "lng": 38.72604
+  },
+  "Jemo Condominium Block Block 24": {
+    "lat": 8.96778,
+    "lng": 38.72458
+  },
+  "Jemo Condominium Block Block 25": {
+    "lat": 8.96049,
+    "lng": 38.72235
+  },
+  "Jemo Condominium Block Block 26": {
+    "lat": 8.96158,
+    "lng": 38.72029
+  },
+  "Jemo Condominium Block Block 27": {
+    "lat": 8.96364,
+    "lng": 38.72651
+  },
+  "Jemo Condominium Block Block 28": {
+    "lat": 8.96222,
+    "lng": 38.72398
+  },
+  "Jemo Condominium Block Block 29": {
+    "lat": 8.96266,
+    "lng": 38.72775
+  },
+  "Jemo Condominium Block Block 30": {
+    "lat": 8.96404,
+    "lng": 38.72248
+  },
+  "Jemo Condominium Block Block 31": {
+    "lat": 8.96739,
+    "lng": 38.72731
+  },
+  "Jemo Condominium Block Block 32": {
+    "lat": 8.96797,
+    "lng": 38.72276
+  },
+  "Jemo Condominium Block Block 33": {
+    "lat": 8.95993,
+    "lng": 38.72784
+  },
+  "Jemo Condominium Block Block 34": {
+    "lat": 8.96122,
+    "lng": 38.72259
+  },
+  "Jemo Condominium Block Block 35": {
+    "lat": 8.96139,
+    "lng": 38.72263
+  },
+  "Jemo Condominium Block Block 36": {
+    "lat": 8.96114,
+    "lng": 38.72245
+  },
+  "Jemo Condominium Block Block 37": {
+    "lat": 8.96297,
+    "lng": 38.72399
+  },
+  "Jemo Condominium Block Block 38": {
+    "lat": 8.96778,
+    "lng": 38.71986
+  },
+  "Jemo Condominium Block Block 39": {
+    "lat": 8.96925,
+    "lng": 38.72632
+  },
+  "Jemo Condominium Block Block 40": {
+    "lat": 8.96033,
+    "lng": 38.72415
+  },
+  "Jemo Condominium Block Block 41": {
+    "lat": 8.96693,
+    "lng": 38.72782
+  },
+  "Jemo Condominium Block Block 42": {
+    "lat": 8.96683,
+    "lng": 38.72617
+  },
+  "Jemo Condominium Block Block 43": {
+    "lat": 8.96598,
+    "lng": 38.72271
+  },
+  "Jemo Condominium Block Block 44": {
+    "lat": 8.96675,
+    "lng": 38.72598
+  },
+  "Jemo Condominium Block Block 45": {
+    "lat": 8.96296,
+    "lng": 38.72135
+  },
+  "Jemo Condominium Block Block 46": {
+    "lat": 8.96703,
+    "lng": 38.71898
+  },
+  "Jemo Condominium Block Block 47": {
+    "lat": 8.96499,
+    "lng": 38.72077
+  },
+  "Jemo Condominium Block Block 48": {
+    "lat": 8.96299,
+    "lng": 38.72228
+  },
+  "Jemo Condominium Block Block 49": {
+    "lat": 8.96350,
+    "lng": 38.72424
+  },
+  "Jemo Condominium Block Block 50": {
+    "lat": 8.96677,
+    "lng": 38.72588
+  },
+  "Jemo Condominium Block Block 51": {
+    "lat": 8.96016,
+    "lng": 38.71887
+  },
+  "Jemo Condominium Block Block 52": {
+    "lat": 8.96354,
+    "lng": 38.72699
+  },
+  "Jemo Condominium Block Block 53": {
+    "lat": 8.96530,
+    "lng": 38.71994
+  },
+  "Jemo Condominium Block Block 54": {
+    "lat": 8.96912,
+    "lng": 38.72602
+  },
+  "Jemo Condominium Block Block 55": {
+    "lat": 8.96121,
+    "lng": 38.72090
+  },
+  "Jemo Condominium Block Block 56": {
+    "lat": 8.96729,
+    "lng": 38.72725
+  },
+  "Jemo Condominium Block Block 57": {
+    "lat": 8.96938,
+    "lng": 38.72688
+  },
+  "Jemo Condominium Block Block 58": {
+    "lat": 8.96713,
+    "lng": 38.72141
+  },
+  "Jemo Condominium Block Block 59": {
+    "lat": 8.96423,
+    "lng": 38.72362
+  },
+  "Jemo Condominium Block Block 60": {
+    "lat": 8.96368,
+    "lng": 38.72278
+  },
+  "Jemo Condominium Block Block 61": {
+    "lat": 8.96029,
+    "lng": 38.72100
+  },
+  "Jemo Condominium Block Block 62": {
+    "lat": 8.96614,
+    "lng": 38.72092
+  },
+  "Jemo Condominium Block Block 63": {
+    "lat": 8.96581,
+    "lng": 38.72519
+  },
+  "Jemo Condominium Block Block 64": {
+    "lat": 8.96697,
+    "lng": 38.72250
+  },
+  "Jemo Condominium Block Block 65": {
+    "lat": 8.96050,
+    "lng": 38.71947
+  },
+  "Jemo Condominium Block Block 66": {
+    "lat": 8.96284,
+    "lng": 38.71873
+  },
+  "Jemo Condominium Block Block 67": {
+    "lat": 8.96088,
+    "lng": 38.72396
+  },
+  "Jemo Condominium Block Block 68": {
+    "lat": 8.96486,
+    "lng": 38.72473
+  },
+  "Jemo Condominium Block Block 69": {
+    "lat": 8.96531,
+    "lng": 38.72068
+  },
+  "Jemo Condominium Block Block 70": {
+    "lat": 8.96362,
+    "lng": 38.72134
+  },
+  "Jemo Condominium Block Block 71": {
+    "lat": 8.96745,
+    "lng": 38.72577
+  },
+  "Jemo Condominium Block Block 72": {
+    "lat": 8.96508,
+    "lng": 38.72479
+  },
+  "Jemo Condominium Block Block 73": {
+    "lat": 8.96395,
+    "lng": 38.72572
+  },
+  "Jemo Condominium Block Block 74": {
+    "lat": 8.96337,
+    "lng": 38.72463
+  },
+  "Jemo Condominium Block Block 75": {
+    "lat": 8.96647,
+    "lng": 38.71965
+  },
+  "Jemo Condominium Block Block 76": {
+    "lat": 8.96452,
+    "lng": 38.72755
+  },
+  "Jemo Condominium Block Block 77": {
+    "lat": 8.96678,
+    "lng": 38.72040
+  },
+  "Jemo Condominium Block Block 78": {
+    "lat": 8.96557,
+    "lng": 38.72517
+  },
+  "Jemo Condominium Block Block 79": {
+    "lat": 8.96930,
+    "lng": 38.72803
+  },
+  "Jemo Condominium Block Block 80": {
+    "lat": 8.96141,
+    "lng": 38.71995
+  },
+  "Jemo Condominium Block Block 81": {
+    "lat": 8.96536,
+    "lng": 38.72748
+  },
+  "Jemo Condominium Block Block 82": {
+    "lat": 8.96423,
+    "lng": 38.72159
+  },
+  "Jemo Condominium Block Block 83": {
+    "lat": 8.96228,
+    "lng": 38.72432
+  },
+  "Jemo Condominium Block Block 84": {
+    "lat": 8.96558,
+    "lng": 38.72440
+  },
+  "Jemo Condominium Block Block 85": {
+    "lat": 8.96635,
+    "lng": 38.71870
+  },
+  "Jemo Condominium Block Block 86": {
+    "lat": 8.96340,
+    "lng": 38.72009
+  },
+  "Jemo Condominium Block Block 87": {
+    "lat": 8.96672,
+    "lng": 38.72492
+  },
+  "Jemo Condominium Block Block 88": {
+    "lat": 8.96846,
+    "lng": 38.71833
+  },
+  "Jemo Condominium Block Block 89": {
+    "lat": 8.96598,
+    "lng": 38.72111
+  },
+  "Jemo Condominium Block Block 90": {
+    "lat": 8.96133,
+    "lng": 38.72293
+  },
+  "Jemo Condominium Block Block 91": {
+    "lat": 8.95954,
+    "lng": 38.72620
+  },
+  "Jemo Condominium Block Block 92": {
+    "lat": 8.96420,
+    "lng": 38.72673
+  },
+  "Jemo Condominium Block Block 93": {
+    "lat": 8.96911,
+    "lng": 38.72654
+  },
+  "Jemo Condominium Block Block 94": {
+    "lat": 8.96879,
+    "lng": 38.72591
+  },
+  "Jemo Condominium Block Block 95": {
+    "lat": 8.96024,
+    "lng": 38.72125
+  },
+  "Jemo Condominium Block Block 96": {
+    "lat": 8.96939,
+    "lng": 38.72007
+  },
+  "Jemo Condominium Block Block 97": {
+    "lat": 8.96413,
+    "lng": 38.71993
+  },
+  "Jemo Condominium Block Block 98": {
+    "lat": 8.96257,
+    "lng": 38.72477
+  },
+  "Jemo Condominium Block Block 99": {
+    "lat": 8.96498,
+    "lng": 38.72515
+  },
+  "Jemo Condominium Block Block 100": {
+    "lat": 8.96561,
+    "lng": 38.72826
+  },
+  "Jemo Gubae Block 1": {
+    "lat": 8.96368,
+    "lng": 38.72270
+  },
+  "Jemo Gubae Block 2": {
+    "lat": 8.96210,
+    "lng": 38.71923
+  },
+  "Jemo Gubae Block 3": {
+    "lat": 8.96092,
+    "lng": 38.72404
+  },
+  "Jemo Gubae Block 4": {
+    "lat": 8.96197,
+    "lng": 38.72046
+  },
+  "Jemo Gubae Block 5": {
+    "lat": 8.96583,
+    "lng": 38.72778
+  },
+  "Jemo Gubae Block 6": {
+    "lat": 8.96258,
+    "lng": 38.72699
+  },
+  "Jemo Gubae Block 7": {
+    "lat": 8.96063,
+    "lng": 38.72769
+  },
+  "Jemo Gubae Block 8": {
+    "lat": 8.96348,
+    "lng": 38.72420
+  },
+  "Jemo Gubae Block 9": {
+    "lat": 8.96143,
+    "lng": 38.72177
+  },
+  "Jemo Gubae Block 10": {
+    "lat": 8.95958,
+    "lng": 38.72134
+  },
+  "Jemo Gubae Block 11": {
+    "lat": 8.96226,
+    "lng": 38.72690
+  },
+  "Jemo Gubae Block 12": {
+    "lat": 8.95979,
+    "lng": 38.72220
+  },
+  "Jemo Gubae Block 13": {
+    "lat": 8.96698,
+    "lng": 38.71972
+  },
+  "Jemo Gubae Block 14": {
+    "lat": 8.96077,
+    "lng": 38.72105
+  },
+  "Jemo Gubae Block 15": {
+    "lat": 8.96628,
+    "lng": 38.72233
+  },
+  "Jemo Gubae Block 16": {
+    "lat": 8.96493,
+    "lng": 38.72564
+  },
+  "Jemo Gubae Block 17": {
+    "lat": 8.96405,
+    "lng": 38.72513
+  },
+  "Jemo Gubae Block 18": {
+    "lat": 8.96906,
+    "lng": 38.72044
+  },
+  "Jemo Gubae Block 19": {
+    "lat": 8.96731,
+    "lng": 38.72306
+  },
+  "Jemo Gubae Block 20": {
+    "lat": 8.96344,
+    "lng": 38.71870
+  },
+  "Jemo Gubae Block 21": {
+    "lat": 8.96731,
+    "lng": 38.72213
+  },
+  "Jemo Gubae Block 22": {
+    "lat": 8.96785,
+    "lng": 38.72008
+  },
+  "Jemo Gubae Block 23": {
+    "lat": 8.96510,
+    "lng": 38.72298
+  },
+  "Jemo Gubae Block 24": {
+    "lat": 8.96142,
+    "lng": 38.72762
+  },
+  "Jemo Gubae Block 25": {
+    "lat": 8.96160,
+    "lng": 38.72617
+  },
+  "Jemo Gubae Block 26": {
+    "lat": 8.96284,
+    "lng": 38.72126
+  },
+  "Jemo Gubae Block 27": {
+    "lat": 8.96010,
+    "lng": 38.71877
+  },
+  "Jemo Gubae Block 28": {
+    "lat": 8.96804,
+    "lng": 38.72624
+  },
+  "Jemo Gubae Block 29": {
+    "lat": 8.96905,
+    "lng": 38.72494
+  },
+  "Jemo Gubae Block 30": {
+    "lat": 8.96829,
+    "lng": 38.72354
+  },
+  "Jemo Gubae Block 31": {
+    "lat": 8.96763,
+    "lng": 38.72297
+  },
+  "Jemo Gubae Block 32": {
+    "lat": 8.96633,
+    "lng": 38.72131
+  },
+  "Jemo Gubae Block 33": {
+    "lat": 8.96830,
+    "lng": 38.72154
+  },
+  "Jemo Gubae Block 34": {
+    "lat": 8.96402,
+    "lng": 38.71936
+  },
+  "Jemo Gubae Block 35": {
+    "lat": 8.96294,
+    "lng": 38.72383
+  },
+  "Jemo Gubae Block 36": {
+    "lat": 8.96881,
+    "lng": 38.72276
+  },
+  "Jemo Gubae Block 37": {
+    "lat": 8.96623,
+    "lng": 38.72330
+  },
+  "Jemo Gubae Block 38": {
+    "lat": 8.96376,
+    "lng": 38.71831
+  },
+  "Jemo Gubae Block 39": {
+    "lat": 8.96494,
+    "lng": 38.72427
+  },
+  "Jemo Gubae Block 40": {
+    "lat": 8.96445,
+    "lng": 38.72088
+  },
+  "Jemo Gubae Block 41": {
+    "lat": 8.96203,
+    "lng": 38.72580
+  },
+  "Jemo Gubae Block 42": {
+    "lat": 8.95989,
+    "lng": 38.72369
+  },
+  "Jemo Gubae Block 43": {
+    "lat": 8.96497,
+    "lng": 38.71853
+  },
+  "Jemo Gubae Block 44": {
+    "lat": 8.96309,
+    "lng": 38.72046
+  },
+  "Jemo Gubae Block 45": {
+    "lat": 8.96237,
+    "lng": 38.72533
+  },
+  "Jemo Gubae Block 46": {
+    "lat": 8.96698,
+    "lng": 38.71937
+  },
+  "Jemo Gubae Block 47": {
+    "lat": 8.96733,
+    "lng": 38.72778
+  },
+  "Jemo Gubae Block 48": {
+    "lat": 8.96181,
+    "lng": 38.71993
+  },
+  "Jemo Gubae Block 49": {
+    "lat": 8.96157,
+    "lng": 38.71832
+  },
+  "Jemo Gubae Block 50": {
+    "lat": 8.96715,
+    "lng": 38.72181
+  },
+  "Jemo Gubae Block 51": {
+    "lat": 8.96120,
+    "lng": 38.72632
+  },
+  "Jemo Gubae Block 52": {
+    "lat": 8.96242,
+    "lng": 38.72697
+  },
+  "Jemo Gubae Block 53": {
+    "lat": 8.96337,
+    "lng": 38.72381
+  },
+  "Jemo Gubae Block 54": {
+    "lat": 8.96136,
+    "lng": 38.72328
+  },
+  "Jemo Gubae Block 55": {
+    "lat": 8.96788,
+    "lng": 38.72120
+  },
+  "Jemo Gubae Block 56": {
+    "lat": 8.96514,
+    "lng": 38.72322
+  },
+  "Jemo Gubae Block 57": {
+    "lat": 8.96568,
+    "lng": 38.72168
+  },
+  "Jemo Gubae Block 58": {
+    "lat": 8.96079,
+    "lng": 38.72521
+  },
+  "Jemo Gubae Block 59": {
+    "lat": 8.96738,
+    "lng": 38.72241
+  },
+  "Jemo Gubae Block 60": {
+    "lat": 8.96805,
+    "lng": 38.72806
+  },
+  "Jemo Gubae Block 61": {
+    "lat": 8.96086,
+    "lng": 38.72216
+  },
+  "Jemo Gubae Block 62": {
+    "lat": 8.96147,
+    "lng": 38.71971
+  },
+  "Jemo Gubae Block 63": {
+    "lat": 8.96178,
+    "lng": 38.72498
+  },
+  "Jemo Gubae Block 64": {
+    "lat": 8.96512,
+    "lng": 38.72487
+  },
+  "Jemo Gubae Block 65": {
+    "lat": 8.96442,
+    "lng": 38.72073
+  },
+  "Jemo Gubae Block 66": {
+    "lat": 8.96526,
+    "lng": 38.72071
+  },
+  "Jemo Gubae Block 67": {
+    "lat": 8.96128,
+    "lng": 38.72500
+  },
+  "Jemo Gubae Block 68": {
+    "lat": 8.96122,
+    "lng": 38.72150
+  },
+  "Jemo Gubae Block 69": {
+    "lat": 8.96610,
+    "lng": 38.72297
+  },
+  "Jemo Gubae Block 70": {
+    "lat": 8.96055,
+    "lng": 38.72427
+  },
+  "Jemo Gubae Block 71": {
+    "lat": 8.96046,
+    "lng": 38.72555
+  },
+  "Jemo Gubae Block 72": {
+    "lat": 8.96873,
+    "lng": 38.72071
+  },
+  "Jemo Gubae Block 73": {
+    "lat": 8.96486,
+    "lng": 38.72239
+  },
+  "Jemo Gubae Block 74": {
+    "lat": 8.96205,
+    "lng": 38.72234
+  },
+  "Jemo Gubae Block 75": {
+    "lat": 8.95945,
+    "lng": 38.72536
+  },
+  "Jemo Gubae Block 76": {
+    "lat": 8.96493,
+    "lng": 38.72729
+  },
+  "Jemo Gubae Block 77": {
+    "lat": 8.96516,
+    "lng": 38.72571
+  },
+  "Jemo Gubae Block 78": {
+    "lat": 8.96044,
+    "lng": 38.72703
+  },
+  "Jemo Gubae Block 79": {
+    "lat": 8.96104,
+    "lng": 38.72450
+  },
+  "Jemo Gubae Block 80": {
+    "lat": 8.95959,
+    "lng": 38.72369
+  },
+  "Jemo Gubae Block 81": {
+    "lat": 8.96354,
+    "lng": 38.72739
+  },
+  "Jemo Gubae Block 82": {
+    "lat": 8.96181,
+    "lng": 38.72250
+  },
+  "Jemo Gubae Block 83": {
+    "lat": 8.96483,
+    "lng": 38.72526
+  },
+  "Jemo Gubae Block 84": {
+    "lat": 8.96348,
+    "lng": 38.72215
+  },
+  "Jemo Gubae Block 85": {
+    "lat": 8.96883,
+    "lng": 38.72054
+  },
+  "Jemo Gubae Block 86": {
+    "lat": 8.96290,
+    "lng": 38.72467
+  },
+  "Jemo Gubae Block 87": {
+    "lat": 8.96100,
+    "lng": 38.72469
+  },
+  "Jemo Gubae Block 88": {
+    "lat": 8.96334,
+    "lng": 38.72492
+  },
+  "Jemo Gubae Block 89": {
+    "lat": 8.96527,
+    "lng": 38.72405
+  },
+  "Jemo Gubae Block 90": {
+    "lat": 8.95979,
+    "lng": 38.72640
+  },
+  "Jemo Gubae Block 91": {
+    "lat": 8.96793,
+    "lng": 38.72596
+  },
+  "Jemo Gubae Block 92": {
+    "lat": 8.96031,
+    "lng": 38.72645
+  },
+  "Jemo Gubae Block 93": {
+    "lat": 8.96936,
+    "lng": 38.72775
+  },
+  "Jemo Gubae Block 94": {
+    "lat": 8.95961,
+    "lng": 38.72701
+  },
+  "Jemo Gubae Block 95": {
+    "lat": 8.96667,
+    "lng": 38.72256
+  },
+  "Jemo Gubae Block 96": {
+    "lat": 8.96700,
+    "lng": 38.72691
+  },
+  "Jemo Gubae Block 97": {
+    "lat": 8.96396,
+    "lng": 38.72666
+  },
+  "Jemo Gubae Block 98": {
+    "lat": 8.96491,
+    "lng": 38.72534
+  },
+  "Jemo Gubae Block 99": {
+    "lat": 8.96757,
+    "lng": 38.72390
+  },
+  "Jemo Gubae Block 100": {
+    "lat": 8.96935,
+    "lng": 38.72440
+  },
+  "Jemo Mebrat Hail Block 1": {
+    "lat": 8.96794,
+    "lng": 38.72188
+  },
+  "Jemo Mebrat Hail Block 2": {
+    "lat": 8.96459,
+    "lng": 38.72145
+  },
+  "Jemo Mebrat Hail Block 3": {
+    "lat": 8.96889,
+    "lng": 38.72778
+  },
+  "Jemo Mebrat Hail Block 4": {
+    "lat": 8.96315,
+    "lng": 38.71838
+  },
+  "Jemo Mebrat Hail Block 5": {
+    "lat": 8.96009,
+    "lng": 38.72128
+  },
+  "Jemo Mebrat Hail Block 6": {
+    "lat": 8.96142,
+    "lng": 38.72372
+  },
+  "Jemo Mebrat Hail Block 7": {
+    "lat": 8.96834,
+    "lng": 38.72637
+  },
+  "Jemo Mebrat Hail Block 8": {
+    "lat": 8.96575,
+    "lng": 38.72046
+  },
+  "Jemo Mebrat Hail Block 9": {
+    "lat": 8.96293,
+    "lng": 38.72010
+  },
+  "Jemo Mebrat Hail Block 10": {
+    "lat": 8.96209,
+    "lng": 38.72780
+  },
+  "Jemo Mebrat Hail Block 11": {
+    "lat": 8.96794,
+    "lng": 38.71848
+  },
+  "Jemo Mebrat Hail Block 12": {
+    "lat": 8.96789,
+    "lng": 38.72040
+  },
+  "Jemo Mebrat Hail Block 13": {
+    "lat": 8.96243,
+    "lng": 38.71908
+  },
+  "Jemo Mebrat Hail Block 14": {
+    "lat": 8.96892,
+    "lng": 38.71923
+  },
+  "Jemo Mebrat Hail Block 15": {
+    "lat": 8.96865,
+    "lng": 38.71944
+  },
+  "Jemo Mebrat Hail Block 16": {
+    "lat": 8.96588,
+    "lng": 38.71962
+  },
+  "Jemo Mebrat Hail Block 17": {
+    "lat": 8.96037,
+    "lng": 38.72180
+  },
+  "Jemo Mebrat Hail Block 18": {
+    "lat": 8.96774,
+    "lng": 38.71902
+  },
+  "Jemo Mebrat Hail Block 19": {
+    "lat": 8.96321,
+    "lng": 38.72382
+  },
+  "Jemo Mebrat Hail Block 20": {
+    "lat": 8.96268,
+    "lng": 38.72488
+  },
+  "Jemo Mebrat Hail Block 21": {
+    "lat": 8.96850,
+    "lng": 38.72771
+  },
+  "Jemo Mebrat Hail Block 22": {
+    "lat": 8.96274,
+    "lng": 38.71951
+  },
+  "Jemo Mebrat Hail Block 23": {
+    "lat": 8.96649,
+    "lng": 38.72284
+  },
+  "Jemo Mebrat Hail Block 24": {
+    "lat": 8.96121,
+    "lng": 38.72698
+  },
+  "Jemo Mebrat Hail Block 25": {
+    "lat": 8.96891,
+    "lng": 38.71840
+  },
+  "Jemo Mebrat Hail Block 26": {
+    "lat": 8.96030,
+    "lng": 38.72467
+  },
+  "Jemo Mebrat Hail Block 27": {
+    "lat": 8.96131,
+    "lng": 38.72129
+  },
+  "Jemo Mebrat Hail Block 28": {
+    "lat": 8.96096,
+    "lng": 38.72633
+  },
+  "Jemo Mebrat Hail Block 29": {
+    "lat": 8.96060,
+    "lng": 38.72392
+  },
+  "Jemo Mebrat Hail Block 30": {
+    "lat": 8.96295,
+    "lng": 38.72690
+  },
+  "Jemo Mebrat Hail Block 31": {
+    "lat": 8.96813,
+    "lng": 38.72360
+  },
+  "Jemo Mebrat Hail Block 32": {
+    "lat": 8.96437,
+    "lng": 38.72513
+  },
+  "Jemo Mebrat Hail Block 33": {
+    "lat": 8.96052,
+    "lng": 38.72241
+  },
+  "Jemo Mebrat Hail Block 34": {
+    "lat": 8.96084,
+    "lng": 38.72608
+  },
+  "Jemo Mebrat Hail Block 35": {
+    "lat": 8.96345,
+    "lng": 38.72479
+  },
+  "Jemo Mebrat Hail Block 36": {
+    "lat": 8.96434,
+    "lng": 38.72795
+  },
+  "Jemo Mebrat Hail Block 37": {
+    "lat": 8.96642,
+    "lng": 38.72776
+  },
+  "Jemo Mebrat Hail Block 38": {
+    "lat": 8.96510,
+    "lng": 38.72497
+  },
+  "Jemo Mebrat Hail Block 39": {
+    "lat": 8.96551,
+    "lng": 38.72211
+  },
+  "Jemo Mebrat Hail Block 40": {
+    "lat": 8.95995,
+    "lng": 38.72604
+  },
+  "Jemo Mebrat Hail Block 41": {
+    "lat": 8.96544,
+    "lng": 38.72371
+  },
+  "Jemo Mebrat Hail Block 42": {
+    "lat": 8.96601,
+    "lng": 38.72813
+  },
+  "Jemo Mebrat Hail Block 43": {
+    "lat": 8.96594,
+    "lng": 38.72087
+  },
+  "Jemo Mebrat Hail Block 44": {
+    "lat": 8.95980,
+    "lng": 38.71855
+  },
+  "Jemo Mebrat Hail Block 45": {
+    "lat": 8.96675,
+    "lng": 38.72425
+  },
+  "Jemo Mebrat Hail Block 46": {
+    "lat": 8.96710,
+    "lng": 38.72150
+  },
+  "Jemo Mebrat Hail Block 47": {
+    "lat": 8.96428,
+    "lng": 38.72090
+  },
+  "Jemo Mebrat Hail Block 48": {
+    "lat": 8.96681,
+    "lng": 38.72733
+  },
+  "Jemo Mebrat Hail Block 49": {
+    "lat": 8.96516,
+    "lng": 38.71922
+  },
+  "Jemo Mebrat Hail Block 50": {
+    "lat": 8.96040,
+    "lng": 38.72671
+  },
+  "Jemo Mebrat Hail Block 51": {
+    "lat": 8.96061,
+    "lng": 38.72198
+  },
+  "Jemo Mebrat Hail Block 52": {
+    "lat": 8.96082,
+    "lng": 38.72453
+  },
+  "Jemo Mebrat Hail Block 53": {
+    "lat": 8.96925,
+    "lng": 38.72014
+  },
+  "Jemo Mebrat Hail Block 54": {
+    "lat": 8.96736,
+    "lng": 38.72372
+  },
+  "Jemo Mebrat Hail Block 55": {
+    "lat": 8.96796,
+    "lng": 38.71922
+  },
+  "Jemo Mebrat Hail Block 56": {
+    "lat": 8.96706,
+    "lng": 38.72133
+  },
+  "Jemo Mebrat Hail Block 57": {
+    "lat": 8.96304,
+    "lng": 38.72750
+  },
+  "Jemo Mebrat Hail Block 58": {
+    "lat": 8.96199,
+    "lng": 38.72502
+  },
+  "Jemo Mebrat Hail Block 59": {
+    "lat": 8.96872,
+    "lng": 38.72167
+  },
+  "Jemo Mebrat Hail Block 60": {
+    "lat": 8.96671,
+    "lng": 38.72749
+  },
+  "Jemo Mebrat Hail Block 61": {
+    "lat": 8.96714,
+    "lng": 38.72520
+  },
+  "Jemo Mebrat Hail Block 62": {
+    "lat": 8.96113,
+    "lng": 38.72494
+  },
+  "Jemo Mebrat Hail Block 63": {
+    "lat": 8.96698,
+    "lng": 38.72603
+  },
+  "Jemo Mebrat Hail Block 64": {
+    "lat": 8.96650,
+    "lng": 38.72689
+  },
+  "Jemo Mebrat Hail Block 65": {
+    "lat": 8.96164,
+    "lng": 38.72129
+  },
+  "Jemo Mebrat Hail Block 66": {
+    "lat": 8.96190,
+    "lng": 38.72337
+  },
+  "Jemo Mebrat Hail Block 67": {
+    "lat": 8.96612,
+    "lng": 38.71834
+  },
+  "Jemo Mebrat Hail Block 68": {
+    "lat": 8.96486,
+    "lng": 38.72771
+  },
+  "Jemo Mebrat Hail Block 69": {
+    "lat": 8.96808,
+    "lng": 38.72791
+  },
+  "Jemo Mebrat Hail Block 70": {
+    "lat": 8.96928,
+    "lng": 38.72343
+  },
+  "Jemo Mebrat Hail Block 71": {
+    "lat": 8.96004,
+    "lng": 38.72768
+  },
+  "Jemo Mebrat Hail Block 72": {
+    "lat": 8.96191,
+    "lng": 38.72695
+  },
+  "Jemo Mebrat Hail Block 73": {
+    "lat": 8.96347,
+    "lng": 38.72170
+  },
+  "Jemo Mebrat Hail Block 74": {
+    "lat": 8.96561,
+    "lng": 38.72812
+  },
+  "Jemo Mebrat Hail Block 75": {
+    "lat": 8.96740,
+    "lng": 38.72368
+  },
+  "Jemo Mebrat Hail Block 76": {
+    "lat": 8.96702,
+    "lng": 38.71885
+  },
+  "Jemo Mebrat Hail Block 77": {
+    "lat": 8.96232,
+    "lng": 38.72545
+  },
+  "Jemo Mebrat Hail Block 78": {
+    "lat": 8.96006,
+    "lng": 38.72259
+  },
+  "Jemo Mebrat Hail Block 79": {
+    "lat": 8.96727,
+    "lng": 38.72705
+  },
+  "Jemo Mebrat Hail Block 80": {
+    "lat": 8.96135,
+    "lng": 38.71959
+  },
+  "Jemo Mebrat Hail Block 81": {
+    "lat": 8.96804,
+    "lng": 38.72251
+  },
+  "Jemo Mebrat Hail Block 82": {
+    "lat": 8.96886,
+    "lng": 38.71981
+  },
+  "Jemo Mebrat Hail Block 83": {
+    "lat": 8.96768,
+    "lng": 38.72618
+  },
+  "Jemo Mebrat Hail Block 84": {
+    "lat": 8.96572,
+    "lng": 38.72821
+  },
+  "Jemo Mebrat Hail Block 85": {
+    "lat": 8.96095,
+    "lng": 38.72217
+  },
+  "Jemo Mebrat Hail Block 86": {
+    "lat": 8.96039,
+    "lng": 38.72364
+  },
+  "Jemo Mebrat Hail Block 87": {
+    "lat": 8.96012,
+    "lng": 38.72243
+  },
+  "Jemo Mebrat Hail Block 88": {
+    "lat": 8.96253,
+    "lng": 38.72022
+  },
+  "Jemo Mebrat Hail Block 89": {
+    "lat": 8.96026,
+    "lng": 38.72241
+  },
+  "Jemo Mebrat Hail Block 90": {
+    "lat": 8.96848,
+    "lng": 38.72454
+  },
+  "Jemo Mebrat Hail Block 91": {
+    "lat": 8.96602,
+    "lng": 38.72765
+  },
+  "Jemo Mebrat Hail Block 92": {
+    "lat": 8.96452,
+    "lng": 38.72655
+  },
+  "Jemo Mebrat Hail Block 93": {
+    "lat": 8.96838,
+    "lng": 38.72062
+  },
+  "Jemo Mebrat Hail Block 94": {
+    "lat": 8.96601,
+    "lng": 38.71846
+  },
+  "Jemo Mebrat Hail Block 95": {
+    "lat": 8.96579,
+    "lng": 38.72370
+  },
+  "Jemo Mebrat Hail Block 96": {
+    "lat": 8.96335,
+    "lng": 38.71860
+  },
+  "Jemo Mebrat Hail Block 97": {
+    "lat": 8.96516,
+    "lng": 38.72023
+  },
+  "Jemo Mebrat Hail Block 98": {
+    "lat": 8.96715,
+    "lng": 38.72621
+  },
+  "Jemo Mebrat Hail Block 99": {
+    "lat": 8.96022,
+    "lng": 38.72170
+  },
+  "Jemo Mebrat Hail Block 100": {
+    "lat": 8.96365,
+    "lng": 38.72373
+  },
+  "Jemo Muzika Sefer Block 1": {
+    "lat": 8.96402,
+    "lng": 38.72411
+  },
+  "Jemo Muzika Sefer Block 2": {
+    "lat": 8.96901,
+    "lng": 38.72600
+  },
+  "Jemo Muzika Sefer Block 3": {
+    "lat": 8.96448,
+    "lng": 38.72221
+  },
+  "Jemo Muzika Sefer Block 4": {
+    "lat": 8.96027,
+    "lng": 38.71893
+  },
+  "Jemo Muzika Sefer Block 5": {
+    "lat": 8.96458,
+    "lng": 38.72538
+  },
+  "Jemo Muzika Sefer Block 6": {
+    "lat": 8.96101,
+    "lng": 38.71871
+  },
+  "Jemo Muzika Sefer Block 7": {
+    "lat": 8.96656,
+    "lng": 38.72347
+  },
+  "Jemo Muzika Sefer Block 8": {
+    "lat": 8.96043,
+    "lng": 38.72072
+  },
+  "Jemo Muzika Sefer Block 9": {
+    "lat": 8.96134,
+    "lng": 38.72653
+  },
+  "Jemo Muzika Sefer Block 10": {
+    "lat": 8.96523,
+    "lng": 38.72709
+  },
+  "Jemo Muzika Sefer Block 11": {
+    "lat": 8.96483,
+    "lng": 38.72626
+  },
+  "Jemo Muzika Sefer Block 12": {
+    "lat": 8.96074,
+    "lng": 38.72451
+  },
+  "Jemo Muzika Sefer Block 13": {
+    "lat": 8.96554,
+    "lng": 38.72219
+  },
+  "Jemo Muzika Sefer Block 14": {
+    "lat": 8.96179,
+    "lng": 38.72815
+  },
+  "Jemo Muzika Sefer Block 15": {
+    "lat": 8.96587,
+    "lng": 38.72568
+  },
+  "Jemo Muzika Sefer Block 16": {
+    "lat": 8.95970,
+    "lng": 38.72300
+  },
+  "Jemo Muzika Sefer Block 17": {
+    "lat": 8.96609,
+    "lng": 38.72721
+  },
+  "Jemo Muzika Sefer Block 18": {
+    "lat": 8.96170,
+    "lng": 38.72705
+  },
+  "Jemo Muzika Sefer Block 19": {
+    "lat": 8.96095,
+    "lng": 38.72578
+  },
+  "Jemo Muzika Sefer Block 20": {
+    "lat": 8.96194,
+    "lng": 38.71889
+  },
+  "Jemo Muzika Sefer Block 21": {
+    "lat": 8.96621,
+    "lng": 38.72820
+  },
+  "Jemo Muzika Sefer Block 22": {
+    "lat": 8.96877,
+    "lng": 38.72435
+  },
+  "Jemo Muzika Sefer Block 23": {
+    "lat": 8.96290,
+    "lng": 38.72562
+  },
+  "Jemo Muzika Sefer Block 24": {
+    "lat": 8.96343,
+    "lng": 38.72723
+  },
+  "Jemo Muzika Sefer Block 25": {
+    "lat": 8.95948,
+    "lng": 38.72439
+  },
+  "Jemo Muzika Sefer Block 26": {
+    "lat": 8.96105,
+    "lng": 38.72476
+  },
+  "Jemo Muzika Sefer Block 27": {
+    "lat": 8.96640,
+    "lng": 38.72358
+  },
+  "Jemo Muzika Sefer Block 28": {
+    "lat": 8.96450,
+    "lng": 38.72638
+  },
+  "Jemo Muzika Sefer Block 29": {
+    "lat": 8.96640,
+    "lng": 38.72788
+  },
+  "Jemo Muzika Sefer Block 30": {
+    "lat": 8.96883,
+    "lng": 38.72719
+  },
+  "Jemo Muzika Sefer Block 31": {
+    "lat": 8.96090,
+    "lng": 38.72456
+  },
+  "Jemo Muzika Sefer Block 32": {
+    "lat": 8.96454,
+    "lng": 38.72192
+  },
+  "Jemo Muzika Sefer Block 33": {
+    "lat": 8.96418,
+    "lng": 38.71955
+  },
+  "Jemo Muzika Sefer Block 34": {
+    "lat": 8.96375,
+    "lng": 38.72621
+  },
+  "Jemo Muzika Sefer Block 35": {
+    "lat": 8.96112,
+    "lng": 38.72656
+  },
+  "Jemo Muzika Sefer Block 36": {
+    "lat": 8.96139,
+    "lng": 38.72752
+  },
+  "Jemo Muzika Sefer Block 37": {
+    "lat": 8.96467,
+    "lng": 38.72509
+  },
+  "Jemo Muzika Sefer Block 38": {
+    "lat": 8.96547,
+    "lng": 38.72274
+  },
+  "Jemo Muzika Sefer Block 39": {
+    "lat": 8.96683,
+    "lng": 38.71869
+  },
+  "Jemo Muzika Sefer Block 40": {
+    "lat": 8.96298,
+    "lng": 38.71859
+  },
+  "Jemo Muzika Sefer Block 41": {
+    "lat": 8.96091,
+    "lng": 38.72780
+  },
+  "Jemo Muzika Sefer Block 42": {
+    "lat": 8.96015,
+    "lng": 38.72450
+  },
+  "Jemo Muzika Sefer Block 43": {
+    "lat": 8.96634,
+    "lng": 38.72010
+  },
+  "Jemo Muzika Sefer Block 44": {
+    "lat": 8.96363,
+    "lng": 38.72029
+  },
+  "Jemo Muzika Sefer Block 45": {
+    "lat": 8.96590,
+    "lng": 38.72232
+  },
+  "Jemo Muzika Sefer Block 46": {
+    "lat": 8.96735,
+    "lng": 38.71985
+  },
+  "Jemo Muzika Sefer Block 47": {
+    "lat": 8.96811,
+    "lng": 38.72830
+  },
+  "Jemo Muzika Sefer Block 48": {
+    "lat": 8.96195,
+    "lng": 38.72804
+  },
+  "Jemo Muzika Sefer Block 49": {
+    "lat": 8.96008,
+    "lng": 38.71897
+  },
+  "Jemo Muzika Sefer Block 50": {
+    "lat": 8.96790,
+    "lng": 38.72222
+  },
+  "Jemo Muzika Sefer Block 51": {
+    "lat": 8.96692,
+    "lng": 38.71934
+  },
+  "Jemo Muzika Sefer Block 52": {
+    "lat": 8.96275,
+    "lng": 38.72210
+  },
+  "Jemo Muzika Sefer Block 53": {
+    "lat": 8.96769,
+    "lng": 38.72193
+  },
+  "Jemo Muzika Sefer Block 54": {
+    "lat": 8.96043,
+    "lng": 38.72619
+  },
+  "Jemo Muzika Sefer Block 55": {
+    "lat": 8.96437,
+    "lng": 38.71842
+  },
+  "Jemo Muzika Sefer Block 56": {
+    "lat": 8.96340,
+    "lng": 38.72376
+  },
+  "Jemo Muzika Sefer Block 57": {
+    "lat": 8.96826,
+    "lng": 38.72538
+  },
+  "Jemo Muzika Sefer Block 58": {
+    "lat": 8.96921,
+    "lng": 38.72196
+  },
+  "Jemo Muzika Sefer Block 59": {
+    "lat": 8.96784,
+    "lng": 38.72516
+  },
+  "Jemo Muzika Sefer Block 60": {
+    "lat": 8.96596,
+    "lng": 38.72689
+  },
+  "Jemo Muzika Sefer Block 61": {
+    "lat": 8.95940,
+    "lng": 38.71859
+  },
+  "Jemo Muzika Sefer Block 62": {
+    "lat": 8.95967,
+    "lng": 38.71973
+  },
+  "Jemo Muzika Sefer Block 63": {
+    "lat": 8.96777,
+    "lng": 38.72164
+  },
+  "Jemo Muzika Sefer Block 64": {
+    "lat": 8.96495,
+    "lng": 38.72300
+  },
+  "Jemo Muzika Sefer Block 65": {
+    "lat": 8.96926,
+    "lng": 38.72465
+  },
+  "Jemo Muzika Sefer Block 66": {
+    "lat": 8.96513,
+    "lng": 38.72658
+  },
+  "Jemo Muzika Sefer Block 67": {
+    "lat": 8.96016,
+    "lng": 38.72398
+  },
+  "Jemo Muzika Sefer Block 68": {
+    "lat": 8.96112,
+    "lng": 38.72798
+  },
+  "Jemo Muzika Sefer Block 69": {
+    "lat": 8.95965,
+    "lng": 38.72642
+  },
+  "Jemo Muzika Sefer Block 70": {
+    "lat": 8.96556,
+    "lng": 38.72638
+  },
+  "Jemo Muzika Sefer Block 71": {
+    "lat": 8.96899,
+    "lng": 38.72209
+  },
+  "Jemo Muzika Sefer Block 72": {
+    "lat": 8.96559,
+    "lng": 38.72775
+  },
+  "Jemo Muzika Sefer Block 73": {
+    "lat": 8.95964,
+    "lng": 38.71904
+  },
+  "Jemo Muzika Sefer Block 74": {
+    "lat": 8.96784,
+    "lng": 38.72573
+  },
+  "Jemo Muzika Sefer Block 75": {
+    "lat": 8.96299,
+    "lng": 38.72259
+  },
+  "Jemo Muzika Sefer Block 76": {
+    "lat": 8.96609,
+    "lng": 38.72691
+  },
+  "Jemo Muzika Sefer Block 77": {
+    "lat": 8.96474,
+    "lng": 38.72349
+  },
+  "Jemo Muzika Sefer Block 78": {
+    "lat": 8.96368,
+    "lng": 38.72082
+  },
+  "Jemo Muzika Sefer Block 79": {
+    "lat": 8.95963,
+    "lng": 38.72233
+  },
+  "Jemo Muzika Sefer Block 80": {
+    "lat": 8.96084,
+    "lng": 38.72439
+  },
+  "Jemo Muzika Sefer Block 81": {
+    "lat": 8.95991,
+    "lng": 38.72672
+  },
+  "Jemo Muzika Sefer Block 82": {
+    "lat": 8.96604,
+    "lng": 38.72631
+  },
+  "Jemo Muzika Sefer Block 83": {
+    "lat": 8.95980,
+    "lng": 38.72019
+  },
+  "Jemo Muzika Sefer Block 84": {
+    "lat": 8.96582,
+    "lng": 38.71945
+  },
+  "Jemo Muzika Sefer Block 85": {
+    "lat": 8.96161,
+    "lng": 38.72335
+  },
+  "Jemo Muzika Sefer Block 86": {
+    "lat": 8.96474,
+    "lng": 38.71944
+  },
+  "Jemo Muzika Sefer Block 87": {
+    "lat": 8.96127,
+    "lng": 38.71883
+  },
+  "Jemo Muzika Sefer Block 88": {
+    "lat": 8.96296,
+    "lng": 38.71921
+  },
+  "Jemo Muzika Sefer Block 89": {
+    "lat": 8.96105,
+    "lng": 38.72218
+  },
+  "Jemo Muzika Sefer Block 90": {
+    "lat": 8.96335,
+    "lng": 38.72170
+  },
+  "Jemo Muzika Sefer Block 91": {
+    "lat": 8.96291,
+    "lng": 38.72631
+  },
+  "Jemo Muzika Sefer Block 92": {
+    "lat": 8.96452,
+    "lng": 38.72767
+  },
+  "Jemo Muzika Sefer Block 93": {
+    "lat": 8.96045,
+    "lng": 38.71979
+  },
+  "Jemo Muzika Sefer Block 94": {
+    "lat": 8.96509,
+    "lng": 38.72449
+  },
+  "Jemo Muzika Sefer Block 95": {
+    "lat": 8.96278,
+    "lng": 38.72358
+  },
+  "Jemo Muzika Sefer Block 96": {
+    "lat": 8.96852,
+    "lng": 38.72169
+  },
+  "Jemo Muzika Sefer Block 97": {
+    "lat": 8.96130,
+    "lng": 38.72673
+  },
+  "Jemo Muzika Sefer Block 98": {
+    "lat": 8.96688,
+    "lng": 38.72456
+  },
+  "Jemo Muzika Sefer Block 99": {
+    "lat": 8.96383,
+    "lng": 38.72688
+  },
+  "Jemo Muzika Sefer Block 100": {
+    "lat": 8.96705,
+    "lng": 38.72457
+  },
+  "Kality Qera Block 1": {
+    "lat": 8.89532,
+    "lng": 38.75830
+  },
+  "Kality Qera Block 2": {
+    "lat": 8.89842,
+    "lng": 38.76297
+  },
+  "Kality Qera Block 3": {
+    "lat": 8.89773,
+    "lng": 38.75706
+  },
+  "Kality Qera Block 4": {
+    "lat": 8.89705,
+    "lng": 38.75412
+  },
+  "Kality Qera Block 5": {
+    "lat": 8.89913,
+    "lng": 38.75974
+  },
+  "Kality Qera Block 6": {
+    "lat": 8.89184,
+    "lng": 38.76244
+  },
+  "Kality Qera Block 7": {
+    "lat": 8.89842,
+    "lng": 38.75585
+  },
+  "Kality Qera Block 8": {
+    "lat": 8.89380,
+    "lng": 38.75643
+  },
+  "Kality Qera Block 9": {
+    "lat": 8.89312,
+    "lng": 38.76280
+  },
+  "Kality Qera Block 10": {
+    "lat": 8.89594,
+    "lng": 38.75557
+  },
+  "Kality Qera Block 11": {
+    "lat": 8.89763,
+    "lng": 38.75893
+  },
+  "Kality Qera Block 12": {
+    "lat": 8.89297,
+    "lng": 38.76105
+  },
+  "Kality Qera Block 13": {
+    "lat": 8.89626,
+    "lng": 38.75342
+  },
+  "Kality Qera Block 14": {
+    "lat": 8.89214,
+    "lng": 38.75754
+  },
+  "Kality Qera Block 15": {
+    "lat": 8.89928,
+    "lng": 38.76218
+  },
+  "Kality Qera Block 16": {
+    "lat": 8.89374,
+    "lng": 38.75777
+  },
+  "Kality Qera Block 17": {
+    "lat": 8.89764,
+    "lng": 38.75813
+  },
+  "Kality Qera Block 18": {
+    "lat": 8.89436,
+    "lng": 38.75914
+  },
+  "Kality Qera Block 19": {
+    "lat": 8.89480,
+    "lng": 38.76144
+  },
+  "Kality Qera Block 20": {
+    "lat": 8.89555,
+    "lng": 38.76065
+  },
+  "Kality Qera Block 21": {
+    "lat": 8.89814,
+    "lng": 38.75969
+  },
+  "Kality Qera Block 22": {
+    "lat": 8.89708,
+    "lng": 38.76304
+  },
+  "Kality Qera Block 23": {
+    "lat": 8.90013,
+    "lng": 38.76033
+  },
+  "Kality Qera Block 24": {
+    "lat": 8.89567,
+    "lng": 38.75561
+  },
+  "Kality Qera Block 25": {
+    "lat": 8.89682,
+    "lng": 38.75802
+  },
+  "Kality Qera Block 26": {
+    "lat": 8.89550,
+    "lng": 38.75437
+  },
+  "Kality Qera Block 27": {
+    "lat": 8.89112,
+    "lng": 38.75636
+  },
+  "Kality Qera Block 28": {
+    "lat": 8.89320,
+    "lng": 38.75560
+  },
+  "Kality Qera Block 29": {
+    "lat": 8.89859,
+    "lng": 38.75776
+  },
+  "Kality Qera Block 30": {
+    "lat": 8.89110,
+    "lng": 38.75998
+  },
+  "Kality Qera Block 31": {
+    "lat": 8.89803,
+    "lng": 38.75934
+  },
+  "Kality Qera Block 32": {
+    "lat": 8.89188,
+    "lng": 38.75892
+  },
+  "Kality Qera Block 33": {
+    "lat": 8.89098,
+    "lng": 38.75479
+  },
+  "Kality Qera Block 34": {
+    "lat": 8.89283,
+    "lng": 38.75850
+  },
+  "Kality Qera Block 35": {
+    "lat": 8.89488,
+    "lng": 38.76180
+  },
+  "Kality Qera Block 36": {
+    "lat": 8.89509,
+    "lng": 38.75789
+  },
+  "Kality Qera Block 37": {
+    "lat": 8.90039,
+    "lng": 38.75591
+  },
+  "Kality Qera Block 38": {
+    "lat": 8.89483,
+    "lng": 38.75389
+  },
+  "Kality Qera Block 39": {
+    "lat": 8.89476,
+    "lng": 38.76312
+  },
+  "Kality Qera Block 40": {
+    "lat": 8.89662,
+    "lng": 38.75791
+  },
+  "Kality Qera Block 41": {
+    "lat": 8.89809,
+    "lng": 38.75390
+  },
+  "Kality Qera Block 42": {
+    "lat": 8.89772,
+    "lng": 38.75706
+  },
+  "Kality Qera Block 43": {
+    "lat": 8.89091,
+    "lng": 38.76126
+  },
+  "Kality Qera Block 44": {
+    "lat": 8.89606,
+    "lng": 38.76215
+  },
+  "Kality Qera Block 45": {
+    "lat": 8.89838,
+    "lng": 38.75857
+  },
+  "Kality Qera Block 46": {
+    "lat": 8.89836,
+    "lng": 38.75420
+  },
+  "Kality Qera Block 47": {
+    "lat": 8.89200,
+    "lng": 38.76226
+  },
+  "Kality Qera Block 48": {
+    "lat": 8.89367,
+    "lng": 38.75482
+  },
+  "Kality Qera Block 49": {
+    "lat": 8.89386,
+    "lng": 38.76169
+  },
+  "Kality Qera Block 50": {
+    "lat": 8.89942,
+    "lng": 38.75791
+  },
+  "Kality Qera Block 51": {
+    "lat": 8.89848,
+    "lng": 38.75951
+  },
+  "Kality Qera Block 52": {
+    "lat": 8.89596,
+    "lng": 38.76062
+  },
+  "Kality Qera Block 53": {
+    "lat": 8.89942,
+    "lng": 38.75386
+  },
+  "Kality Qera Block 54": {
+    "lat": 8.89225,
+    "lng": 38.76286
+  },
+  "Kality Qera Block 55": {
+    "lat": 8.89167,
+    "lng": 38.75676
+  },
+  "Kality Qera Block 56": {
+    "lat": 8.89944,
+    "lng": 38.76273
+  },
+  "Kality Qera Block 57": {
+    "lat": 8.89715,
+    "lng": 38.76149
+  },
+  "Kality Qera Block 58": {
+    "lat": 8.89376,
+    "lng": 38.75341
+  },
+  "Kality Qera Block 59": {
+    "lat": 8.89211,
+    "lng": 38.75486
+  },
+  "Kality Qera Block 60": {
+    "lat": 8.89937,
+    "lng": 38.75883
+  },
+  "Kality Qera Block 61": {
+    "lat": 8.89172,
+    "lng": 38.76287
+  },
+  "Kality Qera Block 62": {
+    "lat": 8.89159,
+    "lng": 38.76176
+  },
+  "Kality Qera Block 63": {
+    "lat": 8.90007,
+    "lng": 38.75509
+  },
+  "Kality Qera Block 64": {
+    "lat": 8.89524,
+    "lng": 38.76069
+  },
+  "Kality Qera Block 65": {
+    "lat": 8.89505,
+    "lng": 38.75598
+  },
+  "Kality Qera Block 66": {
+    "lat": 8.89544,
+    "lng": 38.75654
+  },
+  "Kality Qera Block 67": {
+    "lat": 8.89347,
+    "lng": 38.75532
+  },
+  "Kality Qera Block 68": {
+    "lat": 8.89266,
+    "lng": 38.76249
+  },
+  "Kality Qera Block 69": {
+    "lat": 8.89850,
+    "lng": 38.75645
+  },
+  "Kality Qera Block 70": {
+    "lat": 8.90049,
+    "lng": 38.75883
+  },
+  "Kality Qera Block 71": {
+    "lat": 8.89193,
+    "lng": 38.75490
+  },
+  "Kality Qera Block 72": {
+    "lat": 8.89741,
+    "lng": 38.75359
+  },
+  "Kality Qera Block 73": {
+    "lat": 8.89478,
+    "lng": 38.75467
+  },
+  "Kality Qera Block 74": {
+    "lat": 8.89092,
+    "lng": 38.76291
+  },
+  "Kality Qera Block 75": {
+    "lat": 8.89814,
+    "lng": 38.75702
+  },
+  "Kality Qera Block 76": {
+    "lat": 8.89358,
+    "lng": 38.75970
+  },
+  "Kality Qera Block 77": {
+    "lat": 8.89654,
+    "lng": 38.76237
+  },
+  "Kality Qera Block 78": {
+    "lat": 8.89160,
+    "lng": 38.75563
+  },
+  "Kality Qera Block 79": {
+    "lat": 8.89489,
+    "lng": 38.76184
+  },
+  "Kality Qera Block 80": {
+    "lat": 8.89473,
+    "lng": 38.75433
+  },
+  "Kality Qera Block 81": {
+    "lat": 8.89991,
+    "lng": 38.75826
+  },
+  "Kality Qera Block 82": {
+    "lat": 8.89726,
+    "lng": 38.75690
+  },
+  "Kality Qera Block 83": {
+    "lat": 8.89489,
+    "lng": 38.75752
+  },
+  "Kality Qera Block 84": {
+    "lat": 8.89604,
+    "lng": 38.75899
+  },
+  "Kality Qera Block 85": {
+    "lat": 8.89182,
+    "lng": 38.75592
+  },
+  "Kality Qera Block 86": {
+    "lat": 8.89215,
+    "lng": 38.76103
+  },
+  "Kality Qera Block 87": {
+    "lat": 8.89651,
+    "lng": 38.76213
+  },
+  "Kality Qera Block 88": {
+    "lat": 8.89412,
+    "lng": 38.75809
+  },
+  "Kality Qera Block 89": {
+    "lat": 8.89233,
+    "lng": 38.75652
+  },
+  "Kality Qera Block 90": {
+    "lat": 8.90015,
+    "lng": 38.75330
+  },
+  "Kality Qera Block 91": {
+    "lat": 8.89259,
+    "lng": 38.75886
+  },
+  "Kality Qera Block 92": {
+    "lat": 8.90037,
+    "lng": 38.75712
+  },
+  "Kality Qera Block 93": {
+    "lat": 8.89231,
+    "lng": 38.76327
+  },
+  "Kality Qera Block 94": {
+    "lat": 8.89803,
+    "lng": 38.76167
+  },
+  "Kality Qera Block 95": {
+    "lat": 8.89808,
+    "lng": 38.75825
+  },
+  "Kality Qera Block 96": {
+    "lat": 8.89824,
+    "lng": 38.75725
+  },
+  "Kality Qera Block 97": {
+    "lat": 8.89709,
+    "lng": 38.76199
+  },
+  "Kality Qera Block 98": {
+    "lat": 8.89313,
+    "lng": 38.75593
+  },
+  "Kality Qera Block 99": {
+    "lat": 8.89205,
+    "lng": 38.75750
+  },
+  "Kality Qera Block 100": {
+    "lat": 8.89679,
+    "lng": 38.75477
+  },
+  "Kality Total Block 1": {
+    "lat": 8.89736,
+    "lng": 38.75719
+  },
+  "Kality Total Block 2": {
+    "lat": 8.89419,
+    "lng": 38.75367
+  },
+  "Kality Total Block 3": {
+    "lat": 8.89056,
+    "lng": 38.76223
+  },
+  "Kality Total Block 4": {
+    "lat": 8.89587,
+    "lng": 38.75442
+  },
+  "Kality Total Block 5": {
+    "lat": 8.89286,
+    "lng": 38.75355
+  },
+  "Kality Total Block 6": {
+    "lat": 8.89377,
+    "lng": 38.75893
+  },
+  "Kality Total Block 7": {
+    "lat": 8.89586,
+    "lng": 38.76242
+  },
+  "Kality Total Block 8": {
+    "lat": 8.89425,
+    "lng": 38.75432
+  },
+  "Kality Total Block 9": {
+    "lat": 8.89267,
+    "lng": 38.76271
+  },
+  "Kality Total Block 10": {
+    "lat": 8.90016,
+    "lng": 38.75628
+  },
+  "Kality Total Block 11": {
+    "lat": 8.90035,
+    "lng": 38.75752
+  },
+  "Kality Total Block 12": {
+    "lat": 8.89625,
+    "lng": 38.76021
+  },
+  "Kality Total Block 13": {
+    "lat": 8.89729,
+    "lng": 38.75398
+  },
+  "Kality Total Block 14": {
+    "lat": 8.89282,
+    "lng": 38.75342
+  },
+  "Kality Total Block 15": {
+    "lat": 8.89785,
+    "lng": 38.75583
+  },
+  "Kality Total Block 16": {
+    "lat": 8.89131,
+    "lng": 38.75759
+  },
+  "Kality Total Block 17": {
+    "lat": 8.89846,
+    "lng": 38.76118
+  },
+  "Kality Total Block 18": {
+    "lat": 8.89436,
+    "lng": 38.75715
+  },
+  "Kality Total Block 19": {
+    "lat": 8.89237,
+    "lng": 38.75751
+  },
+  "Kality Total Block 20": {
+    "lat": 8.89332,
+    "lng": 38.75941
+  },
+  "Kality Total Block 21": {
+    "lat": 8.89527,
+    "lng": 38.75625
+  },
+  "Kality Total Block 22": {
+    "lat": 8.89136,
+    "lng": 38.75505
+  },
+  "Kality Total Block 23": {
+    "lat": 8.89077,
+    "lng": 38.75909
+  },
+  "Kality Total Block 24": {
+    "lat": 8.89172,
+    "lng": 38.76181
+  },
+  "Kality Total Block 25": {
+    "lat": 8.89534,
+    "lng": 38.75604
+  },
+  "Kality Total Block 26": {
+    "lat": 8.89101,
+    "lng": 38.76034
+  },
+  "Kality Total Block 27": {
+    "lat": 8.89131,
+    "lng": 38.75683
+  },
+  "Kality Total Block 28": {
+    "lat": 8.89088,
+    "lng": 38.75826
+  },
+  "Kality Total Block 29": {
+    "lat": 8.89133,
+    "lng": 38.75545
+  },
+  "Kality Total Block 30": {
+    "lat": 8.89748,
+    "lng": 38.75668
+  },
+  "Kality Total Block 31": {
+    "lat": 8.89703,
+    "lng": 38.76204
+  },
+  "Kality Total Block 32": {
+    "lat": 8.89857,
+    "lng": 38.76299
+  },
+  "Kality Total Block 33": {
+    "lat": 8.89939,
+    "lng": 38.75758
+  },
+  "Kality Total Block 34": {
+    "lat": 8.89231,
+    "lng": 38.75361
+  },
+  "Kality Total Block 35": {
+    "lat": 8.89658,
+    "lng": 38.75935
+  },
+  "Kality Total Block 36": {
+    "lat": 8.89915,
+    "lng": 38.75501
+  },
+  "Kality Total Block 37": {
+    "lat": 8.89823,
+    "lng": 38.76193
+  },
+  "Kality Total Block 38": {
+    "lat": 8.89375,
+    "lng": 38.75633
+  },
+  "Kality Total Block 39": {
+    "lat": 8.90037,
+    "lng": 38.76314
+  },
+  "Kality Total Block 40": {
+    "lat": 8.89769,
+    "lng": 38.75800
+  },
+  "Kality Total Block 41": {
+    "lat": 8.89704,
+    "lng": 38.75668
+  },
+  "Kality Total Block 42": {
+    "lat": 8.89629,
+    "lng": 38.75948
+  },
+  "Kality Total Block 43": {
+    "lat": 8.89664,
+    "lng": 38.76029
+  },
+  "Kality Total Block 44": {
+    "lat": 8.89580,
+    "lng": 38.75425
+  },
+  "Kality Total Block 45": {
+    "lat": 8.90015,
+    "lng": 38.76021
+  },
+  "Kality Total Block 46": {
+    "lat": 8.89178,
+    "lng": 38.75604
+  },
+  "Kality Total Block 47": {
+    "lat": 8.89190,
+    "lng": 38.75938
+  },
+  "Kality Total Block 48": {
+    "lat": 8.89344,
+    "lng": 38.75576
+  },
+  "Kality Total Block 49": {
+    "lat": 8.90025,
+    "lng": 38.75520
+  },
+  "Kality Total Block 50": {
+    "lat": 8.89923,
+    "lng": 38.75769
+  },
+  "Kality Total Block 51": {
+    "lat": 8.89978,
+    "lng": 38.75986
+  },
+  "Kality Total Block 52": {
+    "lat": 8.89113,
+    "lng": 38.75752
+  },
+  "Kality Total Block 53": {
+    "lat": 8.89174,
+    "lng": 38.76276
+  },
+  "Kality Total Block 54": {
+    "lat": 8.89740,
+    "lng": 38.75606
+  },
+  "Kality Total Block 55": {
+    "lat": 8.89245,
+    "lng": 38.75363
+  },
+  "Kality Total Block 56": {
+    "lat": 8.89615,
+    "lng": 38.75400
+  },
+  "Kality Total Block 57": {
+    "lat": 8.89860,
+    "lng": 38.75482
+  },
+  "Kality Total Block 58": {
+    "lat": 8.89095,
+    "lng": 38.76292
+  },
+  "Kality Total Block 59": {
+    "lat": 8.89339,
+    "lng": 38.75672
+  },
+  "Kality Total Block 60": {
+    "lat": 8.90024,
+    "lng": 38.75830
+  },
+  "Kality Total Block 61": {
+    "lat": 8.89528,
+    "lng": 38.75445
+  },
+  "Kality Total Block 62": {
+    "lat": 8.89279,
+    "lng": 38.75396
+  },
+  "Kality Total Block 63": {
+    "lat": 8.89429,
+    "lng": 38.76138
+  },
+  "Kality Total Block 64": {
+    "lat": 8.89322,
+    "lng": 38.75509
+  },
+  "Kality Total Block 65": {
+    "lat": 8.89635,
+    "lng": 38.75631
+  },
+  "Kality Total Block 66": {
+    "lat": 8.89704,
+    "lng": 38.76231
+  },
+  "Kality Total Block 67": {
+    "lat": 8.89804,
+    "lng": 38.75942
+  },
+  "Kality Total Block 68": {
+    "lat": 8.89150,
+    "lng": 38.76031
+  },
+  "Kality Total Block 69": {
+    "lat": 8.89517,
+    "lng": 38.75552
+  },
+  "Kality Total Block 70": {
+    "lat": 8.89500,
+    "lng": 38.75463
+  },
+  "Kality Total Block 71": {
+    "lat": 8.89912,
+    "lng": 38.75819
+  },
+  "Kality Total Block 72": {
+    "lat": 8.90025,
+    "lng": 38.75376
+  },
+  "Kality Total Block 73": {
+    "lat": 8.89233,
+    "lng": 38.75431
+  },
+  "Kality Total Block 74": {
+    "lat": 8.89342,
+    "lng": 38.75724
+  },
+  "Kality Total Block 75": {
+    "lat": 8.89866,
+    "lng": 38.76018
+  },
+  "Kality Total Block 76": {
+    "lat": 8.89473,
+    "lng": 38.76114
+  },
+  "Kality Total Block 77": {
+    "lat": 8.89626,
+    "lng": 38.75372
+  },
+  "Kality Total Block 78": {
+    "lat": 8.89689,
+    "lng": 38.76180
+  },
+  "Kality Total Block 79": {
+    "lat": 8.89926,
+    "lng": 38.75485
+  },
+  "Kality Total Block 80": {
+    "lat": 8.89793,
+    "lng": 38.75616
+  },
+  "Kality Total Block 81": {
+    "lat": 8.89467,
+    "lng": 38.75870
+  },
+  "Kality Total Block 82": {
+    "lat": 8.89676,
+    "lng": 38.76097
+  },
+  "Kality Total Block 83": {
+    "lat": 8.89560,
+    "lng": 38.76129
+  },
+  "Kality Total Block 84": {
+    "lat": 8.89784,
+    "lng": 38.76224
+  },
+  "Kality Total Block 85": {
+    "lat": 8.89606,
+    "lng": 38.76310
+  },
+  "Kality Total Block 86": {
+    "lat": 8.89509,
+    "lng": 38.75852
+  },
+  "Kality Total Block 87": {
+    "lat": 8.90048,
+    "lng": 38.75341
+  },
+  "Kality Total Block 88": {
+    "lat": 8.90004,
+    "lng": 38.76165
+  },
+  "Kality Total Block 89": {
+    "lat": 8.89336,
+    "lng": 38.75705
+  },
+  "Kality Total Block 90": {
+    "lat": 8.90026,
+    "lng": 38.75802
+  },
+  "Kality Total Block 91": {
+    "lat": 8.89769,
+    "lng": 38.76149
+  },
+  "Kality Total Block 92": {
+    "lat": 8.89390,
+    "lng": 38.75411
+  },
+  "Kality Total Block 93": {
+    "lat": 8.90004,
+    "lng": 38.75727
+  },
+  "Kality Total Block 94": {
+    "lat": 8.89878,
+    "lng": 38.75968
+  },
+  "Kality Total Block 95": {
+    "lat": 8.89468,
+    "lng": 38.75918
+  },
+  "Kality Total Block 96": {
+    "lat": 8.89674,
+    "lng": 38.75661
+  },
+  "Kality Total Block 97": {
+    "lat": 8.89078,
+    "lng": 38.75828
+  },
+  "Kality Total Block 98": {
+    "lat": 8.89972,
+    "lng": 38.75522
+  },
+  "Kality Total Block 99": {
+    "lat": 8.89830,
+    "lng": 38.75421
+  },
+  "Kality Total Block 100": {
+    "lat": 8.89917,
+    "lng": 38.75727
+  },
+  "Kality Square Block 1": {
+    "lat": 8.89090,
+    "lng": 38.76016
+  },
+  "Kality Square Block 2": {
+    "lat": 8.89608,
+    "lng": 38.75510
+  },
+  "Kality Square Block 3": {
+    "lat": 8.89441,
+    "lng": 38.75638
+  },
+  "Kality Square Block 4": {
+    "lat": 8.89715,
+    "lng": 38.76118
+  },
+  "Kality Square Block 5": {
+    "lat": 8.89488,
+    "lng": 38.76316
+  },
+  "Kality Square Block 6": {
+    "lat": 8.89616,
+    "lng": 38.76105
+  },
+  "Kality Square Block 7": {
+    "lat": 8.89726,
+    "lng": 38.76234
+  },
+  "Kality Square Block 8": {
+    "lat": 8.89078,
+    "lng": 38.75616
+  },
+  "Kality Square Block 9": {
+    "lat": 8.90037,
+    "lng": 38.75872
+  },
+  "Kality Square Block 10": {
+    "lat": 8.89066,
+    "lng": 38.75966
+  },
+  "Kality Square Block 11": {
+    "lat": 8.89944,
+    "lng": 38.75685
+  },
+  "Kality Square Block 12": {
+    "lat": 8.89975,
+    "lng": 38.75767
+  },
+  "Kality Square Block 13": {
+    "lat": 8.89084,
+    "lng": 38.75454
+  },
+  "Kality Square Block 14": {
+    "lat": 8.89281,
+    "lng": 38.76082
+  },
+  "Kality Square Block 15": {
+    "lat": 8.89175,
+    "lng": 38.75606
+  },
+  "Kality Square Block 16": {
+    "lat": 8.89056,
+    "lng": 38.75848
+  },
+  "Kality Square Block 17": {
+    "lat": 8.90031,
+    "lng": 38.76151
+  },
+  "Kality Square Block 18": {
+    "lat": 8.89132,
+    "lng": 38.75407
+  },
+  "Kality Square Block 19": {
+    "lat": 8.89943,
+    "lng": 38.76059
+  },
+  "Kality Square Block 20": {
+    "lat": 8.89220,
+    "lng": 38.75349
+  },
+  "Kality Square Block 21": {
+    "lat": 8.89490,
+    "lng": 38.75731
+  },
+  "Kality Square Block 22": {
+    "lat": 8.89306,
+    "lng": 38.75928
+  },
+  "Kality Square Block 23": {
+    "lat": 8.89214,
+    "lng": 38.75439
+  },
+  "Kality Square Block 24": {
+    "lat": 8.89119,
+    "lng": 38.75646
+  },
+  "Kality Square Block 25": {
+    "lat": 8.90048,
+    "lng": 38.75633
+  },
+  "Kality Square Block 26": {
+    "lat": 8.89339,
+    "lng": 38.75575
+  },
+  "Kality Square Block 27": {
+    "lat": 8.89761,
+    "lng": 38.76006
+  },
+  "Kality Square Block 28": {
+    "lat": 8.89401,
+    "lng": 38.75912
+  },
+  "Kality Square Block 29": {
+    "lat": 8.89450,
+    "lng": 38.75598
+  },
+  "Kality Square Block 30": {
+    "lat": 8.89766,
+    "lng": 38.75953
+  },
+  "Kality Square Block 31": {
+    "lat": 8.89051,
+    "lng": 38.75369
+  },
+  "Kality Square Block 32": {
+    "lat": 8.89794,
+    "lng": 38.75733
+  },
+  "Kality Square Block 33": {
+    "lat": 8.89974,
+    "lng": 38.75563
+  },
+  "Kality Square Block 34": {
+    "lat": 8.89438,
+    "lng": 38.75914
+  },
+  "Kality Square Block 35": {
+    "lat": 8.89129,
+    "lng": 38.76099
+  },
+  "Kality Square Block 36": {
+    "lat": 8.89699,
+    "lng": 38.75791
+  },
+  "Kality Square Block 37": {
+    "lat": 8.89175,
+    "lng": 38.75631
+  },
+  "Kality Square Block 38": {
+    "lat": 8.89399,
+    "lng": 38.75895
+  },
+  "Kality Square Block 39": {
+    "lat": 8.89065,
+    "lng": 38.76090
+  },
+  "Kality Square Block 40": {
+    "lat": 8.89502,
+    "lng": 38.75419
+  },
+  "Kality Square Block 41": {
+    "lat": 8.90021,
+    "lng": 38.75694
+  },
+  "Kality Square Block 42": {
+    "lat": 8.89610,
+    "lng": 38.75526
+  },
+  "Kality Square Block 43": {
+    "lat": 8.89057,
+    "lng": 38.75469
+  },
+  "Kality Square Block 44": {
+    "lat": 8.89300,
+    "lng": 38.76172
+  },
+  "Kality Square Block 45": {
+    "lat": 8.89859,
+    "lng": 38.75612
+  },
+  "Kality Square Block 46": {
+    "lat": 8.89520,
+    "lng": 38.75482
+  },
+  "Kality Square Block 47": {
+    "lat": 8.89709,
+    "lng": 38.75522
+  },
+  "Kality Square Block 48": {
+    "lat": 8.89286,
+    "lng": 38.75786
+  },
+  "Kality Square Block 49": {
+    "lat": 8.89545,
+    "lng": 38.76250
+  },
+  "Kality Square Block 50": {
+    "lat": 8.89211,
+    "lng": 38.76255
+  },
+  "Kality Square Block 51": {
+    "lat": 8.89825,
+    "lng": 38.76033
+  },
+  "Kality Square Block 52": {
+    "lat": 8.89842,
+    "lng": 38.76043
+  },
+  "Kality Square Block 53": {
+    "lat": 8.89121,
+    "lng": 38.75512
+  },
+  "Kality Square Block 54": {
+    "lat": 8.89870,
+    "lng": 38.76097
+  },
+  "Kality Square Block 55": {
+    "lat": 8.89964,
+    "lng": 38.75936
+  },
+  "Kality Square Block 56": {
+    "lat": 8.89680,
+    "lng": 38.75684
+  },
+  "Kality Square Block 57": {
+    "lat": 8.89981,
+    "lng": 38.75599
+  },
+  "Kality Square Block 58": {
+    "lat": 8.89763,
+    "lng": 38.75690
+  },
+  "Kality Square Block 59": {
+    "lat": 8.89769,
+    "lng": 38.75422
+  },
+  "Kality Square Block 60": {
+    "lat": 8.89171,
+    "lng": 38.76037
+  },
+  "Kality Square Block 61": {
+    "lat": 8.89229,
+    "lng": 38.76140
+  },
+  "Kality Square Block 62": {
+    "lat": 8.89690,
+    "lng": 38.75822
+  },
+  "Kality Square Block 63": {
+    "lat": 8.89218,
+    "lng": 38.76010
+  },
+  "Kality Square Block 64": {
+    "lat": 8.89505,
+    "lng": 38.75790
+  },
+  "Kality Square Block 65": {
+    "lat": 8.89446,
+    "lng": 38.75809
+  },
+  "Kality Square Block 66": {
+    "lat": 8.90025,
+    "lng": 38.75872
+  },
+  "Kality Square Block 67": {
+    "lat": 8.89067,
+    "lng": 38.76239
+  },
+  "Kality Square Block 68": {
+    "lat": 8.89429,
+    "lng": 38.75689
+  },
+  "Kality Square Block 69": {
+    "lat": 8.89182,
+    "lng": 38.76012
+  },
+  "Kality Square Block 70": {
+    "lat": 8.89855,
+    "lng": 38.76162
+  },
+  "Kality Square Block 71": {
+    "lat": 8.89126,
+    "lng": 38.75811
+  },
+  "Kality Square Block 72": {
+    "lat": 8.89383,
+    "lng": 38.75873
+  },
+  "Kality Square Block 73": {
+    "lat": 8.89787,
+    "lng": 38.76027
+  },
+  "Kality Square Block 74": {
+    "lat": 8.89314,
+    "lng": 38.76071
+  },
+  "Kality Square Block 75": {
+    "lat": 8.89884,
+    "lng": 38.75658
+  },
+  "Kality Square Block 76": {
+    "lat": 8.89138,
+    "lng": 38.75694
+  },
+  "Kality Square Block 77": {
+    "lat": 8.89101,
+    "lng": 38.75519
+  },
+  "Kality Square Block 78": {
+    "lat": 8.89641,
+    "lng": 38.76052
+  },
+  "Kality Square Block 79": {
+    "lat": 8.89334,
+    "lng": 38.76261
+  },
+  "Kality Square Block 80": {
+    "lat": 8.89625,
+    "lng": 38.75558
+  },
+  "Kality Square Block 81": {
+    "lat": 8.89215,
+    "lng": 38.75742
+  },
+  "Kality Square Block 82": {
+    "lat": 8.89072,
+    "lng": 38.75864
+  },
+  "Kality Square Block 83": {
+    "lat": 8.89396,
+    "lng": 38.75891
+  },
+  "Kality Square Block 84": {
+    "lat": 8.89677,
+    "lng": 38.76183
+  },
+  "Kality Square Block 85": {
+    "lat": 8.89761,
+    "lng": 38.75524
+  },
+  "Kality Square Block 86": {
+    "lat": 8.89863,
+    "lng": 38.75896
+  },
+  "Kality Square Block 87": {
+    "lat": 8.89377,
+    "lng": 38.75451
+  },
+  "Kality Square Block 88": {
+    "lat": 8.89385,
+    "lng": 38.75355
+  },
+  "Kality Square Block 89": {
+    "lat": 8.89949,
+    "lng": 38.76319
+  },
+  "Kality Square Block 90": {
+    "lat": 8.89116,
+    "lng": 38.76194
+  },
+  "Kality Square Block 91": {
+    "lat": 8.89409,
+    "lng": 38.76262
+  },
+  "Kality Square Block 92": {
+    "lat": 8.89987,
+    "lng": 38.76005
+  },
+  "Kality Square Block 93": {
+    "lat": 8.89305,
+    "lng": 38.75899
+  },
+  "Kality Square Block 94": {
+    "lat": 8.89689,
+    "lng": 38.75932
+  },
+  "Kality Square Block 95": {
+    "lat": 8.89912,
+    "lng": 38.75590
+  },
+  "Kality Square Block 96": {
+    "lat": 8.89541,
+    "lng": 38.75618
+  },
+  "Kality Square Block 97": {
+    "lat": 8.89344,
+    "lng": 38.75426
+  },
+  "Kality Square Block 98": {
+    "lat": 8.89450,
+    "lng": 38.75653
+  },
+  "Kality Square Block 99": {
+    "lat": 8.89731,
+    "lng": 38.76314
+  },
+  "Kality Square Block 100": {
+    "lat": 8.89721,
+    "lng": 38.75927
+  },
+  "Kality Condominium Block 1": {
+    "lat": 8.89267,
+    "lng": 38.75567
+  },
+  "Kality Condominium Block 2": {
+    "lat": 8.89498,
+    "lng": 38.75866
+  },
+  "Kality Condominium Block 3": {
+    "lat": 8.89659,
+    "lng": 38.76120
+  },
+  "Kality Condominium Block 4": {
+    "lat": 8.89538,
+    "lng": 38.75617
+  },
+  "Kality Condominium Block 5": {
+    "lat": 8.89329,
+    "lng": 38.75854
+  },
+  "Kality Condominium Block 6": {
+    "lat": 8.89805,
+    "lng": 38.75943
+  },
+  "Kality Condominium Block 7": {
+    "lat": 8.89220,
+    "lng": 38.75852
+  },
+  "Kality Condominium Block 8": {
+    "lat": 8.89263,
+    "lng": 38.75450
+  },
+  "Kality Condominium Block 9": {
+    "lat": 8.89381,
+    "lng": 38.75976
+  },
+  "Kality Condominium Block 10": {
+    "lat": 8.89935,
+    "lng": 38.75790
+  },
+  "Kality Condominium Block 11": {
+    "lat": 8.89326,
+    "lng": 38.75748
+  },
+  "Kality Condominium Block 12": {
+    "lat": 8.89577,
+    "lng": 38.75571
+  },
+  "Kality Condominium Block 13": {
+    "lat": 8.89160,
+    "lng": 38.75466
+  },
+  "Kality Condominium Block 14": {
+    "lat": 8.89351,
+    "lng": 38.75823
+  },
+  "Kality Condominium Block 15": {
+    "lat": 8.89688,
+    "lng": 38.75348
+  },
+  "Kality Condominium Block 16": {
+    "lat": 8.89386,
+    "lng": 38.75689
+  },
+  "Kality Condominium Block 17": {
+    "lat": 8.89134,
+    "lng": 38.75868
+  },
+  "Kality Condominium Block 18": {
+    "lat": 8.89347,
+    "lng": 38.75542
+  },
+  "Kality Condominium Block 19": {
+    "lat": 8.89141,
+    "lng": 38.75760
+  },
+  "Kality Condominium Block 20": {
+    "lat": 8.89693,
+    "lng": 38.75544
+  },
+  "Kality Condominium Block 21": {
+    "lat": 8.89345,
+    "lng": 38.75637
+  },
+  "Kality Condominium Block 22": {
+    "lat": 8.89168,
+    "lng": 38.76330
+  },
+  "Kality Condominium Block 23": {
+    "lat": 8.89224,
+    "lng": 38.75498
+  },
+  "Kality Condominium Block 24": {
+    "lat": 8.89965,
+    "lng": 38.75731
+  },
+  "Kality Condominium Block 25": {
+    "lat": 8.89655,
+    "lng": 38.76203
+  },
+  "Kality Condominium Block 26": {
+    "lat": 8.89284,
+    "lng": 38.75686
+  },
+  "Kality Condominium Block 27": {
+    "lat": 8.89968,
+    "lng": 38.75875
+  },
+  "Kality Condominium Block 28": {
+    "lat": 8.89738,
+    "lng": 38.75609
+  },
+  "Kality Condominium Block 29": {
+    "lat": 8.89586,
+    "lng": 38.75979
+  },
+  "Kality Condominium Block 30": {
+    "lat": 8.89641,
+    "lng": 38.76253
+  },
+  "Kality Condominium Block 31": {
+    "lat": 8.89826,
+    "lng": 38.75701
+  },
+  "Kality Condominium Block 32": {
+    "lat": 8.89571,
+    "lng": 38.76246
+  },
+  "Kality Condominium Block 33": {
+    "lat": 8.89052,
+    "lng": 38.75941
+  },
+  "Kality Condominium Block 34": {
+    "lat": 8.89804,
+    "lng": 38.75759
+  },
+  "Kality Condominium Block 35": {
+    "lat": 8.89210,
+    "lng": 38.75746
+  },
+  "Kality Condominium Block 36": {
+    "lat": 8.89769,
+    "lng": 38.75368
+  },
+  "Kality Condominium Block 37": {
+    "lat": 8.89325,
+    "lng": 38.75497
+  },
+  "Kality Condominium Block 38": {
+    "lat": 8.89664,
+    "lng": 38.75973
+  },
+  "Kality Condominium Block 39": {
+    "lat": 8.89055,
+    "lng": 38.75348
+  },
+  "Kality Condominium Block 40": {
+    "lat": 8.89587,
+    "lng": 38.76094
+  },
+  "Kality Condominium Block 41": {
+    "lat": 8.89774,
+    "lng": 38.75381
+  },
+  "Kality Condominium Block 42": {
+    "lat": 8.89789,
+    "lng": 38.75773
+  },
+  "Kality Condominium Block 43": {
+    "lat": 8.90027,
+    "lng": 38.75758
+  },
+  "Kality Condominium Block 44": {
+    "lat": 8.89538,
+    "lng": 38.75716
+  },
+  "Kality Condominium Block 45": {
+    "lat": 8.89164,
+    "lng": 38.75419
+  },
+  "Kality Condominium Block 46": {
+    "lat": 8.89333,
+    "lng": 38.75511
+  },
+  "Kality Condominium Block 47": {
+    "lat": 8.89339,
+    "lng": 38.76029
+  },
+  "Kality Condominium Block 48": {
+    "lat": 8.89554,
+    "lng": 38.75722
+  },
+  "Kality Condominium Block 49": {
+    "lat": 8.89854,
+    "lng": 38.75978
+  },
+  "Kality Condominium Block 50": {
+    "lat": 8.89610,
+    "lng": 38.75988
+  },
+  "Kality Condominium Block 51": {
+    "lat": 8.89666,
+    "lng": 38.75869
+  },
+  "Kality Condominium Block 52": {
+    "lat": 8.89946,
+    "lng": 38.76307
+  },
+  "Kality Condominium Block 53": {
+    "lat": 8.89715,
+    "lng": 38.76156
+  },
+  "Kality Condominium Block 54": {
+    "lat": 8.89538,
+    "lng": 38.76172
+  },
+  "Kality Condominium Block 55": {
+    "lat": 8.89987,
+    "lng": 38.75896
+  },
+  "Kality Condominium Block 56": {
+    "lat": 8.89060,
+    "lng": 38.76172
+  },
+  "Kality Condominium Block 57": {
+    "lat": 8.89470,
+    "lng": 38.76221
+  },
+  "Kality Condominium Block 58": {
+    "lat": 8.89574,
+    "lng": 38.75914
+  },
+  "Kality Condominium Block 59": {
+    "lat": 8.90038,
+    "lng": 38.75558
+  },
+  "Kality Condominium Block 60": {
+    "lat": 8.89430,
+    "lng": 38.75811
+  },
+  "Kality Condominium Block 61": {
+    "lat": 8.89101,
+    "lng": 38.75848
+  },
+  "Kality Condominium Block 62": {
+    "lat": 8.89187,
+    "lng": 38.75801
+  },
+  "Kality Condominium Block 63": {
+    "lat": 8.89320,
+    "lng": 38.75958
+  },
+  "Kality Condominium Block 64": {
+    "lat": 8.89724,
+    "lng": 38.75695
+  },
+  "Kality Condominium Block 65": {
+    "lat": 8.89058,
+    "lng": 38.76216
+  },
+  "Kality Condominium Block 66": {
+    "lat": 8.89893,
+    "lng": 38.75856
+  },
+  "Kality Condominium Block 67": {
+    "lat": 8.89944,
+    "lng": 38.75433
+  },
+  "Kality Condominium Block 68": {
+    "lat": 8.89113,
+    "lng": 38.75491
+  },
+  "Kality Condominium Block 69": {
+    "lat": 8.89888,
+    "lng": 38.75603
+  },
+  "Kality Condominium Block 70": {
+    "lat": 8.89944,
+    "lng": 38.75396
+  },
+  "Kality Condominium Block 71": {
+    "lat": 8.89728,
+    "lng": 38.75671
+  },
+  "Kality Condominium Block 72": {
+    "lat": 8.89436,
+    "lng": 38.76051
+  },
+  "Kality Condominium Block 73": {
+    "lat": 8.89319,
+    "lng": 38.76296
+  },
+  "Kality Condominium Block 74": {
+    "lat": 8.89586,
+    "lng": 38.75749
+  },
+  "Kality Condominium Block 75": {
+    "lat": 8.89560,
+    "lng": 38.75633
+  },
+  "Kality Condominium Block 76": {
+    "lat": 8.89462,
+    "lng": 38.76110
+  },
+  "Kality Condominium Block 77": {
+    "lat": 8.89839,
+    "lng": 38.75956
+  },
+  "Kality Condominium Block 78": {
+    "lat": 8.89760,
+    "lng": 38.75405
+  },
+  "Kality Condominium Block 79": {
+    "lat": 8.89514,
+    "lng": 38.76166
+  },
+  "Kality Condominium Block 80": {
+    "lat": 8.89054,
+    "lng": 38.75336
+  },
+  "Kality Condominium Block 81": {
+    "lat": 8.89941,
+    "lng": 38.76176
+  },
+  "Kality Condominium Block 82": {
+    "lat": 8.89090,
+    "lng": 38.76112
+  },
+  "Kality Condominium Block 83": {
+    "lat": 8.89753,
+    "lng": 38.76187
+  },
+  "Kality Condominium Block 84": {
+    "lat": 8.89209,
+    "lng": 38.75966
+  },
+  "Kality Condominium Block 85": {
+    "lat": 8.89322,
+    "lng": 38.76016
+  },
+  "Kality Condominium Block 86": {
+    "lat": 8.89693,
+    "lng": 38.75732
+  },
+  "Kality Condominium Block 87": {
+    "lat": 8.89982,
+    "lng": 38.76042
+  },
+  "Kality Condominium Block 88": {
+    "lat": 8.90027,
+    "lng": 38.76316
+  },
+  "Kality Condominium Block 89": {
+    "lat": 8.89297,
+    "lng": 38.76107
+  },
+  "Kality Condominium Block 90": {
+    "lat": 8.89184,
+    "lng": 38.75522
+  },
+  "Kality Condominium Block 91": {
+    "lat": 8.89150,
+    "lng": 38.75478
+  },
+  "Kality Condominium Block 92": {
+    "lat": 8.89766,
+    "lng": 38.75546
+  },
+  "Kality Condominium Block 93": {
+    "lat": 8.89532,
+    "lng": 38.76307
+  },
+  "Kality Condominium Block 94": {
+    "lat": 8.89713,
+    "lng": 38.76028
+  },
+  "Kality Condominium Block 95": {
+    "lat": 8.89217,
+    "lng": 38.75344
+  },
+  "Kality Condominium Block 96": {
+    "lat": 8.89706,
+    "lng": 38.75762
+  },
+  "Kality Condominium Block 97": {
+    "lat": 8.89373,
+    "lng": 38.76257
+  },
+  "Kality Condominium Block 98": {
+    "lat": 8.89743,
+    "lng": 38.76193
+  },
+  "Kality Condominium Block 99": {
+    "lat": 8.89674,
+    "lng": 38.76287
+  },
+  "Kality Condominium Block 100": {
+    "lat": 8.89277,
+    "lng": 38.75413
+  },
+  "Kality Gabriel Block 1": {
+    "lat": 8.89849,
+    "lng": 38.75546
+  },
+  "Kality Gabriel Block 2": {
+    "lat": 8.89376,
+    "lng": 38.75572
+  },
+  "Kality Gabriel Block 3": {
+    "lat": 8.89446,
+    "lng": 38.76112
+  },
+  "Kality Gabriel Block 4": {
+    "lat": 8.89669,
+    "lng": 38.76254
+  },
+  "Kality Gabriel Block 5": {
+    "lat": 8.89305,
+    "lng": 38.76010
+  },
+  "Kality Gabriel Block 6": {
+    "lat": 8.90004,
+    "lng": 38.76050
+  },
+  "Kality Gabriel Block 7": {
+    "lat": 8.89134,
+    "lng": 38.75730
+  },
+  "Kality Gabriel Block 8": {
+    "lat": 8.89847,
+    "lng": 38.76281
+  },
+  "Kality Gabriel Block 9": {
+    "lat": 8.89691,
+    "lng": 38.75516
+  },
+  "Kality Gabriel Block 10": {
+    "lat": 8.89554,
+    "lng": 38.76130
+  },
+  "Kality Gabriel Block 11": {
+    "lat": 8.89060,
+    "lng": 38.75795
+  },
+  "Kality Gabriel Block 12": {
+    "lat": 8.89658,
+    "lng": 38.75435
+  },
+  "Kality Gabriel Block 13": {
+    "lat": 8.89396,
+    "lng": 38.76126
+  },
+  "Kality Gabriel Block 14": {
+    "lat": 8.89982,
+    "lng": 38.76170
+  },
+  "Kality Gabriel Block 15": {
+    "lat": 8.89909,
+    "lng": 38.75371
+  },
+  "Kality Gabriel Block 16": {
+    "lat": 8.89780,
+    "lng": 38.75730
+  },
+  "Kality Gabriel Block 17": {
+    "lat": 8.89438,
+    "lng": 38.75798
+  },
+  "Kality Gabriel Block 18": {
+    "lat": 8.89750,
+    "lng": 38.75747
+  },
+  "Kality Gabriel Block 19": {
+    "lat": 8.89670,
+    "lng": 38.75804
+  },
+  "Kality Gabriel Block 20": {
+    "lat": 8.89478,
+    "lng": 38.75908
+  },
+  "Kality Gabriel Block 21": {
+    "lat": 8.89441,
+    "lng": 38.75457
+  },
+  "Kality Gabriel Block 22": {
+    "lat": 8.89904,
+    "lng": 38.76199
+  },
+  "Kality Gabriel Block 23": {
+    "lat": 8.89945,
+    "lng": 38.75641
+  },
+  "Kality Gabriel Block 24": {
+    "lat": 8.89662,
+    "lng": 38.75505
+  },
+  "Kality Gabriel Block 25": {
+    "lat": 8.89286,
+    "lng": 38.75452
+  },
+  "Kality Gabriel Block 26": {
+    "lat": 8.89818,
+    "lng": 38.75658
+  },
+  "Kality Gabriel Block 27": {
+    "lat": 8.89538,
+    "lng": 38.75389
+  },
+  "Kality Gabriel Block 28": {
+    "lat": 8.89057,
+    "lng": 38.75330
+  },
+  "Kality Gabriel Block 29": {
+    "lat": 8.89573,
+    "lng": 38.75431
+  },
+  "Kality Gabriel Block 30": {
+    "lat": 8.89107,
+    "lng": 38.75704
+  },
+  "Kality Gabriel Block 31": {
+    "lat": 8.89072,
+    "lng": 38.75402
+  },
+  "Kality Gabriel Block 32": {
+    "lat": 8.89518,
+    "lng": 38.76252
+  },
+  "Kality Gabriel Block 33": {
+    "lat": 8.89655,
+    "lng": 38.75807
+  },
+  "Kality Gabriel Block 34": {
+    "lat": 8.89680,
+    "lng": 38.76182
+  },
+  "Kality Gabriel Block 35": {
+    "lat": 8.89583,
+    "lng": 38.75596
+  },
+  "Kality Gabriel Block 36": {
+    "lat": 8.89627,
+    "lng": 38.75857
+  },
+  "Kality Gabriel Block 37": {
+    "lat": 8.89451,
+    "lng": 38.76181
+  },
+  "Kality Gabriel Block 38": {
+    "lat": 8.89148,
+    "lng": 38.75491
+  },
+  "Kality Gabriel Block 39": {
+    "lat": 8.89148,
+    "lng": 38.75679
+  },
+  "Kality Gabriel Block 40": {
+    "lat": 8.89576,
+    "lng": 38.76198
+  },
+  "Kality Gabriel Block 41": {
+    "lat": 8.89095,
+    "lng": 38.75959
+  },
+  "Kality Gabriel Block 42": {
+    "lat": 8.89494,
+    "lng": 38.75653
+  },
+  "Kality Gabriel Block 43": {
+    "lat": 8.89106,
+    "lng": 38.76217
+  },
+  "Kality Gabriel Block 44": {
+    "lat": 8.89081,
+    "lng": 38.75370
+  },
+  "Kality Gabriel Block 45": {
+    "lat": 8.89358,
+    "lng": 38.75949
+  },
+  "Kality Gabriel Block 46": {
+    "lat": 8.89050,
+    "lng": 38.76055
+  },
+  "Kality Gabriel Block 47": {
+    "lat": 8.89789,
+    "lng": 38.75802
+  },
+  "Kality Gabriel Block 48": {
+    "lat": 8.89340,
+    "lng": 38.76057
+  },
+  "Kality Gabriel Block 49": {
+    "lat": 8.89815,
+    "lng": 38.75388
+  },
+  "Kality Gabriel Block 50": {
+    "lat": 8.89061,
+    "lng": 38.75661
+  },
+  "Kality Gabriel Block 51": {
+    "lat": 8.89796,
+    "lng": 38.75447
+  },
+  "Kality Gabriel Block 52": {
+    "lat": 8.89644,
+    "lng": 38.76328
+  },
+  "Kality Gabriel Block 53": {
+    "lat": 8.89542,
+    "lng": 38.76025
+  },
+  "Kality Gabriel Block 54": {
+    "lat": 8.89355,
+    "lng": 38.76107
+  },
+  "Kality Gabriel Block 55": {
+    "lat": 8.89388,
+    "lng": 38.76161
+  },
+  "Kality Gabriel Block 56": {
+    "lat": 8.89401,
+    "lng": 38.75854
+  },
+  "Kality Gabriel Block 57": {
+    "lat": 8.89297,
+    "lng": 38.76180
+  },
+  "Kality Gabriel Block 58": {
+    "lat": 8.89894,
+    "lng": 38.75466
+  },
+  "Kality Gabriel Block 59": {
+    "lat": 8.89905,
+    "lng": 38.76170
+  },
+  "Kality Gabriel Block 60": {
+    "lat": 8.89404,
+    "lng": 38.75952
+  },
+  "Kality Gabriel Block 61": {
+    "lat": 8.89758,
+    "lng": 38.75546
+  },
+  "Kality Gabriel Block 62": {
+    "lat": 8.89142,
+    "lng": 38.75461
+  },
+  "Kality Gabriel Block 63": {
+    "lat": 8.89196,
+    "lng": 38.75574
+  },
+  "Kality Gabriel Block 64": {
+    "lat": 8.89239,
+    "lng": 38.75386
+  },
+  "Kality Gabriel Block 65": {
+    "lat": 8.89209,
+    "lng": 38.75591
+  },
+  "Kality Gabriel Block 66": {
+    "lat": 8.89387,
+    "lng": 38.75404
+  },
+  "Kality Gabriel Block 67": {
+    "lat": 8.89320,
+    "lng": 38.76110
+  },
+  "Kality Gabriel Block 68": {
+    "lat": 8.89521,
+    "lng": 38.75380
+  },
+  "Kality Gabriel Block 69": {
+    "lat": 8.89431,
+    "lng": 38.75705
+  },
+  "Kality Gabriel Block 70": {
+    "lat": 8.89282,
+    "lng": 38.76265
+  },
+  "Kality Gabriel Block 71": {
+    "lat": 8.89101,
+    "lng": 38.75398
+  },
+  "Kality Gabriel Block 72": {
+    "lat": 8.89504,
+    "lng": 38.76233
+  },
+  "Kality Gabriel Block 73": {
+    "lat": 8.89961,
+    "lng": 38.76132
+  },
+  "Kality Gabriel Block 74": {
+    "lat": 8.89687,
+    "lng": 38.75450
+  },
+  "Kality Gabriel Block 75": {
+    "lat": 8.89722,
+    "lng": 38.75549
+  },
+  "Kality Gabriel Block 76": {
+    "lat": 8.89724,
+    "lng": 38.75432
+  },
+  "Kality Gabriel Block 77": {
+    "lat": 8.89790,
+    "lng": 38.76119
+  },
+  "Kality Gabriel Block 78": {
+    "lat": 8.89448,
+    "lng": 38.75941
+  },
+  "Kality Gabriel Block 79": {
+    "lat": 8.89153,
+    "lng": 38.75335
+  },
+  "Kality Gabriel Block 80": {
+    "lat": 8.89982,
+    "lng": 38.75814
+  },
+  "Kality Gabriel Block 81": {
+    "lat": 8.89156,
+    "lng": 38.75681
+  },
+  "Kality Gabriel Block 82": {
+    "lat": 8.89166,
+    "lng": 38.75671
+  },
+  "Kality Gabriel Block 83": {
+    "lat": 8.89849,
+    "lng": 38.75346
+  },
+  "Kality Gabriel Block 84": {
+    "lat": 8.89284,
+    "lng": 38.75608
+  },
+  "Kality Gabriel Block 85": {
+    "lat": 8.89315,
+    "lng": 38.75623
+  },
+  "Kality Gabriel Block 86": {
+    "lat": 8.89065,
+    "lng": 38.76200
+  },
+  "Kality Gabriel Block 87": {
+    "lat": 8.89956,
+    "lng": 38.76138
+  },
+  "Kality Gabriel Block 88": {
+    "lat": 8.89645,
+    "lng": 38.75748
+  },
+  "Kality Gabriel Block 89": {
+    "lat": 8.89083,
+    "lng": 38.75779
+  },
+  "Kality Gabriel Block 90": {
+    "lat": 8.89168,
+    "lng": 38.76033
+  },
+  "Kality Gabriel Block 91": {
+    "lat": 8.89588,
+    "lng": 38.75976
+  },
+  "Kality Gabriel Block 92": {
+    "lat": 8.89635,
+    "lng": 38.75925
+  },
+  "Kality Gabriel Block 93": {
+    "lat": 8.89072,
+    "lng": 38.76229
+  },
+  "Kality Gabriel Block 94": {
+    "lat": 8.89224,
+    "lng": 38.75899
+  },
+  "Kality Gabriel Block 95": {
+    "lat": 8.89665,
+    "lng": 38.76047
+  },
+  "Kality Gabriel Block 96": {
+    "lat": 8.89943,
+    "lng": 38.76115
+  },
+  "Kality Gabriel Block 97": {
+    "lat": 8.89144,
+    "lng": 38.75810
+  },
+  "Kality Gabriel Block 98": {
+    "lat": 8.89259,
+    "lng": 38.75777
+  },
+  "Kality Gabriel Block 99": {
+    "lat": 8.89742,
+    "lng": 38.76319
+  },
+  "Kality Gabriel Block 100": {
+    "lat": 8.89145,
+    "lng": 38.75375
+  },
+  "Kality Masalecha Block 1": {
+    "lat": 8.89235,
+    "lng": 38.76191
+  },
+  "Kality Masalecha Block 2": {
+    "lat": 8.89624,
+    "lng": 38.75471
+  },
+  "Kality Masalecha Block 3": {
+    "lat": 8.89527,
+    "lng": 38.75900
+  },
+  "Kality Masalecha Block 4": {
+    "lat": 8.89061,
+    "lng": 38.75865
+  },
+  "Kality Masalecha Block 5": {
+    "lat": 8.90032,
+    "lng": 38.76288
+  },
+  "Kality Masalecha Block 6": {
+    "lat": 8.89270,
+    "lng": 38.75818
+  },
+  "Kality Masalecha Block 7": {
+    "lat": 8.89387,
+    "lng": 38.75411
+  },
+  "Kality Masalecha Block 8": {
+    "lat": 8.89901,
+    "lng": 38.75641
+  },
+  "Kality Masalecha Block 9": {
+    "lat": 8.89774,
+    "lng": 38.75580
+  },
+  "Kality Masalecha Block 10": {
+    "lat": 8.89965,
+    "lng": 38.75342
+  },
+  "Kality Masalecha Block 11": {
+    "lat": 8.89063,
+    "lng": 38.75445
+  },
+  "Kality Masalecha Block 12": {
+    "lat": 8.89660,
+    "lng": 38.76244
+  },
+  "Kality Masalecha Block 13": {
+    "lat": 8.89135,
+    "lng": 38.75466
+  },
+  "Kality Masalecha Block 14": {
+    "lat": 8.89503,
+    "lng": 38.75755
+  },
+  "Kality Masalecha Block 15": {
+    "lat": 8.89906,
+    "lng": 38.75436
+  },
+  "Kality Masalecha Block 16": {
+    "lat": 8.89422,
+    "lng": 38.76094
+  },
+  "Kality Masalecha Block 17": {
+    "lat": 8.89477,
+    "lng": 38.75894
+  },
+  "Kality Masalecha Block 18": {
+    "lat": 8.89488,
+    "lng": 38.75375
+  },
+  "Kality Masalecha Block 19": {
+    "lat": 8.89590,
+    "lng": 38.75879
+  },
+  "Kality Masalecha Block 20": {
+    "lat": 8.89813,
+    "lng": 38.76062
+  },
+  "Kality Masalecha Block 21": {
+    "lat": 8.89176,
+    "lng": 38.76287
+  },
+  "Kality Masalecha Block 22": {
+    "lat": 8.89352,
+    "lng": 38.75476
+  },
+  "Kality Masalecha Block 23": {
+    "lat": 8.89158,
+    "lng": 38.75377
+  },
+  "Kality Masalecha Block 24": {
+    "lat": 8.89244,
+    "lng": 38.75947
+  },
+  "Kality Masalecha Block 25": {
+    "lat": 8.89676,
+    "lng": 38.75605
+  },
+  "Kality Masalecha Block 26": {
+    "lat": 8.89243,
+    "lng": 38.76076
+  },
+  "Kality Masalecha Block 27": {
+    "lat": 8.89794,
+    "lng": 38.75895
+  },
+  "Kality Masalecha Block 28": {
+    "lat": 8.89850,
+    "lng": 38.76239
+  },
+  "Kality Masalecha Block 29": {
+    "lat": 8.89261,
+    "lng": 38.75772
+  },
+  "Kality Masalecha Block 30": {
+    "lat": 8.89207,
+    "lng": 38.75648
+  },
+  "Kality Masalecha Block 31": {
+    "lat": 8.89357,
+    "lng": 38.76134
+  },
+  "Kality Masalecha Block 32": {
+    "lat": 8.89471,
+    "lng": 38.75698
+  },
+  "Kality Masalecha Block 33": {
+    "lat": 8.89693,
+    "lng": 38.76068
+  },
+  "Kality Masalecha Block 34": {
+    "lat": 8.89069,
+    "lng": 38.75908
+  },
+  "Kality Masalecha Block 35": {
+    "lat": 8.89987,
+    "lng": 38.75474
+  },
+  "Kality Masalecha Block 36": {
+    "lat": 8.89862,
+    "lng": 38.75912
+  },
+  "Kality Masalecha Block 37": {
+    "lat": 8.89870,
+    "lng": 38.75754
+  },
+  "Kality Masalecha Block 38": {
+    "lat": 8.89054,
+    "lng": 38.75519
+  },
+  "Kality Masalecha Block 39": {
+    "lat": 8.89958,
+    "lng": 38.76073
+  },
+  "Kality Masalecha Block 40": {
+    "lat": 8.90041,
+    "lng": 38.76183
+  },
+  "Kality Masalecha Block 41": {
+    "lat": 8.89847,
+    "lng": 38.76260
+  },
+  "Kality Masalecha Block 42": {
+    "lat": 8.89689,
+    "lng": 38.76154
+  },
+  "Kality Masalecha Block 43": {
+    "lat": 8.89127,
+    "lng": 38.75352
+  },
+  "Kality Masalecha Block 44": {
+    "lat": 8.89654,
+    "lng": 38.75668
+  },
+  "Kality Masalecha Block 45": {
+    "lat": 8.89926,
+    "lng": 38.75937
+  },
+  "Kality Masalecha Block 46": {
+    "lat": 8.89419,
+    "lng": 38.75928
+  },
+  "Kality Masalecha Block 47": {
+    "lat": 8.89986,
+    "lng": 38.76060
+  },
+  "Kality Masalecha Block 48": {
+    "lat": 8.89751,
+    "lng": 38.75540
+  },
+  "Kality Masalecha Block 49": {
+    "lat": 8.89737,
+    "lng": 38.75463
+  },
+  "Kality Masalecha Block 50": {
+    "lat": 8.89649,
+    "lng": 38.76090
+  },
+  "Kality Masalecha Block 51": {
+    "lat": 8.89450,
+    "lng": 38.75943
+  },
+  "Kality Masalecha Block 52": {
+    "lat": 8.89260,
+    "lng": 38.75509
+  },
+  "Kality Masalecha Block 53": {
+    "lat": 8.89728,
+    "lng": 38.76328
+  },
+  "Kality Masalecha Block 54": {
+    "lat": 8.89950,
+    "lng": 38.75651
+  },
+  "Kality Masalecha Block 55": {
+    "lat": 8.89231,
+    "lng": 38.75788
+  },
+  "Kality Masalecha Block 56": {
+    "lat": 8.89734,
+    "lng": 38.75833
+  },
+  "Kality Masalecha Block 57": {
+    "lat": 8.89508,
+    "lng": 38.76116
+  },
+  "Kality Masalecha Block 58": {
+    "lat": 8.89163,
+    "lng": 38.75630
+  },
+  "Kality Masalecha Block 59": {
+    "lat": 8.89858,
+    "lng": 38.76318
+  },
+  "Kality Masalecha Block 60": {
+    "lat": 8.89994,
+    "lng": 38.76020
+  },
+  "Kality Masalecha Block 61": {
+    "lat": 8.90037,
+    "lng": 38.75615
+  },
+  "Kality Masalecha Block 62": {
+    "lat": 8.89431,
+    "lng": 38.75501
+  },
+  "Kality Masalecha Block 63": {
+    "lat": 8.90014,
+    "lng": 38.75493
+  },
+  "Kality Masalecha Block 64": {
+    "lat": 8.89357,
+    "lng": 38.75509
+  },
+  "Kality Masalecha Block 65": {
+    "lat": 8.89093,
+    "lng": 38.75653
+  },
+  "Kality Masalecha Block 66": {
+    "lat": 8.90027,
+    "lng": 38.75459
+  },
+  "Kality Masalecha Block 67": {
+    "lat": 8.90006,
+    "lng": 38.75343
+  },
+  "Kality Masalecha Block 68": {
+    "lat": 8.89711,
+    "lng": 38.76165
+  },
+  "Kality Masalecha Block 69": {
+    "lat": 8.89611,
+    "lng": 38.76096
+  },
+  "Kality Masalecha Block 70": {
+    "lat": 8.89107,
+    "lng": 38.75874
+  },
+  "Kality Masalecha Block 71": {
+    "lat": 8.89202,
+    "lng": 38.75816
+  },
+  "Kality Masalecha Block 72": {
+    "lat": 8.89630,
+    "lng": 38.76133
+  },
+  "Kality Masalecha Block 73": {
+    "lat": 8.89927,
+    "lng": 38.75820
+  },
+  "Kality Masalecha Block 74": {
+    "lat": 8.89777,
+    "lng": 38.76022
+  },
+  "Kality Masalecha Block 75": {
+    "lat": 8.89190,
+    "lng": 38.76038
+  },
+  "Kality Masalecha Block 76": {
+    "lat": 8.89919,
+    "lng": 38.75855
+  },
+  "Kality Masalecha Block 77": {
+    "lat": 8.89478,
+    "lng": 38.76280
+  },
+  "Kality Masalecha Block 78": {
+    "lat": 8.89332,
+    "lng": 38.76153
+  },
+  "Kality Masalecha Block 79": {
+    "lat": 8.89375,
+    "lng": 38.75616
+  },
+  "Kality Masalecha Block 80": {
+    "lat": 8.89877,
+    "lng": 38.75578
+  },
+  "Kality Masalecha Block 81": {
+    "lat": 8.89280,
+    "lng": 38.76279
+  },
+  "Kality Masalecha Block 82": {
+    "lat": 8.89267,
+    "lng": 38.75430
+  },
+  "Kality Masalecha Block 83": {
+    "lat": 8.89169,
+    "lng": 38.75590
+  },
+  "Kality Masalecha Block 84": {
+    "lat": 8.89730,
+    "lng": 38.75425
+  },
+  "Kality Masalecha Block 85": {
+    "lat": 8.89910,
+    "lng": 38.75521
+  },
+  "Kality Masalecha Block 86": {
+    "lat": 8.89975,
+    "lng": 38.75345
+  },
+  "Kality Masalecha Block 87": {
+    "lat": 8.89343,
+    "lng": 38.75821
+  },
+  "Kality Masalecha Block 88": {
+    "lat": 8.89660,
+    "lng": 38.75899
+  },
+  "Kality Masalecha Block 89": {
+    "lat": 8.89604,
+    "lng": 38.75717
+  },
+  "Kality Masalecha Block 90": {
+    "lat": 8.89719,
+    "lng": 38.75797
+  },
+  "Kality Masalecha Block 91": {
+    "lat": 8.89488,
+    "lng": 38.75604
+  },
+  "Kality Masalecha Block 92": {
+    "lat": 8.89147,
+    "lng": 38.76322
+  },
+  "Kality Masalecha Block 93": {
+    "lat": 8.89637,
+    "lng": 38.75933
+  },
+  "Kality Masalecha Block 94": {
+    "lat": 8.89121,
+    "lng": 38.76195
+  },
+  "Kality Masalecha Block 95": {
+    "lat": 8.89802,
+    "lng": 38.75510
+  },
+  "Kality Masalecha Block 96": {
+    "lat": 8.89430,
+    "lng": 38.75439
+  },
+  "Kality Masalecha Block 97": {
+    "lat": 8.89647,
+    "lng": 38.75986
+  },
+  "Kality Masalecha Block 98": {
+    "lat": 8.89087,
+    "lng": 38.75656
+  },
+  "Kality Masalecha Block 99": {
+    "lat": 8.90003,
+    "lng": 38.76238
+  },
+  "Kality Masalecha Block 100": {
+    "lat": 8.89294,
+    "lng": 38.75385
+  },
+  "Gerji Mebrat Hail Block 1": {
+    "lat": 9.00524,
+    "lng": 38.80838
+  },
+  "Gerji Mebrat Hail Block 2": {
+    "lat": 9.00283,
+    "lng": 38.80637
+  },
+  "Gerji Mebrat Hail Block 3": {
+    "lat": 8.99899,
+    "lng": 38.80243
+  },
+  "Gerji Mebrat Hail Block 4": {
+    "lat": 9.00747,
+    "lng": 38.80569
+  },
+  "Gerji Mebrat Hail Block 5": {
+    "lat": 9.00434,
+    "lng": 38.80826
+  },
+  "Gerji Mebrat Hail Block 6": {
+    "lat": 9.00636,
+    "lng": 38.80154
+  },
+  "Gerji Mebrat Hail Block 7": {
+    "lat": 8.99948,
+    "lng": 38.81013
+  },
+  "Gerji Mebrat Hail Block 8": {
+    "lat": 9.00157,
+    "lng": 38.80063
+  },
+  "Gerji Mebrat Hail Block 9": {
+    "lat": 9.00405,
+    "lng": 38.80875
+  },
+  "Gerji Mebrat Hail Block 10": {
+    "lat": 9.00290,
+    "lng": 38.80374
+  },
+  "Gerji Mebrat Hail Block 11": {
+    "lat": 9.00021,
+    "lng": 38.80185
+  },
+  "Gerji Mebrat Hail Block 12": {
+    "lat": 9.00676,
+    "lng": 38.80264
+  },
+  "Gerji Mebrat Hail Block 13": {
+    "lat": 8.99975,
+    "lng": 38.80881
+  },
+  "Gerji Mebrat Hail Block 14": {
+    "lat": 9.00708,
+    "lng": 38.80757
+  },
+  "Gerji Mebrat Hail Block 15": {
+    "lat": 8.99914,
+    "lng": 38.80538
+  },
+  "Gerji Mebrat Hail Block 16": {
+    "lat": 9.00127,
+    "lng": 38.80702
+  },
+  "Gerji Mebrat Hail Block 17": {
+    "lat": 9.00700,
+    "lng": 38.80876
+  },
+  "Gerji Mebrat Hail Block 18": {
+    "lat": 9.00513,
+    "lng": 38.80139
+  },
+  "Gerji Mebrat Hail Block 19": {
+    "lat": 9.00154,
+    "lng": 38.80485
+  },
+  "Gerji Mebrat Hail Block 20": {
+    "lat": 9.00021,
+    "lng": 38.80670
+  },
+  "Gerji Mebrat Hail Block 21": {
+    "lat": 9.00568,
+    "lng": 38.80468
+  },
+  "Gerji Mebrat Hail Block 22": {
+    "lat": 9.00680,
+    "lng": 38.80097
+  },
+  "Gerji Mebrat Hail Block 23": {
+    "lat": 9.00297,
+    "lng": 38.80716
+  },
+  "Gerji Mebrat Hail Block 24": {
+    "lat": 9.00209,
+    "lng": 38.80665
+  },
+  "Gerji Mebrat Hail Block 25": {
+    "lat": 9.00377,
+    "lng": 38.80508
+  },
+  "Gerji Mebrat Hail Block 26": {
+    "lat": 9.00698,
+    "lng": 38.80753
+  },
+  "Gerji Mebrat Hail Block 27": {
+    "lat": 9.00117,
+    "lng": 38.80472
+  },
+  "Gerji Mebrat Hail Block 28": {
+    "lat": 9.00687,
+    "lng": 38.80472
+  },
+  "Gerji Mebrat Hail Block 29": {
+    "lat": 8.99918,
+    "lng": 38.81026
+  },
+  "Gerji Mebrat Hail Block 30": {
+    "lat": 9.00085,
+    "lng": 38.80246
+  },
+  "Gerji Mebrat Hail Block 31": {
+    "lat": 9.00741,
+    "lng": 38.80760
+  },
+  "Gerji Mebrat Hail Block 32": {
+    "lat": 9.00423,
+    "lng": 38.81028
+  },
+  "Gerji Mebrat Hail Block 33": {
+    "lat": 9.00715,
+    "lng": 38.80442
+  },
+  "Gerji Mebrat Hail Block 34": {
+    "lat": 8.99989,
+    "lng": 38.81012
+  },
+  "Gerji Mebrat Hail Block 35": {
+    "lat": 9.00405,
+    "lng": 38.80873
+  },
+  "Gerji Mebrat Hail Block 36": {
+    "lat": 9.00087,
+    "lng": 38.80815
+  },
+  "Gerji Mebrat Hail Block 37": {
+    "lat": 9.00391,
+    "lng": 38.80532
+  },
+  "Gerji Mebrat Hail Block 38": {
+    "lat": 8.99918,
+    "lng": 38.81030
+  },
+  "Gerji Mebrat Hail Block 39": {
+    "lat": 9.00210,
+    "lng": 38.80237
+  },
+  "Gerji Mebrat Hail Block 40": {
+    "lat": 9.00409,
+    "lng": 38.80977
+  },
+  "Gerji Mebrat Hail Block 41": {
+    "lat": 9.00549,
+    "lng": 38.80297
+  },
+  "Gerji Mebrat Hail Block 42": {
+    "lat": 9.00089,
+    "lng": 38.80171
+  },
+  "Gerji Mebrat Hail Block 43": {
+    "lat": 9.00515,
+    "lng": 38.80624
+  },
+  "Gerji Mebrat Hail Block 44": {
+    "lat": 8.99903,
+    "lng": 38.80650
+  },
+  "Gerji Mebrat Hail Block 45": {
+    "lat": 9.00312,
+    "lng": 38.80188
+  },
+  "Gerji Mebrat Hail Block 46": {
+    "lat": 8.99834,
+    "lng": 38.80174
+  },
+  "Gerji Mebrat Hail Block 47": {
+    "lat": 8.99892,
+    "lng": 38.80677
+  },
+  "Gerji Mebrat Hail Block 48": {
+    "lat": 9.00585,
+    "lng": 38.80905
+  },
+  "Gerji Mebrat Hail Block 49": {
+    "lat": 9.00589,
+    "lng": 38.80880
+  },
+  "Gerji Mebrat Hail Block 50": {
+    "lat": 9.00049,
+    "lng": 38.80355
+  },
+  "Gerji Mebrat Hail Block 51": {
+    "lat": 9.00360,
+    "lng": 38.80693
+  },
+  "Gerji Mebrat Hail Block 52": {
+    "lat": 9.00199,
+    "lng": 38.80405
+  },
+  "Gerji Mebrat Hail Block 53": {
+    "lat": 9.00785,
+    "lng": 38.80422
+  },
+  "Gerji Mebrat Hail Block 54": {
+    "lat": 9.00736,
+    "lng": 38.80763
+  },
+  "Gerji Mebrat Hail Block 55": {
+    "lat": 8.99866,
+    "lng": 38.80746
+  },
+  "Gerji Mebrat Hail Block 56": {
+    "lat": 9.00195,
+    "lng": 38.80409
+  },
+  "Gerji Mebrat Hail Block 57": {
+    "lat": 9.00803,
+    "lng": 38.81018
+  },
+  "Gerji Mebrat Hail Block 58": {
+    "lat": 9.00021,
+    "lng": 38.80202
+  },
+  "Gerji Mebrat Hail Block 59": {
+    "lat": 9.00570,
+    "lng": 38.81036
+  },
+  "Gerji Mebrat Hail Block 60": {
+    "lat": 8.99997,
+    "lng": 38.80840
+  },
+  "Gerji Mebrat Hail Block 61": {
+    "lat": 9.00466,
+    "lng": 38.80725
+  },
+  "Gerji Mebrat Hail Block 62": {
+    "lat": 9.00141,
+    "lng": 38.80249
+  },
+  "Gerji Mebrat Hail Block 63": {
+    "lat": 9.00135,
+    "lng": 38.80796
+  },
+  "Gerji Mebrat Hail Block 64": {
+    "lat": 9.00611,
+    "lng": 38.80500
+  },
+  "Gerji Mebrat Hail Block 65": {
+    "lat": 9.00513,
+    "lng": 38.80196
+  },
+  "Gerji Mebrat Hail Block 66": {
+    "lat": 9.00794,
+    "lng": 38.80375
+  },
+  "Gerji Mebrat Hail Block 67": {
+    "lat": 9.00436,
+    "lng": 38.80806
+  },
+  "Gerji Mebrat Hail Block 68": {
+    "lat": 9.00030,
+    "lng": 38.80742
+  },
+  "Gerji Mebrat Hail Block 69": {
+    "lat": 8.99915,
+    "lng": 38.80454
+  },
+  "Gerji Mebrat Hail Block 70": {
+    "lat": 9.00429,
+    "lng": 38.80148
+  },
+  "Gerji Mebrat Hail Block 71": {
+    "lat": 9.00391,
+    "lng": 38.80330
+  },
+  "Gerji Mebrat Hail Block 72": {
+    "lat": 9.00439,
+    "lng": 38.80731
+  },
+  "Gerji Mebrat Hail Block 73": {
+    "lat": 9.00722,
+    "lng": 38.80161
+  },
+  "Gerji Mebrat Hail Block 74": {
+    "lat": 9.00243,
+    "lng": 38.80072
+  },
+  "Gerji Mebrat Hail Block 75": {
+    "lat": 9.00591,
+    "lng": 38.80732
+  },
+  "Gerji Mebrat Hail Block 76": {
+    "lat": 9.00546,
+    "lng": 38.80563
+  },
+  "Gerji Mebrat Hail Block 77": {
+    "lat": 9.00587,
+    "lng": 38.80487
+  },
+  "Gerji Mebrat Hail Block 78": {
+    "lat": 8.99991,
+    "lng": 38.80366
+  },
+  "Gerji Mebrat Hail Block 79": {
+    "lat": 9.00484,
+    "lng": 38.80575
+  },
+  "Gerji Mebrat Hail Block 80": {
+    "lat": 9.00012,
+    "lng": 38.80446
+  },
+  "Gerji Mebrat Hail Block 81": {
+    "lat": 9.00187,
+    "lng": 38.80398
+  },
+  "Gerji Mebrat Hail Block 82": {
+    "lat": 9.00038,
+    "lng": 38.80084
+  },
+  "Gerji Mebrat Hail Block 83": {
+    "lat": 9.00807,
+    "lng": 38.80992
+  },
+  "Gerji Mebrat Hail Block 84": {
+    "lat": 9.00511,
+    "lng": 38.80443
+  },
+  "Gerji Mebrat Hail Block 85": {
+    "lat": 9.00430,
+    "lng": 38.80899
+  },
+  "Gerji Mebrat Hail Block 86": {
+    "lat": 9.00346,
+    "lng": 38.80953
+  },
+  "Gerji Mebrat Hail Block 87": {
+    "lat": 9.00346,
+    "lng": 38.80614
+  },
+  "Gerji Mebrat Hail Block 88": {
+    "lat": 9.00204,
+    "lng": 38.80200
+  },
+  "Gerji Mebrat Hail Block 89": {
+    "lat": 8.99856,
+    "lng": 38.80688
+  },
+  "Gerji Mebrat Hail Block 90": {
+    "lat": 9.00313,
+    "lng": 38.80168
+  },
+  "Gerji Mebrat Hail Block 91": {
+    "lat": 9.00416,
+    "lng": 38.80924
+  },
+  "Gerji Mebrat Hail Block 92": {
+    "lat": 9.00412,
+    "lng": 38.80751
+  },
+  "Gerji Mebrat Hail Block 93": {
+    "lat": 8.99887,
+    "lng": 38.80577
+  },
+  "Gerji Mebrat Hail Block 94": {
+    "lat": 9.00377,
+    "lng": 38.80482
+  },
+  "Gerji Mebrat Hail Block 95": {
+    "lat": 9.00150,
+    "lng": 38.80699
+  },
+  "Gerji Mebrat Hail Block 96": {
+    "lat": 8.99896,
+    "lng": 38.80119
+  },
+  "Gerji Mebrat Hail Block 97": {
+    "lat": 8.99842,
+    "lng": 38.80528
+  },
+  "Gerji Mebrat Hail Block 98": {
+    "lat": 9.00253,
+    "lng": 38.80947
+  },
+  "Gerji Mebrat Hail Block 99": {
+    "lat": 8.99938,
+    "lng": 38.80608
+  },
+  "Gerji Mebrat Hail Block 100": {
+    "lat": 9.00673,
+    "lng": 38.80448
+  },
+  "Gerji Roba Bakery Block 1": {
+    "lat": 9.00306,
+    "lng": 38.80439
+  },
+  "Gerji Roba Bakery Block 2": {
+    "lat": 9.00123,
+    "lng": 38.80698
+  },
+  "Gerji Roba Bakery Block 3": {
+    "lat": 9.00468,
+    "lng": 38.80484
+  },
+  "Gerji Roba Bakery Block 4": {
+    "lat": 9.00816,
+    "lng": 38.81008
+  },
+  "Gerji Roba Bakery Block 5": {
+    "lat": 8.99910,
+    "lng": 38.80970
+  },
+  "Gerji Roba Bakery Block 6": {
+    "lat": 9.00730,
+    "lng": 38.80482
+  },
+  "Gerji Roba Bakery Block 7": {
+    "lat": 8.99887,
+    "lng": 38.80667
+  },
+  "Gerji Roba Bakery Block 8": {
+    "lat": 9.00670,
+    "lng": 38.80787
+  },
+  "Gerji Roba Bakery Block 9": {
+    "lat": 9.00003,
+    "lng": 38.80571
+  },
+  "Gerji Roba Bakery Block 10": {
+    "lat": 8.99931,
+    "lng": 38.80123
+  },
+  "Gerji Roba Bakery Block 11": {
+    "lat": 9.00063,
+    "lng": 38.80514
+  },
+  "Gerji Roba Bakery Block 12": {
+    "lat": 8.99948,
+    "lng": 38.80609
+  },
+  "Gerji Roba Bakery Block 13": {
+    "lat": 8.99998,
+    "lng": 38.80512
+  },
+  "Gerji Roba Bakery Block 14": {
+    "lat": 9.00545,
+    "lng": 38.80611
+  },
+  "Gerji Roba Bakery Block 15": {
+    "lat": 9.00524,
+    "lng": 38.80155
+  },
+  "Gerji Roba Bakery Block 16": {
+    "lat": 9.00825,
+    "lng": 38.81029
+  },
+  "Gerji Roba Bakery Block 17": {
+    "lat": 8.99889,
+    "lng": 38.80104
+  },
+  "Gerji Roba Bakery Block 18": {
+    "lat": 9.00706,
+    "lng": 38.80905
+  },
+  "Gerji Roba Bakery Block 19": {
+    "lat": 8.99960,
+    "lng": 38.80174
+  },
+  "Gerji Roba Bakery Block 20": {
+    "lat": 9.00104,
+    "lng": 38.80590
+  },
+  "Gerji Roba Bakery Block 21": {
+    "lat": 9.00319,
+    "lng": 38.80615
+  },
+  "Gerji Roba Bakery Block 22": {
+    "lat": 8.99886,
+    "lng": 38.80133
+  },
+  "Gerji Roba Bakery Block 23": {
+    "lat": 9.00125,
+    "lng": 38.80355
+  },
+  "Gerji Roba Bakery Block 24": {
+    "lat": 9.00776,
+    "lng": 38.80425
+  },
+  "Gerji Roba Bakery Block 25": {
+    "lat": 9.00635,
+    "lng": 38.80208
+  },
+  "Gerji Roba Bakery Block 26": {
+    "lat": 8.99882,
+    "lng": 38.80122
+  },
+  "Gerji Roba Bakery Block 27": {
+    "lat": 9.00760,
+    "lng": 38.80147
+  },
+  "Gerji Roba Bakery Block 28": {
+    "lat": 9.00310,
+    "lng": 38.80656
+  },
+  "Gerji Roba Bakery Block 29": {
+    "lat": 9.00279,
+    "lng": 38.80495
+  },
+  "Gerji Roba Bakery Block 30": {
+    "lat": 9.00072,
+    "lng": 38.81010
+  },
+  "Gerji Roba Bakery Block 31": {
+    "lat": 9.00014,
+    "lng": 38.81042
+  },
+  "Gerji Roba Bakery Block 32": {
+    "lat": 9.00028,
+    "lng": 38.80974
+  },
+  "Gerji Roba Bakery Block 33": {
+    "lat": 9.00037,
+    "lng": 38.80973
+  },
+  "Gerji Roba Bakery Block 34": {
+    "lat": 8.99878,
+    "lng": 38.80130
+  },
+  "Gerji Roba Bakery Block 35": {
+    "lat": 8.99870,
+    "lng": 38.80442
+  },
+  "Gerji Roba Bakery Block 36": {
+    "lat": 8.99987,
+    "lng": 38.80478
+  },
+  "Gerji Roba Bakery Block 37": {
+    "lat": 9.00431,
+    "lng": 38.81002
+  },
+  "Gerji Roba Bakery Block 38": {
+    "lat": 9.00419,
+    "lng": 38.81042
+  },
+  "Gerji Roba Bakery Block 39": {
+    "lat": 9.00023,
+    "lng": 38.80965
+  },
+  "Gerji Roba Bakery Block 40": {
+    "lat": 9.00055,
+    "lng": 38.80511
+  },
+  "Gerji Roba Bakery Block 41": {
+    "lat": 9.00302,
+    "lng": 38.80527
+  },
+  "Gerji Roba Bakery Block 42": {
+    "lat": 9.00412,
+    "lng": 38.80217
+  },
+  "Gerji Roba Bakery Block 43": {
+    "lat": 9.00203,
+    "lng": 38.80337
+  },
+  "Gerji Roba Bakery Block 44": {
+    "lat": 8.99942,
+    "lng": 38.80161
+  },
+  "Gerji Roba Bakery Block 45": {
+    "lat": 9.00718,
+    "lng": 38.81016
+  },
+  "Gerji Roba Bakery Block 46": {
+    "lat": 9.00347,
+    "lng": 38.80819
+  },
+  "Gerji Roba Bakery Block 47": {
+    "lat": 9.00436,
+    "lng": 38.80912
+  },
+  "Gerji Roba Bakery Block 48": {
+    "lat": 9.00533,
+    "lng": 38.80125
+  },
+  "Gerji Roba Bakery Block 49": {
+    "lat": 9.00602,
+    "lng": 38.80057
+  },
+  "Gerji Roba Bakery Block 50": {
+    "lat": 9.00419,
+    "lng": 38.81017
+  },
+  "Gerji Roba Bakery Block 51": {
+    "lat": 9.00816,
+    "lng": 38.80459
+  },
+  "Gerji Roba Bakery Block 52": {
+    "lat": 9.00241,
+    "lng": 38.80747
+  },
+  "Gerji Roba Bakery Block 53": {
+    "lat": 8.99932,
+    "lng": 38.80258
+  },
+  "Gerji Roba Bakery Block 54": {
+    "lat": 8.99947,
+    "lng": 38.81034
+  },
+  "Gerji Roba Bakery Block 55": {
+    "lat": 9.00416,
+    "lng": 38.80396
+  },
+  "Gerji Roba Bakery Block 56": {
+    "lat": 9.00757,
+    "lng": 38.80184
+  },
+  "Gerji Roba Bakery Block 57": {
+    "lat": 9.00066,
+    "lng": 38.80907
+  },
+  "Gerji Roba Bakery Block 58": {
+    "lat": 9.00628,
+    "lng": 38.80586
+  },
+  "Gerji Roba Bakery Block 59": {
+    "lat": 8.99959,
+    "lng": 38.80908
+  },
+  "Gerji Roba Bakery Block 60": {
+    "lat": 9.00084,
+    "lng": 38.80078
+  },
+  "Gerji Roba Bakery Block 61": {
+    "lat": 8.99951,
+    "lng": 38.80176
+  },
+  "Gerji Roba Bakery Block 62": {
+    "lat": 9.00025,
+    "lng": 38.80436
+  },
+  "Gerji Roba Bakery Block 63": {
+    "lat": 9.00632,
+    "lng": 38.80753
+  },
+  "Gerji Roba Bakery Block 64": {
+    "lat": 9.00385,
+    "lng": 38.80282
+  },
+  "Gerji Roba Bakery Block 65": {
+    "lat": 9.00825,
+    "lng": 38.80683
+  },
+  "Gerji Roba Bakery Block 66": {
+    "lat": 9.00698,
+    "lng": 38.80854
+  },
+  "Gerji Roba Bakery Block 67": {
+    "lat": 9.00247,
+    "lng": 38.80914
+  },
+  "Gerji Roba Bakery Block 68": {
+    "lat": 9.00489,
+    "lng": 38.80623
+  },
+  "Gerji Roba Bakery Block 69": {
+    "lat": 9.00739,
+    "lng": 38.81016
+  },
+  "Gerji Roba Bakery Block 70": {
+    "lat": 9.00089,
+    "lng": 38.80071
+  },
+  "Gerji Roba Bakery Block 71": {
+    "lat": 9.00342,
+    "lng": 38.80437
+  },
+  "Gerji Roba Bakery Block 72": {
+    "lat": 9.00246,
+    "lng": 38.80120
+  },
+  "Gerji Roba Bakery Block 73": {
+    "lat": 9.00395,
+    "lng": 38.80390
+  },
+  "Gerji Roba Bakery Block 74": {
+    "lat": 9.00098,
+    "lng": 38.80500
+  },
+  "Gerji Roba Bakery Block 75": {
+    "lat": 9.00648,
+    "lng": 38.80440
+  },
+  "Gerji Roba Bakery Block 76": {
+    "lat": 9.00298,
+    "lng": 38.80959
+  },
+  "Gerji Roba Bakery Block 77": {
+    "lat": 9.00015,
+    "lng": 38.80580
+  },
+  "Gerji Roba Bakery Block 78": {
+    "lat": 9.00168,
+    "lng": 38.80785
+  },
+  "Gerji Roba Bakery Block 79": {
+    "lat": 9.00661,
+    "lng": 38.80096
+  },
+  "Gerji Roba Bakery Block 80": {
+    "lat": 9.00333,
+    "lng": 38.80235
+  },
+  "Gerji Roba Bakery Block 81": {
+    "lat": 9.00433,
+    "lng": 38.80543
+  },
+  "Gerji Roba Bakery Block 82": {
+    "lat": 9.00810,
+    "lng": 38.80419
+  },
+  "Gerji Roba Bakery Block 83": {
+    "lat": 9.00527,
+    "lng": 38.80192
+  },
+  "Gerji Roba Bakery Block 84": {
+    "lat": 9.00763,
+    "lng": 38.80649
+  },
+  "Gerji Roba Bakery Block 85": {
+    "lat": 9.00730,
+    "lng": 38.80411
+  },
+  "Gerji Roba Bakery Block 86": {
+    "lat": 9.00055,
+    "lng": 38.80227
+  },
+  "Gerji Roba Bakery Block 87": {
+    "lat": 9.00061,
+    "lng": 38.80452
+  },
+  "Gerji Roba Bakery Block 88": {
+    "lat": 9.00395,
+    "lng": 38.80574
+  },
+  "Gerji Roba Bakery Block 89": {
+    "lat": 8.99950,
+    "lng": 38.80365
+  },
+  "Gerji Roba Bakery Block 90": {
+    "lat": 9.00729,
+    "lng": 38.80053
+  },
+  "Gerji Roba Bakery Block 91": {
+    "lat": 9.00592,
+    "lng": 38.80507
+  },
+  "Gerji Roba Bakery Block 92": {
+    "lat": 9.00562,
+    "lng": 38.80166
+  },
+  "Gerji Roba Bakery Block 93": {
+    "lat": 9.00639,
+    "lng": 38.80461
+  },
+  "Gerji Roba Bakery Block 94": {
+    "lat": 9.00443,
+    "lng": 38.80712
+  },
+  "Gerji Roba Bakery Block 95": {
+    "lat": 9.00426,
+    "lng": 38.80701
+  },
+  "Gerji Roba Bakery Block 96": {
+    "lat": 9.00259,
+    "lng": 38.80991
+  },
+  "Gerji Roba Bakery Block 97": {
+    "lat": 9.00733,
+    "lng": 38.80111
+  },
+  "Gerji Roba Bakery Block 98": {
+    "lat": 9.00302,
+    "lng": 38.80401
+  },
+  "Gerji Roba Bakery Block 99": {
+    "lat": 9.00216,
+    "lng": 38.80959
+  },
+  "Gerji Roba Bakery Block 100": {
+    "lat": 9.00624,
+    "lng": 38.80675
+  },
+  "Gerji Unity University Block 1": {
+    "lat": 9.00281,
+    "lng": 38.80268
+  },
+  "Gerji Unity University Block 2": {
+    "lat": 9.00206,
+    "lng": 38.80387
+  },
+  "Gerji Unity University Block 3": {
+    "lat": 9.00558,
+    "lng": 38.80768
+  },
+  "Gerji Unity University Block 4": {
+    "lat": 9.00347,
+    "lng": 38.80549
+  },
+  "Gerji Unity University Block 5": {
+    "lat": 8.99856,
+    "lng": 38.80318
+  },
+  "Gerji Unity University Block 6": {
+    "lat": 9.00273,
+    "lng": 38.80806
+  },
+  "Gerji Unity University Block 7": {
+    "lat": 9.00828,
+    "lng": 38.81020
+  },
+  "Gerji Unity University Block 8": {
+    "lat": 8.99948,
+    "lng": 38.80832
+  },
+  "Gerji Unity University Block 9": {
+    "lat": 9.00151,
+    "lng": 38.80491
+  },
+  "Gerji Unity University Block 10": {
+    "lat": 9.00349,
+    "lng": 38.80633
+  },
+  "Gerji Unity University Block 11": {
+    "lat": 9.00499,
+    "lng": 38.80459
+  },
+  "Gerji Unity University Block 12": {
+    "lat": 9.00171,
+    "lng": 38.80783
+  },
+  "Gerji Unity University Block 13": {
+    "lat": 9.00656,
+    "lng": 38.80763
+  },
+  "Gerji Unity University Block 14": {
+    "lat": 9.00298,
+    "lng": 38.80613
+  },
+  "Gerji Unity University Block 15": {
+    "lat": 9.00433,
+    "lng": 38.80097
+  },
+  "Gerji Unity University Block 16": {
+    "lat": 9.00429,
+    "lng": 38.80095
+  },
+  "Gerji Unity University Block 17": {
+    "lat": 9.00659,
+    "lng": 38.80726
+  },
+  "Gerji Unity University Block 18": {
+    "lat": 8.99902,
+    "lng": 38.80148
+  },
+  "Gerji Unity University Block 19": {
+    "lat": 9.00827,
+    "lng": 38.80599
+  },
+  "Gerji Unity University Block 20": {
+    "lat": 9.00184,
+    "lng": 38.80073
+  },
+  "Gerji Unity University Block 21": {
+    "lat": 9.00709,
+    "lng": 38.80809
+  },
+  "Gerji Unity University Block 22": {
+    "lat": 9.00479,
+    "lng": 38.80967
+  },
+  "Gerji Unity University Block 23": {
+    "lat": 9.00212,
+    "lng": 38.80116
+  },
+  "Gerji Unity University Block 24": {
+    "lat": 9.00651,
+    "lng": 38.80172
+  },
+  "Gerji Unity University Block 25": {
+    "lat": 9.00738,
+    "lng": 38.80524
+  },
+  "Gerji Unity University Block 26": {
+    "lat": 9.00747,
+    "lng": 38.80998
+  },
+  "Gerji Unity University Block 27": {
+    "lat": 9.00141,
+    "lng": 38.80182
+  },
+  "Gerji Unity University Block 28": {
+    "lat": 9.00513,
+    "lng": 38.80784
+  },
+  "Gerji Unity University Block 29": {
+    "lat": 9.00636,
+    "lng": 38.80730
+  },
+  "Gerji Unity University Block 30": {
+    "lat": 9.00701,
+    "lng": 38.80277
+  },
+  "Gerji Unity University Block 31": {
+    "lat": 9.00080,
+    "lng": 38.80833
+  },
+  "Gerji Unity University Block 32": {
+    "lat": 9.00691,
+    "lng": 38.80625
+  },
+  "Gerji Unity University Block 33": {
+    "lat": 9.00822,
+    "lng": 38.80952
+  },
+  "Gerji Unity University Block 34": {
+    "lat": 9.00219,
+    "lng": 38.80241
+  },
+  "Gerji Unity University Block 35": {
+    "lat": 9.00575,
+    "lng": 38.80796
+  },
+  "Gerji Unity University Block 36": {
+    "lat": 9.00700,
+    "lng": 38.80204
+  },
+  "Gerji Unity University Block 37": {
+    "lat": 9.00596,
+    "lng": 38.80566
+  },
+  "Gerji Unity University Block 38": {
+    "lat": 9.00377,
+    "lng": 38.80954
+  },
+  "Gerji Unity University Block 39": {
+    "lat": 9.00754,
+    "lng": 38.80302
+  },
+  "Gerji Unity University Block 40": {
+    "lat": 9.00295,
+    "lng": 38.80922
+  },
+  "Gerji Unity University Block 41": {
+    "lat": 9.00200,
+    "lng": 38.80386
+  },
+  "Gerji Unity University Block 42": {
+    "lat": 8.99946,
+    "lng": 38.80175
+  },
+  "Gerji Unity University Block 43": {
+    "lat": 8.99897,
+    "lng": 38.80245
+  },
+  "Gerji Unity University Block 44": {
+    "lat": 9.00630,
+    "lng": 38.80675
+  },
+  "Gerji Unity University Block 45": {
+    "lat": 9.00190,
+    "lng": 38.80578
+  },
+  "Gerji Unity University Block 46": {
+    "lat": 9.00428,
+    "lng": 38.80713
+  },
+  "Gerji Unity University Block 47": {
+    "lat": 9.00095,
+    "lng": 38.80052
+  },
+  "Gerji Unity University Block 48": {
+    "lat": 9.00458,
+    "lng": 38.80810
+  },
+  "Gerji Unity University Block 49": {
+    "lat": 9.00658,
+    "lng": 38.80653
+  },
+  "Gerji Unity University Block 50": {
+    "lat": 8.99935,
+    "lng": 38.80857
+  },
+  "Gerji Unity University Block 51": {
+    "lat": 9.00443,
+    "lng": 38.80398
+  },
+  "Gerji Unity University Block 52": {
+    "lat": 9.00112,
+    "lng": 38.80221
+  },
+  "Gerji Unity University Block 53": {
+    "lat": 8.99961,
+    "lng": 38.80945
+  },
+  "Gerji Unity University Block 54": {
+    "lat": 8.99953,
+    "lng": 38.80274
+  },
+  "Gerji Unity University Block 55": {
+    "lat": 9.00782,
+    "lng": 38.80883
+  },
+  "Gerji Unity University Block 56": {
+    "lat": 9.00809,
+    "lng": 38.80594
+  },
+  "Gerji Unity University Block 57": {
+    "lat": 9.00336,
+    "lng": 38.80093
+  },
+  "Gerji Unity University Block 58": {
+    "lat": 9.00767,
+    "lng": 38.80130
+  },
+  "Gerji Unity University Block 59": {
+    "lat": 9.00637,
+    "lng": 38.80482
+  },
+  "Gerji Unity University Block 60": {
+    "lat": 9.00543,
+    "lng": 38.80575
+  },
+  "Gerji Unity University Block 61": {
+    "lat": 9.00040,
+    "lng": 38.80775
+  },
+  "Gerji Unity University Block 62": {
+    "lat": 9.00476,
+    "lng": 38.80991
+  },
+  "Gerji Unity University Block 63": {
+    "lat": 9.00605,
+    "lng": 38.80528
+  },
+  "Gerji Unity University Block 64": {
+    "lat": 8.99868,
+    "lng": 38.80496
+  },
+  "Gerji Unity University Block 65": {
+    "lat": 9.00792,
+    "lng": 38.80556
+  },
+  "Gerji Unity University Block 66": {
+    "lat": 9.00586,
+    "lng": 38.80973
+  },
+  "Gerji Unity University Block 67": {
+    "lat": 9.00760,
+    "lng": 38.80115
+  },
+  "Gerji Unity University Block 68": {
+    "lat": 9.00318,
+    "lng": 38.80945
+  },
+  "Gerji Unity University Block 69": {
+    "lat": 9.00796,
+    "lng": 38.80273
+  },
+  "Gerji Unity University Block 70": {
+    "lat": 9.00822,
+    "lng": 38.80889
+  },
+  "Gerji Unity University Block 71": {
+    "lat": 9.00384,
+    "lng": 38.80399
+  },
+  "Gerji Unity University Block 72": {
+    "lat": 9.00558,
+    "lng": 38.80577
+  },
+  "Gerji Unity University Block 73": {
+    "lat": 9.00082,
+    "lng": 38.80525
+  },
+  "Gerji Unity University Block 74": {
+    "lat": 8.99896,
+    "lng": 38.80679
+  },
+  "Gerji Unity University Block 75": {
+    "lat": 9.00203,
+    "lng": 38.80250
+  },
+  "Gerji Unity University Block 76": {
+    "lat": 9.00669,
+    "lng": 38.80364
+  },
+  "Gerji Unity University Block 77": {
+    "lat": 9.00246,
+    "lng": 38.80137
+  },
+  "Gerji Unity University Block 78": {
+    "lat": 9.00783,
+    "lng": 38.80997
+  },
+  "Gerji Unity University Block 79": {
+    "lat": 9.00670,
+    "lng": 38.80795
+  },
+  "Gerji Unity University Block 80": {
+    "lat": 9.00229,
+    "lng": 38.80798
+  },
+  "Gerji Unity University Block 81": {
+    "lat": 9.00530,
+    "lng": 38.80696
+  },
+  "Gerji Unity University Block 82": {
+    "lat": 9.00231,
+    "lng": 38.80114
+  },
+  "Gerji Unity University Block 83": {
+    "lat": 8.99882,
+    "lng": 38.80250
+  },
+  "Gerji Unity University Block 84": {
+    "lat": 9.00617,
+    "lng": 38.80309
+  },
+  "Gerji Unity University Block 85": {
+    "lat": 9.00120,
+    "lng": 38.80852
+  },
+  "Gerji Unity University Block 86": {
+    "lat": 9.00052,
+    "lng": 38.80211
+  },
+  "Gerji Unity University Block 87": {
+    "lat": 8.99874,
+    "lng": 38.80294
+  },
+  "Gerji Unity University Block 88": {
+    "lat": 9.00755,
+    "lng": 38.80404
+  },
+  "Gerji Unity University Block 89": {
+    "lat": 9.00007,
+    "lng": 38.80891
+  },
+  "Gerji Unity University Block 90": {
+    "lat": 9.00253,
+    "lng": 38.80828
+  },
+  "Gerji Unity University Block 91": {
+    "lat": 9.00190,
+    "lng": 38.80972
+  },
+  "Gerji Unity University Block 92": {
+    "lat": 9.00360,
+    "lng": 38.80106
+  },
+  "Gerji Unity University Block 93": {
+    "lat": 9.00278,
+    "lng": 38.80803
+  },
+  "Gerji Unity University Block 94": {
+    "lat": 8.99861,
+    "lng": 38.80910
+  },
+  "Gerji Unity University Block 95": {
+    "lat": 9.00519,
+    "lng": 38.80847
+  },
+  "Gerji Unity University Block 96": {
+    "lat": 9.00699,
+    "lng": 38.80594
+  },
+  "Gerji Unity University Block 97": {
+    "lat": 9.00395,
+    "lng": 38.80446
+  },
+  "Gerji Unity University Block 98": {
+    "lat": 9.00178,
+    "lng": 38.80136
+  },
+  "Gerji Unity University Block 99": {
+    "lat": 9.00445,
+    "lng": 38.80946
+  },
+  "Gerji Unity University Block 100": {
+    "lat": 9.00716,
+    "lng": 38.80113
+  },
+  "Gerji Condominium Block 1": {
+    "lat": 9.00370,
+    "lng": 38.80130
+  },
+  "Gerji Condominium Block 2": {
+    "lat": 9.00300,
+    "lng": 38.80318
+  },
+  "Gerji Condominium Block 3": {
+    "lat": 8.99979,
+    "lng": 38.80425
+  },
+  "Gerji Condominium Block 4": {
+    "lat": 9.00604,
+    "lng": 38.80979
+  },
+  "Gerji Condominium Block 5": {
+    "lat": 9.00261,
+    "lng": 38.80213
+  },
+  "Gerji Condominium Block 6": {
+    "lat": 8.99973,
+    "lng": 38.80974
+  },
+  "Gerji Condominium Block 7": {
+    "lat": 9.00049,
+    "lng": 38.80339
+  },
+  "Gerji Condominium Block 8": {
+    "lat": 8.99845,
+    "lng": 38.80661
+  },
+  "Gerji Condominium Block 9": {
+    "lat": 8.99891,
+    "lng": 38.80081
+  },
+  "Gerji Condominium Block 10": {
+    "lat": 9.00049,
+    "lng": 38.80416
+  },
+  "Gerji Condominium Block 11": {
+    "lat": 9.00435,
+    "lng": 38.80674
+  },
+  "Gerji Condominium Block 12": {
+    "lat": 9.00681,
+    "lng": 38.80866
+  },
+  "Gerji Condominium Block 13": {
+    "lat": 9.00703,
+    "lng": 38.80202
+  },
+  "Gerji Condominium Block 14": {
+    "lat": 9.00146,
+    "lng": 38.80320
+  },
+  "Gerji Condominium Block 15": {
+    "lat": 8.99867,
+    "lng": 38.80897
+  },
+  "Gerji Condominium Block 16": {
+    "lat": 9.00735,
+    "lng": 38.80309
+  },
+  "Gerji Condominium Block 17": {
+    "lat": 9.00103,
+    "lng": 38.80494
+  },
+  "Gerji Condominium Block 18": {
+    "lat": 9.00810,
+    "lng": 38.80505
+  },
+  "Gerji Condominium Block 19": {
+    "lat": 9.00724,
+    "lng": 38.80637
+  },
+  "Gerji Condominium Block 20": {
+    "lat": 9.00521,
+    "lng": 38.80285
+  },
+  "Gerji Condominium Block 21": {
+    "lat": 9.00642,
+    "lng": 38.80238
+  },
+  "Gerji Condominium Block 22": {
+    "lat": 9.00216,
+    "lng": 38.80503
+  },
+  "Gerji Condominium Block 23": {
+    "lat": 9.00783,
+    "lng": 38.80920
+  },
+  "Gerji Condominium Block 24": {
+    "lat": 9.00008,
+    "lng": 38.80873
+  },
+  "Gerji Condominium Block 25": {
+    "lat": 9.00042,
+    "lng": 38.80656
+  },
+  "Gerji Condominium Block 26": {
+    "lat": 8.99978,
+    "lng": 38.80380
+  },
+  "Gerji Condominium Block 27": {
+    "lat": 9.00324,
+    "lng": 38.80733
+  },
+  "Gerji Condominium Block 28": {
+    "lat": 9.00346,
+    "lng": 38.80858
+  },
+  "Gerji Condominium Block 29": {
+    "lat": 9.00441,
+    "lng": 38.80463
+  },
+  "Gerji Condominium Block 30": {
+    "lat": 8.99844,
+    "lng": 38.80758
+  },
+  "Gerji Condominium Block 31": {
+    "lat": 9.00329,
+    "lng": 38.80197
+  },
+  "Gerji Condominium Block 32": {
+    "lat": 8.99907,
+    "lng": 38.80192
+  },
+  "Gerji Condominium Block 33": {
+    "lat": 9.00592,
+    "lng": 38.80971
+  },
+  "Gerji Condominium Block 34": {
+    "lat": 9.00268,
+    "lng": 38.80164
+  },
+  "Gerji Condominium Block 35": {
+    "lat": 9.00562,
+    "lng": 38.80454
+  },
+  "Gerji Condominium Block 36": {
+    "lat": 9.00457,
+    "lng": 38.80430
+  },
+  "Gerji Condominium Block 37": {
+    "lat": 9.00424,
+    "lng": 38.80436
+  },
+  "Gerji Condominium Block 38": {
+    "lat": 9.00406,
+    "lng": 38.80999
+  },
+  "Gerji Condominium Block 39": {
+    "lat": 9.00215,
+    "lng": 38.80379
+  },
+  "Gerji Condominium Block 40": {
+    "lat": 9.00486,
+    "lng": 38.80209
+  },
+  "Gerji Condominium Block 41": {
+    "lat": 8.99903,
+    "lng": 38.80223
+  },
+  "Gerji Condominium Block 42": {
+    "lat": 9.00760,
+    "lng": 38.80424
+  },
+  "Gerji Condominium Block 43": {
+    "lat": 9.00156,
+    "lng": 38.80527
+  },
+  "Gerji Condominium Block 44": {
+    "lat": 8.99868,
+    "lng": 38.80622
+  },
+  "Gerji Condominium Block 45": {
+    "lat": 9.00787,
+    "lng": 38.80470
+  },
+  "Gerji Condominium Block 46": {
+    "lat": 9.00283,
+    "lng": 38.81027
+  },
+  "Gerji Condominium Block 47": {
+    "lat": 9.00519,
+    "lng": 38.80794
+  },
+  "Gerji Condominium Block 48": {
+    "lat": 9.00079,
+    "lng": 38.80059
+  },
+  "Gerji Condominium Block 49": {
+    "lat": 9.00566,
+    "lng": 38.80877
+  },
+  "Gerji Condominium Block 50": {
+    "lat": 8.99955,
+    "lng": 38.80749
+  },
+  "Gerji Condominium Block 51": {
+    "lat": 9.00245,
+    "lng": 38.80978
+  },
+  "Gerji Condominium Block 52": {
+    "lat": 9.00814,
+    "lng": 38.80195
+  },
+  "Gerji Condominium Block 53": {
+    "lat": 9.00643,
+    "lng": 38.80750
+  },
+  "Gerji Condominium Block 54": {
+    "lat": 9.00485,
+    "lng": 38.80672
+  },
+  "Gerji Condominium Block 55": {
+    "lat": 9.00452,
+    "lng": 38.80089
+  },
+  "Gerji Condominium Block 56": {
+    "lat": 9.00564,
+    "lng": 38.80412
+  },
+  "Gerji Condominium Block 57": {
+    "lat": 8.99918,
+    "lng": 38.80604
+  },
+  "Gerji Condominium Block 58": {
+    "lat": 9.00823,
+    "lng": 38.80990
+  },
+  "Gerji Condominium Block 59": {
+    "lat": 9.00486,
+    "lng": 38.80662
+  },
+  "Gerji Condominium Block 60": {
+    "lat": 8.99883,
+    "lng": 38.80201
+  },
+  "Gerji Condominium Block 61": {
+    "lat": 9.00034,
+    "lng": 38.80573
+  },
+  "Gerji Condominium Block 62": {
+    "lat": 9.00019,
+    "lng": 38.80660
+  },
+  "Gerji Condominium Block 63": {
+    "lat": 9.00086,
+    "lng": 38.80149
+  },
+  "Gerji Condominium Block 64": {
+    "lat": 8.99969,
+    "lng": 38.80313
+  },
+  "Gerji Condominium Block 65": {
+    "lat": 9.00242,
+    "lng": 38.81015
+  },
+  "Gerji Condominium Block 66": {
+    "lat": 9.00517,
+    "lng": 38.80368
+  },
+  "Gerji Condominium Block 67": {
+    "lat": 9.00082,
+    "lng": 38.80867
+  },
+  "Gerji Condominium Block 68": {
+    "lat": 9.00389,
+    "lng": 38.80885
+  },
+  "Gerji Condominium Block 69": {
+    "lat": 9.00460,
+    "lng": 38.80243
+  },
+  "Gerji Condominium Block 70": {
+    "lat": 8.99877,
+    "lng": 38.80854
+  },
+  "Gerji Condominium Block 71": {
+    "lat": 9.00354,
+    "lng": 38.80956
+  },
+  "Gerji Condominium Block 72": {
+    "lat": 8.99960,
+    "lng": 38.80905
+  },
+  "Gerji Condominium Block 73": {
+    "lat": 9.00675,
+    "lng": 38.81031
+  },
+  "Gerji Condominium Block 74": {
+    "lat": 9.00660,
+    "lng": 38.80418
+  },
+  "Gerji Condominium Block 75": {
+    "lat": 9.00096,
+    "lng": 38.80331
+  },
+  "Gerji Condominium Block 76": {
+    "lat": 9.00334,
+    "lng": 38.80607
+  },
+  "Gerji Condominium Block 77": {
+    "lat": 9.00306,
+    "lng": 38.80506
+  },
+  "Gerji Condominium Block 78": {
+    "lat": 9.00113,
+    "lng": 38.80656
+  },
+  "Gerji Condominium Block 79": {
+    "lat": 9.00429,
+    "lng": 38.80938
+  },
+  "Gerji Condominium Block 80": {
+    "lat": 9.00396,
+    "lng": 38.80476
+  },
+  "Gerji Condominium Block 81": {
+    "lat": 9.00207,
+    "lng": 38.80643
+  },
+  "Gerji Condominium Block 82": {
+    "lat": 9.00154,
+    "lng": 38.80151
+  },
+  "Gerji Condominium Block 83": {
+    "lat": 8.99970,
+    "lng": 38.80755
+  },
+  "Gerji Condominium Block 84": {
+    "lat": 9.00010,
+    "lng": 38.80387
+  },
+  "Gerji Condominium Block 85": {
+    "lat": 9.00392,
+    "lng": 38.80762
+  },
+  "Gerji Condominium Block 86": {
+    "lat": 8.99876,
+    "lng": 38.80575
+  },
+  "Gerji Condominium Block 87": {
+    "lat": 9.00366,
+    "lng": 38.80331
+  },
+  "Gerji Condominium Block 88": {
+    "lat": 9.00009,
+    "lng": 38.80837
+  },
+  "Gerji Condominium Block 89": {
+    "lat": 9.00645,
+    "lng": 38.80449
+  },
+  "Gerji Condominium Block 90": {
+    "lat": 9.00299,
+    "lng": 38.80514
+  },
+  "Gerji Condominium Block 91": {
+    "lat": 9.00349,
+    "lng": 38.80532
+  },
+  "Gerji Condominium Block 92": {
+    "lat": 8.99905,
+    "lng": 38.80439
+  },
+  "Gerji Condominium Block 93": {
+    "lat": 8.99924,
+    "lng": 38.80920
+  },
+  "Gerji Condominium Block 94": {
+    "lat": 9.00064,
+    "lng": 38.80101
+  },
+  "Gerji Condominium Block 95": {
+    "lat": 9.00758,
+    "lng": 38.80803
+  },
+  "Gerji Condominium Block 96": {
+    "lat": 8.99852,
+    "lng": 38.80265
+  },
+  "Gerji Condominium Block 97": {
+    "lat": 9.00513,
+    "lng": 38.80608
+  },
+  "Gerji Condominium Block 98": {
+    "lat": 9.00690,
+    "lng": 38.80241
+  },
+  "Gerji Condominium Block 99": {
+    "lat": 9.00726,
+    "lng": 38.80464
+  },
+  "Gerji Condominium Block 100": {
+    "lat": 9.00622,
+    "lng": 38.80897
+  },
+  "Gerji Taxi Tera Block 1": {
+    "lat": 9.00814,
+    "lng": 38.80124
+  },
+  "Gerji Taxi Tera Block 2": {
+    "lat": 9.00460,
+    "lng": 38.80362
+  },
+  "Gerji Taxi Tera Block 3": {
+    "lat": 9.00169,
+    "lng": 38.80911
+  },
+  "Gerji Taxi Tera Block 4": {
+    "lat": 9.00433,
+    "lng": 38.80235
+  },
+  "Gerji Taxi Tera Block 5": {
+    "lat": 9.00440,
+    "lng": 38.81023
+  },
+  "Gerji Taxi Tera Block 6": {
+    "lat": 9.00108,
+    "lng": 38.80474
+  },
+  "Gerji Taxi Tera Block 7": {
+    "lat": 9.00587,
+    "lng": 38.80530
+  },
+  "Gerji Taxi Tera Block 8": {
+    "lat": 9.00536,
+    "lng": 38.80991
+  },
+  "Gerji Taxi Tera Block 9": {
+    "lat": 9.00212,
+    "lng": 38.80873
+  },
+  "Gerji Taxi Tera Block 10": {
+    "lat": 9.00503,
+    "lng": 38.81044
+  },
+  "Gerji Taxi Tera Block 11": {
+    "lat": 9.00003,
+    "lng": 38.80959
+  },
+  "Gerji Taxi Tera Block 12": {
+    "lat": 9.00775,
+    "lng": 38.80063
+  },
+  "Gerji Taxi Tera Block 13": {
+    "lat": 9.00217,
+    "lng": 38.80396
+  },
+  "Gerji Taxi Tera Block 14": {
+    "lat": 9.00364,
+    "lng": 38.80465
+  },
+  "Gerji Taxi Tera Block 15": {
+    "lat": 9.00398,
+    "lng": 38.80970
+  },
+  "Gerji Taxi Tera Block 16": {
+    "lat": 9.00629,
+    "lng": 38.80574
+  },
+  "Gerji Taxi Tera Block 17": {
+    "lat": 9.00000,
+    "lng": 38.80978
+  },
+  "Gerji Taxi Tera Block 18": {
+    "lat": 9.00126,
+    "lng": 38.80735
+  },
+  "Gerji Taxi Tera Block 19": {
+    "lat": 9.00124,
+    "lng": 38.80295
+  },
+  "Gerji Taxi Tera Block 20": {
+    "lat": 9.00652,
+    "lng": 38.80473
+  },
+  "Gerji Taxi Tera Block 21": {
+    "lat": 9.00556,
+    "lng": 38.80437
+  },
+  "Gerji Taxi Tera Block 22": {
+    "lat": 8.99967,
+    "lng": 38.80798
+  },
+  "Gerji Taxi Tera Block 23": {
+    "lat": 9.00030,
+    "lng": 38.80177
+  },
+  "Gerji Taxi Tera Block 24": {
+    "lat": 9.00235,
+    "lng": 38.80720
+  },
+  "Gerji Taxi Tera Block 25": {
+    "lat": 8.99840,
+    "lng": 38.80988
+  },
+  "Gerji Taxi Tera Block 26": {
+    "lat": 9.00239,
+    "lng": 38.80480
+  },
+  "Gerji Taxi Tera Block 27": {
+    "lat": 9.00281,
+    "lng": 38.80531
+  },
+  "Gerji Taxi Tera Block 28": {
+    "lat": 9.00286,
+    "lng": 38.80772
+  },
+  "Gerji Taxi Tera Block 29": {
+    "lat": 9.00081,
+    "lng": 38.80966
+  },
+  "Gerji Taxi Tera Block 30": {
+    "lat": 9.00373,
+    "lng": 38.80607
+  },
+  "Gerji Taxi Tera Block 31": {
+    "lat": 9.00638,
+    "lng": 38.80195
+  },
+  "Gerji Taxi Tera Block 32": {
+    "lat": 9.00566,
+    "lng": 38.80592
+  },
+  "Gerji Taxi Tera Block 33": {
+    "lat": 9.00368,
+    "lng": 38.80738
+  },
+  "Gerji Taxi Tera Block 34": {
+    "lat": 8.99885,
+    "lng": 38.80221
+  },
+  "Gerji Taxi Tera Block 35": {
+    "lat": 8.99864,
+    "lng": 38.80458
+  },
+  "Gerji Taxi Tera Block 36": {
+    "lat": 9.00138,
+    "lng": 38.80344
+  },
+  "Gerji Taxi Tera Block 37": {
+    "lat": 9.00165,
+    "lng": 38.80835
+  },
+  "Gerji Taxi Tera Block 38": {
+    "lat": 9.00201,
+    "lng": 38.81015
+  },
+  "Gerji Taxi Tera Block 39": {
+    "lat": 8.99993,
+    "lng": 38.80177
+  },
+  "Gerji Taxi Tera Block 40": {
+    "lat": 9.00352,
+    "lng": 38.80822
+  },
+  "Gerji Taxi Tera Block 41": {
+    "lat": 9.00282,
+    "lng": 38.80794
+  },
+  "Gerji Taxi Tera Block 42": {
+    "lat": 9.00081,
+    "lng": 38.80611
+  },
+  "Gerji Taxi Tera Block 43": {
+    "lat": 9.00315,
+    "lng": 38.80916
+  },
+  "Gerji Taxi Tera Block 44": {
+    "lat": 9.00315,
+    "lng": 38.80088
+  },
+  "Gerji Taxi Tera Block 45": {
+    "lat": 9.00240,
+    "lng": 38.80757
+  },
+  "Gerji Taxi Tera Block 46": {
+    "lat": 9.00181,
+    "lng": 38.80876
+  },
+  "Gerji Taxi Tera Block 47": {
+    "lat": 9.00045,
+    "lng": 38.80981
+  },
+  "Gerji Taxi Tera Block 48": {
+    "lat": 9.00783,
+    "lng": 38.80885
+  },
+  "Gerji Taxi Tera Block 49": {
+    "lat": 8.99888,
+    "lng": 38.80469
+  },
+  "Gerji Taxi Tera Block 50": {
+    "lat": 9.00598,
+    "lng": 38.80677
+  },
+  "Gerji Taxi Tera Block 51": {
+    "lat": 9.00056,
+    "lng": 38.80701
+  },
+  "Gerji Taxi Tera Block 52": {
+    "lat": 9.00638,
+    "lng": 38.80612
+  },
+  "Gerji Taxi Tera Block 53": {
+    "lat": 9.00621,
+    "lng": 38.80226
+  },
+  "Gerji Taxi Tera Block 54": {
+    "lat": 9.00078,
+    "lng": 38.80598
+  },
+  "Gerji Taxi Tera Block 55": {
+    "lat": 9.00487,
+    "lng": 38.80312
+  },
+  "Gerji Taxi Tera Block 56": {
+    "lat": 9.00512,
+    "lng": 38.80183
+  },
+  "Gerji Taxi Tera Block 57": {
+    "lat": 8.99931,
+    "lng": 38.80411
+  },
+  "Gerji Taxi Tera Block 58": {
+    "lat": 9.00114,
+    "lng": 38.80466
+  },
+  "Gerji Taxi Tera Block 59": {
+    "lat": 9.00133,
+    "lng": 38.80399
+  },
+  "Gerji Taxi Tera Block 60": {
+    "lat": 9.00471,
+    "lng": 38.80418
+  },
+  "Gerji Taxi Tera Block 61": {
+    "lat": 9.00774,
+    "lng": 38.80268
+  },
+  "Gerji Taxi Tera Block 62": {
+    "lat": 8.99969,
+    "lng": 38.80148
+  },
+  "Gerji Taxi Tera Block 63": {
+    "lat": 9.00699,
+    "lng": 38.80526
+  },
+  "Gerji Taxi Tera Block 64": {
+    "lat": 9.00446,
+    "lng": 38.80714
+  },
+  "Gerji Taxi Tera Block 65": {
+    "lat": 9.00716,
+    "lng": 38.80868
+  },
+  "Gerji Taxi Tera Block 66": {
+    "lat": 9.00130,
+    "lng": 38.80487
+  },
+  "Gerji Taxi Tera Block 67": {
+    "lat": 9.00404,
+    "lng": 38.80194
+  },
+  "Gerji Taxi Tera Block 68": {
+    "lat": 9.00659,
+    "lng": 38.80104
+  },
+  "Gerji Taxi Tera Block 69": {
+    "lat": 9.00013,
+    "lng": 38.80090
+  },
+  "Gerji Taxi Tera Block 70": {
+    "lat": 9.00060,
+    "lng": 38.80438
+  },
+  "Gerji Taxi Tera Block 71": {
+    "lat": 9.00401,
+    "lng": 38.80311
+  },
+  "Gerji Taxi Tera Block 72": {
+    "lat": 9.00144,
+    "lng": 38.80338
+  },
+  "Gerji Taxi Tera Block 73": {
+    "lat": 9.00381,
+    "lng": 38.80426
+  },
+  "Gerji Taxi Tera Block 74": {
+    "lat": 9.00092,
+    "lng": 38.80625
+  },
+  "Gerji Taxi Tera Block 75": {
+    "lat": 8.99919,
+    "lng": 38.80457
+  },
+  "Gerji Taxi Tera Block 76": {
+    "lat": 9.00305,
+    "lng": 38.80152
+  },
+  "Gerji Taxi Tera Block 77": {
+    "lat": 8.99988,
+    "lng": 38.80831
+  },
+  "Gerji Taxi Tera Block 78": {
+    "lat": 9.00308,
+    "lng": 38.80403
+  },
+  "Gerji Taxi Tera Block 79": {
+    "lat": 9.00107,
+    "lng": 38.80582
+  },
+  "Gerji Taxi Tera Block 80": {
+    "lat": 9.00627,
+    "lng": 38.80909
+  },
+  "Gerji Taxi Tera Block 81": {
+    "lat": 9.00137,
+    "lng": 38.80076
+  },
+  "Gerji Taxi Tera Block 82": {
+    "lat": 9.00541,
+    "lng": 38.80996
+  },
+  "Gerji Taxi Tera Block 83": {
+    "lat": 9.00590,
+    "lng": 38.80879
+  },
+  "Gerji Taxi Tera Block 84": {
+    "lat": 8.99871,
+    "lng": 38.80414
+  },
+  "Gerji Taxi Tera Block 85": {
+    "lat": 9.00778,
+    "lng": 38.80679
+  },
+  "Gerji Taxi Tera Block 86": {
+    "lat": 9.00056,
+    "lng": 38.80903
+  },
+  "Gerji Taxi Tera Block 87": {
+    "lat": 9.00503,
+    "lng": 38.80930
+  },
+  "Gerji Taxi Tera Block 88": {
+    "lat": 9.00223,
+    "lng": 38.80763
+  },
+  "Gerji Taxi Tera Block 89": {
+    "lat": 9.00386,
+    "lng": 38.80292
+  },
+  "Gerji Taxi Tera Block 90": {
+    "lat": 9.00389,
+    "lng": 38.80971
+  },
+  "Gerji Taxi Tera Block 91": {
+    "lat": 9.00290,
+    "lng": 38.81012
+  },
+  "Gerji Taxi Tera Block 92": {
+    "lat": 9.00041,
+    "lng": 38.80646
+  },
+  "Gerji Taxi Tera Block 93": {
+    "lat": 9.00265,
+    "lng": 38.80420
+  },
+  "Gerji Taxi Tera Block 94": {
+    "lat": 9.00280,
+    "lng": 38.80981
+  },
+  "Gerji Taxi Tera Block 95": {
+    "lat": 9.00467,
+    "lng": 38.80331
+  },
+  "Gerji Taxi Tera Block 96": {
+    "lat": 9.00621,
+    "lng": 38.80203
+  },
+  "Gerji Taxi Tera Block 97": {
+    "lat": 9.00387,
+    "lng": 38.80693
+  },
+  "Gerji Taxi Tera Block 98": {
+    "lat": 9.00419,
+    "lng": 38.80812
+  },
+  "Gerji Taxi Tera Block 99": {
+    "lat": 9.00498,
+    "lng": 38.80945
+  },
+  "Gerji Taxi Tera Block 100": {
+    "lat": 9.00546,
+    "lng": 38.80196
+  },
+  "CMC Michael Block 1": {
+    "lat": 9.01577,
+    "lng": 38.83170
+  },
+  "CMC Michael Block 2": {
+    "lat": 9.02197,
+    "lng": 38.83940
+  },
+  "CMC Michael Block 3": {
+    "lat": 9.02160,
+    "lng": 38.83976
+  },
+  "CMC Michael Block 4": {
+    "lat": 9.02249,
+    "lng": 38.83114
+  },
+  "CMC Michael Block 5": {
+    "lat": 9.02456,
+    "lng": 38.83186
+  },
+  "CMC Michael Block 6": {
+    "lat": 9.02161,
+    "lng": 38.83341
+  },
+  "CMC Michael Block 7": {
+    "lat": 9.01568,
+    "lng": 38.83544
+  },
+  "CMC Michael Block 8": {
+    "lat": 9.01560,
+    "lng": 38.83382
+  },
+  "CMC Michael Block 9": {
+    "lat": 9.02118,
+    "lng": 38.83782
+  },
+  "CMC Michael Block 10": {
+    "lat": 9.02404,
+    "lng": 38.83393
+  },
+  "CMC Michael Block 11": {
+    "lat": 9.02391,
+    "lng": 38.83757
+  },
+  "CMC Michael Block 12": {
+    "lat": 9.02146,
+    "lng": 38.83613
+  },
+  "CMC Michael Block 13": {
+    "lat": 9.01976,
+    "lng": 38.83121
+  },
+  "CMC Michael Block 14": {
+    "lat": 9.02014,
+    "lng": 38.83523
+  },
+  "CMC Michael Block 15": {
+    "lat": 9.01694,
+    "lng": 38.83588
+  },
+  "CMC Michael Block 16": {
+    "lat": 9.02176,
+    "lng": 38.83818
+  },
+  "CMC Michael Block 17": {
+    "lat": 9.02229,
+    "lng": 38.83603
+  },
+  "CMC Michael Block 18": {
+    "lat": 9.01953,
+    "lng": 38.83515
+  },
+  "CMC Michael Block 19": {
+    "lat": 9.02328,
+    "lng": 38.83951
+  },
+  "CMC Michael Block 20": {
+    "lat": 9.01777,
+    "lng": 38.83410
+  },
+  "CMC Michael Block 21": {
+    "lat": 9.02457,
+    "lng": 38.83467
+  },
+  "CMC Michael Block 22": {
+    "lat": 9.01509,
+    "lng": 38.83347
+  },
+  "CMC Michael Block 23": {
+    "lat": 9.01559,
+    "lng": 38.83994
+  },
+  "CMC Michael Block 24": {
+    "lat": 9.02333,
+    "lng": 38.83528
+  },
+  "CMC Michael Block 25": {
+    "lat": 9.01649,
+    "lng": 38.83124
+  },
+  "CMC Michael Block 26": {
+    "lat": 9.01936,
+    "lng": 38.83828
+  },
+  "CMC Michael Block 27": {
+    "lat": 9.02407,
+    "lng": 38.83319
+  },
+  "CMC Michael Block 28": {
+    "lat": 9.02483,
+    "lng": 38.83723
+  },
+  "CMC Michael Block 29": {
+    "lat": 9.02481,
+    "lng": 38.83677
+  },
+  "CMC Michael Block 30": {
+    "lat": 9.02126,
+    "lng": 38.83249
+  },
+  "CMC Michael Block 31": {
+    "lat": 9.01649,
+    "lng": 38.83877
+  },
+  "CMC Michael Block 32": {
+    "lat": 9.02209,
+    "lng": 38.83789
+  },
+  "CMC Michael Block 33": {
+    "lat": 9.02279,
+    "lng": 38.83532
+  },
+  "CMC Michael Block 34": {
+    "lat": 9.01709,
+    "lng": 38.83146
+  },
+  "CMC Michael Block 35": {
+    "lat": 9.02274,
+    "lng": 38.83336
+  },
+  "CMC Michael Block 36": {
+    "lat": 9.01585,
+    "lng": 38.83741
+  },
+  "CMC Michael Block 37": {
+    "lat": 9.02215,
+    "lng": 38.83809
+  },
+  "CMC Michael Block 38": {
+    "lat": 9.01884,
+    "lng": 38.83658
+  },
+  "CMC Michael Block 39": {
+    "lat": 9.02152,
+    "lng": 38.83237
+  },
+  "CMC Michael Block 40": {
+    "lat": 9.01844,
+    "lng": 38.83574
+  },
+  "CMC Michael Block 41": {
+    "lat": 9.02096,
+    "lng": 38.83437
+  },
+  "CMC Michael Block 42": {
+    "lat": 9.02344,
+    "lng": 38.83725
+  },
+  "CMC Michael Block 43": {
+    "lat": 9.01883,
+    "lng": 38.83276
+  },
+  "CMC Michael Block 44": {
+    "lat": 9.02207,
+    "lng": 38.83723
+  },
+  "CMC Michael Block 45": {
+    "lat": 9.02337,
+    "lng": 38.83863
+  },
+  "CMC Michael Block 46": {
+    "lat": 9.02499,
+    "lng": 38.83084
+  },
+  "CMC Michael Block 47": {
+    "lat": 9.01975,
+    "lng": 38.83660
+  },
+  "CMC Michael Block 48": {
+    "lat": 9.01688,
+    "lng": 38.83331
+  },
+  "CMC Michael Block 49": {
+    "lat": 9.01570,
+    "lng": 38.83517
+  },
+  "CMC Michael Block 50": {
+    "lat": 9.02276,
+    "lng": 38.83217
+  },
+  "CMC Michael Block 51": {
+    "lat": 9.02305,
+    "lng": 38.83445
+  },
+  "CMC Michael Block 52": {
+    "lat": 9.01592,
+    "lng": 38.83912
+  },
+  "CMC Michael Block 53": {
+    "lat": 9.02358,
+    "lng": 38.83237
+  },
+  "CMC Michael Block 54": {
+    "lat": 9.02116,
+    "lng": 38.83738
+  },
+  "CMC Michael Block 55": {
+    "lat": 9.02343,
+    "lng": 38.83279
+  },
+  "CMC Michael Block 56": {
+    "lat": 9.01818,
+    "lng": 38.83355
+  },
+  "CMC Michael Block 57": {
+    "lat": 9.02159,
+    "lng": 38.83340
+  },
+  "CMC Michael Block 58": {
+    "lat": 9.02410,
+    "lng": 38.83437
+  },
+  "CMC Michael Block 59": {
+    "lat": 9.02326,
+    "lng": 38.83264
+  },
+  "CMC Michael Block 60": {
+    "lat": 9.01858,
+    "lng": 38.83911
+  },
+  "CMC Michael Block 61": {
+    "lat": 9.01852,
+    "lng": 38.83670
+  },
+  "CMC Michael Block 62": {
+    "lat": 9.01722,
+    "lng": 38.83655
+  },
+  "CMC Michael Block 63": {
+    "lat": 9.02164,
+    "lng": 38.83926
+  },
+  "CMC Michael Block 64": {
+    "lat": 9.01810,
+    "lng": 38.83364
+  },
+  "CMC Michael Block 65": {
+    "lat": 9.01957,
+    "lng": 38.83213
+  },
+  "CMC Michael Block 66": {
+    "lat": 9.02438,
+    "lng": 38.83143
+  },
+  "CMC Michael Block 67": {
+    "lat": 9.02281,
+    "lng": 38.83506
+  },
+  "CMC Michael Block 68": {
+    "lat": 9.01955,
+    "lng": 38.83228
+  },
+  "CMC Michael Block 69": {
+    "lat": 9.01768,
+    "lng": 38.83612
+  },
+  "CMC Michael Block 70": {
+    "lat": 9.01554,
+    "lng": 38.83029
+  },
+  "CMC Michael Block 71": {
+    "lat": 9.02114,
+    "lng": 38.83685
+  },
+  "CMC Michael Block 72": {
+    "lat": 9.02395,
+    "lng": 38.83608
+  },
+  "CMC Michael Block 73": {
+    "lat": 9.02064,
+    "lng": 38.83784
+  },
+  "CMC Michael Block 74": {
+    "lat": 9.02295,
+    "lng": 38.83074
+  },
+  "CMC Michael Block 75": {
+    "lat": 9.01908,
+    "lng": 38.83627
+  },
+  "CMC Michael Block 76": {
+    "lat": 9.02107,
+    "lng": 38.83498
+  },
+  "CMC Michael Block 77": {
+    "lat": 9.01653,
+    "lng": 38.83263
+  },
+  "CMC Michael Block 78": {
+    "lat": 9.01624,
+    "lng": 38.83328
+  },
+  "CMC Michael Block 79": {
+    "lat": 9.01652,
+    "lng": 38.83235
+  },
+  "CMC Michael Block 80": {
+    "lat": 9.02090,
+    "lng": 38.83365
+  },
+  "CMC Michael Block 81": {
+    "lat": 9.02082,
+    "lng": 38.83296
+  },
+  "CMC Michael Block 82": {
+    "lat": 9.01653,
+    "lng": 38.83219
+  },
+  "CMC Michael Block 83": {
+    "lat": 9.01722,
+    "lng": 38.83837
+  },
+  "CMC Michael Block 84": {
+    "lat": 9.02192,
+    "lng": 38.83788
+  },
+  "CMC Michael Block 85": {
+    "lat": 9.02348,
+    "lng": 38.83741
+  },
+  "CMC Michael Block 86": {
+    "lat": 9.01546,
+    "lng": 38.83871
+  },
+  "CMC Michael Block 87": {
+    "lat": 9.01675,
+    "lng": 38.83272
+  },
+  "CMC Michael Block 88": {
+    "lat": 9.02113,
+    "lng": 38.83809
+  },
+  "CMC Michael Block 89": {
+    "lat": 9.02484,
+    "lng": 38.83919
+  },
+  "CMC Michael Block 90": {
+    "lat": 9.02101,
+    "lng": 38.83285
+  },
+  "CMC Michael Block 91": {
+    "lat": 9.01690,
+    "lng": 38.83192
+  },
+  "CMC Michael Block 92": {
+    "lat": 9.01723,
+    "lng": 38.83284
+  },
+  "CMC Michael Block 93": {
+    "lat": 9.02010,
+    "lng": 38.83648
+  },
+  "CMC Michael Block 94": {
+    "lat": 9.01557,
+    "lng": 38.83289
+  },
+  "CMC Michael Block 95": {
+    "lat": 9.02062,
+    "lng": 38.83224
+  },
+  "CMC Michael Block 96": {
+    "lat": 9.02014,
+    "lng": 38.83461
+  },
+  "CMC Michael Block 97": {
+    "lat": 9.02333,
+    "lng": 38.83262
+  },
+  "CMC Michael Block 98": {
+    "lat": 9.02405,
+    "lng": 38.83803
+  },
+  "CMC Michael Block 99": {
+    "lat": 9.01771,
+    "lng": 38.83569
+  },
+  "CMC Michael Block 100": {
+    "lat": 9.02467,
+    "lng": 38.83489
+  },
+  "CMC St. George Block 1": {
+    "lat": 9.02226,
+    "lng": 38.83024
+  },
+  "CMC St. George Block 2": {
+    "lat": 9.01705,
+    "lng": 38.83153
+  },
+  "CMC St. George Block 3": {
+    "lat": 9.02373,
+    "lng": 38.83387
+  },
+  "CMC St. George Block 4": {
+    "lat": 9.01905,
+    "lng": 38.83607
+  },
+  "CMC St. George Block 5": {
+    "lat": 9.01549,
+    "lng": 38.83622
+  },
+  "CMC St. George Block 6": {
+    "lat": 9.01834,
+    "lng": 38.83634
+  },
+  "CMC St. George Block 7": {
+    "lat": 9.02378,
+    "lng": 38.83301
+  },
+  "CMC St. George Block 8": {
+    "lat": 9.02411,
+    "lng": 38.83811
+  },
+  "CMC St. George Block 9": {
+    "lat": 9.01751,
+    "lng": 38.83288
+  },
+  "CMC St. George Block 10": {
+    "lat": 9.01898,
+    "lng": 38.83767
+  },
+  "CMC St. George Block 11": {
+    "lat": 9.02173,
+    "lng": 38.83331
+  },
+  "CMC St. George Block 12": {
+    "lat": 9.02329,
+    "lng": 38.83727
+  },
+  "CMC St. George Block 13": {
+    "lat": 9.02278,
+    "lng": 38.83379
+  },
+  "CMC St. George Block 14": {
+    "lat": 9.01848,
+    "lng": 38.83792
+  },
+  "CMC St. George Block 15": {
+    "lat": 9.02280,
+    "lng": 38.83112
+  },
+  "CMC St. George Block 16": {
+    "lat": 9.02165,
+    "lng": 38.83772
+  },
+  "CMC St. George Block 17": {
+    "lat": 9.01619,
+    "lng": 38.83463
+  },
+  "CMC St. George Block 18": {
+    "lat": 9.01569,
+    "lng": 38.83648
+  },
+  "CMC St. George Block 19": {
+    "lat": 9.02037,
+    "lng": 38.83786
+  },
+  "CMC St. George Block 20": {
+    "lat": 9.01613,
+    "lng": 38.83565
+  },
+  "CMC St. George Block 21": {
+    "lat": 9.01897,
+    "lng": 38.83444
+  },
+  "CMC St. George Block 22": {
+    "lat": 9.01826,
+    "lng": 38.83659
+  },
+  "CMC St. George Block 23": {
+    "lat": 9.02237,
+    "lng": 38.83141
+  },
+  "CMC St. George Block 24": {
+    "lat": 9.01617,
+    "lng": 38.83965
+  },
+  "CMC St. George Block 25": {
+    "lat": 9.01522,
+    "lng": 38.83741
+  },
+  "CMC St. George Block 26": {
+    "lat": 9.02261,
+    "lng": 38.83241
+  },
+  "CMC St. George Block 27": {
+    "lat": 9.02336,
+    "lng": 38.83403
+  },
+  "CMC St. George Block 28": {
+    "lat": 9.02478,
+    "lng": 38.83786
+  },
+  "CMC St. George Block 29": {
+    "lat": 9.02099,
+    "lng": 38.83310
+  },
+  "CMC St. George Block 30": {
+    "lat": 9.02244,
+    "lng": 38.83445
+  },
+  "CMC St. George Block 31": {
+    "lat": 9.01794,
+    "lng": 38.83869
+  },
+  "CMC St. George Block 32": {
+    "lat": 9.02422,
+    "lng": 38.83975
+  },
+  "CMC St. George Block 33": {
+    "lat": 9.02140,
+    "lng": 38.83200
+  },
+  "CMC St. George Block 34": {
+    "lat": 9.01568,
+    "lng": 38.83614
+  },
+  "CMC St. George Block 35": {
+    "lat": 9.01579,
+    "lng": 38.83440
+  },
+  "CMC St. George Block 36": {
+    "lat": 9.01755,
+    "lng": 38.83091
+  },
+  "CMC St. George Block 37": {
+    "lat": 9.01832,
+    "lng": 38.83130
+  },
+  "CMC St. George Block 38": {
+    "lat": 9.02373,
+    "lng": 38.83417
+  },
+  "CMC St. George Block 39": {
+    "lat": 9.02159,
+    "lng": 38.83289
+  },
+  "CMC St. George Block 40": {
+    "lat": 9.01891,
+    "lng": 38.83390
+  },
+  "CMC St. George Block 41": {
+    "lat": 9.01768,
+    "lng": 38.83619
+  },
+  "CMC St. George Block 42": {
+    "lat": 9.01584,
+    "lng": 38.83050
+  },
+  "CMC St. George Block 43": {
+    "lat": 9.02468,
+    "lng": 38.83806
+  },
+  "CMC St. George Block 44": {
+    "lat": 9.02343,
+    "lng": 38.83331
+  },
+  "CMC St. George Block 45": {
+    "lat": 9.02372,
+    "lng": 38.83538
+  },
+  "CMC St. George Block 46": {
+    "lat": 9.01971,
+    "lng": 38.83995
+  },
+  "CMC St. George Block 47": {
+    "lat": 9.02237,
+    "lng": 38.83189
+  },
+  "CMC St. George Block 48": {
+    "lat": 9.02305,
+    "lng": 38.83830
+  },
+  "CMC St. George Block 49": {
+    "lat": 9.02186,
+    "lng": 38.83990
+  },
+  "CMC St. George Block 50": {
+    "lat": 9.01825,
+    "lng": 38.83921
+  },
+  "CMC St. George Block 51": {
+    "lat": 9.02024,
+    "lng": 38.83091
+  },
+  "CMC St. George Block 52": {
+    "lat": 9.01741,
+    "lng": 38.83590
+  },
+  "CMC St. George Block 53": {
+    "lat": 9.01660,
+    "lng": 38.83057
+  },
+  "CMC St. George Block 54": {
+    "lat": 9.02385,
+    "lng": 38.83584
+  },
+  "CMC St. George Block 55": {
+    "lat": 9.02436,
+    "lng": 38.83071
+  },
+  "CMC St. George Block 56": {
+    "lat": 9.02359,
+    "lng": 38.83905
+  },
+  "CMC St. George Block 57": {
+    "lat": 9.02367,
+    "lng": 38.83051
+  },
+  "CMC St. George Block 58": {
+    "lat": 9.01663,
+    "lng": 38.83566
+  },
+  "CMC St. George Block 59": {
+    "lat": 9.01602,
+    "lng": 38.83904
+  },
+  "CMC St. George Block 60": {
+    "lat": 9.01907,
+    "lng": 38.83580
+  },
+  "CMC St. George Block 61": {
+    "lat": 9.02412,
+    "lng": 38.83264
+  },
+  "CMC St. George Block 62": {
+    "lat": 9.02103,
+    "lng": 38.83340
+  },
+  "CMC St. George Block 63": {
+    "lat": 9.02273,
+    "lng": 38.83757
+  },
+  "CMC St. George Block 64": {
+    "lat": 9.01552,
+    "lng": 38.83438
+  },
+  "CMC St. George Block 65": {
+    "lat": 9.01818,
+    "lng": 38.83410
+  },
+  "CMC St. George Block 66": {
+    "lat": 9.01651,
+    "lng": 38.83110
+  },
+  "CMC St. George Block 67": {
+    "lat": 9.02182,
+    "lng": 38.83131
+  },
+  "CMC St. George Block 68": {
+    "lat": 9.02332,
+    "lng": 38.83100
+  },
+  "CMC St. George Block 69": {
+    "lat": 9.01836,
+    "lng": 38.83081
+  },
+  "CMC St. George Block 70": {
+    "lat": 9.01734,
+    "lng": 38.83590
+  },
+  "CMC St. George Block 71": {
+    "lat": 9.02278,
+    "lng": 38.83891
+  },
+  "CMC St. George Block 72": {
+    "lat": 9.02467,
+    "lng": 38.83265
+  },
+  "CMC St. George Block 73": {
+    "lat": 9.01523,
+    "lng": 38.83114
+  },
+  "CMC St. George Block 74": {
+    "lat": 9.02177,
+    "lng": 38.83201
+  },
+  "CMC St. George Block 75": {
+    "lat": 9.02236,
+    "lng": 38.83088
+  },
+  "CMC St. George Block 76": {
+    "lat": 9.01910,
+    "lng": 38.83575
+  },
+  "CMC St. George Block 77": {
+    "lat": 9.01657,
+    "lng": 38.83724
+  },
+  "CMC St. George Block 78": {
+    "lat": 9.02291,
+    "lng": 38.83737
+  },
+  "CMC St. George Block 79": {
+    "lat": 9.01688,
+    "lng": 38.83273
+  },
+  "CMC St. George Block 80": {
+    "lat": 9.02406,
+    "lng": 38.83253
+  },
+  "CMC St. George Block 81": {
+    "lat": 9.01908,
+    "lng": 38.83971
+  },
+  "CMC St. George Block 82": {
+    "lat": 9.01687,
+    "lng": 38.83592
+  },
+  "CMC St. George Block 83": {
+    "lat": 9.01761,
+    "lng": 38.83109
+  },
+  "CMC St. George Block 84": {
+    "lat": 9.02454,
+    "lng": 38.83821
+  },
+  "CMC St. George Block 85": {
+    "lat": 9.01887,
+    "lng": 38.83759
+  },
+  "CMC St. George Block 86": {
+    "lat": 9.02177,
+    "lng": 38.83119
+  },
+  "CMC St. George Block 87": {
+    "lat": 9.01886,
+    "lng": 38.83752
+  },
+  "CMC St. George Block 88": {
+    "lat": 9.01921,
+    "lng": 38.83312
+  },
+  "CMC St. George Block 89": {
+    "lat": 9.02215,
+    "lng": 38.83183
+  },
+  "CMC St. George Block 90": {
+    "lat": 9.02163,
+    "lng": 38.83068
+  },
+  "CMC St. George Block 91": {
+    "lat": 9.01878,
+    "lng": 38.83574
+  },
+  "CMC St. George Block 92": {
+    "lat": 9.02002,
+    "lng": 38.83554
+  },
+  "CMC St. George Block 93": {
+    "lat": 9.02324,
+    "lng": 38.83835
+  },
+  "CMC St. George Block 94": {
+    "lat": 9.02337,
+    "lng": 38.83327
+  },
+  "CMC St. George Block 95": {
+    "lat": 9.02403,
+    "lng": 38.83016
+  },
+  "CMC St. George Block 96": {
+    "lat": 9.01645,
+    "lng": 38.83389
+  },
+  "CMC St. George Block 97": {
+    "lat": 9.02421,
+    "lng": 38.83023
+  },
+  "CMC St. George Block 98": {
+    "lat": 9.02439,
+    "lng": 38.83891
+  },
+  "CMC St. George Block 99": {
+    "lat": 9.02442,
+    "lng": 38.83672
+  },
+  "CMC St. George Block 100": {
+    "lat": 9.01906,
+    "lng": 38.83172
+  },
+  "CMC Square Block 1": {
+    "lat": 9.01645,
+    "lng": 38.83147
+  },
+  "CMC Square Block 2": {
+    "lat": 9.01867,
+    "lng": 38.83917
+  },
+  "CMC Square Block 3": {
+    "lat": 9.01574,
+    "lng": 38.83062
+  },
+  "CMC Square Block 4": {
+    "lat": 9.02087,
+    "lng": 38.83397
+  },
+  "CMC Square Block 5": {
+    "lat": 9.01777,
+    "lng": 38.83533
+  },
+  "CMC Square Block 6": {
+    "lat": 9.01953,
+    "lng": 38.83850
+  },
+  "CMC Square Block 7": {
+    "lat": 9.02184,
+    "lng": 38.83576
+  },
+  "CMC Square Block 8": {
+    "lat": 9.01951,
+    "lng": 38.83036
+  },
+  "CMC Square Block 9": {
+    "lat": 9.01522,
+    "lng": 38.83709
+  },
+  "CMC Square Block 10": {
+    "lat": 9.01781,
+    "lng": 38.83221
+  },
+  "CMC Square Block 11": {
+    "lat": 9.02029,
+    "lng": 38.83112
+  },
+  "CMC Square Block 12": {
+    "lat": 9.02358,
+    "lng": 38.83912
+  },
+  "CMC Square Block 13": {
+    "lat": 9.02255,
+    "lng": 38.83448
+  },
+  "CMC Square Block 14": {
+    "lat": 9.01741,
+    "lng": 38.83203
+  },
+  "CMC Square Block 15": {
+    "lat": 9.01660,
+    "lng": 38.83516
+  },
+  "CMC Square Block 16": {
+    "lat": 9.01763,
+    "lng": 38.83788
+  },
+  "CMC Square Block 17": {
+    "lat": 9.02372,
+    "lng": 38.83084
+  },
+  "CMC Square Block 18": {
+    "lat": 9.01705,
+    "lng": 38.83948
+  },
+  "CMC Square Block 19": {
+    "lat": 9.01648,
+    "lng": 38.83900
+  },
+  "CMC Square Block 20": {
+    "lat": 9.01766,
+    "lng": 38.83505
+  },
+  "CMC Square Block 21": {
+    "lat": 9.02278,
+    "lng": 38.83552
+  },
+  "CMC Square Block 22": {
+    "lat": 9.02331,
+    "lng": 38.83246
+  },
+  "CMC Square Block 23": {
+    "lat": 9.02494,
+    "lng": 38.83317
+  },
+  "CMC Square Block 24": {
+    "lat": 9.02319,
+    "lng": 38.83814
+  },
+  "CMC Square Block 25": {
+    "lat": 9.01862,
+    "lng": 38.83608
+  },
+  "CMC Square Block 26": {
+    "lat": 9.01903,
+    "lng": 38.83298
+  },
+  "CMC Square Block 27": {
+    "lat": 9.01748,
+    "lng": 38.83146
+  },
+  "CMC Square Block 28": {
+    "lat": 9.02042,
+    "lng": 38.83026
+  },
+  "CMC Square Block 29": {
+    "lat": 9.01700,
+    "lng": 38.83108
+  },
+  "CMC Square Block 30": {
+    "lat": 9.02267,
+    "lng": 38.83200
+  },
+  "CMC Square Block 31": {
+    "lat": 9.02456,
+    "lng": 38.83269
+  },
+  "CMC Square Block 32": {
+    "lat": 9.02341,
+    "lng": 38.83769
+  },
+  "CMC Square Block 33": {
+    "lat": 9.02076,
+    "lng": 38.83263
+  },
+  "CMC Square Block 34": {
+    "lat": 9.02051,
+    "lng": 38.83306
+  },
+  "CMC Square Block 35": {
+    "lat": 9.01968,
+    "lng": 38.83387
+  },
+  "CMC Square Block 36": {
+    "lat": 9.02297,
+    "lng": 38.83312
+  },
+  "CMC Square Block 37": {
+    "lat": 9.02487,
+    "lng": 38.83912
+  },
+  "CMC Square Block 38": {
+    "lat": 9.02191,
+    "lng": 38.83489
+  },
+  "CMC Square Block 39": {
+    "lat": 9.02281,
+    "lng": 38.83939
+  },
+  "CMC Square Block 40": {
+    "lat": 9.01874,
+    "lng": 38.83218
+  },
+  "CMC Square Block 41": {
+    "lat": 9.01850,
+    "lng": 38.83846
+  },
+  "CMC Square Block 42": {
+    "lat": 9.01765,
+    "lng": 38.83424
+  },
+  "CMC Square Block 43": {
+    "lat": 9.02241,
+    "lng": 38.83029
+  },
+  "CMC Square Block 44": {
+    "lat": 9.02438,
+    "lng": 38.83378
+  },
+  "CMC Square Block 45": {
+    "lat": 9.02437,
+    "lng": 38.83008
+  },
+  "CMC Square Block 46": {
+    "lat": 9.01701,
+    "lng": 38.83717
+  },
+  "CMC Square Block 47": {
+    "lat": 9.01966,
+    "lng": 38.83088
+  },
+  "CMC Square Block 48": {
+    "lat": 9.01633,
+    "lng": 38.83735
+  },
+  "CMC Square Block 49": {
+    "lat": 9.02148,
+    "lng": 38.83642
+  },
+  "CMC Square Block 50": {
+    "lat": 9.01733,
+    "lng": 38.83795
+  },
+  "CMC Square Block 51": {
+    "lat": 9.02482,
+    "lng": 38.83527
+  },
+  "CMC Square Block 52": {
+    "lat": 9.01900,
+    "lng": 38.83362
+  },
+  "CMC Square Block 53": {
+    "lat": 9.02422,
+    "lng": 38.83243
+  },
+  "CMC Square Block 54": {
+    "lat": 9.02091,
+    "lng": 38.83317
+  },
+  "CMC Square Block 55": {
+    "lat": 9.02029,
+    "lng": 38.83130
+  },
+  "CMC Square Block 56": {
+    "lat": 9.01918,
+    "lng": 38.83593
+  },
+  "CMC Square Block 57": {
+    "lat": 9.02444,
+    "lng": 38.83888
+  },
+  "CMC Square Block 58": {
+    "lat": 9.01707,
+    "lng": 38.83344
+  },
+  "CMC Square Block 59": {
+    "lat": 9.02357,
+    "lng": 38.83920
+  },
+  "CMC Square Block 60": {
+    "lat": 9.01903,
+    "lng": 38.83400
+  },
+  "CMC Square Block 61": {
+    "lat": 9.02339,
+    "lng": 38.83150
+  },
+  "CMC Square Block 62": {
+    "lat": 9.02135,
+    "lng": 38.83693
+  },
+  "CMC Square Block 63": {
+    "lat": 9.02379,
+    "lng": 38.83836
+  },
+  "CMC Square Block 64": {
+    "lat": 9.02072,
+    "lng": 38.83598
+  },
+  "CMC Square Block 65": {
+    "lat": 9.01816,
+    "lng": 38.83347
+  },
+  "CMC Square Block 66": {
+    "lat": 9.01706,
+    "lng": 38.83015
+  },
+  "CMC Square Block 67": {
+    "lat": 9.02372,
+    "lng": 38.83535
+  },
+  "CMC Square Block 68": {
+    "lat": 9.01555,
+    "lng": 38.83206
+  },
+  "CMC Square Block 69": {
+    "lat": 9.02341,
+    "lng": 38.83281
+  },
+  "CMC Square Block 70": {
+    "lat": 9.01796,
+    "lng": 38.83912
+  },
+  "CMC Square Block 71": {
+    "lat": 9.02476,
+    "lng": 38.83253
+  },
+  "CMC Square Block 72": {
+    "lat": 9.01835,
+    "lng": 38.83026
+  },
+  "CMC Square Block 73": {
+    "lat": 9.02024,
+    "lng": 38.83590
+  },
+  "CMC Square Block 74": {
+    "lat": 9.01511,
+    "lng": 38.83730
+  },
+  "CMC Square Block 75": {
+    "lat": 9.01816,
+    "lng": 38.83517
+  },
+  "CMC Square Block 76": {
+    "lat": 9.01887,
+    "lng": 38.83892
+  },
+  "CMC Square Block 77": {
+    "lat": 9.01731,
+    "lng": 38.83327
+  },
+  "CMC Square Block 78": {
+    "lat": 9.01971,
+    "lng": 38.83485
+  },
+  "CMC Square Block 79": {
+    "lat": 9.02453,
+    "lng": 38.83048
+  },
+  "CMC Square Block 80": {
+    "lat": 9.01906,
+    "lng": 38.83818
+  },
+  "CMC Square Block 81": {
+    "lat": 9.01991,
+    "lng": 38.83040
+  },
+  "CMC Square Block 82": {
+    "lat": 9.01559,
+    "lng": 38.83627
+  },
+  "CMC Square Block 83": {
+    "lat": 9.02466,
+    "lng": 38.83640
+  },
+  "CMC Square Block 84": {
+    "lat": 9.01798,
+    "lng": 38.83425
+  },
+  "CMC Square Block 85": {
+    "lat": 9.01949,
+    "lng": 38.83865
+  },
+  "CMC Square Block 86": {
+    "lat": 9.02104,
+    "lng": 38.83537
+  },
+  "CMC Square Block 87": {
+    "lat": 9.01639,
+    "lng": 38.83323
+  },
+  "CMC Square Block 88": {
+    "lat": 9.01837,
+    "lng": 38.83782
+  },
+  "CMC Square Block 89": {
+    "lat": 9.01598,
+    "lng": 38.83086
+  },
+  "CMC Square Block 90": {
+    "lat": 9.02450,
+    "lng": 38.83144
+  },
+  "CMC Square Block 91": {
+    "lat": 9.02360,
+    "lng": 38.83836
+  },
+  "CMC Square Block 92": {
+    "lat": 9.02370,
+    "lng": 38.83382
+  },
+  "CMC Square Block 93": {
+    "lat": 9.02290,
+    "lng": 38.83123
+  },
+  "CMC Square Block 94": {
+    "lat": 9.02034,
+    "lng": 38.83045
+  },
+  "CMC Square Block 95": {
+    "lat": 9.01530,
+    "lng": 38.83713
+  },
+  "CMC Square Block 96": {
+    "lat": 9.02361,
+    "lng": 38.83059
+  },
+  "CMC Square Block 97": {
+    "lat": 9.01879,
+    "lng": 38.83675
+  },
+  "CMC Square Block 98": {
+    "lat": 9.02019,
+    "lng": 38.83429
+  },
+  "CMC Square Block 99": {
+    "lat": 9.02418,
+    "lng": 38.83226
+  },
+  "CMC Square Block 100": {
+    "lat": 9.02356,
+    "lng": 38.83565
+  },
+  "CMC NOC Block 1": {
+    "lat": 9.01874,
+    "lng": 38.83358
+  },
+  "CMC NOC Block 2": {
+    "lat": 9.01596,
+    "lng": 38.83473
+  },
+  "CMC NOC Block 3": {
+    "lat": 9.02208,
+    "lng": 38.83721
+  },
+  "CMC NOC Block 4": {
+    "lat": 9.02186,
+    "lng": 38.83223
+  },
+  "CMC NOC Block 5": {
+    "lat": 9.02059,
+    "lng": 38.83565
+  },
+  "CMC NOC Block 6": {
+    "lat": 9.01698,
+    "lng": 38.83705
+  },
+  "CMC NOC Block 7": {
+    "lat": 9.01593,
+    "lng": 38.83724
+  },
+  "CMC NOC Block 8": {
+    "lat": 9.01817,
+    "lng": 38.83970
+  },
+  "CMC NOC Block 9": {
+    "lat": 9.01765,
+    "lng": 38.83733
+  },
+  "CMC NOC Block 10": {
+    "lat": 9.02366,
+    "lng": 38.83787
+  },
+  "CMC NOC Block 11": {
+    "lat": 9.01584,
+    "lng": 38.83271
+  },
+  "CMC NOC Block 12": {
+    "lat": 9.02113,
+    "lng": 38.83903
+  },
+  "CMC NOC Block 13": {
+    "lat": 9.01512,
+    "lng": 38.83651
+  },
+  "CMC NOC Block 14": {
+    "lat": 9.02054,
+    "lng": 38.83933
+  },
+  "CMC NOC Block 15": {
+    "lat": 9.01704,
+    "lng": 38.83646
+  },
+  "CMC NOC Block 16": {
+    "lat": 9.01809,
+    "lng": 38.83511
+  },
+  "CMC NOC Block 17": {
+    "lat": 9.01856,
+    "lng": 38.83540
+  },
+  "CMC NOC Block 18": {
+    "lat": 9.02010,
+    "lng": 38.83279
+  },
+  "CMC NOC Block 19": {
+    "lat": 9.01775,
+    "lng": 38.83655
+  },
+  "CMC NOC Block 20": {
+    "lat": 9.01963,
+    "lng": 38.83624
+  },
+  "CMC NOC Block 21": {
+    "lat": 9.01895,
+    "lng": 38.83955
+  },
+  "CMC NOC Block 22": {
+    "lat": 9.02222,
+    "lng": 38.83382
+  },
+  "CMC NOC Block 23": {
+    "lat": 9.02443,
+    "lng": 38.83014
+  },
+  "CMC NOC Block 24": {
+    "lat": 9.02105,
+    "lng": 38.83317
+  },
+  "CMC NOC Block 25": {
+    "lat": 9.01901,
+    "lng": 38.83369
+  },
+  "CMC NOC Block 26": {
+    "lat": 9.01615,
+    "lng": 38.83298
+  },
+  "CMC NOC Block 27": {
+    "lat": 9.01901,
+    "lng": 38.83387
+  },
+  "CMC NOC Block 28": {
+    "lat": 9.01554,
+    "lng": 38.83963
+  },
+  "CMC NOC Block 29": {
+    "lat": 9.01636,
+    "lng": 38.83656
+  },
+  "CMC NOC Block 30": {
+    "lat": 9.01729,
+    "lng": 38.83174
+  },
+  "CMC NOC Block 31": {
+    "lat": 9.01789,
+    "lng": 38.83635
+  },
+  "CMC NOC Block 32": {
+    "lat": 9.02155,
+    "lng": 38.83723
+  },
+  "CMC NOC Block 33": {
+    "lat": 9.01723,
+    "lng": 38.83215
+  },
+  "CMC NOC Block 34": {
+    "lat": 9.02437,
+    "lng": 38.83496
+  },
+  "CMC NOC Block 35": {
+    "lat": 9.01630,
+    "lng": 38.83698
+  },
+  "CMC NOC Block 36": {
+    "lat": 9.01915,
+    "lng": 38.83243
+  },
+  "CMC NOC Block 37": {
+    "lat": 9.01540,
+    "lng": 38.83564
+  },
+  "CMC NOC Block 38": {
+    "lat": 9.01841,
+    "lng": 38.83643
+  },
+  "CMC NOC Block 39": {
+    "lat": 9.01977,
+    "lng": 38.83622
+  },
+  "CMC NOC Block 40": {
+    "lat": 9.01708,
+    "lng": 38.83624
+  },
+  "CMC NOC Block 41": {
+    "lat": 9.01535,
+    "lng": 38.83726
+  },
+  "CMC NOC Block 42": {
+    "lat": 9.01689,
+    "lng": 38.83821
+  },
+  "CMC NOC Block 43": {
+    "lat": 9.02206,
+    "lng": 38.83219
+  },
+  "CMC NOC Block 44": {
+    "lat": 9.01752,
+    "lng": 38.83694
+  },
+  "CMC NOC Block 45": {
+    "lat": 9.01629,
+    "lng": 38.83055
+  },
+  "CMC NOC Block 46": {
+    "lat": 9.02081,
+    "lng": 38.83005
+  },
+  "CMC NOC Block 47": {
+    "lat": 9.02434,
+    "lng": 38.83374
+  },
+  "CMC NOC Block 48": {
+    "lat": 9.02045,
+    "lng": 38.83424
+  },
+  "CMC NOC Block 49": {
+    "lat": 9.02075,
+    "lng": 38.83253
+  },
+  "CMC NOC Block 50": {
+    "lat": 9.02028,
+    "lng": 38.83828
+  },
+  "CMC NOC Block 51": {
+    "lat": 9.02432,
+    "lng": 38.83913
+  },
+  "CMC NOC Block 52": {
+    "lat": 9.02332,
+    "lng": 38.83397
+  },
+  "CMC NOC Block 53": {
+    "lat": 9.01895,
+    "lng": 38.83111
+  },
+  "CMC NOC Block 54": {
+    "lat": 9.01915,
+    "lng": 38.83575
+  },
+  "CMC NOC Block 55": {
+    "lat": 9.01904,
+    "lng": 38.83981
+  },
+  "CMC NOC Block 56": {
+    "lat": 9.02055,
+    "lng": 38.83366
+  },
+  "CMC NOC Block 57": {
+    "lat": 9.01964,
+    "lng": 38.83276
+  },
+  "CMC NOC Block 58": {
+    "lat": 9.02063,
+    "lng": 38.83246
+  },
+  "CMC NOC Block 59": {
+    "lat": 9.02359,
+    "lng": 38.83588
+  },
+  "CMC NOC Block 60": {
+    "lat": 9.02029,
+    "lng": 38.83537
+  },
+  "CMC NOC Block 61": {
+    "lat": 9.02205,
+    "lng": 38.83695
+  },
+  "CMC NOC Block 62": {
+    "lat": 9.02150,
+    "lng": 38.83200
+  },
+  "CMC NOC Block 63": {
+    "lat": 9.02492,
+    "lng": 38.83290
+  },
+  "CMC NOC Block 64": {
+    "lat": 9.02496,
+    "lng": 38.83608
+  },
+  "CMC NOC Block 65": {
+    "lat": 9.01858,
+    "lng": 38.83586
+  },
+  "CMC NOC Block 66": {
+    "lat": 9.01786,
+    "lng": 38.83980
+  },
+  "CMC NOC Block 67": {
+    "lat": 9.01664,
+    "lng": 38.83345
+  },
+  "CMC NOC Block 68": {
+    "lat": 9.02020,
+    "lng": 38.83416
+  },
+  "CMC NOC Block 69": {
+    "lat": 9.01799,
+    "lng": 38.83163
+  },
+  "CMC NOC Block 70": {
+    "lat": 9.02398,
+    "lng": 38.83241
+  },
+  "CMC NOC Block 71": {
+    "lat": 9.02094,
+    "lng": 38.83130
+  },
+  "CMC NOC Block 72": {
+    "lat": 9.02248,
+    "lng": 38.83510
+  },
+  "CMC NOC Block 73": {
+    "lat": 9.01797,
+    "lng": 38.83075
+  },
+  "CMC NOC Block 74": {
+    "lat": 9.01714,
+    "lng": 38.83038
+  },
+  "CMC NOC Block 75": {
+    "lat": 9.02255,
+    "lng": 38.83416
+  },
+  "CMC NOC Block 76": {
+    "lat": 9.01698,
+    "lng": 38.83569
+  },
+  "CMC NOC Block 77": {
+    "lat": 9.02393,
+    "lng": 38.83111
+  },
+  "CMC NOC Block 78": {
+    "lat": 9.02255,
+    "lng": 38.83429
+  },
+  "CMC NOC Block 79": {
+    "lat": 9.01880,
+    "lng": 38.83406
+  },
+  "CMC NOC Block 80": {
+    "lat": 9.01808,
+    "lng": 38.83566
+  },
+  "CMC NOC Block 81": {
+    "lat": 9.01913,
+    "lng": 38.83756
+  },
+  "CMC NOC Block 82": {
+    "lat": 9.02411,
+    "lng": 38.83259
+  },
+  "CMC NOC Block 83": {
+    "lat": 9.01552,
+    "lng": 38.83339
+  },
+  "CMC NOC Block 84": {
+    "lat": 9.01593,
+    "lng": 38.83248
+  },
+  "CMC NOC Block 85": {
+    "lat": 9.01656,
+    "lng": 38.83964
+  },
+  "CMC NOC Block 86": {
+    "lat": 9.01595,
+    "lng": 38.83691
+  },
+  "CMC NOC Block 87": {
+    "lat": 9.02148,
+    "lng": 38.83778
+  },
+  "CMC NOC Block 88": {
+    "lat": 9.01566,
+    "lng": 38.83287
+  },
+  "CMC NOC Block 89": {
+    "lat": 9.02269,
+    "lng": 38.83537
+  },
+  "CMC NOC Block 90": {
+    "lat": 9.02275,
+    "lng": 38.83694
+  },
+  "CMC NOC Block 91": {
+    "lat": 9.02206,
+    "lng": 38.83341
+  },
+  "CMC NOC Block 92": {
+    "lat": 9.02382,
+    "lng": 38.83906
+  },
+  "CMC NOC Block 93": {
+    "lat": 9.02161,
+    "lng": 38.83967
+  },
+  "CMC NOC Block 94": {
+    "lat": 9.01941,
+    "lng": 38.83236
+  },
+  "CMC NOC Block 95": {
+    "lat": 9.01546,
+    "lng": 38.83790
+  },
+  "CMC NOC Block 96": {
+    "lat": 9.02295,
+    "lng": 38.83325
+  },
+  "CMC NOC Block 97": {
+    "lat": 9.01679,
+    "lng": 38.83370
+  },
+  "CMC NOC Block 98": {
+    "lat": 9.01932,
+    "lng": 38.83665
+  },
+  "CMC NOC Block 99": {
+    "lat": 9.02004,
+    "lng": 38.83092
+  },
+  "CMC NOC Block 100": {
+    "lat": 9.02218,
+    "lng": 38.83899
+  },
+  "CMC Civil Service Block 1": {
+    "lat": 9.02461,
+    "lng": 38.83120
+  },
+  "CMC Civil Service Block 2": {
+    "lat": 9.02441,
+    "lng": 38.83505
+  },
+  "CMC Civil Service Block 3": {
+    "lat": 9.01749,
+    "lng": 38.83775
+  },
+  "CMC Civil Service Block 4": {
+    "lat": 9.02223,
+    "lng": 38.83807
+  },
+  "CMC Civil Service Block 5": {
+    "lat": 9.02415,
+    "lng": 38.83190
+  },
+  "CMC Civil Service Block 6": {
+    "lat": 9.02149,
+    "lng": 38.83695
+  },
+  "CMC Civil Service Block 7": {
+    "lat": 9.01957,
+    "lng": 38.83044
+  },
+  "CMC Civil Service Block 8": {
+    "lat": 9.01550,
+    "lng": 38.83755
+  },
+  "CMC Civil Service Block 9": {
+    "lat": 9.01519,
+    "lng": 38.83762
+  },
+  "CMC Civil Service Block 10": {
+    "lat": 9.01667,
+    "lng": 38.83314
+  },
+  "CMC Civil Service Block 11": {
+    "lat": 9.02140,
+    "lng": 38.83505
+  },
+  "CMC Civil Service Block 12": {
+    "lat": 9.02301,
+    "lng": 38.83295
+  },
+  "CMC Civil Service Block 13": {
+    "lat": 9.02361,
+    "lng": 38.83382
+  },
+  "CMC Civil Service Block 14": {
+    "lat": 9.02129,
+    "lng": 38.83242
+  },
+  "CMC Civil Service Block 15": {
+    "lat": 9.02262,
+    "lng": 38.83125
+  },
+  "CMC Civil Service Block 16": {
+    "lat": 9.02204,
+    "lng": 38.83871
+  },
+  "CMC Civil Service Block 17": {
+    "lat": 9.01701,
+    "lng": 38.83070
+  },
+  "CMC Civil Service Block 18": {
+    "lat": 9.02303,
+    "lng": 38.83063
+  },
+  "CMC Civil Service Block 19": {
+    "lat": 9.02234,
+    "lng": 38.83676
+  },
+  "CMC Civil Service Block 20": {
+    "lat": 9.02261,
+    "lng": 38.83757
+  },
+  "CMC Civil Service Block 21": {
+    "lat": 9.02209,
+    "lng": 38.83073
+  },
+  "CMC Civil Service Block 22": {
+    "lat": 9.01602,
+    "lng": 38.83394
+  },
+  "CMC Civil Service Block 23": {
+    "lat": 9.01917,
+    "lng": 38.83308
+  },
+  "CMC Civil Service Block 24": {
+    "lat": 9.01926,
+    "lng": 38.83262
+  },
+  "CMC Civil Service Block 25": {
+    "lat": 9.02209,
+    "lng": 38.83869
+  },
+  "CMC Civil Service Block 26": {
+    "lat": 9.01924,
+    "lng": 38.83520
+  },
+  "CMC Civil Service Block 27": {
+    "lat": 9.01647,
+    "lng": 38.83846
+  },
+  "CMC Civil Service Block 28": {
+    "lat": 9.01875,
+    "lng": 38.83614
+  },
+  "CMC Civil Service Block 29": {
+    "lat": 9.01553,
+    "lng": 38.83047
+  },
+  "CMC Civil Service Block 30": {
+    "lat": 9.02083,
+    "lng": 38.83240
+  },
+  "CMC Civil Service Block 31": {
+    "lat": 9.01629,
+    "lng": 38.83288
+  },
+  "CMC Civil Service Block 32": {
+    "lat": 9.01917,
+    "lng": 38.83632
+  },
+  "CMC Civil Service Block 33": {
+    "lat": 9.02076,
+    "lng": 38.83892
+  },
+  "CMC Civil Service Block 34": {
+    "lat": 9.01754,
+    "lng": 38.83116
+  },
+  "CMC Civil Service Block 35": {
+    "lat": 9.02371,
+    "lng": 38.83033
+  },
+  "CMC Civil Service Block 36": {
+    "lat": 9.02034,
+    "lng": 38.83063
+  },
+  "CMC Civil Service Block 37": {
+    "lat": 9.01893,
+    "lng": 38.83932
+  },
+  "CMC Civil Service Block 38": {
+    "lat": 9.01510,
+    "lng": 38.83728
+  },
+  "CMC Civil Service Block 39": {
+    "lat": 9.02116,
+    "lng": 38.83699
+  },
+  "CMC Civil Service Block 40": {
+    "lat": 9.02056,
+    "lng": 38.83732
+  },
+  "CMC Civil Service Block 41": {
+    "lat": 9.01930,
+    "lng": 38.83311
+  },
+  "CMC Civil Service Block 42": {
+    "lat": 9.02493,
+    "lng": 38.83097
+  },
+  "CMC Civil Service Block 43": {
+    "lat": 9.01949,
+    "lng": 38.83042
+  },
+  "CMC Civil Service Block 44": {
+    "lat": 9.01597,
+    "lng": 38.83108
+  },
+  "CMC Civil Service Block 45": {
+    "lat": 9.01790,
+    "lng": 38.83112
+  },
+  "CMC Civil Service Block 46": {
+    "lat": 9.01759,
+    "lng": 38.83429
+  },
+  "CMC Civil Service Block 47": {
+    "lat": 9.02057,
+    "lng": 38.83336
+  },
+  "CMC Civil Service Block 48": {
+    "lat": 9.01991,
+    "lng": 38.83067
+  },
+  "CMC Civil Service Block 49": {
+    "lat": 9.01860,
+    "lng": 38.83978
+  },
+  "CMC Civil Service Block 50": {
+    "lat": 9.02083,
+    "lng": 38.83729
+  },
+  "CMC Civil Service Block 51": {
+    "lat": 9.02294,
+    "lng": 38.83261
+  },
+  "CMC Civil Service Block 52": {
+    "lat": 9.01847,
+    "lng": 38.83163
+  },
+  "CMC Civil Service Block 53": {
+    "lat": 9.01851,
+    "lng": 38.83832
+  },
+  "CMC Civil Service Block 54": {
+    "lat": 9.02437,
+    "lng": 38.83692
+  },
+  "CMC Civil Service Block 55": {
+    "lat": 9.02298,
+    "lng": 38.83895
+  },
+  "CMC Civil Service Block 56": {
+    "lat": 9.02212,
+    "lng": 38.83702
+  },
+  "CMC Civil Service Block 57": {
+    "lat": 9.02208,
+    "lng": 38.83717
+  },
+  "CMC Civil Service Block 58": {
+    "lat": 9.02300,
+    "lng": 38.83796
+  },
+  "CMC Civil Service Block 59": {
+    "lat": 9.02033,
+    "lng": 38.83938
+  },
+  "CMC Civil Service Block 60": {
+    "lat": 9.01808,
+    "lng": 38.83864
+  },
+  "CMC Civil Service Block 61": {
+    "lat": 9.01563,
+    "lng": 38.83011
+  },
+  "CMC Civil Service Block 62": {
+    "lat": 9.02459,
+    "lng": 38.83969
+  },
+  "CMC Civil Service Block 63": {
+    "lat": 9.01745,
+    "lng": 38.83874
+  },
+  "CMC Civil Service Block 64": {
+    "lat": 9.02340,
+    "lng": 38.83980
+  },
+  "CMC Civil Service Block 65": {
+    "lat": 9.02305,
+    "lng": 38.83866
+  },
+  "CMC Civil Service Block 66": {
+    "lat": 9.01921,
+    "lng": 38.83370
+  },
+  "CMC Civil Service Block 67": {
+    "lat": 9.01609,
+    "lng": 38.83517
+  },
+  "CMC Civil Service Block 68": {
+    "lat": 9.01700,
+    "lng": 38.83666
+  },
+  "CMC Civil Service Block 69": {
+    "lat": 9.02140,
+    "lng": 38.83399
+  },
+  "CMC Civil Service Block 70": {
+    "lat": 9.01863,
+    "lng": 38.83617
+  },
+  "CMC Civil Service Block 71": {
+    "lat": 9.01649,
+    "lng": 38.83224
+  },
+  "CMC Civil Service Block 72": {
+    "lat": 9.02007,
+    "lng": 38.83179
+  },
+  "CMC Civil Service Block 73": {
+    "lat": 9.01709,
+    "lng": 38.83280
+  },
+  "CMC Civil Service Block 74": {
+    "lat": 9.02355,
+    "lng": 38.83814
+  },
+  "CMC Civil Service Block 75": {
+    "lat": 9.02476,
+    "lng": 38.83273
+  },
+  "CMC Civil Service Block 76": {
+    "lat": 9.02182,
+    "lng": 38.83842
+  },
+  "CMC Civil Service Block 77": {
+    "lat": 9.02335,
+    "lng": 38.83025
+  },
+  "CMC Civil Service Block 78": {
+    "lat": 9.02315,
+    "lng": 38.83176
+  },
+  "CMC Civil Service Block 79": {
+    "lat": 9.01766,
+    "lng": 38.83738
+  },
+  "CMC Civil Service Block 80": {
+    "lat": 9.02365,
+    "lng": 38.83698
+  },
+  "CMC Civil Service Block 81": {
+    "lat": 9.02242,
+    "lng": 38.83802
+  },
+  "CMC Civil Service Block 82": {
+    "lat": 9.02091,
+    "lng": 38.83553
+  },
+  "CMC Civil Service Block 83": {
+    "lat": 9.02032,
+    "lng": 38.83814
+  },
+  "CMC Civil Service Block 84": {
+    "lat": 9.02455,
+    "lng": 38.83072
+  },
+  "CMC Civil Service Block 85": {
+    "lat": 9.01708,
+    "lng": 38.83690
+  },
+  "CMC Civil Service Block 86": {
+    "lat": 9.01526,
+    "lng": 38.83597
+  },
+  "CMC Civil Service Block 87": {
+    "lat": 9.01670,
+    "lng": 38.83685
+  },
+  "CMC Civil Service Block 88": {
+    "lat": 9.02410,
+    "lng": 38.83257
+  },
+  "CMC Civil Service Block 89": {
+    "lat": 9.01955,
+    "lng": 38.83277
+  },
+  "CMC Civil Service Block 90": {
+    "lat": 9.01751,
+    "lng": 38.83991
+  },
+  "CMC Civil Service Block 91": {
+    "lat": 9.02203,
+    "lng": 38.83454
+  },
+  "CMC Civil Service Block 92": {
+    "lat": 9.01819,
+    "lng": 38.83995
+  },
+  "CMC Civil Service Block 93": {
+    "lat": 9.01618,
+    "lng": 38.83883
+  },
+  "CMC Civil Service Block 94": {
+    "lat": 9.01994,
+    "lng": 38.83904
+  },
+  "CMC Civil Service Block 95": {
+    "lat": 9.01791,
+    "lng": 38.83050
+  },
+  "CMC Civil Service Block 96": {
+    "lat": 9.02366,
+    "lng": 38.83997
+  },
+  "CMC Civil Service Block 97": {
+    "lat": 9.02089,
+    "lng": 38.83418
+  },
+  "CMC Civil Service Block 98": {
+    "lat": 9.01890,
+    "lng": 38.83898
+  },
+  "CMC Civil Service Block 99": {
+    "lat": 9.01934,
+    "lng": 38.83143
+  },
+  "CMC Civil Service Block 100": {
+    "lat": 9.01691,
+    "lng": 38.83315
+  },
+  "Ayat Square Block 1": {
+    "lat": 9.02199,
+    "lng": 38.85443
+  },
+  "Ayat Square Block 2": {
+    "lat": 9.02943,
+    "lng": 38.85973
+  },
+  "Ayat Square Block 3": {
+    "lat": 9.03066,
+    "lng": 38.86041
+  },
+  "Ayat Square Block 4": {
+    "lat": 9.02533,
+    "lng": 38.85318
+  },
+  "Ayat Square Block 5": {
+    "lat": 9.02629,
+    "lng": 38.85705
+  },
+  "Ayat Square Block 6": {
+    "lat": 9.02665,
+    "lng": 38.85380
+  },
+  "Ayat Square Block 7": {
+    "lat": 9.03087,
+    "lng": 38.85793
+  },
+  "Ayat Square Block 8": {
+    "lat": 9.02722,
+    "lng": 38.85439
+  },
+  "Ayat Square Block 9": {
+    "lat": 9.02831,
+    "lng": 38.85333
+  },
+  "Ayat Square Block 10": {
+    "lat": 9.03007,
+    "lng": 38.86165
+  },
+  "Ayat Square Block 11": {
+    "lat": 9.02198,
+    "lng": 38.85440
+  },
+  "Ayat Square Block 12": {
+    "lat": 9.03042,
+    "lng": 38.85938
+  },
+  "Ayat Square Block 13": {
+    "lat": 9.02853,
+    "lng": 38.85722
+  },
+  "Ayat Square Block 14": {
+    "lat": 9.02192,
+    "lng": 38.85971
+  },
+  "Ayat Square Block 15": {
+    "lat": 9.02390,
+    "lng": 38.86175
+  },
+  "Ayat Square Block 16": {
+    "lat": 9.02439,
+    "lng": 38.85485
+  },
+  "Ayat Square Block 17": {
+    "lat": 9.02910,
+    "lng": 38.86253
+  },
+  "Ayat Square Block 18": {
+    "lat": 9.02503,
+    "lng": 38.86004
+  },
+  "Ayat Square Block 19": {
+    "lat": 9.02297,
+    "lng": 38.85997
+  },
+  "Ayat Square Block 20": {
+    "lat": 9.03078,
+    "lng": 38.86197
+  },
+  "Ayat Square Block 21": {
+    "lat": 9.02742,
+    "lng": 38.85818
+  },
+  "Ayat Square Block 22": {
+    "lat": 9.02362,
+    "lng": 38.86036
+  },
+  "Ayat Square Block 23": {
+    "lat": 9.02268,
+    "lng": 38.85433
+  },
+  "Ayat Square Block 24": {
+    "lat": 9.02546,
+    "lng": 38.86056
+  },
+  "Ayat Square Block 25": {
+    "lat": 9.02651,
+    "lng": 38.85709
+  },
+  "Ayat Square Block 26": {
+    "lat": 9.03130,
+    "lng": 38.85465
+  },
+  "Ayat Square Block 27": {
+    "lat": 9.02546,
+    "lng": 38.85350
+  },
+  "Ayat Square Block 28": {
+    "lat": 9.02890,
+    "lng": 38.85923
+  },
+  "Ayat Square Block 29": {
+    "lat": 9.02329,
+    "lng": 38.85851
+  },
+  "Ayat Square Block 30": {
+    "lat": 9.02953,
+    "lng": 38.86107
+  },
+  "Ayat Square Block 31": {
+    "lat": 9.02656,
+    "lng": 38.85648
+  },
+  "Ayat Square Block 32": {
+    "lat": 9.02885,
+    "lng": 38.86242
+  },
+  "Ayat Square Block 33": {
+    "lat": 9.02849,
+    "lng": 38.85567
+  },
+  "Ayat Square Block 34": {
+    "lat": 9.02604,
+    "lng": 38.86018
+  },
+  "Ayat Square Block 35": {
+    "lat": 9.02402,
+    "lng": 38.86028
+  },
+  "Ayat Square Block 36": {
+    "lat": 9.02532,
+    "lng": 38.86042
+  },
+  "Ayat Square Block 37": {
+    "lat": 9.03134,
+    "lng": 38.86058
+  },
+  "Ayat Square Block 38": {
+    "lat": 9.02769,
+    "lng": 38.86266
+  },
+  "Ayat Square Block 39": {
+    "lat": 9.03051,
+    "lng": 38.85506
+  },
+  "Ayat Square Block 40": {
+    "lat": 9.02186,
+    "lng": 38.85683
+  },
+  "Ayat Square Block 41": {
+    "lat": 9.02844,
+    "lng": 38.86048
+  },
+  "Ayat Square Block 42": {
+    "lat": 9.03023,
+    "lng": 38.85895
+  },
+  "Ayat Square Block 43": {
+    "lat": 9.02822,
+    "lng": 38.85442
+  },
+  "Ayat Square Block 44": {
+    "lat": 9.02875,
+    "lng": 38.85496
+  },
+  "Ayat Square Block 45": {
+    "lat": 9.02831,
+    "lng": 38.85527
+  },
+  "Ayat Square Block 46": {
+    "lat": 9.02360,
+    "lng": 38.86221
+  },
+  "Ayat Square Block 47": {
+    "lat": 9.02940,
+    "lng": 38.85829
+  },
+  "Ayat Square Block 48": {
+    "lat": 9.02912,
+    "lng": 38.85533
+  },
+  "Ayat Square Block 49": {
+    "lat": 9.02545,
+    "lng": 38.85426
+  },
+  "Ayat Square Block 50": {
+    "lat": 9.02206,
+    "lng": 38.86095
+  },
+  "Ayat Square Block 51": {
+    "lat": 9.02192,
+    "lng": 38.86157
+  },
+  "Ayat Square Block 52": {
+    "lat": 9.02865,
+    "lng": 38.85633
+  },
+  "Ayat Square Block 53": {
+    "lat": 9.03146,
+    "lng": 38.85958
+  },
+  "Ayat Square Block 54": {
+    "lat": 9.02373,
+    "lng": 38.85489
+  },
+  "Ayat Square Block 55": {
+    "lat": 9.02194,
+    "lng": 38.85603
+  },
+  "Ayat Square Block 56": {
+    "lat": 9.02370,
+    "lng": 38.85823
+  },
+  "Ayat Square Block 57": {
+    "lat": 9.02637,
+    "lng": 38.86237
+  },
+  "Ayat Square Block 58": {
+    "lat": 9.02629,
+    "lng": 38.85994
+  },
+  "Ayat Square Block 59": {
+    "lat": 9.02934,
+    "lng": 38.85525
+  },
+  "Ayat Square Block 60": {
+    "lat": 9.02761,
+    "lng": 38.85908
+  },
+  "Ayat Square Block 61": {
+    "lat": 9.02854,
+    "lng": 38.86102
+  },
+  "Ayat Square Block 62": {
+    "lat": 9.02279,
+    "lng": 38.86228
+  },
+  "Ayat Square Block 63": {
+    "lat": 9.02567,
+    "lng": 38.85622
+  },
+  "Ayat Square Block 64": {
+    "lat": 9.03046,
+    "lng": 38.85624
+  },
+  "Ayat Square Block 65": {
+    "lat": 9.02861,
+    "lng": 38.86052
+  },
+  "Ayat Square Block 66": {
+    "lat": 9.02600,
+    "lng": 38.85676
+  },
+  "Ayat Square Block 67": {
+    "lat": 9.02598,
+    "lng": 38.86142
+  },
+  "Ayat Square Block 68": {
+    "lat": 9.02217,
+    "lng": 38.85447
+  },
+  "Ayat Square Block 69": {
+    "lat": 9.02363,
+    "lng": 38.85344
+  },
+  "Ayat Square Block 70": {
+    "lat": 9.02170,
+    "lng": 38.85329
+  },
+  "Ayat Square Block 71": {
+    "lat": 9.03111,
+    "lng": 38.86275
+  },
+  "Ayat Square Block 72": {
+    "lat": 9.02839,
+    "lng": 38.85983
+  },
+  "Ayat Square Block 73": {
+    "lat": 9.02409,
+    "lng": 38.86035
+  },
+  "Ayat Square Block 74": {
+    "lat": 9.03144,
+    "lng": 38.86280
+  },
+  "Ayat Square Block 75": {
+    "lat": 9.02985,
+    "lng": 38.85583
+  },
+  "Ayat Square Block 76": {
+    "lat": 9.02497,
+    "lng": 38.85677
+  },
+  "Ayat Square Block 77": {
+    "lat": 9.02421,
+    "lng": 38.85936
+  },
+  "Ayat Square Block 78": {
+    "lat": 9.02985,
+    "lng": 38.85579
+  },
+  "Ayat Square Block 79": {
+    "lat": 9.02916,
+    "lng": 38.85583
+  },
+  "Ayat Square Block 80": {
+    "lat": 9.02889,
+    "lng": 38.85530
+  },
+  "Ayat Square Block 81": {
+    "lat": 9.02647,
+    "lng": 38.85306
+  },
+  "Ayat Square Block 82": {
+    "lat": 9.02793,
+    "lng": 38.85875
+  },
+  "Ayat Square Block 83": {
+    "lat": 9.02703,
+    "lng": 38.85512
+  },
+  "Ayat Square Block 84": {
+    "lat": 9.02504,
+    "lng": 38.86150
+  },
+  "Ayat Square Block 85": {
+    "lat": 9.02480,
+    "lng": 38.86129
+  },
+  "Ayat Square Block 86": {
+    "lat": 9.02904,
+    "lng": 38.85899
+  },
+  "Ayat Square Block 87": {
+    "lat": 9.02465,
+    "lng": 38.86194
+  },
+  "Ayat Square Block 88": {
+    "lat": 9.02372,
+    "lng": 38.86271
+  },
+  "Ayat Square Block 89": {
+    "lat": 9.03117,
+    "lng": 38.85965
+  },
+  "Ayat Square Block 90": {
+    "lat": 9.02337,
+    "lng": 38.85610
+  },
+  "Ayat Square Block 91": {
+    "lat": 9.02972,
+    "lng": 38.85803
+  },
+  "Ayat Square Block 92": {
+    "lat": 9.02700,
+    "lng": 38.86235
+  },
+  "Ayat Square Block 93": {
+    "lat": 9.03012,
+    "lng": 38.85744
+  },
+  "Ayat Square Block 94": {
+    "lat": 9.03078,
+    "lng": 38.85604
+  },
+  "Ayat Square Block 95": {
+    "lat": 9.02705,
+    "lng": 38.86011
+  },
+  "Ayat Square Block 96": {
+    "lat": 9.03003,
+    "lng": 38.86069
+  },
+  "Ayat Square Block 97": {
+    "lat": 9.02311,
+    "lng": 38.85828
+  },
+  "Ayat Square Block 98": {
+    "lat": 9.02393,
+    "lng": 38.85760
+  },
+  "Ayat Square Block 99": {
+    "lat": 9.02931,
+    "lng": 38.85583
+  },
+  "Ayat Square Block 100": {
+    "lat": 9.02226,
+    "lng": 38.86004
+  },
+  "Ayat Condominium Block 1": {
+    "lat": 9.03036,
+    "lng": 38.85895
+  },
+  "Ayat Condominium Block 2": {
+    "lat": 9.03076,
+    "lng": 38.86210
+  },
+  "Ayat Condominium Block 3": {
+    "lat": 9.02515,
+    "lng": 38.86246
+  },
+  "Ayat Condominium Block 4": {
+    "lat": 9.02665,
+    "lng": 38.86239
+  },
+  "Ayat Condominium Block 5": {
+    "lat": 9.02268,
+    "lng": 38.86090
+  },
+  "Ayat Condominium Block 6": {
+    "lat": 9.02728,
+    "lng": 38.85836
+  },
+  "Ayat Condominium Block 7": {
+    "lat": 9.02543,
+    "lng": 38.86015
+  },
+  "Ayat Condominium Block 8": {
+    "lat": 9.02399,
+    "lng": 38.85392
+  },
+  "Ayat Condominium Block 9": {
+    "lat": 9.02717,
+    "lng": 38.85377
+  },
+  "Ayat Condominium Block 10": {
+    "lat": 9.02641,
+    "lng": 38.85547
+  },
+  "Ayat Condominium Block 11": {
+    "lat": 9.02404,
+    "lng": 38.85551
+  },
+  "Ayat Condominium Block 12": {
+    "lat": 9.02304,
+    "lng": 38.85808
+  },
+  "Ayat Condominium Block 13": {
+    "lat": 9.02971,
+    "lng": 38.85779
+  },
+  "Ayat Condominium Block 14": {
+    "lat": 9.02992,
+    "lng": 38.86057
+  },
+  "Ayat Condominium Block 15": {
+    "lat": 9.02254,
+    "lng": 38.86075
+  },
+  "Ayat Condominium Block 16": {
+    "lat": 9.02272,
+    "lng": 38.86255
+  },
+  "Ayat Condominium Block 17": {
+    "lat": 9.02229,
+    "lng": 38.85571
+  },
+  "Ayat Condominium Block 18": {
+    "lat": 9.02924,
+    "lng": 38.86208
+  },
+  "Ayat Condominium Block 19": {
+    "lat": 9.02212,
+    "lng": 38.85612
+  },
+  "Ayat Condominium Block 20": {
+    "lat": 9.03111,
+    "lng": 38.85355
+  },
+  "Ayat Condominium Block 21": {
+    "lat": 9.02620,
+    "lng": 38.86023
+  },
+  "Ayat Condominium Block 22": {
+    "lat": 9.02753,
+    "lng": 38.85310
+  },
+  "Ayat Condominium Block 23": {
+    "lat": 9.02285,
+    "lng": 38.86011
+  },
+  "Ayat Condominium Block 24": {
+    "lat": 9.02470,
+    "lng": 38.85883
+  },
+  "Ayat Condominium Block 25": {
+    "lat": 9.02884,
+    "lng": 38.85664
+  },
+  "Ayat Condominium Block 26": {
+    "lat": 9.02372,
+    "lng": 38.86001
+  },
+  "Ayat Condominium Block 27": {
+    "lat": 9.02697,
+    "lng": 38.85750
+  },
+  "Ayat Condominium Block 28": {
+    "lat": 9.02225,
+    "lng": 38.85975
+  },
+  "Ayat Condominium Block 29": {
+    "lat": 9.02165,
+    "lng": 38.85939
+  },
+  "Ayat Condominium Block 30": {
+    "lat": 9.02581,
+    "lng": 38.86259
+  },
+  "Ayat Condominium Block 31": {
+    "lat": 9.02667,
+    "lng": 38.85890
+  },
+  "Ayat Condominium Block 32": {
+    "lat": 9.02948,
+    "lng": 38.85327
+  },
+  "Ayat Condominium Block 33": {
+    "lat": 9.02330,
+    "lng": 38.86285
+  },
+  "Ayat Condominium Block 34": {
+    "lat": 9.02659,
+    "lng": 38.85534
+  },
+  "Ayat Condominium Block 35": {
+    "lat": 9.02318,
+    "lng": 38.85768
+  },
+  "Ayat Condominium Block 36": {
+    "lat": 9.02440,
+    "lng": 38.85506
+  },
+  "Ayat Condominium Block 37": {
+    "lat": 9.02325,
+    "lng": 38.85764
+  },
+  "Ayat Condominium Block 38": {
+    "lat": 9.02494,
+    "lng": 38.85656
+  },
+  "Ayat Condominium Block 39": {
+    "lat": 9.02696,
+    "lng": 38.85666
+  },
+  "Ayat Condominium Block 40": {
+    "lat": 9.02346,
+    "lng": 38.85530
+  },
+  "Ayat Condominium Block 41": {
+    "lat": 9.03125,
+    "lng": 38.85751
+  },
+  "Ayat Condominium Block 42": {
+    "lat": 9.03095,
+    "lng": 38.85414
+  },
+  "Ayat Condominium Block 43": {
+    "lat": 9.02183,
+    "lng": 38.85897
+  },
+  "Ayat Condominium Block 44": {
+    "lat": 9.02991,
+    "lng": 38.85348
+  },
+  "Ayat Condominium Block 45": {
+    "lat": 9.02369,
+    "lng": 38.86265
+  },
+  "Ayat Condominium Block 46": {
+    "lat": 9.02704,
+    "lng": 38.85340
+  },
+  "Ayat Condominium Block 47": {
+    "lat": 9.02917,
+    "lng": 38.85666
+  },
+  "Ayat Condominium Block 48": {
+    "lat": 9.03157,
+    "lng": 38.86221
+  },
+  "Ayat Condominium Block 49": {
+    "lat": 9.02956,
+    "lng": 38.85464
+  },
+  "Ayat Condominium Block 50": {
+    "lat": 9.03054,
+    "lng": 38.86264
+  },
+  "Ayat Condominium Block 51": {
+    "lat": 9.03141,
+    "lng": 38.85502
+  },
+  "Ayat Condominium Block 52": {
+    "lat": 9.02762,
+    "lng": 38.85645
+  },
+  "Ayat Condominium Block 53": {
+    "lat": 9.03036,
+    "lng": 38.85408
+  },
+  "Ayat Condominium Block 54": {
+    "lat": 9.03143,
+    "lng": 38.85605
+  },
+  "Ayat Condominium Block 55": {
+    "lat": 9.02733,
+    "lng": 38.85906
+  },
+  "Ayat Condominium Block 56": {
+    "lat": 9.02742,
+    "lng": 38.85594
+  },
+  "Ayat Condominium Block 57": {
+    "lat": 9.03087,
+    "lng": 38.85579
+  },
+  "Ayat Condominium Block 58": {
+    "lat": 9.02285,
+    "lng": 38.85459
+  },
+  "Ayat Condominium Block 59": {
+    "lat": 9.03108,
+    "lng": 38.86132
+  },
+  "Ayat Condominium Block 60": {
+    "lat": 9.02267,
+    "lng": 38.86056
+  },
+  "Ayat Condominium Block 61": {
+    "lat": 9.02722,
+    "lng": 38.86294
+  },
+  "Ayat Condominium Block 62": {
+    "lat": 9.02717,
+    "lng": 38.85713
+  },
+  "Ayat Condominium Block 63": {
+    "lat": 9.02376,
+    "lng": 38.85581
+  },
+  "Ayat Condominium Block 64": {
+    "lat": 9.02990,
+    "lng": 38.86261
+  },
+  "Ayat Condominium Block 65": {
+    "lat": 9.02755,
+    "lng": 38.86211
+  },
+  "Ayat Condominium Block 66": {
+    "lat": 9.02444,
+    "lng": 38.85443
+  },
+  "Ayat Condominium Block 67": {
+    "lat": 9.02812,
+    "lng": 38.85381
+  },
+  "Ayat Condominium Block 68": {
+    "lat": 9.02752,
+    "lng": 38.86120
+  },
+  "Ayat Condominium Block 69": {
+    "lat": 9.02747,
+    "lng": 38.85385
+  },
+  "Ayat Condominium Block 70": {
+    "lat": 9.02405,
+    "lng": 38.85865
+  },
+  "Ayat Condominium Block 71": {
+    "lat": 9.02701,
+    "lng": 38.85748
+  },
+  "Ayat Condominium Block 72": {
+    "lat": 9.02293,
+    "lng": 38.85798
+  },
+  "Ayat Condominium Block 73": {
+    "lat": 9.02764,
+    "lng": 38.86257
+  },
+  "Ayat Condominium Block 74": {
+    "lat": 9.03005,
+    "lng": 38.85658
+  },
+  "Ayat Condominium Block 75": {
+    "lat": 9.02393,
+    "lng": 38.85426
+  },
+  "Ayat Condominium Block 76": {
+    "lat": 9.02746,
+    "lng": 38.85820
+  },
+  "Ayat Condominium Block 77": {
+    "lat": 9.02767,
+    "lng": 38.85933
+  },
+  "Ayat Condominium Block 78": {
+    "lat": 9.02913,
+    "lng": 38.85798
+  },
+  "Ayat Condominium Block 79": {
+    "lat": 9.03136,
+    "lng": 38.85898
+  },
+  "Ayat Condominium Block 80": {
+    "lat": 9.03085,
+    "lng": 38.86067
+  },
+  "Ayat Condominium Block 81": {
+    "lat": 9.02479,
+    "lng": 38.86157
+  },
+  "Ayat Condominium Block 82": {
+    "lat": 9.02310,
+    "lng": 38.85309
+  },
+  "Ayat Condominium Block 83": {
+    "lat": 9.02521,
+    "lng": 38.85679
+  },
+  "Ayat Condominium Block 84": {
+    "lat": 9.02867,
+    "lng": 38.86165
+  },
+  "Ayat Condominium Block 85": {
+    "lat": 9.02594,
+    "lng": 38.85887
+  },
+  "Ayat Condominium Block 86": {
+    "lat": 9.02814,
+    "lng": 38.85694
+  },
+  "Ayat Condominium Block 87": {
+    "lat": 9.02338,
+    "lng": 38.85729
+  },
+  "Ayat Condominium Block 88": {
+    "lat": 9.02493,
+    "lng": 38.85885
+  },
+  "Ayat Condominium Block 89": {
+    "lat": 9.02305,
+    "lng": 38.85945
+  },
+  "Ayat Condominium Block 90": {
+    "lat": 9.02775,
+    "lng": 38.85982
+  },
+  "Ayat Condominium Block 91": {
+    "lat": 9.02583,
+    "lng": 38.85725
+  },
+  "Ayat Condominium Block 92": {
+    "lat": 9.02494,
+    "lng": 38.85649
+  },
+  "Ayat Condominium Block 93": {
+    "lat": 9.02347,
+    "lng": 38.86148
+  },
+  "Ayat Condominium Block 94": {
+    "lat": 9.02874,
+    "lng": 38.85803
+  },
+  "Ayat Condominium Block 95": {
+    "lat": 9.02604,
+    "lng": 38.86285
+  },
+  "Ayat Condominium Block 96": {
+    "lat": 9.03017,
+    "lng": 38.85730
+  },
+  "Ayat Condominium Block 97": {
+    "lat": 9.02807,
+    "lng": 38.85852
+  },
+  "Ayat Condominium Block 98": {
+    "lat": 9.02506,
+    "lng": 38.85357
+  },
+  "Ayat Condominium Block 99": {
+    "lat": 9.02473,
+    "lng": 38.85474
+  },
+  "Ayat Condominium Block 100": {
+    "lat": 9.02373,
+    "lng": 38.86164
+  },
+  "Ayat Tafo Road Block 1": {
+    "lat": 9.02233,
+    "lng": 38.85558
+  },
+  "Ayat Tafo Road Block 2": {
+    "lat": 9.02406,
+    "lng": 38.86298
+  },
+  "Ayat Tafo Road Block 3": {
+    "lat": 9.02177,
+    "lng": 38.85560
+  },
+  "Ayat Tafo Road Block 4": {
+    "lat": 9.03087,
+    "lng": 38.85484
+  },
+  "Ayat Tafo Road Block 5": {
+    "lat": 9.02926,
+    "lng": 38.86157
+  },
+  "Ayat Tafo Road Block 6": {
+    "lat": 9.03061,
+    "lng": 38.85796
+  },
+  "Ayat Tafo Road Block 7": {
+    "lat": 9.02208,
+    "lng": 38.85388
+  },
+  "Ayat Tafo Road Block 8": {
+    "lat": 9.02486,
+    "lng": 38.85391
+  },
+  "Ayat Tafo Road Block 9": {
+    "lat": 9.02200,
+    "lng": 38.85748
+  },
+  "Ayat Tafo Road Block 10": {
+    "lat": 9.02616,
+    "lng": 38.85571
+  },
+  "Ayat Tafo Road Block 11": {
+    "lat": 9.02961,
+    "lng": 38.85662
+  },
+  "Ayat Tafo Road Block 12": {
+    "lat": 9.02735,
+    "lng": 38.85832
+  },
+  "Ayat Tafo Road Block 13": {
+    "lat": 9.02897,
+    "lng": 38.86125
+  },
+  "Ayat Tafo Road Block 14": {
+    "lat": 9.03030,
+    "lng": 38.86003
+  },
+  "Ayat Tafo Road Block 15": {
+    "lat": 9.02487,
+    "lng": 38.85988
+  },
+  "Ayat Tafo Road Block 16": {
+    "lat": 9.02580,
+    "lng": 38.85832
+  },
+  "Ayat Tafo Road Block 17": {
+    "lat": 9.02755,
+    "lng": 38.85609
+  },
+  "Ayat Tafo Road Block 18": {
+    "lat": 9.02429,
+    "lng": 38.86127
+  },
+  "Ayat Tafo Road Block 19": {
+    "lat": 9.02175,
+    "lng": 38.85338
+  },
+  "Ayat Tafo Road Block 20": {
+    "lat": 9.02538,
+    "lng": 38.86118
+  },
+  "Ayat Tafo Road Block 21": {
+    "lat": 9.02889,
+    "lng": 38.85355
+  },
+  "Ayat Tafo Road Block 22": {
+    "lat": 9.02544,
+    "lng": 38.86066
+  },
+  "Ayat Tafo Road Block 23": {
+    "lat": 9.02862,
+    "lng": 38.85345
+  },
+  "Ayat Tafo Road Block 24": {
+    "lat": 9.02862,
+    "lng": 38.85874
+  },
+  "Ayat Tafo Road Block 25": {
+    "lat": 9.02945,
+    "lng": 38.85818
+  },
+  "Ayat Tafo Road Block 26": {
+    "lat": 9.02785,
+    "lng": 38.86067
+  },
+  "Ayat Tafo Road Block 27": {
+    "lat": 9.02880,
+    "lng": 38.85972
+  },
+  "Ayat Tafo Road Block 28": {
+    "lat": 9.02793,
+    "lng": 38.85925
+  },
+  "Ayat Tafo Road Block 29": {
+    "lat": 9.02412,
+    "lng": 38.85384
+  },
+  "Ayat Tafo Road Block 30": {
+    "lat": 9.02722,
+    "lng": 38.86161
+  },
+  "Ayat Tafo Road Block 31": {
+    "lat": 9.02507,
+    "lng": 38.85859
+  },
+  "Ayat Tafo Road Block 32": {
+    "lat": 9.03122,
+    "lng": 38.85868
+  },
+  "Ayat Tafo Road Block 33": {
+    "lat": 9.02475,
+    "lng": 38.86128
+  },
+  "Ayat Tafo Road Block 34": {
+    "lat": 9.02440,
+    "lng": 38.85752
+  },
+  "Ayat Tafo Road Block 35": {
+    "lat": 9.03043,
+    "lng": 38.86095
+  },
+  "Ayat Tafo Road Block 36": {
+    "lat": 9.03091,
+    "lng": 38.86148
+  },
+  "Ayat Tafo Road Block 37": {
+    "lat": 9.02205,
+    "lng": 38.86078
+  },
+  "Ayat Tafo Road Block 38": {
+    "lat": 9.02635,
+    "lng": 38.85797
+  },
+  "Ayat Tafo Road Block 39": {
+    "lat": 9.02662,
+    "lng": 38.85971
+  },
+  "Ayat Tafo Road Block 40": {
+    "lat": 9.02369,
+    "lng": 38.85899
+  },
+  "Ayat Tafo Road Block 41": {
+    "lat": 9.02441,
+    "lng": 38.85445
+  },
+  "Ayat Tafo Road Block 42": {
+    "lat": 9.02939,
+    "lng": 38.86212
+  },
+  "Ayat Tafo Road Block 43": {
+    "lat": 9.02189,
+    "lng": 38.86256
+  },
+  "Ayat Tafo Road Block 44": {
+    "lat": 9.02962,
+    "lng": 38.85487
+  },
+  "Ayat Tafo Road Block 45": {
+    "lat": 9.02837,
+    "lng": 38.85441
+  },
+  "Ayat Tafo Road Block 46": {
+    "lat": 9.02673,
+    "lng": 38.85819
+  },
+  "Ayat Tafo Road Block 47": {
+    "lat": 9.03141,
+    "lng": 38.85981
+  },
+  "Ayat Tafo Road Block 48": {
+    "lat": 9.02441,
+    "lng": 38.86083
+  },
+  "Ayat Tafo Road Block 49": {
+    "lat": 9.02980,
+    "lng": 38.85375
+  },
+  "Ayat Tafo Road Block 50": {
+    "lat": 9.02174,
+    "lng": 38.86276
+  },
+  "Ayat Tafo Road Block 51": {
+    "lat": 9.02450,
+    "lng": 38.85854
+  },
+  "Ayat Tafo Road Block 52": {
+    "lat": 9.02744,
+    "lng": 38.86262
+  },
+  "Ayat Tafo Road Block 53": {
+    "lat": 9.02655,
+    "lng": 38.85926
+  },
+  "Ayat Tafo Road Block 54": {
+    "lat": 9.02513,
+    "lng": 38.85981
+  },
+  "Ayat Tafo Road Block 55": {
+    "lat": 9.02665,
+    "lng": 38.85958
+  },
+  "Ayat Tafo Road Block 56": {
+    "lat": 9.02841,
+    "lng": 38.85708
+  },
+  "Ayat Tafo Road Block 57": {
+    "lat": 9.02478,
+    "lng": 38.85547
+  },
+  "Ayat Tafo Road Block 58": {
+    "lat": 9.02679,
+    "lng": 38.85743
+  },
+  "Ayat Tafo Road Block 59": {
+    "lat": 9.02225,
+    "lng": 38.85977
+  },
+  "Ayat Tafo Road Block 60": {
+    "lat": 9.02402,
+    "lng": 38.86248
+  },
+  "Ayat Tafo Road Block 61": {
+    "lat": 9.02529,
+    "lng": 38.85838
+  },
+  "Ayat Tafo Road Block 62": {
+    "lat": 9.02572,
+    "lng": 38.86113
+  },
+  "Ayat Tafo Road Block 63": {
+    "lat": 9.03016,
+    "lng": 38.85587
+  },
+  "Ayat Tafo Road Block 64": {
+    "lat": 9.02527,
+    "lng": 38.86259
+  },
+  "Ayat Tafo Road Block 65": {
+    "lat": 9.02195,
+    "lng": 38.85930
+  },
+  "Ayat Tafo Road Block 66": {
+    "lat": 9.02740,
+    "lng": 38.85913
+  },
+  "Ayat Tafo Road Block 67": {
+    "lat": 9.02921,
+    "lng": 38.85410
+  },
+  "Ayat Tafo Road Block 68": {
+    "lat": 9.02210,
+    "lng": 38.85498
+  },
+  "Ayat Tafo Road Block 69": {
+    "lat": 9.02417,
+    "lng": 38.85338
+  },
+  "Ayat Tafo Road Block 70": {
+    "lat": 9.02677,
+    "lng": 38.86098
+  },
+  "Ayat Tafo Road Block 71": {
+    "lat": 9.02540,
+    "lng": 38.86231
+  },
+  "Ayat Tafo Road Block 72": {
+    "lat": 9.02346,
+    "lng": 38.85386
+  },
+  "Ayat Tafo Road Block 73": {
+    "lat": 9.02835,
+    "lng": 38.85981
+  },
+  "Ayat Tafo Road Block 74": {
+    "lat": 9.02955,
+    "lng": 38.85510
+  },
+  "Ayat Tafo Road Block 75": {
+    "lat": 9.02204,
+    "lng": 38.85671
+  },
+  "Ayat Tafo Road Block 76": {
+    "lat": 9.02645,
+    "lng": 38.85561
+  },
+  "Ayat Tafo Road Block 77": {
+    "lat": 9.02560,
+    "lng": 38.86254
+  },
+  "Ayat Tafo Road Block 78": {
+    "lat": 9.02291,
+    "lng": 38.85979
+  },
+  "Ayat Tafo Road Block 79": {
+    "lat": 9.02249,
+    "lng": 38.85548
+  },
+  "Ayat Tafo Road Block 80": {
+    "lat": 9.03049,
+    "lng": 38.86139
+  },
+  "Ayat Tafo Road Block 81": {
+    "lat": 9.02569,
+    "lng": 38.86152
+  },
+  "Ayat Tafo Road Block 82": {
+    "lat": 9.02359,
+    "lng": 38.85826
+  },
+  "Ayat Tafo Road Block 83": {
+    "lat": 9.02956,
+    "lng": 38.86152
+  },
+  "Ayat Tafo Road Block 84": {
+    "lat": 9.02215,
+    "lng": 38.85778
+  },
+  "Ayat Tafo Road Block 85": {
+    "lat": 9.02392,
+    "lng": 38.85846
+  },
+  "Ayat Tafo Road Block 86": {
+    "lat": 9.03045,
+    "lng": 38.85591
+  },
+  "Ayat Tafo Road Block 87": {
+    "lat": 9.03044,
+    "lng": 38.85337
+  },
+  "Ayat Tafo Road Block 88": {
+    "lat": 9.02749,
+    "lng": 38.85620
+  },
+  "Ayat Tafo Road Block 89": {
+    "lat": 9.02304,
+    "lng": 38.85474
+  },
+  "Ayat Tafo Road Block 90": {
+    "lat": 9.02650,
+    "lng": 38.85588
+  },
+  "Ayat Tafo Road Block 91": {
+    "lat": 9.02563,
+    "lng": 38.86207
+  },
+  "Ayat Tafo Road Block 92": {
+    "lat": 9.03093,
+    "lng": 38.86073
+  },
+  "Ayat Tafo Road Block 93": {
+    "lat": 9.02411,
+    "lng": 38.86187
+  },
+  "Ayat Tafo Road Block 94": {
+    "lat": 9.02196,
+    "lng": 38.85983
+  },
+  "Ayat Tafo Road Block 95": {
+    "lat": 9.02872,
+    "lng": 38.85595
+  },
+  "Ayat Tafo Road Block 96": {
+    "lat": 9.02435,
+    "lng": 38.85540
+  },
+  "Ayat Tafo Road Block 97": {
+    "lat": 9.02628,
+    "lng": 38.85831
+  },
+  "Ayat Tafo Road Block 98": {
+    "lat": 9.03059,
+    "lng": 38.86139
+  },
+  "Ayat Tafo Road Block 99": {
+    "lat": 9.03138,
+    "lng": 38.85572
+  },
+  "Ayat Tafo Road Block 100": {
+    "lat": 9.02620,
+    "lng": 38.86271
+  },
+  "Ayat Meri Block 1": {
+    "lat": 9.02247,
+    "lng": 38.85462
+  },
+  "Ayat Meri Block 2": {
+    "lat": 9.02967,
+    "lng": 38.85379
+  },
+  "Ayat Meri Block 3": {
+    "lat": 9.02420,
+    "lng": 38.86202
+  },
+  "Ayat Meri Block 4": {
+    "lat": 9.03120,
+    "lng": 38.86042
+  },
+  "Ayat Meri Block 5": {
+    "lat": 9.02733,
+    "lng": 38.85951
+  },
+  "Ayat Meri Block 6": {
+    "lat": 9.02620,
+    "lng": 38.85524
+  },
+  "Ayat Meri Block 7": {
+    "lat": 9.02217,
+    "lng": 38.85778
+  },
+  "Ayat Meri Block 8": {
+    "lat": 9.02347,
+    "lng": 38.86231
+  },
+  "Ayat Meri Block 9": {
+    "lat": 9.02466,
+    "lng": 38.85327
+  },
+  "Ayat Meri Block 10": {
+    "lat": 9.02879,
+    "lng": 38.86266
+  },
+  "Ayat Meri Block 11": {
+    "lat": 9.02379,
+    "lng": 38.85595
+  },
+  "Ayat Meri Block 12": {
+    "lat": 9.02947,
+    "lng": 38.86296
+  },
+  "Ayat Meri Block 13": {
+    "lat": 9.02467,
+    "lng": 38.86135
+  },
+  "Ayat Meri Block 14": {
+    "lat": 9.02802,
+    "lng": 38.85535
+  },
+  "Ayat Meri Block 15": {
+    "lat": 9.02555,
+    "lng": 38.86121
+  },
+  "Ayat Meri Block 16": {
+    "lat": 9.03137,
+    "lng": 38.85353
+  },
+  "Ayat Meri Block 17": {
+    "lat": 9.02620,
+    "lng": 38.86227
+  },
+  "Ayat Meri Block 18": {
+    "lat": 9.02321,
+    "lng": 38.86128
+  },
+  "Ayat Meri Block 19": {
+    "lat": 9.02877,
+    "lng": 38.85821
+  },
+  "Ayat Meri Block 20": {
+    "lat": 9.02680,
+    "lng": 38.85582
+  },
+  "Ayat Meri Block 21": {
+    "lat": 9.03078,
+    "lng": 38.85496
+  },
+  "Ayat Meri Block 22": {
+    "lat": 9.02457,
+    "lng": 38.85346
+  },
+  "Ayat Meri Block 23": {
+    "lat": 9.02358,
+    "lng": 38.85813
+  },
+  "Ayat Meri Block 24": {
+    "lat": 9.03032,
+    "lng": 38.85691
+  },
+  "Ayat Meri Block 25": {
+    "lat": 9.03130,
+    "lng": 38.85629
+  },
+  "Ayat Meri Block 26": {
+    "lat": 9.02932,
+    "lng": 38.86288
+  },
+  "Ayat Meri Block 27": {
+    "lat": 9.03095,
+    "lng": 38.86233
+  },
+  "Ayat Meri Block 28": {
+    "lat": 9.02883,
+    "lng": 38.85550
+  },
+  "Ayat Meri Block 29": {
+    "lat": 9.02969,
+    "lng": 38.85541
+  },
+  "Ayat Meri Block 30": {
+    "lat": 9.02344,
+    "lng": 38.85455
+  },
+  "Ayat Meri Block 31": {
+    "lat": 9.02704,
+    "lng": 38.85896
+  },
+  "Ayat Meri Block 32": {
+    "lat": 9.02842,
+    "lng": 38.85734
+  },
+  "Ayat Meri Block 33": {
+    "lat": 9.02882,
+    "lng": 38.85381
+  },
+  "Ayat Meri Block 34": {
+    "lat": 9.02875,
+    "lng": 38.86222
+  },
+  "Ayat Meri Block 35": {
+    "lat": 9.02457,
+    "lng": 38.85610
+  },
+  "Ayat Meri Block 36": {
+    "lat": 9.03107,
+    "lng": 38.86166
+  },
+  "Ayat Meri Block 37": {
+    "lat": 9.02627,
+    "lng": 38.85981
+  },
+  "Ayat Meri Block 38": {
+    "lat": 9.02767,
+    "lng": 38.85767
+  },
+  "Ayat Meri Block 39": {
+    "lat": 9.02460,
+    "lng": 38.86270
+  },
+  "Ayat Meri Block 40": {
+    "lat": 9.02388,
+    "lng": 38.85700
+  },
+  "Ayat Meri Block 41": {
+    "lat": 9.02844,
+    "lng": 38.86018
+  },
+  "Ayat Meri Block 42": {
+    "lat": 9.02929,
+    "lng": 38.85527
+  },
+  "Ayat Meri Block 43": {
+    "lat": 9.02255,
+    "lng": 38.85847
+  },
+  "Ayat Meri Block 44": {
+    "lat": 9.03117,
+    "lng": 38.85969
+  },
+  "Ayat Meri Block 45": {
+    "lat": 9.02729,
+    "lng": 38.85868
+  },
+  "Ayat Meri Block 46": {
+    "lat": 9.02425,
+    "lng": 38.85348
+  },
+  "Ayat Meri Block 47": {
+    "lat": 9.02743,
+    "lng": 38.86093
+  },
+  "Ayat Meri Block 48": {
+    "lat": 9.02882,
+    "lng": 38.86071
+  },
+  "Ayat Meri Block 49": {
+    "lat": 9.02399,
+    "lng": 38.85858
+  },
+  "Ayat Meri Block 50": {
+    "lat": 9.02585,
+    "lng": 38.85460
+  },
+  "Ayat Meri Block 51": {
+    "lat": 9.02730,
+    "lng": 38.86099
+  },
+  "Ayat Meri Block 52": {
+    "lat": 9.03130,
+    "lng": 38.85626
+  },
+  "Ayat Meri Block 53": {
+    "lat": 9.02199,
+    "lng": 38.85985
+  },
+  "Ayat Meri Block 54": {
+    "lat": 9.02384,
+    "lng": 38.86126
+  },
+  "Ayat Meri Block 55": {
+    "lat": 9.03067,
+    "lng": 38.85648
+  },
+  "Ayat Meri Block 56": {
+    "lat": 9.02709,
+    "lng": 38.85553
+  },
+  "Ayat Meri Block 57": {
+    "lat": 9.02806,
+    "lng": 38.85752
+  },
+  "Ayat Meri Block 58": {
+    "lat": 9.03060,
+    "lng": 38.85385
+  },
+  "Ayat Meri Block 59": {
+    "lat": 9.02856,
+    "lng": 38.85519
+  },
+  "Ayat Meri Block 60": {
+    "lat": 9.02348,
+    "lng": 38.85487
+  },
+  "Ayat Meri Block 61": {
+    "lat": 9.02344,
+    "lng": 38.85495
+  },
+  "Ayat Meri Block 62": {
+    "lat": 9.03126,
+    "lng": 38.85499
+  },
+  "Ayat Meri Block 63": {
+    "lat": 9.02615,
+    "lng": 38.85722
+  },
+  "Ayat Meri Block 64": {
+    "lat": 9.02717,
+    "lng": 38.85933
+  },
+  "Ayat Meri Block 65": {
+    "lat": 9.03088,
+    "lng": 38.86177
+  },
+  "Ayat Meri Block 66": {
+    "lat": 9.02548,
+    "lng": 38.86131
+  },
+  "Ayat Meri Block 67": {
+    "lat": 9.02419,
+    "lng": 38.86049
+  },
+  "Ayat Meri Block 68": {
+    "lat": 9.03120,
+    "lng": 38.85835
+  },
+  "Ayat Meri Block 69": {
+    "lat": 9.02551,
+    "lng": 38.85954
+  },
+  "Ayat Meri Block 70": {
+    "lat": 9.02771,
+    "lng": 38.85921
+  },
+  "Ayat Meri Block 71": {
+    "lat": 9.02465,
+    "lng": 38.85889
+  },
+  "Ayat Meri Block 72": {
+    "lat": 9.02840,
+    "lng": 38.85377
+  },
+  "Ayat Meri Block 73": {
+    "lat": 9.02952,
+    "lng": 38.86082
+  },
+  "Ayat Meri Block 74": {
+    "lat": 9.02540,
+    "lng": 38.86180
+  },
+  "Ayat Meri Block 75": {
+    "lat": 9.02886,
+    "lng": 38.86241
+  },
+  "Ayat Meri Block 76": {
+    "lat": 9.02376,
+    "lng": 38.86016
+  },
+  "Ayat Meri Block 77": {
+    "lat": 9.02272,
+    "lng": 38.85744
+  },
+  "Ayat Meri Block 78": {
+    "lat": 9.02385,
+    "lng": 38.85688
+  },
+  "Ayat Meri Block 79": {
+    "lat": 9.02627,
+    "lng": 38.85913
+  },
+  "Ayat Meri Block 80": {
+    "lat": 9.03042,
+    "lng": 38.85907
+  },
+  "Ayat Meri Block 81": {
+    "lat": 9.02966,
+    "lng": 38.86295
+  },
+  "Ayat Meri Block 82": {
+    "lat": 9.03033,
+    "lng": 38.86210
+  },
+  "Ayat Meri Block 83": {
+    "lat": 9.03037,
+    "lng": 38.85323
+  },
+  "Ayat Meri Block 84": {
+    "lat": 9.02321,
+    "lng": 38.85332
+  },
+  "Ayat Meri Block 85": {
+    "lat": 9.03123,
+    "lng": 38.85878
+  },
+  "Ayat Meri Block 86": {
+    "lat": 9.02292,
+    "lng": 38.85638
+  },
+  "Ayat Meri Block 87": {
+    "lat": 9.02795,
+    "lng": 38.85577
+  },
+  "Ayat Meri Block 88": {
+    "lat": 9.02267,
+    "lng": 38.85607
+  },
+  "Ayat Meri Block 89": {
+    "lat": 9.03056,
+    "lng": 38.85789
+  },
+  "Ayat Meri Block 90": {
+    "lat": 9.02472,
+    "lng": 38.85481
+  },
+  "Ayat Meri Block 91": {
+    "lat": 9.02602,
+    "lng": 38.85421
+  },
+  "Ayat Meri Block 92": {
+    "lat": 9.03060,
+    "lng": 38.85791
+  },
+  "Ayat Meri Block 93": {
+    "lat": 9.02291,
+    "lng": 38.86087
+  },
+  "Ayat Meri Block 94": {
+    "lat": 9.02953,
+    "lng": 38.85615
+  },
+  "Ayat Meri Block 95": {
+    "lat": 9.02414,
+    "lng": 38.86262
+  },
+  "Ayat Meri Block 96": {
+    "lat": 9.02391,
+    "lng": 38.85343
+  },
+  "Ayat Meri Block 97": {
+    "lat": 9.02459,
+    "lng": 38.86237
+  },
+  "Ayat Meri Block 98": {
+    "lat": 9.03078,
+    "lng": 38.85915
+  },
+  "Ayat Meri Block 99": {
+    "lat": 9.03115,
+    "lng": 38.85518
+  },
+  "Ayat Meri Block 100": {
+    "lat": 9.02784,
+    "lng": 38.85359
+  },
+  "Ayat Zone Block 1": {
+    "lat": 9.02548,
+    "lng": 38.85663
+  },
+  "Ayat Zone Block 2": {
+    "lat": 9.02204,
+    "lng": 38.86145
+  },
+  "Ayat Zone Block 3": {
+    "lat": 9.02478,
+    "lng": 38.85914
+  },
+  "Ayat Zone Block 4": {
+    "lat": 9.02447,
+    "lng": 38.86111
+  },
+  "Ayat Zone Block 5": {
+    "lat": 9.02546,
+    "lng": 38.85450
+  },
+  "Ayat Zone Block 6": {
+    "lat": 9.02776,
+    "lng": 38.85590
+  },
+  "Ayat Zone Block 7": {
+    "lat": 9.03032,
+    "lng": 38.86060
+  },
+  "Ayat Zone Block 8": {
+    "lat": 9.02291,
+    "lng": 38.85745
+  },
+  "Ayat Zone Block 9": {
+    "lat": 9.02994,
+    "lng": 38.85800
+  },
+  "Ayat Zone Block 10": {
+    "lat": 9.02413,
+    "lng": 38.85840
+  },
+  "Ayat Zone Block 11": {
+    "lat": 9.02476,
+    "lng": 38.86039
+  },
+  "Ayat Zone Block 12": {
+    "lat": 9.02956,
+    "lng": 38.86037
+  },
+  "Ayat Zone Block 13": {
+    "lat": 9.02525,
+    "lng": 38.86088
+  },
+  "Ayat Zone Block 14": {
+    "lat": 9.02492,
+    "lng": 38.86140
+  },
+  "Ayat Zone Block 15": {
+    "lat": 9.02839,
+    "lng": 38.86151
+  },
+  "Ayat Zone Block 16": {
+    "lat": 9.02940,
+    "lng": 38.85640
+  },
+  "Ayat Zone Block 17": {
+    "lat": 9.02922,
+    "lng": 38.85971
+  },
+  "Ayat Zone Block 18": {
+    "lat": 9.02898,
+    "lng": 38.85304
+  },
+  "Ayat Zone Block 19": {
+    "lat": 9.02909,
+    "lng": 38.86084
+  },
+  "Ayat Zone Block 20": {
+    "lat": 9.02590,
+    "lng": 38.85500
+  },
+  "Ayat Zone Block 21": {
+    "lat": 9.02770,
+    "lng": 38.85473
+  },
+  "Ayat Zone Block 22": {
+    "lat": 9.02205,
+    "lng": 38.85672
+  },
+  "Ayat Zone Block 23": {
+    "lat": 9.03119,
+    "lng": 38.86159
+  },
+  "Ayat Zone Block 24": {
+    "lat": 9.03064,
+    "lng": 38.85847
+  },
+  "Ayat Zone Block 25": {
+    "lat": 9.03116,
+    "lng": 38.85607
+  },
+  "Ayat Zone Block 26": {
+    "lat": 9.02524,
+    "lng": 38.86147
+  },
+  "Ayat Zone Block 27": {
+    "lat": 9.03025,
+    "lng": 38.85988
+  },
+  "Ayat Zone Block 28": {
+    "lat": 9.02438,
+    "lng": 38.85685
+  },
+  "Ayat Zone Block 29": {
+    "lat": 9.02201,
+    "lng": 38.85367
+  },
+  "Ayat Zone Block 30": {
+    "lat": 9.02676,
+    "lng": 38.85468
+  },
+  "Ayat Zone Block 31": {
+    "lat": 9.02996,
+    "lng": 38.85316
+  },
+  "Ayat Zone Block 32": {
+    "lat": 9.02534,
+    "lng": 38.85431
+  },
+  "Ayat Zone Block 33": {
+    "lat": 9.02313,
+    "lng": 38.85426
+  },
+  "Ayat Zone Block 34": {
+    "lat": 9.02796,
+    "lng": 38.85593
+  },
+  "Ayat Zone Block 35": {
+    "lat": 9.02952,
+    "lng": 38.86125
+  },
+  "Ayat Zone Block 36": {
+    "lat": 9.02273,
+    "lng": 38.85582
+  },
+  "Ayat Zone Block 37": {
+    "lat": 9.03109,
+    "lng": 38.85386
+  },
+  "Ayat Zone Block 38": {
+    "lat": 9.02364,
+    "lng": 38.85949
+  },
+  "Ayat Zone Block 39": {
+    "lat": 9.02850,
+    "lng": 38.85629
+  },
+  "Ayat Zone Block 40": {
+    "lat": 9.02642,
+    "lng": 38.86115
+  },
+  "Ayat Zone Block 41": {
+    "lat": 9.02656,
+    "lng": 38.86241
+  },
+  "Ayat Zone Block 42": {
+    "lat": 9.02374,
+    "lng": 38.85894
+  },
+  "Ayat Zone Block 43": {
+    "lat": 9.03062,
+    "lng": 38.85680
+  },
+  "Ayat Zone Block 44": {
+    "lat": 9.03123,
+    "lng": 38.85527
+  },
+  "Ayat Zone Block 45": {
+    "lat": 9.02887,
+    "lng": 38.85980
+  },
+  "Ayat Zone Block 46": {
+    "lat": 9.03083,
+    "lng": 38.86086
+  },
+  "Ayat Zone Block 47": {
+    "lat": 9.03115,
+    "lng": 38.85493
+  },
+  "Ayat Zone Block 48": {
+    "lat": 9.02634,
+    "lng": 38.86283
+  },
+  "Ayat Zone Block 49": {
+    "lat": 9.02229,
+    "lng": 38.86084
+  },
+  "Ayat Zone Block 50": {
+    "lat": 9.02743,
+    "lng": 38.85391
+  },
+  "Ayat Zone Block 51": {
+    "lat": 9.02988,
+    "lng": 38.85488
+  },
+  "Ayat Zone Block 52": {
+    "lat": 9.02995,
+    "lng": 38.85717
+  },
+  "Ayat Zone Block 53": {
+    "lat": 9.02758,
+    "lng": 38.86227
+  },
+  "Ayat Zone Block 54": {
+    "lat": 9.02831,
+    "lng": 38.86123
+  },
+  "Ayat Zone Block 55": {
+    "lat": 9.02601,
+    "lng": 38.85942
+  },
+  "Ayat Zone Block 56": {
+    "lat": 9.02911,
+    "lng": 38.86285
+  },
+  "Ayat Zone Block 57": {
+    "lat": 9.03071,
+    "lng": 38.85996
+  },
+  "Ayat Zone Block 58": {
+    "lat": 9.03013,
+    "lng": 38.85394
+  },
+  "Ayat Zone Block 59": {
+    "lat": 9.02820,
+    "lng": 38.86180
+  },
+  "Ayat Zone Block 60": {
+    "lat": 9.02403,
+    "lng": 38.85822
+  },
+  "Ayat Zone Block 61": {
+    "lat": 9.02437,
+    "lng": 38.85812
+  },
+  "Ayat Zone Block 62": {
+    "lat": 9.03032,
+    "lng": 38.85436
+  },
+  "Ayat Zone Block 63": {
+    "lat": 9.02774,
+    "lng": 38.86112
+  },
+  "Ayat Zone Block 64": {
+    "lat": 9.02447,
+    "lng": 38.86282
+  },
+  "Ayat Zone Block 65": {
+    "lat": 9.02830,
+    "lng": 38.85864
+  },
+  "Ayat Zone Block 66": {
+    "lat": 9.02290,
+    "lng": 38.85731
+  },
+  "Ayat Zone Block 67": {
+    "lat": 9.02260,
+    "lng": 38.85645
+  },
+  "Ayat Zone Block 68": {
+    "lat": 9.02920,
+    "lng": 38.85411
+  },
+  "Ayat Zone Block 69": {
+    "lat": 9.03009,
+    "lng": 38.85533
+  },
+  "Ayat Zone Block 70": {
+    "lat": 9.02400,
+    "lng": 38.85671
+  },
+  "Ayat Zone Block 71": {
+    "lat": 9.03114,
+    "lng": 38.85755
+  },
+  "Ayat Zone Block 72": {
+    "lat": 9.03140,
+    "lng": 38.85534
+  },
+  "Ayat Zone Block 73": {
+    "lat": 9.02895,
+    "lng": 38.85324
+  },
+  "Ayat Zone Block 74": {
+    "lat": 9.02268,
+    "lng": 38.85311
+  },
+  "Ayat Zone Block 75": {
+    "lat": 9.02685,
+    "lng": 38.86042
+  },
+  "Ayat Zone Block 76": {
+    "lat": 9.02946,
+    "lng": 38.85440
+  },
+  "Ayat Zone Block 77": {
+    "lat": 9.02509,
+    "lng": 38.86127
+  },
+  "Ayat Zone Block 78": {
+    "lat": 9.02387,
+    "lng": 38.86075
+  },
+  "Ayat Zone Block 79": {
+    "lat": 9.02295,
+    "lng": 38.86270
+  },
+  "Ayat Zone Block 80": {
+    "lat": 9.02681,
+    "lng": 38.86198
+  },
+  "Ayat Zone Block 81": {
+    "lat": 9.03114,
+    "lng": 38.85433
+  },
+  "Ayat Zone Block 82": {
+    "lat": 9.02916,
+    "lng": 38.85668
+  },
+  "Ayat Zone Block 83": {
+    "lat": 9.02651,
+    "lng": 38.86130
+  },
+  "Ayat Zone Block 84": {
+    "lat": 9.02460,
+    "lng": 38.85729
+  },
+  "Ayat Zone Block 85": {
+    "lat": 9.02991,
+    "lng": 38.86094
+  },
+  "Ayat Zone Block 86": {
+    "lat": 9.02582,
+    "lng": 38.85822
+  },
+  "Ayat Zone Block 87": {
+    "lat": 9.03025,
+    "lng": 38.85893
+  },
+  "Ayat Zone Block 88": {
+    "lat": 9.02380,
+    "lng": 38.86249
+  },
+  "Ayat Zone Block 89": {
+    "lat": 9.02323,
+    "lng": 38.85560
+  },
+  "Ayat Zone Block 90": {
+    "lat": 9.03054,
+    "lng": 38.85812
+  },
+  "Ayat Zone Block 91": {
+    "lat": 9.03103,
+    "lng": 38.86184
+  },
+  "Ayat Zone Block 92": {
+    "lat": 9.02914,
+    "lng": 38.86287
+  },
+  "Ayat Zone Block 93": {
+    "lat": 9.02399,
+    "lng": 38.85642
+  },
+  "Ayat Zone Block 94": {
+    "lat": 9.02539,
+    "lng": 38.85350
+  },
+  "Ayat Zone Block 95": {
+    "lat": 9.02849,
+    "lng": 38.86233
+  },
+  "Ayat Zone Block 96": {
+    "lat": 9.03002,
+    "lng": 38.85425
+  },
+  "Ayat Zone Block 97": {
+    "lat": 9.02351,
+    "lng": 38.85912
+  },
+  "Ayat Zone Block 98": {
+    "lat": 9.02734,
+    "lng": 38.85895
+  },
+  "Ayat Zone Block 99": {
+    "lat": 9.02263,
+    "lng": 38.85465
+  },
+  "Ayat Zone Block 100": {
+    "lat": 9.03007,
+    "lng": 38.86240
+  },
+  "Addis Ketema Autotera Block 1": {
+    "lat": 9.02551,
+    "lng": 38.72662
+  },
+  "Addis Ketema Autotera Block 2": {
+    "lat": 9.02388,
+    "lng": 38.73195
+  },
+  "Addis Ketema Autotera Block 3": {
+    "lat": 9.02266,
+    "lng": 38.73436
+  },
+  "Addis Ketema Autotera Block 4": {
+    "lat": 9.02392,
+    "lng": 38.73453
+  },
+  "Addis Ketema Autotera Block 5": {
+    "lat": 9.02893,
+    "lng": 38.72573
+  },
+  "Addis Ketema Autotera Block 6": {
+    "lat": 9.02505,
+    "lng": 38.73413
+  },
+  "Addis Ketema Autotera Block 7": {
+    "lat": 9.02331,
+    "lng": 38.73295
+  },
+  "Addis Ketema Autotera Block 8": {
+    "lat": 9.02216,
+    "lng": 38.73301
+  },
+  "Addis Ketema Autotera Block 9": {
+    "lat": 9.02888,
+    "lng": 38.72655
+  },
+  "Addis Ketema Autotera Block 10": {
+    "lat": 9.02236,
+    "lng": 38.72705
+  },
+  "Addis Ketema Autotera Block 11": {
+    "lat": 9.02393,
+    "lng": 38.73174
+  },
+  "Addis Ketema Autotera Block 12": {
+    "lat": 9.02196,
+    "lng": 38.72907
+  },
+  "Addis Ketema Autotera Block 13": {
+    "lat": 9.02397,
+    "lng": 38.73355
+  },
+  "Addis Ketema Autotera Block 14": {
+    "lat": 9.02155,
+    "lng": 38.73041
+  },
+  "Addis Ketema Autotera Block 15": {
+    "lat": 9.02655,
+    "lng": 38.72561
+  },
+  "Addis Ketema Autotera Block 16": {
+    "lat": 9.02469,
+    "lng": 38.73057
+  },
+  "Addis Ketema Autotera Block 17": {
+    "lat": 9.02815,
+    "lng": 38.72610
+  },
+  "Addis Ketema Autotera Block 18": {
+    "lat": 9.02573,
+    "lng": 38.72716
+  },
+  "Addis Ketema Autotera Block 19": {
+    "lat": 9.02820,
+    "lng": 38.73090
+  },
+  "Addis Ketema Autotera Block 20": {
+    "lat": 9.02224,
+    "lng": 38.73164
+  },
+  "Addis Ketema Autotera Block 21": {
+    "lat": 9.02522,
+    "lng": 38.72896
+  },
+  "Addis Ketema Autotera Block 22": {
+    "lat": 9.02087,
+    "lng": 38.72941
+  },
+  "Addis Ketema Autotera Block 23": {
+    "lat": 9.01927,
+    "lng": 38.73453
+  },
+  "Addis Ketema Autotera Block 24": {
+    "lat": 9.02315,
+    "lng": 38.73389
+  },
+  "Addis Ketema Autotera Block 25": {
+    "lat": 9.02731,
+    "lng": 38.72939
+  },
+  "Addis Ketema Autotera Block 26": {
+    "lat": 9.02538,
+    "lng": 38.72890
+  },
+  "Addis Ketema Autotera Block 27": {
+    "lat": 9.02747,
+    "lng": 38.72898
+  },
+  "Addis Ketema Autotera Block 28": {
+    "lat": 9.02136,
+    "lng": 38.73421
+  },
+  "Addis Ketema Autotera Block 29": {
+    "lat": 9.02461,
+    "lng": 38.73014
+  },
+  "Addis Ketema Autotera Block 30": {
+    "lat": 9.02270,
+    "lng": 38.72923
+  },
+  "Addis Ketema Autotera Block 31": {
+    "lat": 9.02853,
+    "lng": 38.73385
+  },
+  "Addis Ketema Autotera Block 32": {
+    "lat": 9.02081,
+    "lng": 38.72856
+  },
+  "Addis Ketema Autotera Block 33": {
+    "lat": 9.02660,
+    "lng": 38.73271
+  },
+  "Addis Ketema Autotera Block 34": {
+    "lat": 9.02148,
+    "lng": 38.73053
+  },
+  "Addis Ketema Autotera Block 35": {
+    "lat": 9.02201,
+    "lng": 38.73115
+  },
+  "Addis Ketema Autotera Block 36": {
+    "lat": 9.02397,
+    "lng": 38.72504
+  },
+  "Addis Ketema Autotera Block 37": {
+    "lat": 9.02442,
+    "lng": 38.73450
+  },
+  "Addis Ketema Autotera Block 38": {
+    "lat": 9.02880,
+    "lng": 38.73003
+  },
+  "Addis Ketema Autotera Block 39": {
+    "lat": 9.02325,
+    "lng": 38.72545
+  },
+  "Addis Ketema Autotera Block 40": {
+    "lat": 9.02606,
+    "lng": 38.73029
+  },
+  "Addis Ketema Autotera Block 41": {
+    "lat": 9.02589,
+    "lng": 38.72857
+  },
+  "Addis Ketema Autotera Block 42": {
+    "lat": 9.02369,
+    "lng": 38.72747
+  },
+  "Addis Ketema Autotera Block 43": {
+    "lat": 9.02300,
+    "lng": 38.72903
+  },
+  "Addis Ketema Autotera Block 44": {
+    "lat": 9.01932,
+    "lng": 38.72543
+  },
+  "Addis Ketema Autotera Block 45": {
+    "lat": 9.02076,
+    "lng": 38.72944
+  },
+  "Addis Ketema Autotera Block 46": {
+    "lat": 9.02494,
+    "lng": 38.72933
+  },
+  "Addis Ketema Autotera Block 47": {
+    "lat": 9.02363,
+    "lng": 38.72801
+  },
+  "Addis Ketema Autotera Block 48": {
+    "lat": 9.02087,
+    "lng": 38.73068
+  },
+  "Addis Ketema Autotera Block 49": {
+    "lat": 9.02774,
+    "lng": 38.73008
+  },
+  "Addis Ketema Autotera Block 50": {
+    "lat": 9.01969,
+    "lng": 38.73149
+  },
+  "Addis Ketema Autotera Block 51": {
+    "lat": 9.02815,
+    "lng": 38.72631
+  },
+  "Addis Ketema Autotera Block 52": {
+    "lat": 9.02480,
+    "lng": 38.72930
+  },
+  "Addis Ketema Autotera Block 53": {
+    "lat": 9.01979,
+    "lng": 38.73139
+  },
+  "Addis Ketema Autotera Block 54": {
+    "lat": 9.02494,
+    "lng": 38.73035
+  },
+  "Addis Ketema Autotera Block 55": {
+    "lat": 9.02450,
+    "lng": 38.73158
+  },
+  "Addis Ketema Autotera Block 56": {
+    "lat": 9.02721,
+    "lng": 38.73342
+  },
+  "Addis Ketema Autotera Block 57": {
+    "lat": 9.02727,
+    "lng": 38.73339
+  },
+  "Addis Ketema Autotera Block 58": {
+    "lat": 9.02290,
+    "lng": 38.73137
+  },
+  "Addis Ketema Autotera Block 59": {
+    "lat": 9.02052,
+    "lng": 38.72763
+  },
+  "Addis Ketema Autotera Block 60": {
+    "lat": 9.01912,
+    "lng": 38.72635
+  },
+  "Addis Ketema Autotera Block 61": {
+    "lat": 9.02402,
+    "lng": 38.72957
+  },
+  "Addis Ketema Autotera Block 62": {
+    "lat": 9.02152,
+    "lng": 38.72495
+  },
+  "Addis Ketema Autotera Block 63": {
+    "lat": 9.02856,
+    "lng": 38.72631
+  },
+  "Addis Ketema Autotera Block 64": {
+    "lat": 9.02699,
+    "lng": 38.73311
+  },
+  "Addis Ketema Autotera Block 65": {
+    "lat": 9.02588,
+    "lng": 38.72783
+  },
+  "Addis Ketema Autotera Block 66": {
+    "lat": 9.02098,
+    "lng": 38.72677
+  },
+  "Addis Ketema Autotera Block 67": {
+    "lat": 9.02459,
+    "lng": 38.72943
+  },
+  "Addis Ketema Autotera Block 68": {
+    "lat": 9.02243,
+    "lng": 38.72627
+  },
+  "Addis Ketema Autotera Block 69": {
+    "lat": 9.02012,
+    "lng": 38.73463
+  },
+  "Addis Ketema Autotera Block 70": {
+    "lat": 9.02504,
+    "lng": 38.73258
+  },
+  "Addis Ketema Autotera Block 71": {
+    "lat": 9.01992,
+    "lng": 38.72765
+  },
+  "Addis Ketema Autotera Block 72": {
+    "lat": 9.02485,
+    "lng": 38.72670
+  },
+  "Addis Ketema Autotera Block 73": {
+    "lat": 9.02464,
+    "lng": 38.72908
+  },
+  "Addis Ketema Autotera Block 74": {
+    "lat": 9.02159,
+    "lng": 38.72760
+  },
+  "Addis Ketema Autotera Block 75": {
+    "lat": 9.02109,
+    "lng": 38.72692
+  },
+  "Addis Ketema Autotera Block 76": {
+    "lat": 9.02604,
+    "lng": 38.73075
+  },
+  "Addis Ketema Autotera Block 77": {
+    "lat": 9.01954,
+    "lng": 38.72605
+  },
+  "Addis Ketema Autotera Block 78": {
+    "lat": 9.02654,
+    "lng": 38.72526
+  },
+  "Addis Ketema Autotera Block 79": {
+    "lat": 9.02061,
+    "lng": 38.73446
+  },
+  "Addis Ketema Autotera Block 80": {
+    "lat": 9.02588,
+    "lng": 38.73240
+  },
+  "Addis Ketema Autotera Block 81": {
+    "lat": 9.02653,
+    "lng": 38.73057
+  },
+  "Addis Ketema Autotera Block 82": {
+    "lat": 9.02371,
+    "lng": 38.72939
+  },
+  "Addis Ketema Autotera Block 83": {
+    "lat": 9.02222,
+    "lng": 38.73395
+  },
+  "Addis Ketema Autotera Block 84": {
+    "lat": 9.02766,
+    "lng": 38.73346
+  },
+  "Addis Ketema Autotera Block 85": {
+    "lat": 9.02861,
+    "lng": 38.72501
+  },
+  "Addis Ketema Autotera Block 86": {
+    "lat": 9.02712,
+    "lng": 38.72578
+  },
+  "Addis Ketema Autotera Block 87": {
+    "lat": 9.02535,
+    "lng": 38.72546
+  },
+  "Addis Ketema Autotera Block 88": {
+    "lat": 9.02597,
+    "lng": 38.73170
+  },
+  "Addis Ketema Autotera Block 89": {
+    "lat": 9.02620,
+    "lng": 38.73277
+  },
+  "Addis Ketema Autotera Block 90": {
+    "lat": 9.02459,
+    "lng": 38.72951
+  },
+  "Addis Ketema Autotera Block 91": {
+    "lat": 9.02880,
+    "lng": 38.72887
+  },
+  "Addis Ketema Autotera Block 92": {
+    "lat": 9.02478,
+    "lng": 38.73076
+  },
+  "Addis Ketema Autotera Block 93": {
+    "lat": 9.02288,
+    "lng": 38.73487
+  },
+  "Addis Ketema Autotera Block 94": {
+    "lat": 9.02158,
+    "lng": 38.73483
+  },
+  "Addis Ketema Autotera Block 95": {
+    "lat": 9.02707,
+    "lng": 38.72896
+  },
+  "Addis Ketema Autotera Block 96": {
+    "lat": 9.02845,
+    "lng": 38.73295
+  },
+  "Addis Ketema Autotera Block 97": {
+    "lat": 9.02301,
+    "lng": 38.72804
+  },
+  "Addis Ketema Autotera Block 98": {
+    "lat": 9.02623,
+    "lng": 38.72685
+  },
+  "Addis Ketema Autotera Block 99": {
+    "lat": 9.02320,
+    "lng": 38.73020
+  },
+  "Addis Ketema Autotera Block 100": {
+    "lat": 9.02698,
+    "lng": 38.72934
+  },
+  "Addis Ketema Lideta Block 1": {
+    "lat": 9.02397,
+    "lng": 38.72593
+  },
+  "Addis Ketema Lideta Block 2": {
+    "lat": 9.02376,
+    "lng": 38.73486
+  },
+  "Addis Ketema Lideta Block 3": {
+    "lat": 9.02567,
+    "lng": 38.73425
+  },
+  "Addis Ketema Lideta Block 4": {
+    "lat": 9.02809,
+    "lng": 38.73349
+  },
+  "Addis Ketema Lideta Block 5": {
+    "lat": 9.02659,
+    "lng": 38.72513
+  },
+  "Addis Ketema Lideta Block 6": {
+    "lat": 9.02218,
+    "lng": 38.73385
+  },
+  "Addis Ketema Lideta Block 7": {
+    "lat": 9.02236,
+    "lng": 38.72581
+  },
+  "Addis Ketema Lideta Block 8": {
+    "lat": 9.02381,
+    "lng": 38.72512
+  },
+  "Addis Ketema Lideta Block 9": {
+    "lat": 9.02639,
+    "lng": 38.73229
+  },
+  "Addis Ketema Lideta Block 10": {
+    "lat": 9.02570,
+    "lng": 38.73237
+  },
+  "Addis Ketema Lideta Block 11": {
+    "lat": 9.02264,
+    "lng": 38.73269
+  },
+  "Addis Ketema Lideta Block 12": {
+    "lat": 9.02482,
+    "lng": 38.73322
+  },
+  "Addis Ketema Lideta Block 13": {
+    "lat": 9.02136,
+    "lng": 38.72871
+  },
+  "Addis Ketema Lideta Block 14": {
+    "lat": 9.02035,
+    "lng": 38.73343
+  },
+  "Addis Ketema Lideta Block 15": {
+    "lat": 9.02700,
+    "lng": 38.72923
+  },
+  "Addis Ketema Lideta Block 16": {
+    "lat": 9.02450,
+    "lng": 38.72853
+  },
+  "Addis Ketema Lideta Block 17": {
+    "lat": 9.02262,
+    "lng": 38.72810
+  },
+  "Addis Ketema Lideta Block 18": {
+    "lat": 9.02294,
+    "lng": 38.72903
+  },
+  "Addis Ketema Lideta Block 19": {
+    "lat": 9.02704,
+    "lng": 38.72637
+  },
+  "Addis Ketema Lideta Block 20": {
+    "lat": 9.02243,
+    "lng": 38.73140
+  },
+  "Addis Ketema Lideta Block 21": {
+    "lat": 9.02129,
+    "lng": 38.72888
+  },
+  "Addis Ketema Lideta Block 22": {
+    "lat": 9.02005,
+    "lng": 38.72531
+  },
+  "Addis Ketema Lideta Block 23": {
+    "lat": 9.02823,
+    "lng": 38.73464
+  },
+  "Addis Ketema Lideta Block 24": {
+    "lat": 9.02136,
+    "lng": 38.73238
+  },
+  "Addis Ketema Lideta Block 25": {
+    "lat": 9.02150,
+    "lng": 38.73028
+  },
+  "Addis Ketema Lideta Block 26": {
+    "lat": 9.02043,
+    "lng": 38.72722
+  },
+  "Addis Ketema Lideta Block 27": {
+    "lat": 9.02244,
+    "lng": 38.72873
+  },
+  "Addis Ketema Lideta Block 28": {
+    "lat": 9.02722,
+    "lng": 38.73086
+  },
+  "Addis Ketema Lideta Block 29": {
+    "lat": 9.02819,
+    "lng": 38.73460
+  },
+  "Addis Ketema Lideta Block 30": {
+    "lat": 9.01979,
+    "lng": 38.73204
+  },
+  "Addis Ketema Lideta Block 31": {
+    "lat": 9.02155,
+    "lng": 38.72519
+  },
+  "Addis Ketema Lideta Block 32": {
+    "lat": 9.02158,
+    "lng": 38.73155
+  },
+  "Addis Ketema Lideta Block 33": {
+    "lat": 9.02306,
+    "lng": 38.72881
+  },
+  "Addis Ketema Lideta Block 34": {
+    "lat": 9.02228,
+    "lng": 38.73233
+  },
+  "Addis Ketema Lideta Block 35": {
+    "lat": 9.02115,
+    "lng": 38.73178
+  },
+  "Addis Ketema Lideta Block 36": {
+    "lat": 9.02711,
+    "lng": 38.73328
+  },
+  "Addis Ketema Lideta Block 37": {
+    "lat": 9.02512,
+    "lng": 38.73177
+  },
+  "Addis Ketema Lideta Block 38": {
+    "lat": 9.02582,
+    "lng": 38.72697
+  },
+  "Addis Ketema Lideta Block 39": {
+    "lat": 9.02065,
+    "lng": 38.72907
+  },
+  "Addis Ketema Lideta Block 40": {
+    "lat": 9.02895,
+    "lng": 38.72900
+  },
+  "Addis Ketema Lideta Block 41": {
+    "lat": 9.02058,
+    "lng": 38.72972
+  },
+  "Addis Ketema Lideta Block 42": {
+    "lat": 9.02202,
+    "lng": 38.72924
+  },
+  "Addis Ketema Lideta Block 43": {
+    "lat": 9.01902,
+    "lng": 38.73278
+  },
+  "Addis Ketema Lideta Block 44": {
+    "lat": 9.02375,
+    "lng": 38.72625
+  },
+  "Addis Ketema Lideta Block 45": {
+    "lat": 9.02806,
+    "lng": 38.73036
+  },
+  "Addis Ketema Lideta Block 46": {
+    "lat": 9.02564,
+    "lng": 38.72860
+  },
+  "Addis Ketema Lideta Block 47": {
+    "lat": 9.02219,
+    "lng": 38.72818
+  },
+  "Addis Ketema Lideta Block 48": {
+    "lat": 9.02261,
+    "lng": 38.72651
+  },
+  "Addis Ketema Lideta Block 49": {
+    "lat": 9.02092,
+    "lng": 38.72852
+  },
+  "Addis Ketema Lideta Block 50": {
+    "lat": 9.02512,
+    "lng": 38.72904
+  },
+  "Addis Ketema Lideta Block 51": {
+    "lat": 9.02857,
+    "lng": 38.73072
+  },
+  "Addis Ketema Lideta Block 52": {
+    "lat": 9.02171,
+    "lng": 38.72729
+  },
+  "Addis Ketema Lideta Block 53": {
+    "lat": 9.02721,
+    "lng": 38.73190
+  },
+  "Addis Ketema Lideta Block 54": {
+    "lat": 9.02602,
+    "lng": 38.73275
+  },
+  "Addis Ketema Lideta Block 55": {
+    "lat": 9.02390,
+    "lng": 38.72509
+  },
+  "Addis Ketema Lideta Block 56": {
+    "lat": 9.02607,
+    "lng": 38.73149
+  },
+  "Addis Ketema Lideta Block 57": {
+    "lat": 9.01987,
+    "lng": 38.72713
+  },
+  "Addis Ketema Lideta Block 58": {
+    "lat": 9.02253,
+    "lng": 38.72543
+  },
+  "Addis Ketema Lideta Block 59": {
+    "lat": 9.02474,
+    "lng": 38.73098
+  },
+  "Addis Ketema Lideta Block 60": {
+    "lat": 9.02042,
+    "lng": 38.73051
+  },
+  "Addis Ketema Lideta Block 61": {
+    "lat": 9.02182,
+    "lng": 38.73203
+  },
+  "Addis Ketema Lideta Block 62": {
+    "lat": 9.02739,
+    "lng": 38.73434
+  },
+  "Addis Ketema Lideta Block 63": {
+    "lat": 9.02500,
+    "lng": 38.72682
+  },
+  "Addis Ketema Lideta Block 64": {
+    "lat": 9.02218,
+    "lng": 38.72877
+  },
+  "Addis Ketema Lideta Block 65": {
+    "lat": 9.02721,
+    "lng": 38.73237
+  },
+  "Addis Ketema Lideta Block 66": {
+    "lat": 9.02563,
+    "lng": 38.73340
+  },
+  "Addis Ketema Lideta Block 67": {
+    "lat": 9.02284,
+    "lng": 38.72730
+  },
+  "Addis Ketema Lideta Block 68": {
+    "lat": 9.02162,
+    "lng": 38.73310
+  },
+  "Addis Ketema Lideta Block 69": {
+    "lat": 9.02669,
+    "lng": 38.72524
+  },
+  "Addis Ketema Lideta Block 70": {
+    "lat": 9.01987,
+    "lng": 38.72680
+  },
+  "Addis Ketema Lideta Block 71": {
+    "lat": 9.02020,
+    "lng": 38.72689
+  },
+  "Addis Ketema Lideta Block 72": {
+    "lat": 9.02481,
+    "lng": 38.72550
+  },
+  "Addis Ketema Lideta Block 73": {
+    "lat": 9.02384,
+    "lng": 38.72921
+  },
+  "Addis Ketema Lideta Block 74": {
+    "lat": 9.02199,
+    "lng": 38.73110
+  },
+  "Addis Ketema Lideta Block 75": {
+    "lat": 9.02852,
+    "lng": 38.72823
+  },
+  "Addis Ketema Lideta Block 76": {
+    "lat": 9.02028,
+    "lng": 38.73468
+  },
+  "Addis Ketema Lideta Block 77": {
+    "lat": 9.02665,
+    "lng": 38.73303
+  },
+  "Addis Ketema Lideta Block 78": {
+    "lat": 9.02596,
+    "lng": 38.73441
+  },
+  "Addis Ketema Lideta Block 79": {
+    "lat": 9.02863,
+    "lng": 38.73426
+  },
+  "Addis Ketema Lideta Block 80": {
+    "lat": 9.02537,
+    "lng": 38.73098
+  },
+  "Addis Ketema Lideta Block 81": {
+    "lat": 9.02078,
+    "lng": 38.72653
+  },
+  "Addis Ketema Lideta Block 82": {
+    "lat": 9.01989,
+    "lng": 38.73393
+  },
+  "Addis Ketema Lideta Block 83": {
+    "lat": 9.02712,
+    "lng": 38.72653
+  },
+  "Addis Ketema Lideta Block 84": {
+    "lat": 9.01994,
+    "lng": 38.72654
+  },
+  "Addis Ketema Lideta Block 85": {
+    "lat": 9.02612,
+    "lng": 38.72863
+  },
+  "Addis Ketema Lideta Block 86": {
+    "lat": 9.02086,
+    "lng": 38.73376
+  },
+  "Addis Ketema Lideta Block 87": {
+    "lat": 9.02118,
+    "lng": 38.73134
+  },
+  "Addis Ketema Lideta Block 88": {
+    "lat": 9.02634,
+    "lng": 38.72536
+  },
+  "Addis Ketema Lideta Block 89": {
+    "lat": 9.02694,
+    "lng": 38.73205
+  },
+  "Addis Ketema Lideta Block 90": {
+    "lat": 9.02419,
+    "lng": 38.72780
+  },
+  "Addis Ketema Lideta Block 91": {
+    "lat": 9.02519,
+    "lng": 38.73303
+  },
+  "Addis Ketema Lideta Block 92": {
+    "lat": 9.02357,
+    "lng": 38.72982
+  },
+  "Addis Ketema Lideta Block 93": {
+    "lat": 9.02879,
+    "lng": 38.72526
+  },
+  "Addis Ketema Lideta Block 94": {
+    "lat": 9.02072,
+    "lng": 38.73148
+  },
+  "Addis Ketema Lideta Block 95": {
+    "lat": 9.02542,
+    "lng": 38.73300
+  },
+  "Addis Ketema Lideta Block 96": {
+    "lat": 9.02667,
+    "lng": 38.72978
+  },
+  "Addis Ketema Lideta Block 97": {
+    "lat": 9.02636,
+    "lng": 38.72546
+  },
+  "Addis Ketema Lideta Block 98": {
+    "lat": 9.02376,
+    "lng": 38.72969
+  },
+  "Addis Ketema Lideta Block 99": {
+    "lat": 9.01987,
+    "lng": 38.73221
+  },
+  "Addis Ketema Lideta Block 100": {
+    "lat": 9.01984,
+    "lng": 38.73076
+  },
+  "Addis Ketema Abinet Block 1": {
+    "lat": 9.01901,
+    "lng": 38.72887
+  },
+  "Addis Ketema Abinet Block 2": {
+    "lat": 9.02053,
+    "lng": 38.73146
+  },
+  "Addis Ketema Abinet Block 3": {
+    "lat": 9.02789,
+    "lng": 38.72858
+  },
+  "Addis Ketema Abinet Block 4": {
+    "lat": 9.02298,
+    "lng": 38.73456
+  },
+  "Addis Ketema Abinet Block 5": {
+    "lat": 9.02251,
+    "lng": 38.73238
+  },
+  "Addis Ketema Abinet Block 6": {
+    "lat": 9.01973,
+    "lng": 38.72654
+  },
+  "Addis Ketema Abinet Block 7": {
+    "lat": 9.02276,
+    "lng": 38.72803
+  },
+  "Addis Ketema Abinet Block 8": {
+    "lat": 9.02003,
+    "lng": 38.72769
+  },
+  "Addis Ketema Abinet Block 9": {
+    "lat": 9.02240,
+    "lng": 38.72587
+  },
+  "Addis Ketema Abinet Block 10": {
+    "lat": 9.02592,
+    "lng": 38.72715
+  },
+  "Addis Ketema Abinet Block 11": {
+    "lat": 9.02254,
+    "lng": 38.73080
+  },
+  "Addis Ketema Abinet Block 12": {
+    "lat": 9.02731,
+    "lng": 38.72773
+  },
+  "Addis Ketema Abinet Block 13": {
+    "lat": 9.01936,
+    "lng": 38.73189
+  },
+  "Addis Ketema Abinet Block 14": {
+    "lat": 9.02122,
+    "lng": 38.73236
+  },
+  "Addis Ketema Abinet Block 15": {
+    "lat": 9.01933,
+    "lng": 38.73487
+  },
+  "Addis Ketema Abinet Block 16": {
+    "lat": 9.02056,
+    "lng": 38.73046
+  },
+  "Addis Ketema Abinet Block 17": {
+    "lat": 9.02481,
+    "lng": 38.72903
+  },
+  "Addis Ketema Abinet Block 18": {
+    "lat": 9.02582,
+    "lng": 38.73481
+  },
+  "Addis Ketema Abinet Block 19": {
+    "lat": 9.02520,
+    "lng": 38.73320
+  },
+  "Addis Ketema Abinet Block 20": {
+    "lat": 9.02351,
+    "lng": 38.72945
+  },
+  "Addis Ketema Abinet Block 21": {
+    "lat": 9.02052,
+    "lng": 38.73207
+  },
+  "Addis Ketema Abinet Block 22": {
+    "lat": 9.02228,
+    "lng": 38.73007
+  },
+  "Addis Ketema Abinet Block 23": {
+    "lat": 9.02493,
+    "lng": 38.73028
+  },
+  "Addis Ketema Abinet Block 24": {
+    "lat": 9.02586,
+    "lng": 38.72535
+  },
+  "Addis Ketema Abinet Block 25": {
+    "lat": 9.02882,
+    "lng": 38.73442
+  },
+  "Addis Ketema Abinet Block 26": {
+    "lat": 9.02177,
+    "lng": 38.73200
+  },
+  "Addis Ketema Abinet Block 27": {
+    "lat": 9.02160,
+    "lng": 38.72681
+  },
+  "Addis Ketema Abinet Block 28": {
+    "lat": 9.02893,
+    "lng": 38.73456
+  },
+  "Addis Ketema Abinet Block 29": {
+    "lat": 9.02278,
+    "lng": 38.73008
+  },
+  "Addis Ketema Abinet Block 30": {
+    "lat": 9.02804,
+    "lng": 38.72725
+  },
+  "Addis Ketema Abinet Block 31": {
+    "lat": 9.02599,
+    "lng": 38.72493
+  },
+  "Addis Ketema Abinet Block 32": {
+    "lat": 9.02721,
+    "lng": 38.72906
+  },
+  "Addis Ketema Abinet Block 33": {
+    "lat": 9.02871,
+    "lng": 38.73173
+  },
+  "Addis Ketema Abinet Block 34": {
+    "lat": 9.02861,
+    "lng": 38.73395
+  },
+  "Addis Ketema Abinet Block 35": {
+    "lat": 9.02416,
+    "lng": 38.73305
+  },
+  "Addis Ketema Abinet Block 36": {
+    "lat": 9.02610,
+    "lng": 38.72784
+  },
+  "Addis Ketema Abinet Block 37": {
+    "lat": 9.02539,
+    "lng": 38.73286
+  },
+  "Addis Ketema Abinet Block 38": {
+    "lat": 9.02662,
+    "lng": 38.72770
+  },
+  "Addis Ketema Abinet Block 39": {
+    "lat": 9.02269,
+    "lng": 38.72926
+  },
+  "Addis Ketema Abinet Block 40": {
+    "lat": 9.02058,
+    "lng": 38.73409
+  },
+  "Addis Ketema Abinet Block 41": {
+    "lat": 9.02531,
+    "lng": 38.72824
+  },
+  "Addis Ketema Abinet Block 42": {
+    "lat": 9.02520,
+    "lng": 38.73067
+  },
+  "Addis Ketema Abinet Block 43": {
+    "lat": 9.02334,
+    "lng": 38.73413
+  },
+  "Addis Ketema Abinet Block 44": {
+    "lat": 9.01966,
+    "lng": 38.73023
+  },
+  "Addis Ketema Abinet Block 45": {
+    "lat": 9.01957,
+    "lng": 38.72691
+  },
+  "Addis Ketema Abinet Block 46": {
+    "lat": 9.02420,
+    "lng": 38.73162
+  },
+  "Addis Ketema Abinet Block 47": {
+    "lat": 9.01927,
+    "lng": 38.73266
+  },
+  "Addis Ketema Abinet Block 48": {
+    "lat": 9.02884,
+    "lng": 38.73006
+  },
+  "Addis Ketema Abinet Block 49": {
+    "lat": 9.02178,
+    "lng": 38.72841
+  },
+  "Addis Ketema Abinet Block 50": {
+    "lat": 9.02310,
+    "lng": 38.73418
+  },
+  "Addis Ketema Abinet Block 51": {
+    "lat": 9.02414,
+    "lng": 38.73096
+  },
+  "Addis Ketema Abinet Block 52": {
+    "lat": 9.01994,
+    "lng": 38.73483
+  },
+  "Addis Ketema Abinet Block 53": {
+    "lat": 9.02540,
+    "lng": 38.73085
+  },
+  "Addis Ketema Abinet Block 54": {
+    "lat": 9.02255,
+    "lng": 38.72625
+  },
+  "Addis Ketema Abinet Block 55": {
+    "lat": 9.02359,
+    "lng": 38.73416
+  },
+  "Addis Ketema Abinet Block 56": {
+    "lat": 9.02540,
+    "lng": 38.73143
+  },
+  "Addis Ketema Abinet Block 57": {
+    "lat": 9.02441,
+    "lng": 38.73420
+  },
+  "Addis Ketema Abinet Block 58": {
+    "lat": 9.02145,
+    "lng": 38.72594
+  },
+  "Addis Ketema Abinet Block 59": {
+    "lat": 9.02772,
+    "lng": 38.73115
+  },
+  "Addis Ketema Abinet Block 60": {
+    "lat": 9.02600,
+    "lng": 38.72840
+  },
+  "Addis Ketema Abinet Block 61": {
+    "lat": 9.02726,
+    "lng": 38.73255
+  },
+  "Addis Ketema Abinet Block 62": {
+    "lat": 9.02287,
+    "lng": 38.73392
+  },
+  "Addis Ketema Abinet Block 63": {
+    "lat": 9.02549,
+    "lng": 38.73063
+  },
+  "Addis Ketema Abinet Block 64": {
+    "lat": 9.02702,
+    "lng": 38.72729
+  },
+  "Addis Ketema Abinet Block 65": {
+    "lat": 9.01957,
+    "lng": 38.73473
+  },
+  "Addis Ketema Abinet Block 66": {
+    "lat": 9.02395,
+    "lng": 38.72725
+  },
+  "Addis Ketema Abinet Block 67": {
+    "lat": 9.02701,
+    "lng": 38.73281
+  },
+  "Addis Ketema Abinet Block 68": {
+    "lat": 9.02792,
+    "lng": 38.72797
+  },
+  "Addis Ketema Abinet Block 69": {
+    "lat": 9.01939,
+    "lng": 38.72598
+  },
+  "Addis Ketema Abinet Block 70": {
+    "lat": 9.02180,
+    "lng": 38.73342
+  },
+  "Addis Ketema Abinet Block 71": {
+    "lat": 9.01921,
+    "lng": 38.73486
+  },
+  "Addis Ketema Abinet Block 72": {
+    "lat": 9.02094,
+    "lng": 38.72725
+  },
+  "Addis Ketema Abinet Block 73": {
+    "lat": 9.01987,
+    "lng": 38.72945
+  },
+  "Addis Ketema Abinet Block 74": {
+    "lat": 9.01967,
+    "lng": 38.73296
+  },
+  "Addis Ketema Abinet Block 75": {
+    "lat": 9.02177,
+    "lng": 38.73059
+  },
+  "Addis Ketema Abinet Block 76": {
+    "lat": 9.02370,
+    "lng": 38.72952
+  },
+  "Addis Ketema Abinet Block 77": {
+    "lat": 9.02577,
+    "lng": 38.72947
+  },
+  "Addis Ketema Abinet Block 78": {
+    "lat": 9.02299,
+    "lng": 38.72736
+  },
+  "Addis Ketema Abinet Block 79": {
+    "lat": 9.02430,
+    "lng": 38.72546
+  },
+  "Addis Ketema Abinet Block 80": {
+    "lat": 9.02354,
+    "lng": 38.73351
+  },
+  "Addis Ketema Abinet Block 81": {
+    "lat": 9.01927,
+    "lng": 38.73082
+  },
+  "Addis Ketema Abinet Block 82": {
+    "lat": 9.02703,
+    "lng": 38.72910
+  },
+  "Addis Ketema Abinet Block 83": {
+    "lat": 9.02790,
+    "lng": 38.73329
+  },
+  "Addis Ketema Abinet Block 84": {
+    "lat": 9.02147,
+    "lng": 38.73409
+  },
+  "Addis Ketema Abinet Block 85": {
+    "lat": 9.02088,
+    "lng": 38.73099
+  },
+  "Addis Ketema Abinet Block 86": {
+    "lat": 9.01979,
+    "lng": 38.72499
+  },
+  "Addis Ketema Abinet Block 87": {
+    "lat": 9.02425,
+    "lng": 38.73093
+  },
+  "Addis Ketema Abinet Block 88": {
+    "lat": 9.02164,
+    "lng": 38.72886
+  },
+  "Addis Ketema Abinet Block 89": {
+    "lat": 9.02767,
+    "lng": 38.72994
+  },
+  "Addis Ketema Abinet Block 90": {
+    "lat": 9.02546,
+    "lng": 38.72660
+  },
+  "Addis Ketema Abinet Block 91": {
+    "lat": 9.02380,
+    "lng": 38.72892
+  },
+  "Addis Ketema Abinet Block 92": {
+    "lat": 9.02014,
+    "lng": 38.73131
+  },
+  "Addis Ketema Abinet Block 93": {
+    "lat": 9.02478,
+    "lng": 38.72693
+  },
+  "Addis Ketema Abinet Block 94": {
+    "lat": 9.01972,
+    "lng": 38.72622
+  },
+  "Addis Ketema Abinet Block 95": {
+    "lat": 9.02515,
+    "lng": 38.73229
+  },
+  "Addis Ketema Abinet Block 96": {
+    "lat": 9.02190,
+    "lng": 38.73414
+  },
+  "Addis Ketema Abinet Block 97": {
+    "lat": 9.02030,
+    "lng": 38.72805
+  },
+  "Addis Ketema Abinet Block 98": {
+    "lat": 9.02836,
+    "lng": 38.72828
+  },
+  "Addis Ketema Abinet Block 99": {
+    "lat": 9.02150,
+    "lng": 38.72545
+  },
+  "Addis Ketema Abinet Block 100": {
+    "lat": 9.01945,
+    "lng": 38.72906
+  },
+  "Addis Ketema Geja Sefer Block 1": {
+    "lat": 9.02860,
+    "lng": 38.73255
+  },
+  "Addis Ketema Geja Sefer Block 2": {
+    "lat": 9.01907,
+    "lng": 38.72873
+  },
+  "Addis Ketema Geja Sefer Block 3": {
+    "lat": 9.02579,
+    "lng": 38.73438
+  },
+  "Addis Ketema Geja Sefer Block 4": {
+    "lat": 9.02773,
+    "lng": 38.72599
+  },
+  "Addis Ketema Geja Sefer Block 5": {
+    "lat": 9.02445,
+    "lng": 38.72697
+  },
+  "Addis Ketema Geja Sefer Block 6": {
+    "lat": 9.02518,
+    "lng": 38.73279
+  },
+  "Addis Ketema Geja Sefer Block 7": {
+    "lat": 9.02361,
+    "lng": 38.73069
+  },
+  "Addis Ketema Geja Sefer Block 8": {
+    "lat": 9.02520,
+    "lng": 38.72746
+  },
+  "Addis Ketema Geja Sefer Block 9": {
+    "lat": 9.02784,
+    "lng": 38.72722
+  },
+  "Addis Ketema Geja Sefer Block 10": {
+    "lat": 9.02189,
+    "lng": 38.72641
+  },
+  "Addis Ketema Geja Sefer Block 11": {
+    "lat": 9.02654,
+    "lng": 38.72870
+  },
+  "Addis Ketema Geja Sefer Block 12": {
+    "lat": 9.02386,
+    "lng": 38.72617
+  },
+  "Addis Ketema Geja Sefer Block 13": {
+    "lat": 9.02305,
+    "lng": 38.73269
+  },
+  "Addis Ketema Geja Sefer Block 14": {
+    "lat": 9.02557,
+    "lng": 38.72750
+  },
+  "Addis Ketema Geja Sefer Block 15": {
+    "lat": 9.02097,
+    "lng": 38.73358
+  },
+  "Addis Ketema Geja Sefer Block 16": {
+    "lat": 9.02118,
+    "lng": 38.72676
+  },
+  "Addis Ketema Geja Sefer Block 17": {
+    "lat": 9.02153,
+    "lng": 38.73255
+  },
+  "Addis Ketema Geja Sefer Block 18": {
+    "lat": 9.02205,
+    "lng": 38.73269
+  },
+  "Addis Ketema Geja Sefer Block 19": {
+    "lat": 9.02566,
+    "lng": 38.73472
+  },
+  "Addis Ketema Geja Sefer Block 20": {
+    "lat": 9.02118,
+    "lng": 38.72916
+  },
+  "Addis Ketema Geja Sefer Block 21": {
+    "lat": 9.02231,
+    "lng": 38.72764
+  },
+  "Addis Ketema Geja Sefer Block 22": {
+    "lat": 9.02879,
+    "lng": 38.73243
+  },
+  "Addis Ketema Geja Sefer Block 23": {
+    "lat": 9.02031,
+    "lng": 38.72560
+  },
+  "Addis Ketema Geja Sefer Block 24": {
+    "lat": 9.02512,
+    "lng": 38.73180
+  },
+  "Addis Ketema Geja Sefer Block 25": {
+    "lat": 9.02321,
+    "lng": 38.73354
+  },
+  "Addis Ketema Geja Sefer Block 26": {
+    "lat": 9.02423,
+    "lng": 38.73209
+  },
+  "Addis Ketema Geja Sefer Block 27": {
+    "lat": 9.02207,
+    "lng": 38.73436
+  },
+  "Addis Ketema Geja Sefer Block 28": {
+    "lat": 9.02043,
+    "lng": 38.72523
+  },
+  "Addis Ketema Geja Sefer Block 29": {
+    "lat": 9.02405,
+    "lng": 38.72558
+  },
+  "Addis Ketema Geja Sefer Block 30": {
+    "lat": 9.02731,
+    "lng": 38.73078
+  },
+  "Addis Ketema Geja Sefer Block 31": {
+    "lat": 9.01955,
+    "lng": 38.72563
+  },
+  "Addis Ketema Geja Sefer Block 32": {
+    "lat": 9.02807,
+    "lng": 38.73000
+  },
+  "Addis Ketema Geja Sefer Block 33": {
+    "lat": 9.02807,
+    "lng": 38.72632
+  },
+  "Addis Ketema Geja Sefer Block 34": {
+    "lat": 9.02658,
+    "lng": 38.72588
+  },
+  "Addis Ketema Geja Sefer Block 35": {
+    "lat": 9.02628,
+    "lng": 38.72807
+  },
+  "Addis Ketema Geja Sefer Block 36": {
+    "lat": 9.02407,
+    "lng": 38.73097
+  },
+  "Addis Ketema Geja Sefer Block 37": {
+    "lat": 9.02693,
+    "lng": 38.73208
+  },
+  "Addis Ketema Geja Sefer Block 38": {
+    "lat": 9.02450,
+    "lng": 38.73198
+  },
+  "Addis Ketema Geja Sefer Block 39": {
+    "lat": 9.02200,
+    "lng": 38.73162
+  },
+  "Addis Ketema Geja Sefer Block 40": {
+    "lat": 9.01919,
+    "lng": 38.72942
+  },
+  "Addis Ketema Geja Sefer Block 41": {
+    "lat": 9.02155,
+    "lng": 38.73030
+  },
+  "Addis Ketema Geja Sefer Block 42": {
+    "lat": 9.02325,
+    "lng": 38.72837
+  },
+  "Addis Ketema Geja Sefer Block 43": {
+    "lat": 9.02373,
+    "lng": 38.72835
+  },
+  "Addis Ketema Geja Sefer Block 44": {
+    "lat": 9.02076,
+    "lng": 38.72555
+  },
+  "Addis Ketema Geja Sefer Block 45": {
+    "lat": 9.02101,
+    "lng": 38.72616
+  },
+  "Addis Ketema Geja Sefer Block 46": {
+    "lat": 9.02022,
+    "lng": 38.73248
+  },
+  "Addis Ketema Geja Sefer Block 47": {
+    "lat": 9.02854,
+    "lng": 38.72744
+  },
+  "Addis Ketema Geja Sefer Block 48": {
+    "lat": 9.02527,
+    "lng": 38.72865
+  },
+  "Addis Ketema Geja Sefer Block 49": {
+    "lat": 9.02875,
+    "lng": 38.73452
+  },
+  "Addis Ketema Geja Sefer Block 50": {
+    "lat": 9.02874,
+    "lng": 38.72767
+  },
+  "Addis Ketema Geja Sefer Block 51": {
+    "lat": 9.02371,
+    "lng": 38.72714
+  },
+  "Addis Ketema Geja Sefer Block 52": {
+    "lat": 9.02478,
+    "lng": 38.73423
+  },
+  "Addis Ketema Geja Sefer Block 53": {
+    "lat": 9.02255,
+    "lng": 38.72938
+  },
+  "Addis Ketema Geja Sefer Block 54": {
+    "lat": 9.02493,
+    "lng": 38.73378
+  },
+  "Addis Ketema Geja Sefer Block 55": {
+    "lat": 9.02863,
+    "lng": 38.73422
+  },
+  "Addis Ketema Geja Sefer Block 56": {
+    "lat": 9.02193,
+    "lng": 38.72892
+  },
+  "Addis Ketema Geja Sefer Block 57": {
+    "lat": 9.02501,
+    "lng": 38.72658
+  },
+  "Addis Ketema Geja Sefer Block 58": {
+    "lat": 9.02304,
+    "lng": 38.72916
+  },
+  "Addis Ketema Geja Sefer Block 59": {
+    "lat": 9.02393,
+    "lng": 38.73113
+  },
+  "Addis Ketema Geja Sefer Block 60": {
+    "lat": 9.02645,
+    "lng": 38.72597
+  },
+  "Addis Ketema Geja Sefer Block 61": {
+    "lat": 9.02798,
+    "lng": 38.73338
+  },
+  "Addis Ketema Geja Sefer Block 62": {
+    "lat": 9.02363,
+    "lng": 38.73325
+  },
+  "Addis Ketema Geja Sefer Block 63": {
+    "lat": 9.01981,
+    "lng": 38.73072
+  },
+  "Addis Ketema Geja Sefer Block 64": {
+    "lat": 9.02869,
+    "lng": 38.73325
+  },
+  "Addis Ketema Geja Sefer Block 65": {
+    "lat": 9.02119,
+    "lng": 38.72801
+  },
+  "Addis Ketema Geja Sefer Block 66": {
+    "lat": 9.02314,
+    "lng": 38.72984
+  },
+  "Addis Ketema Geja Sefer Block 67": {
+    "lat": 9.02301,
+    "lng": 38.72835
+  },
+  "Addis Ketema Geja Sefer Block 68": {
+    "lat": 9.02076,
+    "lng": 38.73040
+  },
+  "Addis Ketema Geja Sefer Block 69": {
+    "lat": 9.02485,
+    "lng": 38.73043
+  },
+  "Addis Ketema Geja Sefer Block 70": {
+    "lat": 9.01972,
+    "lng": 38.72567
+  },
+  "Addis Ketema Geja Sefer Block 71": {
+    "lat": 9.01981,
+    "lng": 38.73038
+  },
+  "Addis Ketema Geja Sefer Block 72": {
+    "lat": 9.02375,
+    "lng": 38.73110
+  },
+  "Addis Ketema Geja Sefer Block 73": {
+    "lat": 9.02051,
+    "lng": 38.72534
+  },
+  "Addis Ketema Geja Sefer Block 74": {
+    "lat": 9.02008,
+    "lng": 38.73118
+  },
+  "Addis Ketema Geja Sefer Block 75": {
+    "lat": 9.02730,
+    "lng": 38.72858
+  },
+  "Addis Ketema Geja Sefer Block 76": {
+    "lat": 9.02678,
+    "lng": 38.73007
+  },
+  "Addis Ketema Geja Sefer Block 77": {
+    "lat": 9.02296,
+    "lng": 38.72688
+  },
+  "Addis Ketema Geja Sefer Block 78": {
+    "lat": 9.02165,
+    "lng": 38.72712
+  },
+  "Addis Ketema Geja Sefer Block 79": {
+    "lat": 9.02365,
+    "lng": 38.72490
+  },
+  "Addis Ketema Geja Sefer Block 80": {
+    "lat": 9.02157,
+    "lng": 38.73310
+  },
+  "Addis Ketema Geja Sefer Block 81": {
+    "lat": 9.02712,
+    "lng": 38.72526
+  },
+  "Addis Ketema Geja Sefer Block 82": {
+    "lat": 9.02070,
+    "lng": 38.72775
+  },
+  "Addis Ketema Geja Sefer Block 83": {
+    "lat": 9.02609,
+    "lng": 38.72629
+  },
+  "Addis Ketema Geja Sefer Block 84": {
+    "lat": 9.02398,
+    "lng": 38.73462
+  },
+  "Addis Ketema Geja Sefer Block 85": {
+    "lat": 9.02681,
+    "lng": 38.73281
+  },
+  "Addis Ketema Geja Sefer Block 86": {
+    "lat": 9.02570,
+    "lng": 38.72708
+  },
+  "Addis Ketema Geja Sefer Block 87": {
+    "lat": 9.02641,
+    "lng": 38.73348
+  },
+  "Addis Ketema Geja Sefer Block 88": {
+    "lat": 9.02193,
+    "lng": 38.72661
+  },
+  "Addis Ketema Geja Sefer Block 89": {
+    "lat": 9.02331,
+    "lng": 38.73380
+  },
+  "Addis Ketema Geja Sefer Block 90": {
+    "lat": 9.02542,
+    "lng": 38.73295
+  },
+  "Addis Ketema Geja Sefer Block 91": {
+    "lat": 9.02150,
+    "lng": 38.73303
+  },
+  "Addis Ketema Geja Sefer Block 92": {
+    "lat": 9.02517,
+    "lng": 38.72644
+  },
+  "Addis Ketema Geja Sefer Block 93": {
+    "lat": 9.02039,
+    "lng": 38.72691
+  },
+  "Addis Ketema Geja Sefer Block 94": {
+    "lat": 9.02202,
+    "lng": 38.72814
+  },
+  "Addis Ketema Geja Sefer Block 95": {
+    "lat": 9.02782,
+    "lng": 38.73325
+  },
+  "Addis Ketema Geja Sefer Block 96": {
+    "lat": 9.02358,
+    "lng": 38.73446
+  },
+  "Addis Ketema Geja Sefer Block 97": {
+    "lat": 9.01942,
+    "lng": 38.72654
+  },
+  "Addis Ketema Geja Sefer Block 98": {
+    "lat": 9.01986,
+    "lng": 38.73056
+  },
+  "Addis Ketema Geja Sefer Block 99": {
+    "lat": 9.02010,
+    "lng": 38.72670
+  },
+  "Addis Ketema Geja Sefer Block 100": {
+    "lat": 9.02094,
+    "lng": 38.73456
+  },
+  "Addis Ketema Sengatera Block 1": {
+    "lat": 9.02119,
+    "lng": 38.72756
+  },
+  "Addis Ketema Sengatera Block 2": {
+    "lat": 9.02216,
+    "lng": 38.72918
+  },
+  "Addis Ketema Sengatera Block 3": {
+    "lat": 9.02238,
+    "lng": 38.72937
+  },
+  "Addis Ketema Sengatera Block 4": {
+    "lat": 9.02487,
+    "lng": 38.73044
+  },
+  "Addis Ketema Sengatera Block 5": {
+    "lat": 9.02439,
+    "lng": 38.73140
+  },
+  "Addis Ketema Sengatera Block 6": {
+    "lat": 9.02305,
+    "lng": 38.73471
+  },
+  "Addis Ketema Sengatera Block 7": {
+    "lat": 9.02438,
+    "lng": 38.72990
+  },
+  "Addis Ketema Sengatera Block 8": {
+    "lat": 9.02303,
+    "lng": 38.73115
+  },
+  "Addis Ketema Sengatera Block 9": {
+    "lat": 9.02221,
+    "lng": 38.73120
+  },
+  "Addis Ketema Sengatera Block 10": {
+    "lat": 9.02686,
+    "lng": 38.73099
+  },
+  "Addis Ketema Sengatera Block 11": {
+    "lat": 9.02102,
+    "lng": 38.72761
+  },
+  "Addis Ketema Sengatera Block 12": {
+    "lat": 9.02838,
+    "lng": 38.73121
+  },
+  "Addis Ketema Sengatera Block 13": {
+    "lat": 9.02310,
+    "lng": 38.73234
+  },
+  "Addis Ketema Sengatera Block 14": {
+    "lat": 9.02558,
+    "lng": 38.73386
+  },
+  "Addis Ketema Sengatera Block 15": {
+    "lat": 9.02313,
+    "lng": 38.73001
+  },
+  "Addis Ketema Sengatera Block 16": {
+    "lat": 9.02073,
+    "lng": 38.72981
+  },
+  "Addis Ketema Sengatera Block 17": {
+    "lat": 9.02731,
+    "lng": 38.72553
+  },
+  "Addis Ketema Sengatera Block 18": {
+    "lat": 9.02652,
+    "lng": 38.72594
+  },
+  "Addis Ketema Sengatera Block 19": {
+    "lat": 9.02180,
+    "lng": 38.72956
+  },
+  "Addis Ketema Sengatera Block 20": {
+    "lat": 9.02161,
+    "lng": 38.73396
+  },
+  "Addis Ketema Sengatera Block 21": {
+    "lat": 9.02366,
+    "lng": 38.73105
+  },
+  "Addis Ketema Sengatera Block 22": {
+    "lat": 9.02092,
+    "lng": 38.72841
+  },
+  "Addis Ketema Sengatera Block 23": {
+    "lat": 9.02075,
+    "lng": 38.73213
+  },
+  "Addis Ketema Sengatera Block 24": {
+    "lat": 9.02667,
+    "lng": 38.72896
+  },
+  "Addis Ketema Sengatera Block 25": {
+    "lat": 9.02544,
+    "lng": 38.72673
+  },
+  "Addis Ketema Sengatera Block 26": {
+    "lat": 9.02838,
+    "lng": 38.73411
+  },
+  "Addis Ketema Sengatera Block 27": {
+    "lat": 9.02789,
+    "lng": 38.73468
+  },
+  "Addis Ketema Sengatera Block 28": {
+    "lat": 9.02448,
+    "lng": 38.72660
+  },
+  "Addis Ketema Sengatera Block 29": {
+    "lat": 9.02880,
+    "lng": 38.72907
+  },
+  "Addis Ketema Sengatera Block 30": {
+    "lat": 9.01946,
+    "lng": 38.73179
+  },
+  "Addis Ketema Sengatera Block 31": {
+    "lat": 9.02063,
+    "lng": 38.72960
+  },
+  "Addis Ketema Sengatera Block 32": {
+    "lat": 9.02790,
+    "lng": 38.73193
+  },
+  "Addis Ketema Sengatera Block 33": {
+    "lat": 9.02370,
+    "lng": 38.72941
+  },
+  "Addis Ketema Sengatera Block 34": {
+    "lat": 9.01972,
+    "lng": 38.72756
+  },
+  "Addis Ketema Sengatera Block 35": {
+    "lat": 9.02293,
+    "lng": 38.72650
+  },
+  "Addis Ketema Sengatera Block 36": {
+    "lat": 9.02619,
+    "lng": 38.73215
+  },
+  "Addis Ketema Sengatera Block 37": {
+    "lat": 9.02627,
+    "lng": 38.73039
+  },
+  "Addis Ketema Sengatera Block 38": {
+    "lat": 9.02429,
+    "lng": 38.72749
+  },
+  "Addis Ketema Sengatera Block 39": {
+    "lat": 9.02074,
+    "lng": 38.73446
+  },
+  "Addis Ketema Sengatera Block 40": {
+    "lat": 9.02630,
+    "lng": 38.73457
+  },
+  "Addis Ketema Sengatera Block 41": {
+    "lat": 9.02440,
+    "lng": 38.72937
+  },
+  "Addis Ketema Sengatera Block 42": {
+    "lat": 9.02671,
+    "lng": 38.72660
+  },
+  "Addis Ketema Sengatera Block 43": {
+    "lat": 9.02316,
+    "lng": 38.72886
+  },
+  "Addis Ketema Sengatera Block 44": {
+    "lat": 9.02618,
+    "lng": 38.72898
+  },
+  "Addis Ketema Sengatera Block 45": {
+    "lat": 9.02674,
+    "lng": 38.73452
+  },
+  "Addis Ketema Sengatera Block 46": {
+    "lat": 9.02237,
+    "lng": 38.73071
+  },
+  "Addis Ketema Sengatera Block 47": {
+    "lat": 9.02412,
+    "lng": 38.72548
+  },
+  "Addis Ketema Sengatera Block 48": {
+    "lat": 9.02382,
+    "lng": 38.73114
+  },
+  "Addis Ketema Sengatera Block 49": {
+    "lat": 9.01987,
+    "lng": 38.73143
+  },
+  "Addis Ketema Sengatera Block 50": {
+    "lat": 9.02876,
+    "lng": 38.73269
+  },
+  "Addis Ketema Sengatera Block 51": {
+    "lat": 9.02489,
+    "lng": 38.72887
+  },
+  "Addis Ketema Sengatera Block 52": {
+    "lat": 9.02359,
+    "lng": 38.73004
+  },
+  "Addis Ketema Sengatera Block 53": {
+    "lat": 9.02465,
+    "lng": 38.72870
+  },
+  "Addis Ketema Sengatera Block 54": {
+    "lat": 9.02074,
+    "lng": 38.73031
+  },
+  "Addis Ketema Sengatera Block 55": {
+    "lat": 9.02051,
+    "lng": 38.73062
+  },
+  "Addis Ketema Sengatera Block 56": {
+    "lat": 9.01982,
+    "lng": 38.73010
+  },
+  "Addis Ketema Sengatera Block 57": {
+    "lat": 9.02070,
+    "lng": 38.73397
+  },
+  "Addis Ketema Sengatera Block 58": {
+    "lat": 9.02166,
+    "lng": 38.73369
+  },
+  "Addis Ketema Sengatera Block 59": {
+    "lat": 9.02693,
+    "lng": 38.72543
+  },
+  "Addis Ketema Sengatera Block 60": {
+    "lat": 9.02684,
+    "lng": 38.72925
+  },
+  "Addis Ketema Sengatera Block 61": {
+    "lat": 9.02040,
+    "lng": 38.72950
+  },
+  "Addis Ketema Sengatera Block 62": {
+    "lat": 9.02453,
+    "lng": 38.73196
+  },
+  "Addis Ketema Sengatera Block 63": {
+    "lat": 9.02712,
+    "lng": 38.72541
+  },
+  "Addis Ketema Sengatera Block 64": {
+    "lat": 9.02476,
+    "lng": 38.72814
+  },
+  "Addis Ketema Sengatera Block 65": {
+    "lat": 9.02156,
+    "lng": 38.73262
+  },
+  "Addis Ketema Sengatera Block 66": {
+    "lat": 9.02498,
+    "lng": 38.73010
+  },
+  "Addis Ketema Sengatera Block 67": {
+    "lat": 9.02056,
+    "lng": 38.73415
+  },
+  "Addis Ketema Sengatera Block 68": {
+    "lat": 9.02403,
+    "lng": 38.73437
+  },
+  "Addis Ketema Sengatera Block 69": {
+    "lat": 9.02032,
+    "lng": 38.72511
+  },
+  "Addis Ketema Sengatera Block 70": {
+    "lat": 9.02546,
+    "lng": 38.73188
+  },
+  "Addis Ketema Sengatera Block 71": {
+    "lat": 9.02137,
+    "lng": 38.73336
+  },
+  "Addis Ketema Sengatera Block 72": {
+    "lat": 9.02375,
+    "lng": 38.72660
+  },
+  "Addis Ketema Sengatera Block 73": {
+    "lat": 9.02482,
+    "lng": 38.72990
+  },
+  "Addis Ketema Sengatera Block 74": {
+    "lat": 9.02293,
+    "lng": 38.72497
+  },
+  "Addis Ketema Sengatera Block 75": {
+    "lat": 9.02209,
+    "lng": 38.72858
+  },
+  "Addis Ketema Sengatera Block 76": {
+    "lat": 9.02546,
+    "lng": 38.72718
+  },
+  "Addis Ketema Sengatera Block 77": {
+    "lat": 9.02017,
+    "lng": 38.73118
+  },
+  "Addis Ketema Sengatera Block 78": {
+    "lat": 9.02685,
+    "lng": 38.72591
+  },
+  "Addis Ketema Sengatera Block 79": {
+    "lat": 9.02750,
+    "lng": 38.73268
+  },
+  "Addis Ketema Sengatera Block 80": {
+    "lat": 9.02661,
+    "lng": 38.73206
+  },
+  "Addis Ketema Sengatera Block 81": {
+    "lat": 9.02165,
+    "lng": 38.72800
+  },
+  "Addis Ketema Sengatera Block 82": {
+    "lat": 9.02098,
+    "lng": 38.73094
+  },
+  "Addis Ketema Sengatera Block 83": {
+    "lat": 9.01906,
+    "lng": 38.72647
+  },
+  "Addis Ketema Sengatera Block 84": {
+    "lat": 9.02413,
+    "lng": 38.73022
+  },
+  "Addis Ketema Sengatera Block 85": {
+    "lat": 9.01974,
+    "lng": 38.73189
+  },
+  "Addis Ketema Sengatera Block 86": {
+    "lat": 9.02098,
+    "lng": 38.73193
+  },
+  "Addis Ketema Sengatera Block 87": {
+    "lat": 9.02277,
+    "lng": 38.72788
+  },
+  "Addis Ketema Sengatera Block 88": {
+    "lat": 9.02283,
+    "lng": 38.73304
+  },
+  "Addis Ketema Sengatera Block 89": {
+    "lat": 9.02576,
+    "lng": 38.73354
+  },
+  "Addis Ketema Sengatera Block 90": {
+    "lat": 9.02821,
+    "lng": 38.72895
+  },
+  "Addis Ketema Sengatera Block 91": {
+    "lat": 9.02315,
+    "lng": 38.73067
+  },
+  "Addis Ketema Sengatera Block 92": {
+    "lat": 9.02083,
+    "lng": 38.72713
+  },
+  "Addis Ketema Sengatera Block 93": {
+    "lat": 9.02320,
+    "lng": 38.73061
+  },
+  "Addis Ketema Sengatera Block 94": {
+    "lat": 9.02868,
+    "lng": 38.72601
+  },
+  "Addis Ketema Sengatera Block 95": {
+    "lat": 9.02189,
+    "lng": 38.73284
+  },
+  "Addis Ketema Sengatera Block 96": {
+    "lat": 9.01971,
+    "lng": 38.72826
+  },
+  "Addis Ketema Sengatera Block 97": {
+    "lat": 9.02794,
+    "lng": 38.73012
+  },
+  "Addis Ketema Sengatera Block 98": {
+    "lat": 9.02618,
+    "lng": 38.73075
+  },
+  "Addis Ketema Sengatera Block 99": {
+    "lat": 9.02799,
+    "lng": 38.72517
+  },
+  "Addis Ketema Sengatera Block 100": {
+    "lat": 9.02166,
+    "lng": 38.73417
+  },
+  "Kolfe Keraniyo Block 1": {
+    "lat": 9.03674,
+    "lng": 38.71850
+  },
+  "Kolfe Keraniyo Block 2": {
+    "lat": 9.03160,
+    "lng": 38.71676
+  },
+  "Kolfe Keraniyo Block 3": {
+    "lat": 9.03262,
+    "lng": 38.71648
+  },
+  "Kolfe Keraniyo Block 4": {
+    "lat": 9.03258,
+    "lng": 38.71759
+  },
+  "Kolfe Keraniyo Block 5": {
+    "lat": 9.03813,
+    "lng": 38.71817
+  },
+  "Kolfe Keraniyo Block 6": {
+    "lat": 9.03538,
+    "lng": 38.72160
+  },
+  "Kolfe Keraniyo Block 7": {
+    "lat": 9.03014,
+    "lng": 38.72073
+  },
+  "Kolfe Keraniyo Block 8": {
+    "lat": 9.03590,
+    "lng": 38.72358
+  },
+  "Kolfe Keraniyo Block 9": {
+    "lat": 9.03822,
+    "lng": 38.71762
+  },
+  "Kolfe Keraniyo Block 10": {
+    "lat": 9.03470,
+    "lng": 38.71915
+  },
+  "Kolfe Keraniyo Block 11": {
+    "lat": 9.02939,
+    "lng": 38.72045
+  },
+  "Kolfe Keraniyo Block 12": {
+    "lat": 9.03182,
+    "lng": 38.72354
+  },
+  "Kolfe Keraniyo Block 13": {
+    "lat": 9.03488,
+    "lng": 38.72176
+  },
+  "Kolfe Keraniyo Block 14": {
+    "lat": 9.03826,
+    "lng": 38.72128
+  },
+  "Kolfe Keraniyo Block 15": {
+    "lat": 9.03441,
+    "lng": 38.71596
+  },
+  "Kolfe Keraniyo Block 16": {
+    "lat": 9.03807,
+    "lng": 38.72334
+  },
+  "Kolfe Keraniyo Block 17": {
+    "lat": 9.03102,
+    "lng": 38.71745
+  },
+  "Kolfe Keraniyo Block 18": {
+    "lat": 9.03249,
+    "lng": 38.72347
+  },
+  "Kolfe Keraniyo Block 19": {
+    "lat": 9.03398,
+    "lng": 38.72097
+  },
+  "Kolfe Keraniyo Block 20": {
+    "lat": 9.03313,
+    "lng": 38.71632
+  },
+  "Kolfe Keraniyo Block 21": {
+    "lat": 9.03239,
+    "lng": 38.71759
+  },
+  "Kolfe Keraniyo Block 22": {
+    "lat": 9.03071,
+    "lng": 38.72173
+  },
+  "Kolfe Keraniyo Block 23": {
+    "lat": 9.03703,
+    "lng": 38.72342
+  },
+  "Kolfe Keraniyo Block 24": {
+    "lat": 9.03340,
+    "lng": 38.72210
+  },
+  "Kolfe Keraniyo Block 25": {
+    "lat": 9.02864,
+    "lng": 38.71511
+  },
+  "Kolfe Keraniyo Block 26": {
+    "lat": 9.03547,
+    "lng": 38.72011
+  },
+  "Kolfe Keraniyo Block 27": {
+    "lat": 9.03172,
+    "lng": 38.72098
+  },
+  "Kolfe Keraniyo Block 28": {
+    "lat": 9.02981,
+    "lng": 38.71403
+  },
+  "Kolfe Keraniyo Block 29": {
+    "lat": 9.03799,
+    "lng": 38.72147
+  },
+  "Kolfe Keraniyo Block 30": {
+    "lat": 9.03170,
+    "lng": 38.71392
+  },
+  "Kolfe Keraniyo Block 31": {
+    "lat": 9.03486,
+    "lng": 38.71484
+  },
+  "Kolfe Keraniyo Block 32": {
+    "lat": 9.02991,
+    "lng": 38.71854
+  },
+  "Kolfe Keraniyo Block 33": {
+    "lat": 9.03038,
+    "lng": 38.71927
+  },
+  "Kolfe Keraniyo Block 34": {
+    "lat": 9.02958,
+    "lng": 38.72140
+  },
+  "Kolfe Keraniyo Block 35": {
+    "lat": 9.03069,
+    "lng": 38.71622
+  },
+  "Kolfe Keraniyo Block 36": {
+    "lat": 9.03730,
+    "lng": 38.71744
+  },
+  "Kolfe Keraniyo Block 37": {
+    "lat": 9.03473,
+    "lng": 38.71827
+  },
+  "Kolfe Keraniyo Block 38": {
+    "lat": 9.03084,
+    "lng": 38.72219
+  },
+  "Kolfe Keraniyo Block 39": {
+    "lat": 9.03590,
+    "lng": 38.72136
+  },
+  "Kolfe Keraniyo Block 40": {
+    "lat": 9.03372,
+    "lng": 38.71922
+  },
+  "Kolfe Keraniyo Block 41": {
+    "lat": 9.03221,
+    "lng": 38.71628
+  },
+  "Kolfe Keraniyo Block 42": {
+    "lat": 9.03696,
+    "lng": 38.71647
+  },
+  "Kolfe Keraniyo Block 43": {
+    "lat": 9.02905,
+    "lng": 38.72369
+  },
+  "Kolfe Keraniyo Block 44": {
+    "lat": 9.03815,
+    "lng": 38.71590
+  },
+  "Kolfe Keraniyo Block 45": {
+    "lat": 9.03783,
+    "lng": 38.72163
+  },
+  "Kolfe Keraniyo Block 46": {
+    "lat": 9.03727,
+    "lng": 38.72327
+  },
+  "Kolfe Keraniyo Block 47": {
+    "lat": 9.02978,
+    "lng": 38.71779
+  },
+  "Kolfe Keraniyo Block 48": {
+    "lat": 9.03355,
+    "lng": 38.71592
+  },
+  "Kolfe Keraniyo Block 49": {
+    "lat": 9.03461,
+    "lng": 38.71687
+  },
+  "Kolfe Keraniyo Block 50": {
+    "lat": 9.02859,
+    "lng": 38.72204
+  },
+  "Kolfe Keraniyo Block 51": {
+    "lat": 9.03708,
+    "lng": 38.71760
+  },
+  "Kolfe Keraniyo Block 52": {
+    "lat": 9.03324,
+    "lng": 38.71452
+  },
+  "Kolfe Keraniyo Block 53": {
+    "lat": 9.03692,
+    "lng": 38.72286
+  },
+  "Kolfe Keraniyo Block 54": {
+    "lat": 9.03325,
+    "lng": 38.71393
+  },
+  "Kolfe Keraniyo Block 55": {
+    "lat": 9.03406,
+    "lng": 38.72166
+  },
+  "Kolfe Keraniyo Block 56": {
+    "lat": 9.03617,
+    "lng": 38.72363
+  },
+  "Kolfe Keraniyo Block 57": {
+    "lat": 9.03647,
+    "lng": 38.71702
+  },
+  "Kolfe Keraniyo Block 58": {
+    "lat": 9.03735,
+    "lng": 38.71416
+  },
+  "Kolfe Keraniyo Block 59": {
+    "lat": 9.03655,
+    "lng": 38.72076
+  },
+  "Kolfe Keraniyo Block 60": {
+    "lat": 9.03322,
+    "lng": 38.71557
+  },
+  "Kolfe Keraniyo Block 61": {
+    "lat": 9.03453,
+    "lng": 38.71867
+  },
+  "Kolfe Keraniyo Block 62": {
+    "lat": 9.03698,
+    "lng": 38.72115
+  },
+  "Kolfe Keraniyo Block 63": {
+    "lat": 9.03638,
+    "lng": 38.71542
+  },
+  "Kolfe Keraniyo Block 64": {
+    "lat": 9.03506,
+    "lng": 38.71390
+  },
+  "Kolfe Keraniyo Block 65": {
+    "lat": 9.03627,
+    "lng": 38.71867
+  },
+  "Kolfe Keraniyo Block 66": {
+    "lat": 9.03405,
+    "lng": 38.71588
+  },
+  "Kolfe Keraniyo Block 67": {
+    "lat": 9.02839,
+    "lng": 38.72255
+  },
+  "Kolfe Keraniyo Block 68": {
+    "lat": 9.03668,
+    "lng": 38.71853
+  },
+  "Kolfe Keraniyo Block 69": {
+    "lat": 9.03444,
+    "lng": 38.72032
+  },
+  "Kolfe Keraniyo Block 70": {
+    "lat": 9.03025,
+    "lng": 38.72126
+  },
+  "Kolfe Keraniyo Block 71": {
+    "lat": 9.03484,
+    "lng": 38.71543
+  },
+  "Kolfe Keraniyo Block 72": {
+    "lat": 9.03614,
+    "lng": 38.71451
+  },
+  "Kolfe Keraniyo Block 73": {
+    "lat": 9.02840,
+    "lng": 38.72023
+  },
+  "Kolfe Keraniyo Block 74": {
+    "lat": 9.03694,
+    "lng": 38.71697
+  },
+  "Kolfe Keraniyo Block 75": {
+    "lat": 9.03204,
+    "lng": 38.71751
+  },
+  "Kolfe Keraniyo Block 76": {
+    "lat": 9.03573,
+    "lng": 38.71499
+  },
+  "Kolfe Keraniyo Block 77": {
+    "lat": 9.02861,
+    "lng": 38.71382
+  },
+  "Kolfe Keraniyo Block 78": {
+    "lat": 9.03307,
+    "lng": 38.71607
+  },
+  "Kolfe Keraniyo Block 79": {
+    "lat": 9.03642,
+    "lng": 38.72164
+  },
+  "Kolfe Keraniyo Block 80": {
+    "lat": 9.03348,
+    "lng": 38.72122
+  },
+  "Kolfe Keraniyo Block 81": {
+    "lat": 9.03222,
+    "lng": 38.71492
+  },
+  "Kolfe Keraniyo Block 82": {
+    "lat": 9.03225,
+    "lng": 38.71618
+  },
+  "Kolfe Keraniyo Block 83": {
+    "lat": 9.02842,
+    "lng": 38.72146
+  },
+  "Kolfe Keraniyo Block 84": {
+    "lat": 9.03213,
+    "lng": 38.71721
+  },
+  "Kolfe Keraniyo Block 85": {
+    "lat": 9.03746,
+    "lng": 38.72060
+  },
+  "Kolfe Keraniyo Block 86": {
+    "lat": 9.03690,
+    "lng": 38.71611
+  },
+  "Kolfe Keraniyo Block 87": {
+    "lat": 9.03564,
+    "lng": 38.72227
+  },
+  "Kolfe Keraniyo Block 88": {
+    "lat": 9.03516,
+    "lng": 38.71528
+  },
+  "Kolfe Keraniyo Block 89": {
+    "lat": 9.03183,
+    "lng": 38.71945
+  },
+  "Kolfe Keraniyo Block 90": {
+    "lat": 9.03283,
+    "lng": 38.71497
+  },
+  "Kolfe Keraniyo Block 91": {
+    "lat": 9.03211,
+    "lng": 38.71644
+  },
+  "Kolfe Keraniyo Block 92": {
+    "lat": 9.03723,
+    "lng": 38.72177
+  },
+  "Kolfe Keraniyo Block 93": {
+    "lat": 9.03697,
+    "lng": 38.71553
+  },
+  "Kolfe Keraniyo Block 94": {
+    "lat": 9.03486,
+    "lng": 38.71479
+  },
+  "Kolfe Keraniyo Block 95": {
+    "lat": 9.03507,
+    "lng": 38.71959
+  },
+  "Kolfe Keraniyo Block 96": {
+    "lat": 9.03037,
+    "lng": 38.72320
+  },
+  "Kolfe Keraniyo Block 97": {
+    "lat": 9.02877,
+    "lng": 38.72134
+  },
+  "Kolfe Keraniyo Block 98": {
+    "lat": 9.03669,
+    "lng": 38.71721
+  },
+  "Kolfe Keraniyo Block 99": {
+    "lat": 9.02968,
+    "lng": 38.71427
+  },
+  "Kolfe Keraniyo Block 100": {
+    "lat": 9.03044,
+    "lng": 38.72223
+  },
+  "Kolfe Zenebe Werk Block 1": {
+    "lat": 9.03210,
+    "lng": 38.72228
+  },
+  "Kolfe Zenebe Werk Block 2": {
+    "lat": 9.03538,
+    "lng": 38.71392
+  },
+  "Kolfe Zenebe Werk Block 3": {
+    "lat": 9.03461,
+    "lng": 38.71608
+  },
+  "Kolfe Zenebe Werk Block 4": {
+    "lat": 9.03350,
+    "lng": 38.72286
+  },
+  "Kolfe Zenebe Werk Block 5": {
+    "lat": 9.03276,
+    "lng": 38.71648
+  },
+  "Kolfe Zenebe Werk Block 6": {
+    "lat": 9.02992,
+    "lng": 38.71526
+  },
+  "Kolfe Zenebe Werk Block 7": {
+    "lat": 9.03124,
+    "lng": 38.71423
+  },
+  "Kolfe Zenebe Werk Block 8": {
+    "lat": 9.03346,
+    "lng": 38.71443
+  },
+  "Kolfe Zenebe Werk Block 9": {
+    "lat": 9.03763,
+    "lng": 38.71608
+  },
+  "Kolfe Zenebe Werk Block 10": {
+    "lat": 9.03550,
+    "lng": 38.71582
+  },
+  "Kolfe Zenebe Werk Block 11": {
+    "lat": 9.03308,
+    "lng": 38.71411
+  },
+  "Kolfe Zenebe Werk Block 12": {
+    "lat": 9.03666,
+    "lng": 38.71498
+  },
+  "Kolfe Zenebe Werk Block 13": {
+    "lat": 9.02854,
+    "lng": 38.71864
+  },
+  "Kolfe Zenebe Werk Block 14": {
+    "lat": 9.03138,
+    "lng": 38.71486
+  },
+  "Kolfe Zenebe Werk Block 15": {
+    "lat": 9.02989,
+    "lng": 38.71863
+  },
+  "Kolfe Zenebe Werk Block 16": {
+    "lat": 9.02927,
+    "lng": 38.71704
+  },
+  "Kolfe Zenebe Werk Block 17": {
+    "lat": 9.03799,
+    "lng": 38.72210
+  },
+  "Kolfe Zenebe Werk Block 18": {
+    "lat": 9.02999,
+    "lng": 38.72231
+  },
+  "Kolfe Zenebe Werk Block 19": {
+    "lat": 9.03457,
+    "lng": 38.72037
+  },
+  "Kolfe Zenebe Werk Block 20": {
+    "lat": 9.02915,
+    "lng": 38.72107
+  },
+  "Kolfe Zenebe Werk Block 21": {
+    "lat": 9.03712,
+    "lng": 38.71639
+  },
+  "Kolfe Zenebe Werk Block 22": {
+    "lat": 9.03272,
+    "lng": 38.72082
+  },
+  "Kolfe Zenebe Werk Block 23": {
+    "lat": 9.03702,
+    "lng": 38.71942
+  },
+  "Kolfe Zenebe Werk Block 24": {
+    "lat": 9.02833,
+    "lng": 38.72077
+  },
+  "Kolfe Zenebe Werk Block 25": {
+    "lat": 9.03189,
+    "lng": 38.71872
+  },
+  "Kolfe Zenebe Werk Block 26": {
+    "lat": 9.03820,
+    "lng": 38.71757
+  },
+  "Kolfe Zenebe Werk Block 27": {
+    "lat": 9.03603,
+    "lng": 38.71710
+  },
+  "Kolfe Zenebe Werk Block 28": {
+    "lat": 9.02840,
+    "lng": 38.72107
+  },
+  "Kolfe Zenebe Werk Block 29": {
+    "lat": 9.03569,
+    "lng": 38.71788
+  },
+  "Kolfe Zenebe Werk Block 30": {
+    "lat": 9.03548,
+    "lng": 38.71799
+  },
+  "Kolfe Zenebe Werk Block 31": {
+    "lat": 9.03770,
+    "lng": 38.71586
+  },
+  "Kolfe Zenebe Werk Block 32": {
+    "lat": 9.03786,
+    "lng": 38.72121
+  },
+  "Kolfe Zenebe Werk Block 33": {
+    "lat": 9.02941,
+    "lng": 38.72366
+  },
+  "Kolfe Zenebe Werk Block 34": {
+    "lat": 9.03107,
+    "lng": 38.71589
+  },
+  "Kolfe Zenebe Werk Block 35": {
+    "lat": 9.03736,
+    "lng": 38.71813
+  },
+  "Kolfe Zenebe Werk Block 36": {
+    "lat": 9.02935,
+    "lng": 38.71810
+  },
+  "Kolfe Zenebe Werk Block 37": {
+    "lat": 9.02887,
+    "lng": 38.71491
+  },
+  "Kolfe Zenebe Werk Block 38": {
+    "lat": 9.03486,
+    "lng": 38.72274
+  },
+  "Kolfe Zenebe Werk Block 39": {
+    "lat": 9.03533,
+    "lng": 38.71970
+  },
+  "Kolfe Zenebe Werk Block 40": {
+    "lat": 9.03625,
+    "lng": 38.72047
+  },
+  "Kolfe Zenebe Werk Block 41": {
+    "lat": 9.03088,
+    "lng": 38.71776
+  },
+  "Kolfe Zenebe Werk Block 42": {
+    "lat": 9.02989,
+    "lng": 38.71909
+  },
+  "Kolfe Zenebe Werk Block 43": {
+    "lat": 9.03017,
+    "lng": 38.71728
+  },
+  "Kolfe Zenebe Werk Block 44": {
+    "lat": 9.03000,
+    "lng": 38.71908
+  },
+  "Kolfe Zenebe Werk Block 45": {
+    "lat": 9.02877,
+    "lng": 38.72080
+  },
+  "Kolfe Zenebe Werk Block 46": {
+    "lat": 9.03647,
+    "lng": 38.71521
+  },
+  "Kolfe Zenebe Werk Block 47": {
+    "lat": 9.03725,
+    "lng": 38.71494
+  },
+  "Kolfe Zenebe Werk Block 48": {
+    "lat": 9.03183,
+    "lng": 38.71659
+  },
+  "Kolfe Zenebe Werk Block 49": {
+    "lat": 9.03573,
+    "lng": 38.71750
+  },
+  "Kolfe Zenebe Werk Block 50": {
+    "lat": 9.03669,
+    "lng": 38.71735
+  },
+  "Kolfe Zenebe Werk Block 51": {
+    "lat": 9.03393,
+    "lng": 38.72205
+  },
+  "Kolfe Zenebe Werk Block 52": {
+    "lat": 9.03489,
+    "lng": 38.72051
+  },
+  "Kolfe Zenebe Werk Block 53": {
+    "lat": 9.03721,
+    "lng": 38.72177
+  },
+  "Kolfe Zenebe Werk Block 54": {
+    "lat": 9.03382,
+    "lng": 38.72092
+  },
+  "Kolfe Zenebe Werk Block 55": {
+    "lat": 9.03119,
+    "lng": 38.71677
+  },
+  "Kolfe Zenebe Werk Block 56": {
+    "lat": 9.03615,
+    "lng": 38.72338
+  },
+  "Kolfe Zenebe Werk Block 57": {
+    "lat": 9.03191,
+    "lng": 38.72274
+  },
+  "Kolfe Zenebe Werk Block 58": {
+    "lat": 9.03112,
+    "lng": 38.71590
+  },
+  "Kolfe Zenebe Werk Block 59": {
+    "lat": 9.03592,
+    "lng": 38.71585
+  },
+  "Kolfe Zenebe Werk Block 60": {
+    "lat": 9.03608,
+    "lng": 38.71731
+  },
+  "Kolfe Zenebe Werk Block 61": {
+    "lat": 9.03506,
+    "lng": 38.71848
+  },
+  "Kolfe Zenebe Werk Block 62": {
+    "lat": 9.03182,
+    "lng": 38.72357
+  },
+  "Kolfe Zenebe Werk Block 63": {
+    "lat": 9.03821,
+    "lng": 38.71830
+  },
+  "Kolfe Zenebe Werk Block 64": {
+    "lat": 9.02935,
+    "lng": 38.71931
+  },
+  "Kolfe Zenebe Werk Block 65": {
+    "lat": 9.03802,
+    "lng": 38.71845
+  },
+  "Kolfe Zenebe Werk Block 66": {
+    "lat": 9.03259,
+    "lng": 38.72253
+  },
+  "Kolfe Zenebe Werk Block 67": {
+    "lat": 9.03137,
+    "lng": 38.72066
+  },
+  "Kolfe Zenebe Werk Block 68": {
+    "lat": 9.02891,
+    "lng": 38.71933
+  },
+  "Kolfe Zenebe Werk Block 69": {
+    "lat": 9.03084,
+    "lng": 38.71516
+  },
+  "Kolfe Zenebe Werk Block 70": {
+    "lat": 9.02947,
+    "lng": 38.72121
+  },
+  "Kolfe Zenebe Werk Block 71": {
+    "lat": 9.03456,
+    "lng": 38.72361
+  },
+  "Kolfe Zenebe Werk Block 72": {
+    "lat": 9.03554,
+    "lng": 38.71577
+  },
+  "Kolfe Zenebe Werk Block 73": {
+    "lat": 9.03353,
+    "lng": 38.71887
+  },
+  "Kolfe Zenebe Werk Block 74": {
+    "lat": 9.03237,
+    "lng": 38.71671
+  },
+  "Kolfe Zenebe Werk Block 75": {
+    "lat": 9.02959,
+    "lng": 38.71880
+  },
+  "Kolfe Zenebe Werk Block 76": {
+    "lat": 9.02852,
+    "lng": 38.71611
+  },
+  "Kolfe Zenebe Werk Block 77": {
+    "lat": 9.03588,
+    "lng": 38.71592
+  },
+  "Kolfe Zenebe Werk Block 78": {
+    "lat": 9.03114,
+    "lng": 38.72064
+  },
+  "Kolfe Zenebe Werk Block 79": {
+    "lat": 9.03233,
+    "lng": 38.71852
+  },
+  "Kolfe Zenebe Werk Block 80": {
+    "lat": 9.02935,
+    "lng": 38.71678
+  },
+  "Kolfe Zenebe Werk Block 81": {
+    "lat": 9.03240,
+    "lng": 38.72222
+  },
+  "Kolfe Zenebe Werk Block 82": {
+    "lat": 9.03199,
+    "lng": 38.72345
+  },
+  "Kolfe Zenebe Werk Block 83": {
+    "lat": 9.02955,
+    "lng": 38.71733
+  },
+  "Kolfe Zenebe Werk Block 84": {
+    "lat": 9.02999,
+    "lng": 38.71533
+  },
+  "Kolfe Zenebe Werk Block 85": {
+    "lat": 9.03677,
+    "lng": 38.71809
+  },
+  "Kolfe Zenebe Werk Block 86": {
+    "lat": 9.03047,
+    "lng": 38.71479
+  },
+  "Kolfe Zenebe Werk Block 87": {
+    "lat": 9.02872,
+    "lng": 38.72276
+  },
+  "Kolfe Zenebe Werk Block 88": {
+    "lat": 9.03521,
+    "lng": 38.72043
+  },
+  "Kolfe Zenebe Werk Block 89": {
+    "lat": 9.03393,
+    "lng": 38.72192
+  },
+  "Kolfe Zenebe Werk Block 90": {
+    "lat": 9.03561,
+    "lng": 38.71607
+  },
+  "Kolfe Zenebe Werk Block 91": {
+    "lat": 9.03040,
+    "lng": 38.71587
+  },
+  "Kolfe Zenebe Werk Block 92": {
+    "lat": 9.03159,
+    "lng": 38.72339
+  },
+  "Kolfe Zenebe Werk Block 93": {
+    "lat": 9.03373,
+    "lng": 38.72019
+  },
+  "Kolfe Zenebe Werk Block 94": {
+    "lat": 9.02856,
+    "lng": 38.71957
+  },
+  "Kolfe Zenebe Werk Block 95": {
+    "lat": 9.03452,
+    "lng": 38.71610
+  },
+  "Kolfe Zenebe Werk Block 96": {
+    "lat": 9.03511,
+    "lng": 38.72154
+  },
+  "Kolfe Zenebe Werk Block 97": {
+    "lat": 9.03467,
+    "lng": 38.71393
+  },
+  "Kolfe Zenebe Werk Block 98": {
+    "lat": 9.03622,
+    "lng": 38.71424
+  },
+  "Kolfe Zenebe Werk Block 99": {
+    "lat": 9.03369,
+    "lng": 38.72305
+  },
+  "Kolfe Zenebe Werk Block 100": {
+    "lat": 9.03148,
+    "lng": 38.72048
+  },
+  "Kolfe Tor Hailoch Block 1": {
+    "lat": 9.02959,
+    "lng": 38.71590
+  },
+  "Kolfe Tor Hailoch Block 2": {
+    "lat": 9.03172,
+    "lng": 38.71822
+  },
+  "Kolfe Tor Hailoch Block 3": {
+    "lat": 9.03388,
+    "lng": 38.72103
+  },
+  "Kolfe Tor Hailoch Block 4": {
+    "lat": 9.03655,
+    "lng": 38.72250
+  },
+  "Kolfe Tor Hailoch Block 5": {
+    "lat": 9.03336,
+    "lng": 38.71612
+  },
+  "Kolfe Tor Hailoch Block 6": {
+    "lat": 9.02919,
+    "lng": 38.72103
+  },
+  "Kolfe Tor Hailoch Block 7": {
+    "lat": 9.03121,
+    "lng": 38.71481
+  },
+  "Kolfe Tor Hailoch Block 8": {
+    "lat": 9.03446,
+    "lng": 38.72218
+  },
+  "Kolfe Tor Hailoch Block 9": {
+    "lat": 9.03033,
+    "lng": 38.71864
+  },
+  "Kolfe Tor Hailoch Block 10": {
+    "lat": 9.03286,
+    "lng": 38.71937
+  },
+  "Kolfe Tor Hailoch Block 11": {
+    "lat": 9.03035,
+    "lng": 38.71617
+  },
+  "Kolfe Tor Hailoch Block 12": {
+    "lat": 9.03243,
+    "lng": 38.71953
+  },
+  "Kolfe Tor Hailoch Block 13": {
+    "lat": 9.03313,
+    "lng": 38.72365
+  },
+  "Kolfe Tor Hailoch Block 14": {
+    "lat": 9.03107,
+    "lng": 38.71776
+  },
+  "Kolfe Tor Hailoch Block 15": {
+    "lat": 9.03499,
+    "lng": 38.72314
+  },
+  "Kolfe Tor Hailoch Block 16": {
+    "lat": 9.02955,
+    "lng": 38.72117
+  },
+  "Kolfe Tor Hailoch Block 17": {
+    "lat": 9.03072,
+    "lng": 38.72374
+  },
+  "Kolfe Tor Hailoch Block 18": {
+    "lat": 9.03194,
+    "lng": 38.72217
+  },
+  "Kolfe Tor Hailoch Block 19": {
+    "lat": 9.02879,
+    "lng": 38.71988
+  },
+  "Kolfe Tor Hailoch Block 20": {
+    "lat": 9.02851,
+    "lng": 38.72109
+  },
+  "Kolfe Tor Hailoch Block 21": {
+    "lat": 9.03560,
+    "lng": 38.72069
+  },
+  "Kolfe Tor Hailoch Block 22": {
+    "lat": 9.03697,
+    "lng": 38.71866
+  },
+  "Kolfe Tor Hailoch Block 23": {
+    "lat": 9.03489,
+    "lng": 38.71485
+  },
+  "Kolfe Tor Hailoch Block 24": {
+    "lat": 9.03167,
+    "lng": 38.71887
+  },
+  "Kolfe Tor Hailoch Block 25": {
+    "lat": 9.03483,
+    "lng": 38.71696
+  },
+  "Kolfe Tor Hailoch Block 26": {
+    "lat": 9.03354,
+    "lng": 38.72263
+  },
+  "Kolfe Tor Hailoch Block 27": {
+    "lat": 9.03134,
+    "lng": 38.72066
+  },
+  "Kolfe Tor Hailoch Block 28": {
+    "lat": 9.03024,
+    "lng": 38.71415
+  },
+  "Kolfe Tor Hailoch Block 29": {
+    "lat": 9.02999,
+    "lng": 38.71988
+  },
+  "Kolfe Tor Hailoch Block 30": {
+    "lat": 9.02846,
+    "lng": 38.71465
+  },
+  "Kolfe Tor Hailoch Block 31": {
+    "lat": 9.03437,
+    "lng": 38.71520
+  },
+  "Kolfe Tor Hailoch Block 32": {
+    "lat": 9.03759,
+    "lng": 38.72316
+  },
+  "Kolfe Tor Hailoch Block 33": {
+    "lat": 9.03761,
+    "lng": 38.72164
+  },
+  "Kolfe Tor Hailoch Block 34": {
+    "lat": 9.03314,
+    "lng": 38.71645
+  },
+  "Kolfe Tor Hailoch Block 35": {
+    "lat": 9.03319,
+    "lng": 38.72028
+  },
+  "Kolfe Tor Hailoch Block 36": {
+    "lat": 9.03677,
+    "lng": 38.72193
+  },
+  "Kolfe Tor Hailoch Block 37": {
+    "lat": 9.03487,
+    "lng": 38.71502
+  },
+  "Kolfe Tor Hailoch Block 38": {
+    "lat": 9.02900,
+    "lng": 38.72125
+  },
+  "Kolfe Tor Hailoch Block 39": {
+    "lat": 9.03591,
+    "lng": 38.71780
+  },
+  "Kolfe Tor Hailoch Block 40": {
+    "lat": 9.02850,
+    "lng": 38.71670
+  },
+  "Kolfe Tor Hailoch Block 41": {
+    "lat": 9.03106,
+    "lng": 38.71604
+  },
+  "Kolfe Tor Hailoch Block 42": {
+    "lat": 9.02886,
+    "lng": 38.71879
+  },
+  "Kolfe Tor Hailoch Block 43": {
+    "lat": 9.03512,
+    "lng": 38.71484
+  },
+  "Kolfe Tor Hailoch Block 44": {
+    "lat": 9.02993,
+    "lng": 38.71744
+  },
+  "Kolfe Tor Hailoch Block 45": {
+    "lat": 9.03470,
+    "lng": 38.71709
+  },
+  "Kolfe Tor Hailoch Block 46": {
+    "lat": 9.03492,
+    "lng": 38.72244
+  },
+  "Kolfe Tor Hailoch Block 47": {
+    "lat": 9.03173,
+    "lng": 38.71872
+  },
+  "Kolfe Tor Hailoch Block 48": {
+    "lat": 9.03018,
+    "lng": 38.71981
+  },
+  "Kolfe Tor Hailoch Block 49": {
+    "lat": 9.03771,
+    "lng": 38.71946
+  },
+  "Kolfe Tor Hailoch Block 50": {
+    "lat": 9.02890,
+    "lng": 38.72177
+  },
+  "Kolfe Tor Hailoch Block 51": {
+    "lat": 9.03639,
+    "lng": 38.71619
+  },
+  "Kolfe Tor Hailoch Block 52": {
+    "lat": 9.02839,
+    "lng": 38.71599
+  },
+  "Kolfe Tor Hailoch Block 53": {
+    "lat": 9.02904,
+    "lng": 38.71884
+  },
+  "Kolfe Tor Hailoch Block 54": {
+    "lat": 9.03439,
+    "lng": 38.71981
+  },
+  "Kolfe Tor Hailoch Block 55": {
+    "lat": 9.02958,
+    "lng": 38.71979
+  },
+  "Kolfe Tor Hailoch Block 56": {
+    "lat": 9.03138,
+    "lng": 38.71408
+  },
+  "Kolfe Tor Hailoch Block 57": {
+    "lat": 9.03521,
+    "lng": 38.71643
+  },
+  "Kolfe Tor Hailoch Block 58": {
+    "lat": 9.03199,
+    "lng": 38.71640
+  },
+  "Kolfe Tor Hailoch Block 59": {
+    "lat": 9.03333,
+    "lng": 38.71503
+  },
+  "Kolfe Tor Hailoch Block 60": {
+    "lat": 9.03173,
+    "lng": 38.71619
+  },
+  "Kolfe Tor Hailoch Block 61": {
+    "lat": 9.03764,
+    "lng": 38.71710
+  },
+  "Kolfe Tor Hailoch Block 62": {
+    "lat": 9.02893,
+    "lng": 38.72166
+  },
+  "Kolfe Tor Hailoch Block 63": {
+    "lat": 9.02841,
+    "lng": 38.71786
+  },
+  "Kolfe Tor Hailoch Block 64": {
+    "lat": 9.03616,
+    "lng": 38.72234
+  },
+  "Kolfe Tor Hailoch Block 65": {
+    "lat": 9.03265,
+    "lng": 38.71589
+  },
+  "Kolfe Tor Hailoch Block 66": {
+    "lat": 9.03167,
+    "lng": 38.71691
+  },
+  "Kolfe Tor Hailoch Block 67": {
+    "lat": 9.03513,
+    "lng": 38.71472
+  },
+  "Kolfe Tor Hailoch Block 68": {
+    "lat": 9.03552,
+    "lng": 38.71577
+  },
+  "Kolfe Tor Hailoch Block 69": {
+    "lat": 9.02993,
+    "lng": 38.72322
+  },
+  "Kolfe Tor Hailoch Block 70": {
+    "lat": 9.03080,
+    "lng": 38.71842
+  },
+  "Kolfe Tor Hailoch Block 71": {
+    "lat": 9.03610,
+    "lng": 38.71675
+  },
+  "Kolfe Tor Hailoch Block 72": {
+    "lat": 9.02953,
+    "lng": 38.71821
+  },
+  "Kolfe Tor Hailoch Block 73": {
+    "lat": 9.03525,
+    "lng": 38.71781
+  },
+  "Kolfe Tor Hailoch Block 74": {
+    "lat": 9.03328,
+    "lng": 38.71401
+  },
+  "Kolfe Tor Hailoch Block 75": {
+    "lat": 9.03405,
+    "lng": 38.72054
+  },
+  "Kolfe Tor Hailoch Block 76": {
+    "lat": 9.03196,
+    "lng": 38.71829
+  },
+  "Kolfe Tor Hailoch Block 77": {
+    "lat": 9.03798,
+    "lng": 38.71792
+  },
+  "Kolfe Tor Hailoch Block 78": {
+    "lat": 9.03371,
+    "lng": 38.71870
+  },
+  "Kolfe Tor Hailoch Block 79": {
+    "lat": 9.03117,
+    "lng": 38.71936
+  },
+  "Kolfe Tor Hailoch Block 80": {
+    "lat": 9.03675,
+    "lng": 38.72298
+  },
+  "Kolfe Tor Hailoch Block 81": {
+    "lat": 9.03720,
+    "lng": 38.72328
+  },
+  "Kolfe Tor Hailoch Block 82": {
+    "lat": 9.03405,
+    "lng": 38.71471
+  },
+  "Kolfe Tor Hailoch Block 83": {
+    "lat": 9.03273,
+    "lng": 38.72203
+  },
+  "Kolfe Tor Hailoch Block 84": {
+    "lat": 9.03315,
+    "lng": 38.72047
+  },
+  "Kolfe Tor Hailoch Block 85": {
+    "lat": 9.03336,
+    "lng": 38.71571
+  },
+  "Kolfe Tor Hailoch Block 86": {
+    "lat": 9.03800,
+    "lng": 38.71786
+  },
+  "Kolfe Tor Hailoch Block 87": {
+    "lat": 9.03551,
+    "lng": 38.72162
+  },
+  "Kolfe Tor Hailoch Block 88": {
+    "lat": 9.03163,
+    "lng": 38.72229
+  },
+  "Kolfe Tor Hailoch Block 89": {
+    "lat": 9.03287,
+    "lng": 38.71948
+  },
+  "Kolfe Tor Hailoch Block 90": {
+    "lat": 9.03128,
+    "lng": 38.71827
+  },
+  "Kolfe Tor Hailoch Block 91": {
+    "lat": 9.03827,
+    "lng": 38.71388
+  },
+  "Kolfe Tor Hailoch Block 92": {
+    "lat": 9.02848,
+    "lng": 38.71919
+  },
+  "Kolfe Tor Hailoch Block 93": {
+    "lat": 9.03011,
+    "lng": 38.71421
+  },
+  "Kolfe Tor Hailoch Block 94": {
+    "lat": 9.03304,
+    "lng": 38.71509
+  },
+  "Kolfe Tor Hailoch Block 95": {
+    "lat": 9.02943,
+    "lng": 38.71541
+  },
+  "Kolfe Tor Hailoch Block 96": {
+    "lat": 9.03144,
+    "lng": 38.71927
+  },
+  "Kolfe Tor Hailoch Block 97": {
+    "lat": 9.03719,
+    "lng": 38.71481
+  },
+  "Kolfe Tor Hailoch Block 98": {
+    "lat": 9.03772,
+    "lng": 38.72079
+  },
+  "Kolfe Tor Hailoch Block 99": {
+    "lat": 9.03024,
+    "lng": 38.71717
+  },
+  "Kolfe Tor Hailoch Block 100": {
+    "lat": 9.03087,
+    "lng": 38.71720
+  },
+  "Kolfe Ayer Tena Block 1": {
+    "lat": 9.03116,
+    "lng": 38.72246
+  },
+  "Kolfe Ayer Tena Block 2": {
+    "lat": 9.03324,
+    "lng": 38.71503
+  },
+  "Kolfe Ayer Tena Block 3": {
+    "lat": 9.03464,
+    "lng": 38.71821
+  },
+  "Kolfe Ayer Tena Block 4": {
+    "lat": 9.03478,
+    "lng": 38.72028
+  },
+  "Kolfe Ayer Tena Block 5": {
+    "lat": 9.03338,
+    "lng": 38.71872
+  },
+  "Kolfe Ayer Tena Block 6": {
+    "lat": 9.03409,
+    "lng": 38.71406
+  },
+  "Kolfe Ayer Tena Block 7": {
+    "lat": 9.03359,
+    "lng": 38.71627
+  },
+  "Kolfe Ayer Tena Block 8": {
+    "lat": 9.03633,
+    "lng": 38.72072
+  },
+  "Kolfe Ayer Tena Block 9": {
+    "lat": 9.02998,
+    "lng": 38.71817
+  },
+  "Kolfe Ayer Tena Block 10": {
+    "lat": 9.02906,
+    "lng": 38.71988
+  },
+  "Kolfe Ayer Tena Block 11": {
+    "lat": 9.03671,
+    "lng": 38.72126
+  },
+  "Kolfe Ayer Tena Block 12": {
+    "lat": 9.03445,
+    "lng": 38.71666
+  },
+  "Kolfe Ayer Tena Block 13": {
+    "lat": 9.03639,
+    "lng": 38.71835
+  },
+  "Kolfe Ayer Tena Block 14": {
+    "lat": 9.03012,
+    "lng": 38.72377
+  },
+  "Kolfe Ayer Tena Block 15": {
+    "lat": 9.03418,
+    "lng": 38.72359
+  },
+  "Kolfe Ayer Tena Block 16": {
+    "lat": 9.03056,
+    "lng": 38.72363
+  },
+  "Kolfe Ayer Tena Block 17": {
+    "lat": 9.03632,
+    "lng": 38.71472
+  },
+  "Kolfe Ayer Tena Block 18": {
+    "lat": 9.03182,
+    "lng": 38.71443
+  },
+  "Kolfe Ayer Tena Block 19": {
+    "lat": 9.02982,
+    "lng": 38.72317
+  },
+  "Kolfe Ayer Tena Block 20": {
+    "lat": 9.03268,
+    "lng": 38.71483
+  },
+  "Kolfe Ayer Tena Block 21": {
+    "lat": 9.02926,
+    "lng": 38.71390
+  },
+  "Kolfe Ayer Tena Block 22": {
+    "lat": 9.03321,
+    "lng": 38.71810
+  },
+  "Kolfe Ayer Tena Block 23": {
+    "lat": 9.03628,
+    "lng": 38.71952
+  },
+  "Kolfe Ayer Tena Block 24": {
+    "lat": 9.03666,
+    "lng": 38.71505
+  },
+  "Kolfe Ayer Tena Block 25": {
+    "lat": 9.03404,
+    "lng": 38.71932
+  },
+  "Kolfe Ayer Tena Block 26": {
+    "lat": 9.03042,
+    "lng": 38.71755
+  },
+  "Kolfe Ayer Tena Block 27": {
+    "lat": 9.02967,
+    "lng": 38.71926
+  },
+  "Kolfe Ayer Tena Block 28": {
+    "lat": 9.02939,
+    "lng": 38.71483
+  },
+  "Kolfe Ayer Tena Block 29": {
+    "lat": 9.03818,
+    "lng": 38.72060
+  },
+  "Kolfe Ayer Tena Block 30": {
+    "lat": 9.03802,
+    "lng": 38.71505
+  },
+  "Kolfe Ayer Tena Block 31": {
+    "lat": 9.03108,
+    "lng": 38.71413
+  },
+  "Kolfe Ayer Tena Block 32": {
+    "lat": 9.02950,
+    "lng": 38.72337
+  },
+  "Kolfe Ayer Tena Block 33": {
+    "lat": 9.03379,
+    "lng": 38.71912
+  },
+  "Kolfe Ayer Tena Block 34": {
+    "lat": 9.03423,
+    "lng": 38.71468
+  },
+  "Kolfe Ayer Tena Block 35": {
+    "lat": 9.03560,
+    "lng": 38.71435
+  },
+  "Kolfe Ayer Tena Block 36": {
+    "lat": 9.03340,
+    "lng": 38.72295
+  },
+  "Kolfe Ayer Tena Block 37": {
+    "lat": 9.03648,
+    "lng": 38.71989
+  },
+  "Kolfe Ayer Tena Block 38": {
+    "lat": 9.03470,
+    "lng": 38.72351
+  },
+  "Kolfe Ayer Tena Block 39": {
+    "lat": 9.03001,
+    "lng": 38.71517
+  },
+  "Kolfe Ayer Tena Block 40": {
+    "lat": 9.03246,
+    "lng": 38.71818
+  },
+  "Kolfe Ayer Tena Block 41": {
+    "lat": 9.03167,
+    "lng": 38.71734
+  },
+  "Kolfe Ayer Tena Block 42": {
+    "lat": 9.03006,
+    "lng": 38.71433
+  },
+  "Kolfe Ayer Tena Block 43": {
+    "lat": 9.03370,
+    "lng": 38.72368
+  },
+  "Kolfe Ayer Tena Block 44": {
+    "lat": 9.03163,
+    "lng": 38.72108
+  },
+  "Kolfe Ayer Tena Block 45": {
+    "lat": 9.03091,
+    "lng": 38.71397
+  },
+  "Kolfe Ayer Tena Block 46": {
+    "lat": 9.03280,
+    "lng": 38.71429
+  },
+  "Kolfe Ayer Tena Block 47": {
+    "lat": 9.02881,
+    "lng": 38.72359
+  },
+  "Kolfe Ayer Tena Block 48": {
+    "lat": 9.03786,
+    "lng": 38.71541
+  },
+  "Kolfe Ayer Tena Block 49": {
+    "lat": 9.03236,
+    "lng": 38.71917
+  },
+  "Kolfe Ayer Tena Block 50": {
+    "lat": 9.03016,
+    "lng": 38.72260
+  },
+  "Kolfe Ayer Tena Block 51": {
+    "lat": 9.03136,
+    "lng": 38.71576
+  },
+  "Kolfe Ayer Tena Block 52": {
+    "lat": 9.03152,
+    "lng": 38.71749
+  },
+  "Kolfe Ayer Tena Block 53": {
+    "lat": 9.03188,
+    "lng": 38.71744
+  },
+  "Kolfe Ayer Tena Block 54": {
+    "lat": 9.03585,
+    "lng": 38.71760
+  },
+  "Kolfe Ayer Tena Block 55": {
+    "lat": 9.02883,
+    "lng": 38.72158
+  },
+  "Kolfe Ayer Tena Block 56": {
+    "lat": 9.03385,
+    "lng": 38.72208
+  },
+  "Kolfe Ayer Tena Block 57": {
+    "lat": 9.03173,
+    "lng": 38.72010
+  },
+  "Kolfe Ayer Tena Block 58": {
+    "lat": 9.03253,
+    "lng": 38.71991
+  },
+  "Kolfe Ayer Tena Block 59": {
+    "lat": 9.03274,
+    "lng": 38.72267
+  },
+  "Kolfe Ayer Tena Block 60": {
+    "lat": 9.03191,
+    "lng": 38.72114
+  },
+  "Kolfe Ayer Tena Block 61": {
+    "lat": 9.02974,
+    "lng": 38.72209
+  },
+  "Kolfe Ayer Tena Block 62": {
+    "lat": 9.03080,
+    "lng": 38.71631
+  },
+  "Kolfe Ayer Tena Block 63": {
+    "lat": 9.03630,
+    "lng": 38.71893
+  },
+  "Kolfe Ayer Tena Block 64": {
+    "lat": 9.02851,
+    "lng": 38.71390
+  },
+  "Kolfe Ayer Tena Block 65": {
+    "lat": 9.02878,
+    "lng": 38.71931
+  },
+  "Kolfe Ayer Tena Block 66": {
+    "lat": 9.03815,
+    "lng": 38.71519
+  },
+  "Kolfe Ayer Tena Block 67": {
+    "lat": 9.03082,
+    "lng": 38.71397
+  },
+  "Kolfe Ayer Tena Block 68": {
+    "lat": 9.03577,
+    "lng": 38.71770
+  },
+  "Kolfe Ayer Tena Block 69": {
+    "lat": 9.03414,
+    "lng": 38.71600
+  },
+  "Kolfe Ayer Tena Block 70": {
+    "lat": 9.03466,
+    "lng": 38.72056
+  },
+  "Kolfe Ayer Tena Block 71": {
+    "lat": 9.02917,
+    "lng": 38.72131
+  },
+  "Kolfe Ayer Tena Block 72": {
+    "lat": 9.03182,
+    "lng": 38.72318
+  },
+  "Kolfe Ayer Tena Block 73": {
+    "lat": 9.03753,
+    "lng": 38.71521
+  },
+  "Kolfe Ayer Tena Block 74": {
+    "lat": 9.03603,
+    "lng": 38.71922
+  },
+  "Kolfe Ayer Tena Block 75": {
+    "lat": 9.03570,
+    "lng": 38.72313
+  },
+  "Kolfe Ayer Tena Block 76": {
+    "lat": 9.03225,
+    "lng": 38.72223
+  },
+  "Kolfe Ayer Tena Block 77": {
+    "lat": 9.03615,
+    "lng": 38.71785
+  },
+  "Kolfe Ayer Tena Block 78": {
+    "lat": 9.03112,
+    "lng": 38.71458
+  },
+  "Kolfe Ayer Tena Block 79": {
+    "lat": 9.03414,
+    "lng": 38.71463
+  },
+  "Kolfe Ayer Tena Block 80": {
+    "lat": 9.03639,
+    "lng": 38.72197
+  },
+  "Kolfe Ayer Tena Block 81": {
+    "lat": 9.03382,
+    "lng": 38.72254
+  },
+  "Kolfe Ayer Tena Block 82": {
+    "lat": 9.03452,
+    "lng": 38.71634
+  },
+  "Kolfe Ayer Tena Block 83": {
+    "lat": 9.03501,
+    "lng": 38.71888
+  },
+  "Kolfe Ayer Tena Block 84": {
+    "lat": 9.03768,
+    "lng": 38.71895
+  },
+  "Kolfe Ayer Tena Block 85": {
+    "lat": 9.03522,
+    "lng": 38.71631
+  },
+  "Kolfe Ayer Tena Block 86": {
+    "lat": 9.03380,
+    "lng": 38.71548
+  },
+  "Kolfe Ayer Tena Block 87": {
+    "lat": 9.03512,
+    "lng": 38.71824
+  },
+  "Kolfe Ayer Tena Block 88": {
+    "lat": 9.03319,
+    "lng": 38.72182
+  },
+  "Kolfe Ayer Tena Block 89": {
+    "lat": 9.03161,
+    "lng": 38.72075
+  },
+  "Kolfe Ayer Tena Block 90": {
+    "lat": 9.03122,
+    "lng": 38.71910
+  },
+  "Kolfe Ayer Tena Block 91": {
+    "lat": 9.03825,
+    "lng": 38.71936
+  },
+  "Kolfe Ayer Tena Block 92": {
+    "lat": 9.03501,
+    "lng": 38.71542
+  },
+  "Kolfe Ayer Tena Block 93": {
+    "lat": 9.03792,
+    "lng": 38.71774
+  },
+  "Kolfe Ayer Tena Block 94": {
+    "lat": 9.03307,
+    "lng": 38.71774
+  },
+  "Kolfe Ayer Tena Block 95": {
+    "lat": 9.03180,
+    "lng": 38.71467
+  },
+  "Kolfe Ayer Tena Block 96": {
+    "lat": 9.03000,
+    "lng": 38.71625
+  },
+  "Kolfe Ayer Tena Block 97": {
+    "lat": 9.03359,
+    "lng": 38.71997
+  },
+  "Kolfe Ayer Tena Block 98": {
+    "lat": 9.03754,
+    "lng": 38.72289
+  },
+  "Kolfe Ayer Tena Block 99": {
+    "lat": 9.03462,
+    "lng": 38.72140
+  },
+  "Kolfe Ayer Tena Block 100": {
+    "lat": 9.03255,
+    "lng": 38.71701
+  },
+  "Kolfe Alert Block 1": {
+    "lat": 9.03197,
+    "lng": 38.72179
+  },
+  "Kolfe Alert Block 2": {
+    "lat": 9.02832,
+    "lng": 38.71861
+  },
+  "Kolfe Alert Block 3": {
+    "lat": 9.03606,
+    "lng": 38.71380
+  },
+  "Kolfe Alert Block 4": {
+    "lat": 9.03268,
+    "lng": 38.72214
+  },
+  "Kolfe Alert Block 5": {
+    "lat": 9.02885,
+    "lng": 38.72355
+  },
+  "Kolfe Alert Block 6": {
+    "lat": 9.03478,
+    "lng": 38.72170
+  },
+  "Kolfe Alert Block 7": {
+    "lat": 9.03397,
+    "lng": 38.71464
+  },
+  "Kolfe Alert Block 8": {
+    "lat": 9.02852,
+    "lng": 38.71453
+  },
+  "Kolfe Alert Block 9": {
+    "lat": 9.03239,
+    "lng": 38.72251
+  },
+  "Kolfe Alert Block 10": {
+    "lat": 9.03388,
+    "lng": 38.71718
+  },
+  "Kolfe Alert Block 11": {
+    "lat": 9.03533,
+    "lng": 38.72304
+  },
+  "Kolfe Alert Block 12": {
+    "lat": 9.03055,
+    "lng": 38.72089
+  },
+  "Kolfe Alert Block 13": {
+    "lat": 9.03427,
+    "lng": 38.71509
+  },
+  "Kolfe Alert Block 14": {
+    "lat": 9.03534,
+    "lng": 38.71520
+  },
+  "Kolfe Alert Block 15": {
+    "lat": 9.02935,
+    "lng": 38.71876
+  },
+  "Kolfe Alert Block 16": {
+    "lat": 9.02916,
+    "lng": 38.72266
+  },
+  "Kolfe Alert Block 17": {
+    "lat": 9.03255,
+    "lng": 38.72044
+  },
+  "Kolfe Alert Block 18": {
+    "lat": 9.03811,
+    "lng": 38.72285
+  },
+  "Kolfe Alert Block 19": {
+    "lat": 9.03025,
+    "lng": 38.72060
+  },
+  "Kolfe Alert Block 20": {
+    "lat": 9.03476,
+    "lng": 38.71910
+  },
+  "Kolfe Alert Block 21": {
+    "lat": 9.03351,
+    "lng": 38.71533
+  },
+  "Kolfe Alert Block 22": {
+    "lat": 9.03287,
+    "lng": 38.71448
+  },
+  "Kolfe Alert Block 23": {
+    "lat": 9.03107,
+    "lng": 38.72046
+  },
+  "Kolfe Alert Block 24": {
+    "lat": 9.03043,
+    "lng": 38.72259
+  },
+  "Kolfe Alert Block 25": {
+    "lat": 9.03554,
+    "lng": 38.71826
+  },
+  "Kolfe Alert Block 26": {
+    "lat": 9.03451,
+    "lng": 38.72191
+  },
+  "Kolfe Alert Block 27": {
+    "lat": 9.03056,
+    "lng": 38.71790
+  },
+  "Kolfe Alert Block 28": {
+    "lat": 9.03329,
+    "lng": 38.71772
+  },
+  "Kolfe Alert Block 29": {
+    "lat": 9.03480,
+    "lng": 38.72266
+  },
+  "Kolfe Alert Block 30": {
+    "lat": 9.03511,
+    "lng": 38.71940
+  },
+  "Kolfe Alert Block 31": {
+    "lat": 9.03573,
+    "lng": 38.72253
+  },
+  "Kolfe Alert Block 32": {
+    "lat": 9.03345,
+    "lng": 38.72246
+  },
+  "Kolfe Alert Block 33": {
+    "lat": 9.03142,
+    "lng": 38.71563
+  },
+  "Kolfe Alert Block 34": {
+    "lat": 9.03534,
+    "lng": 38.72248
+  },
+  "Kolfe Alert Block 35": {
+    "lat": 9.03432,
+    "lng": 38.71414
+  },
+  "Kolfe Alert Block 36": {
+    "lat": 9.03219,
+    "lng": 38.71424
+  },
+  "Kolfe Alert Block 37": {
+    "lat": 9.02891,
+    "lng": 38.71707
+  },
+  "Kolfe Alert Block 38": {
+    "lat": 9.03082,
+    "lng": 38.72271
+  },
+  "Kolfe Alert Block 39": {
+    "lat": 9.03739,
+    "lng": 38.72136
+  },
+  "Kolfe Alert Block 40": {
+    "lat": 9.03562,
+    "lng": 38.72229
+  },
+  "Kolfe Alert Block 41": {
+    "lat": 9.03511,
+    "lng": 38.72112
+  },
+  "Kolfe Alert Block 42": {
+    "lat": 9.03570,
+    "lng": 38.72167
+  },
+  "Kolfe Alert Block 43": {
+    "lat": 9.03515,
+    "lng": 38.71953
+  },
+  "Kolfe Alert Block 44": {
+    "lat": 9.03289,
+    "lng": 38.71569
+  },
+  "Kolfe Alert Block 45": {
+    "lat": 9.03561,
+    "lng": 38.71584
+  },
+  "Kolfe Alert Block 46": {
+    "lat": 9.03312,
+    "lng": 38.71678
+  },
+  "Kolfe Alert Block 47": {
+    "lat": 9.02915,
+    "lng": 38.71484
+  },
+  "Kolfe Alert Block 48": {
+    "lat": 9.03602,
+    "lng": 38.71479
+  },
+  "Kolfe Alert Block 49": {
+    "lat": 9.03672,
+    "lng": 38.71693
+  },
+  "Kolfe Alert Block 50": {
+    "lat": 9.03800,
+    "lng": 38.71591
+  },
+  "Kolfe Alert Block 51": {
+    "lat": 9.03686,
+    "lng": 38.71712
+  },
+  "Kolfe Alert Block 52": {
+    "lat": 9.03017,
+    "lng": 38.71600
+  },
+  "Kolfe Alert Block 53": {
+    "lat": 9.02878,
+    "lng": 38.72352
+  },
+  "Kolfe Alert Block 54": {
+    "lat": 9.03562,
+    "lng": 38.71705
+  },
+  "Kolfe Alert Block 55": {
+    "lat": 9.03649,
+    "lng": 38.71960
+  },
+  "Kolfe Alert Block 56": {
+    "lat": 9.03521,
+    "lng": 38.72065
+  },
+  "Kolfe Alert Block 57": {
+    "lat": 9.03011,
+    "lng": 38.71602
+  },
+  "Kolfe Alert Block 58": {
+    "lat": 9.02936,
+    "lng": 38.72052
+  },
+  "Kolfe Alert Block 59": {
+    "lat": 9.03167,
+    "lng": 38.71470
+  },
+  "Kolfe Alert Block 60": {
+    "lat": 9.03564,
+    "lng": 38.71556
+  },
+  "Kolfe Alert Block 61": {
+    "lat": 9.03162,
+    "lng": 38.72157
+  },
+  "Kolfe Alert Block 62": {
+    "lat": 9.03054,
+    "lng": 38.71953
+  },
+  "Kolfe Alert Block 63": {
+    "lat": 9.02959,
+    "lng": 38.72001
+  },
+  "Kolfe Alert Block 64": {
+    "lat": 9.03447,
+    "lng": 38.71582
+  },
+  "Kolfe Alert Block 65": {
+    "lat": 9.03591,
+    "lng": 38.72150
+  },
+  "Kolfe Alert Block 66": {
+    "lat": 9.03687,
+    "lng": 38.72240
+  },
+  "Kolfe Alert Block 67": {
+    "lat": 9.03370,
+    "lng": 38.71384
+  },
+  "Kolfe Alert Block 68": {
+    "lat": 9.03133,
+    "lng": 38.72012
+  },
+  "Kolfe Alert Block 69": {
+    "lat": 9.03693,
+    "lng": 38.71762
+  },
+  "Kolfe Alert Block 70": {
+    "lat": 9.02910,
+    "lng": 38.72010
+  },
+  "Kolfe Alert Block 71": {
+    "lat": 9.03587,
+    "lng": 38.72210
+  },
+  "Kolfe Alert Block 72": {
+    "lat": 9.02997,
+    "lng": 38.71986
+  },
+  "Kolfe Alert Block 73": {
+    "lat": 9.03532,
+    "lng": 38.71678
+  },
+  "Kolfe Alert Block 74": {
+    "lat": 9.03616,
+    "lng": 38.71990
+  },
+  "Kolfe Alert Block 75": {
+    "lat": 9.03106,
+    "lng": 38.72152
+  },
+  "Kolfe Alert Block 76": {
+    "lat": 9.03306,
+    "lng": 38.72344
+  },
+  "Kolfe Alert Block 77": {
+    "lat": 9.03477,
+    "lng": 38.72109
+  },
+  "Kolfe Alert Block 78": {
+    "lat": 9.03314,
+    "lng": 38.72237
+  },
+  "Kolfe Alert Block 79": {
+    "lat": 9.03366,
+    "lng": 38.71841
+  },
+  "Kolfe Alert Block 80": {
+    "lat": 9.03450,
+    "lng": 38.71420
+  },
+  "Kolfe Alert Block 81": {
+    "lat": 9.03776,
+    "lng": 38.71811
+  },
+  "Kolfe Alert Block 82": {
+    "lat": 9.02908,
+    "lng": 38.71529
+  },
+  "Kolfe Alert Block 83": {
+    "lat": 9.03299,
+    "lng": 38.71972
+  },
+  "Kolfe Alert Block 84": {
+    "lat": 9.03066,
+    "lng": 38.71781
+  },
+  "Kolfe Alert Block 85": {
+    "lat": 9.02902,
+    "lng": 38.71648
+  },
+  "Kolfe Alert Block 86": {
+    "lat": 9.03205,
+    "lng": 38.72220
+  },
+  "Kolfe Alert Block 87": {
+    "lat": 9.03514,
+    "lng": 38.72292
+  },
+  "Kolfe Alert Block 88": {
+    "lat": 9.03796,
+    "lng": 38.71519
+  },
+  "Kolfe Alert Block 89": {
+    "lat": 9.02981,
+    "lng": 38.71773
+  },
+  "Kolfe Alert Block 90": {
+    "lat": 9.03414,
+    "lng": 38.71756
+  },
+  "Kolfe Alert Block 91": {
+    "lat": 9.03714,
+    "lng": 38.72094
+  },
+  "Kolfe Alert Block 92": {
+    "lat": 9.03670,
+    "lng": 38.71456
+  },
+  "Kolfe Alert Block 93": {
+    "lat": 9.02897,
+    "lng": 38.72270
+  },
+  "Kolfe Alert Block 94": {
+    "lat": 9.03645,
+    "lng": 38.71969
+  },
+  "Kolfe Alert Block 95": {
+    "lat": 9.02916,
+    "lng": 38.71446
+  },
+  "Kolfe Alert Block 96": {
+    "lat": 9.02856,
+    "lng": 38.72049
+  },
+  "Kolfe Alert Block 97": {
+    "lat": 9.03287,
+    "lng": 38.71799
+  },
+  "Kolfe Alert Block 98": {
+    "lat": 9.02928,
+    "lng": 38.71464
+  },
+  "Kolfe Alert Block 99": {
+    "lat": 9.03003,
+    "lng": 38.71608
+  },
+  "Kolfe Alert Block 100": {
+    "lat": 9.03281,
+    "lng": 38.71617
+  },
+  "Kolfe Koshe Block 1": {
+    "lat": 9.03561,
+    "lng": 38.72009
+  },
+  "Kolfe Koshe Block 2": {
+    "lat": 9.03577,
+    "lng": 38.72317
+  },
+  "Kolfe Koshe Block 3": {
+    "lat": 9.03408,
+    "lng": 38.72364
+  },
+  "Kolfe Koshe Block 4": {
+    "lat": 9.03625,
+    "lng": 38.71439
+  },
+  "Kolfe Koshe Block 5": {
+    "lat": 9.03423,
+    "lng": 38.71563
+  },
+  "Kolfe Koshe Block 6": {
+    "lat": 9.03460,
+    "lng": 38.71983
+  },
+  "Kolfe Koshe Block 7": {
+    "lat": 9.03470,
+    "lng": 38.71637
+  },
+  "Kolfe Koshe Block 8": {
+    "lat": 9.03647,
+    "lng": 38.71511
+  },
+  "Kolfe Koshe Block 9": {
+    "lat": 9.03381,
+    "lng": 38.71847
+  },
+  "Kolfe Koshe Block 10": {
+    "lat": 9.03672,
+    "lng": 38.71414
+  },
+  "Kolfe Koshe Block 11": {
+    "lat": 9.03199,
+    "lng": 38.71618
+  },
+  "Kolfe Koshe Block 12": {
+    "lat": 9.03753,
+    "lng": 38.71814
+  },
+  "Kolfe Koshe Block 13": {
+    "lat": 9.03557,
+    "lng": 38.72009
+  },
+  "Kolfe Koshe Block 14": {
+    "lat": 9.03392,
+    "lng": 38.72020
+  },
+  "Kolfe Koshe Block 15": {
+    "lat": 9.03295,
+    "lng": 38.72229
+  },
+  "Kolfe Koshe Block 16": {
+    "lat": 9.03310,
+    "lng": 38.71918
+  },
+  "Kolfe Koshe Block 17": {
+    "lat": 9.03000,
+    "lng": 38.71883
+  },
+  "Kolfe Koshe Block 18": {
+    "lat": 9.02867,
+    "lng": 38.71666
+  },
+  "Kolfe Koshe Block 19": {
+    "lat": 9.02885,
+    "lng": 38.71964
+  },
+  "Kolfe Koshe Block 20": {
+    "lat": 9.03769,
+    "lng": 38.71586
+  },
+  "Kolfe Koshe Block 21": {
+    "lat": 9.02864,
+    "lng": 38.71758
+  },
+  "Kolfe Koshe Block 22": {
+    "lat": 9.03029,
+    "lng": 38.72132
+  },
+  "Kolfe Koshe Block 23": {
+    "lat": 9.02974,
+    "lng": 38.72270
+  },
+  "Kolfe Koshe Block 24": {
+    "lat": 9.03133,
+    "lng": 38.71668
+  },
+  "Kolfe Koshe Block 25": {
+    "lat": 9.02976,
+    "lng": 38.72180
+  },
+  "Kolfe Koshe Block 26": {
+    "lat": 9.03165,
+    "lng": 38.72320
+  },
+  "Kolfe Koshe Block 27": {
+    "lat": 9.03376,
+    "lng": 38.72192
+  },
+  "Kolfe Koshe Block 28": {
+    "lat": 9.03637,
+    "lng": 38.71696
+  },
+  "Kolfe Koshe Block 29": {
+    "lat": 9.03786,
+    "lng": 38.71622
+  },
+  "Kolfe Koshe Block 30": {
+    "lat": 9.03555,
+    "lng": 38.72292
+  },
+  "Kolfe Koshe Block 31": {
+    "lat": 9.02966,
+    "lng": 38.71931
+  },
+  "Kolfe Koshe Block 32": {
+    "lat": 9.03044,
+    "lng": 38.71552
+  },
+  "Kolfe Koshe Block 33": {
+    "lat": 9.03012,
+    "lng": 38.71927
+  },
+  "Kolfe Koshe Block 34": {
+    "lat": 9.03274,
+    "lng": 38.71973
+  },
+  "Kolfe Koshe Block 35": {
+    "lat": 9.03802,
+    "lng": 38.72186
+  },
+  "Kolfe Koshe Block 36": {
+    "lat": 9.03158,
+    "lng": 38.71402
+  },
+  "Kolfe Koshe Block 37": {
+    "lat": 9.03537,
+    "lng": 38.72333
+  },
+  "Kolfe Koshe Block 38": {
+    "lat": 9.03019,
+    "lng": 38.71501
+  },
+  "Kolfe Koshe Block 39": {
+    "lat": 9.03616,
+    "lng": 38.71916
+  },
+  "Kolfe Koshe Block 40": {
+    "lat": 9.03134,
+    "lng": 38.71492
+  },
+  "Kolfe Koshe Block 41": {
+    "lat": 9.03239,
+    "lng": 38.71543
+  },
+  "Kolfe Koshe Block 42": {
+    "lat": 9.02945,
+    "lng": 38.71871
+  },
+  "Kolfe Koshe Block 43": {
+    "lat": 9.03531,
+    "lng": 38.71750
+  },
+  "Kolfe Koshe Block 44": {
+    "lat": 9.03227,
+    "lng": 38.71548
+  },
+  "Kolfe Koshe Block 45": {
+    "lat": 9.03104,
+    "lng": 38.71982
+  },
+  "Kolfe Koshe Block 46": {
+    "lat": 9.03072,
+    "lng": 38.71381
+  },
+  "Kolfe Koshe Block 47": {
+    "lat": 9.03197,
+    "lng": 38.72323
+  },
+  "Kolfe Koshe Block 48": {
+    "lat": 9.02875,
+    "lng": 38.71802
+  },
+  "Kolfe Koshe Block 49": {
+    "lat": 9.03768,
+    "lng": 38.71420
+  },
+  "Kolfe Koshe Block 50": {
+    "lat": 9.03523,
+    "lng": 38.71793
+  },
+  "Kolfe Koshe Block 51": {
+    "lat": 9.03502,
+    "lng": 38.72373
+  },
+  "Kolfe Koshe Block 52": {
+    "lat": 9.03217,
+    "lng": 38.71402
+  },
+  "Kolfe Koshe Block 53": {
+    "lat": 9.02874,
+    "lng": 38.72162
+  },
+  "Kolfe Koshe Block 54": {
+    "lat": 9.03121,
+    "lng": 38.72195
+  },
+  "Kolfe Koshe Block 55": {
+    "lat": 9.03036,
+    "lng": 38.71449
+  },
+  "Kolfe Koshe Block 56": {
+    "lat": 9.03227,
+    "lng": 38.72055
+  },
+  "Kolfe Koshe Block 57": {
+    "lat": 9.02841,
+    "lng": 38.72320
+  },
+  "Kolfe Koshe Block 58": {
+    "lat": 9.03750,
+    "lng": 38.71667
+  },
+  "Kolfe Koshe Block 59": {
+    "lat": 9.03762,
+    "lng": 38.72069
+  },
+  "Kolfe Koshe Block 60": {
+    "lat": 9.02998,
+    "lng": 38.72183
+  },
+  "Kolfe Koshe Block 61": {
+    "lat": 9.03341,
+    "lng": 38.71968
+  },
+  "Kolfe Koshe Block 62": {
+    "lat": 9.03410,
+    "lng": 38.71398
+  },
+  "Kolfe Koshe Block 63": {
+    "lat": 9.03106,
+    "lng": 38.72189
+  },
+  "Kolfe Koshe Block 64": {
+    "lat": 9.03113,
+    "lng": 38.71779
+  },
+  "Kolfe Koshe Block 65": {
+    "lat": 9.03435,
+    "lng": 38.71638
+  },
+  "Kolfe Koshe Block 66": {
+    "lat": 9.03533,
+    "lng": 38.72081
+  },
+  "Kolfe Koshe Block 67": {
+    "lat": 9.03125,
+    "lng": 38.72246
+  },
+  "Kolfe Koshe Block 68": {
+    "lat": 9.03675,
+    "lng": 38.71983
+  },
+  "Kolfe Koshe Block 69": {
+    "lat": 9.03810,
+    "lng": 38.72040
+  },
+  "Kolfe Koshe Block 70": {
+    "lat": 9.02958,
+    "lng": 38.71566
+  },
+  "Kolfe Koshe Block 71": {
+    "lat": 9.03220,
+    "lng": 38.71596
+  },
+  "Kolfe Koshe Block 72": {
+    "lat": 9.02969,
+    "lng": 38.71834
+  },
+  "Kolfe Koshe Block 73": {
+    "lat": 9.03185,
+    "lng": 38.71723
+  },
+  "Kolfe Koshe Block 74": {
+    "lat": 9.03312,
+    "lng": 38.72065
+  },
+  "Kolfe Koshe Block 75": {
+    "lat": 9.03728,
+    "lng": 38.71863
+  },
+  "Kolfe Koshe Block 76": {
+    "lat": 9.03064,
+    "lng": 38.71564
+  },
+  "Kolfe Koshe Block 77": {
+    "lat": 9.03529,
+    "lng": 38.72043
+  },
+  "Kolfe Koshe Block 78": {
+    "lat": 9.02884,
+    "lng": 38.71500
+  },
+  "Kolfe Koshe Block 79": {
+    "lat": 9.02912,
+    "lng": 38.72129
+  },
+  "Kolfe Koshe Block 80": {
+    "lat": 9.03716,
+    "lng": 38.71837
+  },
+  "Kolfe Koshe Block 81": {
+    "lat": 9.03136,
+    "lng": 38.71665
+  },
+  "Kolfe Koshe Block 82": {
+    "lat": 9.03370,
+    "lng": 38.72251
+  },
+  "Kolfe Koshe Block 83": {
+    "lat": 9.03166,
+    "lng": 38.72167
+  },
+  "Kolfe Koshe Block 84": {
+    "lat": 9.03194,
+    "lng": 38.72299
+  },
+  "Kolfe Koshe Block 85": {
+    "lat": 9.03662,
+    "lng": 38.72179
+  },
+  "Kolfe Koshe Block 86": {
+    "lat": 9.03492,
+    "lng": 38.71858
+  },
+  "Kolfe Koshe Block 87": {
+    "lat": 9.03148,
+    "lng": 38.72292
+  },
+  "Kolfe Koshe Block 88": {
+    "lat": 9.03519,
+    "lng": 38.72288
+  },
+  "Kolfe Koshe Block 89": {
+    "lat": 9.03077,
+    "lng": 38.71848
+  },
+  "Kolfe Koshe Block 90": {
+    "lat": 9.03165,
+    "lng": 38.72142
+  },
+  "Kolfe Koshe Block 91": {
+    "lat": 9.03634,
+    "lng": 38.71671
+  },
+  "Kolfe Koshe Block 92": {
+    "lat": 9.02970,
+    "lng": 38.71538
+  },
+  "Kolfe Koshe Block 93": {
+    "lat": 9.03368,
+    "lng": 38.71771
+  },
+  "Kolfe Koshe Block 94": {
+    "lat": 9.03522,
+    "lng": 38.71406
+  },
+  "Kolfe Koshe Block 95": {
+    "lat": 9.03032,
+    "lng": 38.71382
+  },
+  "Kolfe Koshe Block 96": {
+    "lat": 9.03650,
+    "lng": 38.71522
+  },
+  "Kolfe Koshe Block 97": {
+    "lat": 9.03774,
+    "lng": 38.71623
+  },
+  "Kolfe Koshe Block 98": {
+    "lat": 9.03812,
+    "lng": 38.72101
+  },
+  "Kolfe Koshe Block 99": {
+    "lat": 9.03494,
+    "lng": 38.71464
+  },
+  "Kolfe Koshe Block 100": {
+    "lat": 9.03685,
+    "lng": 38.72102
+  },
+  "Gullele Shiro Meda Block 1": {
+    "lat": 9.05483,
+    "lng": 38.72855
+  },
+  "Gullele Shiro Meda Block 2": {
+    "lat": 9.05693,
+    "lng": 38.72402
+  },
+  "Gullele Shiro Meda Block 3": {
+    "lat": 9.05054,
+    "lng": 38.72662
+  },
+  "Gullele Shiro Meda Block 4": {
+    "lat": 9.05697,
+    "lng": 38.72388
+  },
+  "Gullele Shiro Meda Block 5": {
+    "lat": 9.05084,
+    "lng": 38.71887
+  },
+  "Gullele Shiro Meda Block 6": {
+    "lat": 9.05129,
+    "lng": 38.72249
+  },
+  "Gullele Shiro Meda Block 7": {
+    "lat": 9.05757,
+    "lng": 38.72313
+  },
+  "Gullele Shiro Meda Block 8": {
+    "lat": 9.05591,
+    "lng": 38.72485
+  },
+  "Gullele Shiro Meda Block 9": {
+    "lat": 9.05480,
+    "lng": 38.72553
+  },
+  "Gullele Shiro Meda Block 10": {
+    "lat": 9.05569,
+    "lng": 38.72622
+  },
+  "Gullele Shiro Meda Block 11": {
+    "lat": 9.05741,
+    "lng": 38.71962
+  },
+  "Gullele Shiro Meda Block 12": {
+    "lat": 9.05640,
+    "lng": 38.71982
+  },
+  "Gullele Shiro Meda Block 13": {
+    "lat": 9.04970,
+    "lng": 38.72798
+  },
+  "Gullele Shiro Meda Block 14": {
+    "lat": 9.05742,
+    "lng": 38.71886
+  },
+  "Gullele Shiro Meda Block 15": {
+    "lat": 9.05768,
+    "lng": 38.72535
+  },
+  "Gullele Shiro Meda Block 16": {
+    "lat": 9.05836,
+    "lng": 38.72506
+  },
+  "Gullele Shiro Meda Block 17": {
+    "lat": 9.05506,
+    "lng": 38.72856
+  },
+  "Gullele Shiro Meda Block 18": {
+    "lat": 9.04910,
+    "lng": 38.71905
+  },
+  "Gullele Shiro Meda Block 19": {
+    "lat": 9.05480,
+    "lng": 38.72625
+  },
+  "Gullele Shiro Meda Block 20": {
+    "lat": 9.05709,
+    "lng": 38.72764
+  },
+  "Gullele Shiro Meda Block 21": {
+    "lat": 9.05812,
+    "lng": 38.71902
+  },
+  "Gullele Shiro Meda Block 22": {
+    "lat": 9.05656,
+    "lng": 38.72584
+  },
+  "Gullele Shiro Meda Block 23": {
+    "lat": 9.05494,
+    "lng": 38.72180
+  },
+  "Gullele Shiro Meda Block 24": {
+    "lat": 9.04909,
+    "lng": 38.72374
+  },
+  "Gullele Shiro Meda Block 25": {
+    "lat": 9.05008,
+    "lng": 38.72094
+  },
+  "Gullele Shiro Meda Block 26": {
+    "lat": 9.04926,
+    "lng": 38.72737
+  },
+  "Gullele Shiro Meda Block 27": {
+    "lat": 9.05525,
+    "lng": 38.72453
+  },
+  "Gullele Shiro Meda Block 28": {
+    "lat": 9.05021,
+    "lng": 38.72023
+  },
+  "Gullele Shiro Meda Block 29": {
+    "lat": 9.05310,
+    "lng": 38.72034
+  },
+  "Gullele Shiro Meda Block 30": {
+    "lat": 9.05711,
+    "lng": 38.72818
+  },
+  "Gullele Shiro Meda Block 31": {
+    "lat": 9.05645,
+    "lng": 38.72795
+  },
+  "Gullele Shiro Meda Block 32": {
+    "lat": 9.05320,
+    "lng": 38.72501
+  },
+  "Gullele Shiro Meda Block 33": {
+    "lat": 9.05170,
+    "lng": 38.72713
+  },
+  "Gullele Shiro Meda Block 34": {
+    "lat": 9.05420,
+    "lng": 38.72416
+  },
+  "Gullele Shiro Meda Block 35": {
+    "lat": 9.05842,
+    "lng": 38.72044
+  },
+  "Gullele Shiro Meda Block 36": {
+    "lat": 9.05353,
+    "lng": 38.72186
+  },
+  "Gullele Shiro Meda Block 37": {
+    "lat": 9.05451,
+    "lng": 38.72838
+  },
+  "Gullele Shiro Meda Block 38": {
+    "lat": 9.05165,
+    "lng": 38.72557
+  },
+  "Gullele Shiro Meda Block 39": {
+    "lat": 9.05631,
+    "lng": 38.72201
+  },
+  "Gullele Shiro Meda Block 40": {
+    "lat": 9.05702,
+    "lng": 38.72592
+  },
+  "Gullele Shiro Meda Block 41": {
+    "lat": 9.05642,
+    "lng": 38.72614
+  },
+  "Gullele Shiro Meda Block 42": {
+    "lat": 9.05449,
+    "lng": 38.71961
+  },
+  "Gullele Shiro Meda Block 43": {
+    "lat": 9.05587,
+    "lng": 38.72603
+  },
+  "Gullele Shiro Meda Block 44": {
+    "lat": 9.04954,
+    "lng": 38.72001
+  },
+  "Gullele Shiro Meda Block 45": {
+    "lat": 9.04947,
+    "lng": 38.71928
+  },
+  "Gullele Shiro Meda Block 46": {
+    "lat": 9.05784,
+    "lng": 38.72344
+  },
+  "Gullele Shiro Meda Block 47": {
+    "lat": 9.04910,
+    "lng": 38.71899
+  },
+  "Gullele Shiro Meda Block 48": {
+    "lat": 9.05821,
+    "lng": 38.72715
+  },
+  "Gullele Shiro Meda Block 49": {
+    "lat": 9.05303,
+    "lng": 38.72262
+  },
+  "Gullele Shiro Meda Block 50": {
+    "lat": 9.05123,
+    "lng": 38.72522
+  },
+  "Gullele Shiro Meda Block 51": {
+    "lat": 9.04915,
+    "lng": 38.72047
+  },
+  "Gullele Shiro Meda Block 52": {
+    "lat": 9.04929,
+    "lng": 38.72474
+  },
+  "Gullele Shiro Meda Block 53": {
+    "lat": 9.04925,
+    "lng": 38.72791
+  },
+  "Gullele Shiro Meda Block 54": {
+    "lat": 9.05320,
+    "lng": 38.72323
+  },
+  "Gullele Shiro Meda Block 55": {
+    "lat": 9.05129,
+    "lng": 38.72435
+  },
+  "Gullele Shiro Meda Block 56": {
+    "lat": 9.04995,
+    "lng": 38.72259
+  },
+  "Gullele Shiro Meda Block 57": {
+    "lat": 9.05002,
+    "lng": 38.72532
+  },
+  "Gullele Shiro Meda Block 58": {
+    "lat": 9.05485,
+    "lng": 38.72627
+  },
+  "Gullele Shiro Meda Block 59": {
+    "lat": 9.05099,
+    "lng": 38.72745
+  },
+  "Gullele Shiro Meda Block 60": {
+    "lat": 9.04914,
+    "lng": 38.72017
+  },
+  "Gullele Shiro Meda Block 61": {
+    "lat": 9.05725,
+    "lng": 38.72544
+  },
+  "Gullele Shiro Meda Block 62": {
+    "lat": 9.05388,
+    "lng": 38.72717
+  },
+  "Gullele Shiro Meda Block 63": {
+    "lat": 9.05338,
+    "lng": 38.72024
+  },
+  "Gullele Shiro Meda Block 64": {
+    "lat": 9.05878,
+    "lng": 38.72190
+  },
+  "Gullele Shiro Meda Block 65": {
+    "lat": 9.05156,
+    "lng": 38.72691
+  },
+  "Gullele Shiro Meda Block 66": {
+    "lat": 9.05459,
+    "lng": 38.72276
+  },
+  "Gullele Shiro Meda Block 67": {
+    "lat": 9.05207,
+    "lng": 38.72668
+  },
+  "Gullele Shiro Meda Block 68": {
+    "lat": 9.05308,
+    "lng": 38.72673
+  },
+  "Gullele Shiro Meda Block 69": {
+    "lat": 9.05556,
+    "lng": 38.72073
+  },
+  "Gullele Shiro Meda Block 70": {
+    "lat": 9.05347,
+    "lng": 38.71964
+  },
+  "Gullele Shiro Meda Block 71": {
+    "lat": 9.05442,
+    "lng": 38.72016
+  },
+  "Gullele Shiro Meda Block 72": {
+    "lat": 9.05161,
+    "lng": 38.72066
+  },
+  "Gullele Shiro Meda Block 73": {
+    "lat": 9.05686,
+    "lng": 38.71965
+  },
+  "Gullele Shiro Meda Block 74": {
+    "lat": 9.05172,
+    "lng": 38.72682
+  },
+  "Gullele Shiro Meda Block 75": {
+    "lat": 9.05693,
+    "lng": 38.72461
+  },
+  "Gullele Shiro Meda Block 76": {
+    "lat": 9.05506,
+    "lng": 38.72159
+  },
+  "Gullele Shiro Meda Block 77": {
+    "lat": 9.05592,
+    "lng": 38.72358
+  },
+  "Gullele Shiro Meda Block 78": {
+    "lat": 9.05720,
+    "lng": 38.72046
+  },
+  "Gullele Shiro Meda Block 79": {
+    "lat": 9.05678,
+    "lng": 38.72513
+  },
+  "Gullele Shiro Meda Block 80": {
+    "lat": 9.05602,
+    "lng": 38.72305
+  },
+  "Gullele Shiro Meda Block 81": {
+    "lat": 9.05105,
+    "lng": 38.72730
+  },
+  "Gullele Shiro Meda Block 82": {
+    "lat": 9.05099,
+    "lng": 38.72652
+  },
+  "Gullele Shiro Meda Block 83": {
+    "lat": 9.04994,
+    "lng": 38.72022
+  },
+  "Gullele Shiro Meda Block 84": {
+    "lat": 9.05790,
+    "lng": 38.72550
+  },
+  "Gullele Shiro Meda Block 85": {
+    "lat": 9.05577,
+    "lng": 38.71992
+  },
+  "Gullele Shiro Meda Block 86": {
+    "lat": 9.05367,
+    "lng": 38.72404
+  },
+  "Gullele Shiro Meda Block 87": {
+    "lat": 9.05830,
+    "lng": 38.72692
+  },
+  "Gullele Shiro Meda Block 88": {
+    "lat": 9.04887,
+    "lng": 38.71978
+  },
+  "Gullele Shiro Meda Block 89": {
+    "lat": 9.05673,
+    "lng": 38.72176
+  },
+  "Gullele Shiro Meda Block 90": {
+    "lat": 9.05059,
+    "lng": 38.72216
+  },
+  "Gullele Shiro Meda Block 91": {
+    "lat": 9.05158,
+    "lng": 38.72309
+  },
+  "Gullele Shiro Meda Block 92": {
+    "lat": 9.05763,
+    "lng": 38.72646
+  },
+  "Gullele Shiro Meda Block 93": {
+    "lat": 9.05369,
+    "lng": 38.72127
+  },
+  "Gullele Shiro Meda Block 94": {
+    "lat": 9.05585,
+    "lng": 38.72235
+  },
+  "Gullele Shiro Meda Block 95": {
+    "lat": 9.05223,
+    "lng": 38.72158
+  },
+  "Gullele Shiro Meda Block 96": {
+    "lat": 9.05330,
+    "lng": 38.72437
+  },
+  "Gullele Shiro Meda Block 97": {
+    "lat": 9.05155,
+    "lng": 38.72036
+  },
+  "Gullele Shiro Meda Block 98": {
+    "lat": 9.04898,
+    "lng": 38.72283
+  },
+  "Gullele Shiro Meda Block 99": {
+    "lat": 9.05242,
+    "lng": 38.72275
+  },
+  "Gullele Shiro Meda Block 100": {
+    "lat": 9.05083,
+    "lng": 38.72122
+  },
+  "Gullele Addisu Gebeya Block 1": {
+    "lat": 9.04966,
+    "lng": 38.72658
+  },
+  "Gullele Addisu Gebeya Block 2": {
+    "lat": 9.05297,
+    "lng": 38.72507
+  },
+  "Gullele Addisu Gebeya Block 3": {
+    "lat": 9.04888,
+    "lng": 38.72720
+  },
+  "Gullele Addisu Gebeya Block 4": {
+    "lat": 9.04885,
+    "lng": 38.72242
+  },
+  "Gullele Addisu Gebeya Block 5": {
+    "lat": 9.05130,
+    "lng": 38.72775
+  },
+  "Gullele Addisu Gebeya Block 6": {
+    "lat": 9.05286,
+    "lng": 38.72109
+  },
+  "Gullele Addisu Gebeya Block 7": {
+    "lat": 9.05149,
+    "lng": 38.72796
+  },
+  "Gullele Addisu Gebeya Block 8": {
+    "lat": 9.05617,
+    "lng": 38.72743
+  },
+  "Gullele Addisu Gebeya Block 9": {
+    "lat": 9.05843,
+    "lng": 38.72054
+  },
+  "Gullele Addisu Gebeya Block 10": {
+    "lat": 9.05450,
+    "lng": 38.72694
+  },
+  "Gullele Addisu Gebeya Block 11": {
+    "lat": 9.05795,
+    "lng": 38.72432
+  },
+  "Gullele Addisu Gebeya Block 12": {
+    "lat": 9.05038,
+    "lng": 38.72437
+  },
+  "Gullele Addisu Gebeya Block 13": {
+    "lat": 9.05434,
+    "lng": 38.72158
+  },
+  "Gullele Addisu Gebeya Block 14": {
+    "lat": 9.05293,
+    "lng": 38.72444
+  },
+  "Gullele Addisu Gebeya Block 15": {
+    "lat": 9.05438,
+    "lng": 38.72025
+  },
+  "Gullele Addisu Gebeya Block 16": {
+    "lat": 9.05265,
+    "lng": 38.71978
+  },
+  "Gullele Addisu Gebeya Block 17": {
+    "lat": 9.05231,
+    "lng": 38.72588
+  },
+  "Gullele Addisu Gebeya Block 18": {
+    "lat": 9.05096,
+    "lng": 38.72741
+  },
+  "Gullele Addisu Gebeya Block 19": {
+    "lat": 9.05394,
+    "lng": 38.71941
+  },
+  "Gullele Addisu Gebeya Block 20": {
+    "lat": 9.05138,
+    "lng": 38.72068
+  },
+  "Gullele Addisu Gebeya Block 21": {
+    "lat": 9.05492,
+    "lng": 38.72769
+  },
+  "Gullele Addisu Gebeya Block 22": {
+    "lat": 9.05160,
+    "lng": 38.72619
+  },
+  "Gullele Addisu Gebeya Block 23": {
+    "lat": 9.04883,
+    "lng": 38.72542
+  },
+  "Gullele Addisu Gebeya Block 24": {
+    "lat": 9.05585,
+    "lng": 38.72114
+  },
+  "Gullele Addisu Gebeya Block 25": {
+    "lat": 9.05512,
+    "lng": 38.72354
+  },
+  "Gullele Addisu Gebeya Block 26": {
+    "lat": 9.05587,
+    "lng": 38.72757
+  },
+  "Gullele Addisu Gebeya Block 27": {
+    "lat": 9.04912,
+    "lng": 38.72072
+  },
+  "Gullele Addisu Gebeya Block 28": {
+    "lat": 9.05352,
+    "lng": 38.72032
+  },
+  "Gullele Addisu Gebeya Block 29": {
+    "lat": 9.05873,
+    "lng": 38.72395
+  },
+  "Gullele Addisu Gebeya Block 30": {
+    "lat": 9.05666,
+    "lng": 38.72306
+  },
+  "Gullele Addisu Gebeya Block 31": {
+    "lat": 9.04907,
+    "lng": 38.72703
+  },
+  "Gullele Addisu Gebeya Block 32": {
+    "lat": 9.05570,
+    "lng": 38.72717
+  },
+  "Gullele Addisu Gebeya Block 33": {
+    "lat": 9.05733,
+    "lng": 38.72234
+  },
+  "Gullele Addisu Gebeya Block 34": {
+    "lat": 9.04970,
+    "lng": 38.71871
+  },
+  "Gullele Addisu Gebeya Block 35": {
+    "lat": 9.05493,
+    "lng": 38.72559
+  },
+  "Gullele Addisu Gebeya Block 36": {
+    "lat": 9.05869,
+    "lng": 38.72373
+  },
+  "Gullele Addisu Gebeya Block 37": {
+    "lat": 9.05313,
+    "lng": 38.72120
+  },
+  "Gullele Addisu Gebeya Block 38": {
+    "lat": 9.05152,
+    "lng": 38.72180
+  },
+  "Gullele Addisu Gebeya Block 39": {
+    "lat": 9.05703,
+    "lng": 38.71998
+  },
+  "Gullele Addisu Gebeya Block 40": {
+    "lat": 9.05505,
+    "lng": 38.72675
+  },
+  "Gullele Addisu Gebeya Block 41": {
+    "lat": 9.05868,
+    "lng": 38.72461
+  },
+  "Gullele Addisu Gebeya Block 42": {
+    "lat": 9.05757,
+    "lng": 38.72530
+  },
+  "Gullele Addisu Gebeya Block 43": {
+    "lat": 9.05089,
+    "lng": 38.72261
+  },
+  "Gullele Addisu Gebeya Block 44": {
+    "lat": 9.05601,
+    "lng": 38.72708
+  },
+  "Gullele Addisu Gebeya Block 45": {
+    "lat": 9.05359,
+    "lng": 38.72249
+  },
+  "Gullele Addisu Gebeya Block 46": {
+    "lat": 9.05194,
+    "lng": 38.72565
+  },
+  "Gullele Addisu Gebeya Block 47": {
+    "lat": 9.05610,
+    "lng": 38.72531
+  },
+  "Gullele Addisu Gebeya Block 48": {
+    "lat": 9.05875,
+    "lng": 38.72444
+  },
+  "Gullele Addisu Gebeya Block 49": {
+    "lat": 9.05692,
+    "lng": 38.72419
+  },
+  "Gullele Addisu Gebeya Block 50": {
+    "lat": 9.05797,
+    "lng": 38.72076
+  },
+  "Gullele Addisu Gebeya Block 51": {
+    "lat": 9.05612,
+    "lng": 38.72332
+  },
+  "Gullele Addisu Gebeya Block 52": {
+    "lat": 9.05425,
+    "lng": 38.72330
+  },
+  "Gullele Addisu Gebeya Block 53": {
+    "lat": 9.05383,
+    "lng": 38.72180
+  },
+  "Gullele Addisu Gebeya Block 54": {
+    "lat": 9.05593,
+    "lng": 38.72324
+  },
+  "Gullele Addisu Gebeya Block 55": {
+    "lat": 9.05724,
+    "lng": 38.72388
+  },
+  "Gullele Addisu Gebeya Block 56": {
+    "lat": 9.05067,
+    "lng": 38.72147
+  },
+  "Gullele Addisu Gebeya Block 57": {
+    "lat": 9.05397,
+    "lng": 38.72590
+  },
+  "Gullele Addisu Gebeya Block 58": {
+    "lat": 9.05751,
+    "lng": 38.72647
+  },
+  "Gullele Addisu Gebeya Block 59": {
+    "lat": 9.05073,
+    "lng": 38.72463
+  },
+  "Gullele Addisu Gebeya Block 60": {
+    "lat": 9.05359,
+    "lng": 38.72561
+  },
+  "Gullele Addisu Gebeya Block 61": {
+    "lat": 9.05300,
+    "lng": 38.72724
+  },
+  "Gullele Addisu Gebeya Block 62": {
+    "lat": 9.05811,
+    "lng": 38.72732
+  },
+  "Gullele Addisu Gebeya Block 63": {
+    "lat": 9.05805,
+    "lng": 38.72566
+  },
+  "Gullele Addisu Gebeya Block 64": {
+    "lat": 9.05341,
+    "lng": 38.72859
+  },
+  "Gullele Addisu Gebeya Block 65": {
+    "lat": 9.05513,
+    "lng": 38.72162
+  },
+  "Gullele Addisu Gebeya Block 66": {
+    "lat": 9.05426,
+    "lng": 38.72199
+  },
+  "Gullele Addisu Gebeya Block 67": {
+    "lat": 9.05575,
+    "lng": 38.72418
+  },
+  "Gullele Addisu Gebeya Block 68": {
+    "lat": 9.05601,
+    "lng": 38.72556
+  },
+  "Gullele Addisu Gebeya Block 69": {
+    "lat": 9.05740,
+    "lng": 38.71884
+  },
+  "Gullele Addisu Gebeya Block 70": {
+    "lat": 9.05191,
+    "lng": 38.72454
+  },
+  "Gullele Addisu Gebeya Block 71": {
+    "lat": 9.05656,
+    "lng": 38.72078
+  },
+  "Gullele Addisu Gebeya Block 72": {
+    "lat": 9.05745,
+    "lng": 38.72315
+  },
+  "Gullele Addisu Gebeya Block 73": {
+    "lat": 9.05786,
+    "lng": 38.72595
+  },
+  "Gullele Addisu Gebeya Block 74": {
+    "lat": 9.05284,
+    "lng": 38.72140
+  },
+  "Gullele Addisu Gebeya Block 75": {
+    "lat": 9.05126,
+    "lng": 38.72206
+  },
+  "Gullele Addisu Gebeya Block 76": {
+    "lat": 9.05554,
+    "lng": 38.72612
+  },
+  "Gullele Addisu Gebeya Block 77": {
+    "lat": 9.05465,
+    "lng": 38.72092
+  },
+  "Gullele Addisu Gebeya Block 78": {
+    "lat": 9.05208,
+    "lng": 38.71875
+  },
+  "Gullele Addisu Gebeya Block 79": {
+    "lat": 9.05030,
+    "lng": 38.71911
+  },
+  "Gullele Addisu Gebeya Block 80": {
+    "lat": 9.05200,
+    "lng": 38.71981
+  },
+  "Gullele Addisu Gebeya Block 81": {
+    "lat": 9.05567,
+    "lng": 38.72416
+  },
+  "Gullele Addisu Gebeya Block 82": {
+    "lat": 9.05857,
+    "lng": 38.72436
+  },
+  "Gullele Addisu Gebeya Block 83": {
+    "lat": 9.05269,
+    "lng": 38.72763
+  },
+  "Gullele Addisu Gebeya Block 84": {
+    "lat": 9.05445,
+    "lng": 38.72033
+  },
+  "Gullele Addisu Gebeya Block 85": {
+    "lat": 9.05689,
+    "lng": 38.72565
+  },
+  "Gullele Addisu Gebeya Block 86": {
+    "lat": 9.05096,
+    "lng": 38.72512
+  },
+  "Gullele Addisu Gebeya Block 87": {
+    "lat": 9.05130,
+    "lng": 38.72158
+  },
+  "Gullele Addisu Gebeya Block 88": {
+    "lat": 9.05096,
+    "lng": 38.72108
+  },
+  "Gullele Addisu Gebeya Block 89": {
+    "lat": 9.05372,
+    "lng": 38.72377
+  },
+  "Gullele Addisu Gebeya Block 90": {
+    "lat": 9.05404,
+    "lng": 38.72000
+  },
+  "Gullele Addisu Gebeya Block 91": {
+    "lat": 9.05786,
+    "lng": 38.72448
+  },
+  "Gullele Addisu Gebeya Block 92": {
+    "lat": 9.05388,
+    "lng": 38.72652
+  },
+  "Gullele Addisu Gebeya Block 93": {
+    "lat": 9.05041,
+    "lng": 38.72215
+  },
+  "Gullele Addisu Gebeya Block 94": {
+    "lat": 9.05740,
+    "lng": 38.72809
+  },
+  "Gullele Addisu Gebeya Block 95": {
+    "lat": 9.05870,
+    "lng": 38.72317
+  },
+  "Gullele Addisu Gebeya Block 96": {
+    "lat": 9.05451,
+    "lng": 38.72056
+  },
+  "Gullele Addisu Gebeya Block 97": {
+    "lat": 9.05453,
+    "lng": 38.72773
+  },
+  "Gullele Addisu Gebeya Block 98": {
+    "lat": 9.05179,
+    "lng": 38.72171
+  },
+  "Gullele Addisu Gebeya Block 99": {
+    "lat": 9.05017,
+    "lng": 38.72386
+  },
+  "Gullele Addisu Gebeya Block 100": {
+    "lat": 9.05640,
+    "lng": 38.72064
+  },
+  "Gullele Shegole Block 1": {
+    "lat": 9.05860,
+    "lng": 38.72642
+  },
+  "Gullele Shegole Block 2": {
+    "lat": 9.05657,
+    "lng": 38.72398
+  },
+  "Gullele Shegole Block 3": {
+    "lat": 9.05678,
+    "lng": 38.72260
+  },
+  "Gullele Shegole Block 4": {
+    "lat": 9.05703,
+    "lng": 38.72589
+  },
+  "Gullele Shegole Block 5": {
+    "lat": 9.05618,
+    "lng": 38.71898
+  },
+  "Gullele Shegole Block 6": {
+    "lat": 9.05837,
+    "lng": 38.72553
+  },
+  "Gullele Shegole Block 7": {
+    "lat": 9.04921,
+    "lng": 38.72500
+  },
+  "Gullele Shegole Block 8": {
+    "lat": 9.05377,
+    "lng": 38.71891
+  },
+  "Gullele Shegole Block 9": {
+    "lat": 9.05838,
+    "lng": 38.72437
+  },
+  "Gullele Shegole Block 10": {
+    "lat": 9.05685,
+    "lng": 38.72177
+  },
+  "Gullele Shegole Block 11": {
+    "lat": 9.05744,
+    "lng": 38.72454
+  },
+  "Gullele Shegole Block 12": {
+    "lat": 9.05717,
+    "lng": 38.72612
+  },
+  "Gullele Shegole Block 13": {
+    "lat": 9.05520,
+    "lng": 38.72525
+  },
+  "Gullele Shegole Block 14": {
+    "lat": 9.05560,
+    "lng": 38.72671
+  },
+  "Gullele Shegole Block 15": {
+    "lat": 9.05184,
+    "lng": 38.72802
+  },
+  "Gullele Shegole Block 16": {
+    "lat": 9.05776,
+    "lng": 38.72480
+  },
+  "Gullele Shegole Block 17": {
+    "lat": 9.05743,
+    "lng": 38.72406
+  },
+  "Gullele Shegole Block 18": {
+    "lat": 9.05622,
+    "lng": 38.72826
+  },
+  "Gullele Shegole Block 19": {
+    "lat": 9.05700,
+    "lng": 38.72316
+  },
+  "Gullele Shegole Block 20": {
+    "lat": 9.05608,
+    "lng": 38.72037
+  },
+  "Gullele Shegole Block 21": {
+    "lat": 9.05790,
+    "lng": 38.72757
+  },
+  "Gullele Shegole Block 22": {
+    "lat": 9.05061,
+    "lng": 38.72105
+  },
+  "Gullele Shegole Block 23": {
+    "lat": 9.05629,
+    "lng": 38.72357
+  },
+  "Gullele Shegole Block 24": {
+    "lat": 9.05090,
+    "lng": 38.72864
+  },
+  "Gullele Shegole Block 25": {
+    "lat": 9.05281,
+    "lng": 38.72733
+  },
+  "Gullele Shegole Block 26": {
+    "lat": 9.05730,
+    "lng": 38.72792
+  },
+  "Gullele Shegole Block 27": {
+    "lat": 9.05702,
+    "lng": 38.72508
+  },
+  "Gullele Shegole Block 28": {
+    "lat": 9.05463,
+    "lng": 38.72341
+  },
+  "Gullele Shegole Block 29": {
+    "lat": 9.05619,
+    "lng": 38.72097
+  },
+  "Gullele Shegole Block 30": {
+    "lat": 9.05876,
+    "lng": 38.72717
+  },
+  "Gullele Shegole Block 31": {
+    "lat": 9.04974,
+    "lng": 38.72127
+  },
+  "Gullele Shegole Block 32": {
+    "lat": 9.05719,
+    "lng": 38.71973
+  },
+  "Gullele Shegole Block 33": {
+    "lat": 9.05761,
+    "lng": 38.72291
+  },
+  "Gullele Shegole Block 34": {
+    "lat": 9.05751,
+    "lng": 38.71941
+  },
+  "Gullele Shegole Block 35": {
+    "lat": 9.05338,
+    "lng": 38.72618
+  },
+  "Gullele Shegole Block 36": {
+    "lat": 9.05445,
+    "lng": 38.72725
+  },
+  "Gullele Shegole Block 37": {
+    "lat": 9.05493,
+    "lng": 38.72680
+  },
+  "Gullele Shegole Block 38": {
+    "lat": 9.05785,
+    "lng": 38.72791
+  },
+  "Gullele Shegole Block 39": {
+    "lat": 9.05520,
+    "lng": 38.72702
+  },
+  "Gullele Shegole Block 40": {
+    "lat": 9.05104,
+    "lng": 38.72489
+  },
+  "Gullele Shegole Block 41": {
+    "lat": 9.05753,
+    "lng": 38.72216
+  },
+  "Gullele Shegole Block 42": {
+    "lat": 9.05583,
+    "lng": 38.72830
+  },
+  "Gullele Shegole Block 43": {
+    "lat": 9.05585,
+    "lng": 38.72832
+  },
+  "Gullele Shegole Block 44": {
+    "lat": 9.05245,
+    "lng": 38.72316
+  },
+  "Gullele Shegole Block 45": {
+    "lat": 9.05037,
+    "lng": 38.72410
+  },
+  "Gullele Shegole Block 46": {
+    "lat": 9.05820,
+    "lng": 38.72858
+  },
+  "Gullele Shegole Block 47": {
+    "lat": 9.05643,
+    "lng": 38.72144
+  },
+  "Gullele Shegole Block 48": {
+    "lat": 9.05234,
+    "lng": 38.72366
+  },
+  "Gullele Shegole Block 49": {
+    "lat": 9.05780,
+    "lng": 38.71898
+  },
+  "Gullele Shegole Block 50": {
+    "lat": 9.05421,
+    "lng": 38.72015
+  },
+  "Gullele Shegole Block 51": {
+    "lat": 9.05590,
+    "lng": 38.72490
+  },
+  "Gullele Shegole Block 52": {
+    "lat": 9.05270,
+    "lng": 38.72668
+  },
+  "Gullele Shegole Block 53": {
+    "lat": 9.05664,
+    "lng": 38.72676
+  },
+  "Gullele Shegole Block 54": {
+    "lat": 9.04909,
+    "lng": 38.72469
+  },
+  "Gullele Shegole Block 55": {
+    "lat": 9.05449,
+    "lng": 38.72325
+  },
+  "Gullele Shegole Block 56": {
+    "lat": 9.05879,
+    "lng": 38.72631
+  },
+  "Gullele Shegole Block 57": {
+    "lat": 9.05872,
+    "lng": 38.72259
+  },
+  "Gullele Shegole Block 58": {
+    "lat": 9.05065,
+    "lng": 38.72425
+  },
+  "Gullele Shegole Block 59": {
+    "lat": 9.05646,
+    "lng": 38.72578
+  },
+  "Gullele Shegole Block 60": {
+    "lat": 9.05139,
+    "lng": 38.72711
+  },
+  "Gullele Shegole Block 61": {
+    "lat": 9.04999,
+    "lng": 38.72815
+  },
+  "Gullele Shegole Block 62": {
+    "lat": 9.05766,
+    "lng": 38.72245
+  },
+  "Gullele Shegole Block 63": {
+    "lat": 9.05610,
+    "lng": 38.72538
+  },
+  "Gullele Shegole Block 64": {
+    "lat": 9.05271,
+    "lng": 38.72845
+  },
+  "Gullele Shegole Block 65": {
+    "lat": 9.05022,
+    "lng": 38.72821
+  },
+  "Gullele Shegole Block 66": {
+    "lat": 9.05268,
+    "lng": 38.72264
+  },
+  "Gullele Shegole Block 67": {
+    "lat": 9.05030,
+    "lng": 38.72804
+  },
+  "Gullele Shegole Block 68": {
+    "lat": 9.05057,
+    "lng": 38.72574
+  },
+  "Gullele Shegole Block 69": {
+    "lat": 9.05264,
+    "lng": 38.72519
+  },
+  "Gullele Shegole Block 70": {
+    "lat": 9.05098,
+    "lng": 38.72719
+  },
+  "Gullele Shegole Block 71": {
+    "lat": 9.05795,
+    "lng": 38.72614
+  },
+  "Gullele Shegole Block 72": {
+    "lat": 9.05131,
+    "lng": 38.72431
+  },
+  "Gullele Shegole Block 73": {
+    "lat": 9.05233,
+    "lng": 38.72606
+  },
+  "Gullele Shegole Block 74": {
+    "lat": 9.05861,
+    "lng": 38.72444
+  },
+  "Gullele Shegole Block 75": {
+    "lat": 9.05706,
+    "lng": 38.72308
+  },
+  "Gullele Shegole Block 76": {
+    "lat": 9.05835,
+    "lng": 38.72857
+  },
+  "Gullele Shegole Block 77": {
+    "lat": 9.04906,
+    "lng": 38.72063
+  },
+  "Gullele Shegole Block 78": {
+    "lat": 9.05132,
+    "lng": 38.72694
+  },
+  "Gullele Shegole Block 79": {
+    "lat": 9.04986,
+    "lng": 38.72615
+  },
+  "Gullele Shegole Block 80": {
+    "lat": 9.05242,
+    "lng": 38.72666
+  },
+  "Gullele Shegole Block 81": {
+    "lat": 9.05342,
+    "lng": 38.72833
+  },
+  "Gullele Shegole Block 82": {
+    "lat": 9.05696,
+    "lng": 38.72256
+  },
+  "Gullele Shegole Block 83": {
+    "lat": 9.05246,
+    "lng": 38.72649
+  },
+  "Gullele Shegole Block 84": {
+    "lat": 9.05229,
+    "lng": 38.72647
+  },
+  "Gullele Shegole Block 85": {
+    "lat": 9.05651,
+    "lng": 38.71918
+  },
+  "Gullele Shegole Block 86": {
+    "lat": 9.05548,
+    "lng": 38.72621
+  },
+  "Gullele Shegole Block 87": {
+    "lat": 9.04939,
+    "lng": 38.72150
+  },
+  "Gullele Shegole Block 88": {
+    "lat": 9.05796,
+    "lng": 38.72028
+  },
+  "Gullele Shegole Block 89": {
+    "lat": 9.05775,
+    "lng": 38.72124
+  },
+  "Gullele Shegole Block 90": {
+    "lat": 9.05213,
+    "lng": 38.72556
+  },
+  "Gullele Shegole Block 91": {
+    "lat": 9.05597,
+    "lng": 38.72424
+  },
+  "Gullele Shegole Block 92": {
+    "lat": 9.05267,
+    "lng": 38.72595
+  },
+  "Gullele Shegole Block 93": {
+    "lat": 9.05755,
+    "lng": 38.72397
+  },
+  "Gullele Shegole Block 94": {
+    "lat": 9.05639,
+    "lng": 38.72356
+  },
+  "Gullele Shegole Block 95": {
+    "lat": 9.05491,
+    "lng": 38.72016
+  },
+  "Gullele Shegole Block 96": {
+    "lat": 9.05796,
+    "lng": 38.72255
+  },
+  "Gullele Shegole Block 97": {
+    "lat": 9.05542,
+    "lng": 38.72471
+  },
+  "Gullele Shegole Block 98": {
+    "lat": 9.05468,
+    "lng": 38.72429
+  },
+  "Gullele Shegole Block 99": {
+    "lat": 9.05180,
+    "lng": 38.72350
+  },
+  "Gullele Shegole Block 100": {
+    "lat": 9.05361,
+    "lng": 38.72252
+  },
+  "Gullele Kuskuam Block 1": {
+    "lat": 9.05855,
+    "lng": 38.72405
+  },
+  "Gullele Kuskuam Block 2": {
+    "lat": 9.05766,
+    "lng": 38.72647
+  },
+  "Gullele Kuskuam Block 3": {
+    "lat": 9.05024,
+    "lng": 38.72476
+  },
+  "Gullele Kuskuam Block 4": {
+    "lat": 9.05874,
+    "lng": 38.72466
+  },
+  "Gullele Kuskuam Block 5": {
+    "lat": 9.05331,
+    "lng": 38.72828
+  },
+  "Gullele Kuskuam Block 6": {
+    "lat": 9.05406,
+    "lng": 38.72023
+  },
+  "Gullele Kuskuam Block 7": {
+    "lat": 9.05530,
+    "lng": 38.72338
+  },
+  "Gullele Kuskuam Block 8": {
+    "lat": 9.05581,
+    "lng": 38.72628
+  },
+  "Gullele Kuskuam Block 9": {
+    "lat": 9.05274,
+    "lng": 38.72562
+  },
+  "Gullele Kuskuam Block 10": {
+    "lat": 9.05146,
+    "lng": 38.72294
+  },
+  "Gullele Kuskuam Block 11": {
+    "lat": 9.05456,
+    "lng": 38.72426
+  },
+  "Gullele Kuskuam Block 12": {
+    "lat": 9.05260,
+    "lng": 38.72665
+  },
+  "Gullele Kuskuam Block 13": {
+    "lat": 9.05040,
+    "lng": 38.72835
+  },
+  "Gullele Kuskuam Block 14": {
+    "lat": 9.05108,
+    "lng": 38.72127
+  },
+  "Gullele Kuskuam Block 15": {
+    "lat": 9.04963,
+    "lng": 38.72168
+  },
+  "Gullele Kuskuam Block 16": {
+    "lat": 9.04959,
+    "lng": 38.72126
+  },
+  "Gullele Kuskuam Block 17": {
+    "lat": 9.05067,
+    "lng": 38.72836
+  },
+  "Gullele Kuskuam Block 18": {
+    "lat": 9.05773,
+    "lng": 38.72654
+  },
+  "Gullele Kuskuam Block 19": {
+    "lat": 9.04943,
+    "lng": 38.72664
+  },
+  "Gullele Kuskuam Block 20": {
+    "lat": 9.05750,
+    "lng": 38.72042
+  },
+  "Gullele Kuskuam Block 21": {
+    "lat": 9.04951,
+    "lng": 38.72833
+  },
+  "Gullele Kuskuam Block 22": {
+    "lat": 9.05579,
+    "lng": 38.72238
+  },
+  "Gullele Kuskuam Block 23": {
+    "lat": 9.05525,
+    "lng": 38.72744
+  },
+  "Gullele Kuskuam Block 24": {
+    "lat": 9.05663,
+    "lng": 38.72124
+  },
+  "Gullele Kuskuam Block 25": {
+    "lat": 9.05236,
+    "lng": 38.71902
+  },
+  "Gullele Kuskuam Block 26": {
+    "lat": 9.05671,
+    "lng": 38.72373
+  },
+  "Gullele Kuskuam Block 27": {
+    "lat": 9.05818,
+    "lng": 38.72652
+  },
+  "Gullele Kuskuam Block 28": {
+    "lat": 9.05874,
+    "lng": 38.72604
+  },
+  "Gullele Kuskuam Block 29": {
+    "lat": 9.05561,
+    "lng": 38.72034
+  },
+  "Gullele Kuskuam Block 30": {
+    "lat": 9.05120,
+    "lng": 38.72677
+  },
+  "Gullele Kuskuam Block 31": {
+    "lat": 9.05877,
+    "lng": 38.72393
+  },
+  "Gullele Kuskuam Block 32": {
+    "lat": 9.05079,
+    "lng": 38.72707
+  },
+  "Gullele Kuskuam Block 33": {
+    "lat": 9.05517,
+    "lng": 38.71900
+  },
+  "Gullele Kuskuam Block 34": {
+    "lat": 9.05227,
+    "lng": 38.72627
+  },
+  "Gullele Kuskuam Block 35": {
+    "lat": 9.05312,
+    "lng": 38.72087
+  },
+  "Gullele Kuskuam Block 36": {
+    "lat": 9.05604,
+    "lng": 38.72060
+  },
+  "Gullele Kuskuam Block 37": {
+    "lat": 9.05247,
+    "lng": 38.72272
+  },
+  "Gullele Kuskuam Block 38": {
+    "lat": 9.04888,
+    "lng": 38.72849
+  },
+  "Gullele Kuskuam Block 39": {
+    "lat": 9.05085,
+    "lng": 38.72399
+  },
+  "Gullele Kuskuam Block 40": {
+    "lat": 9.05068,
+    "lng": 38.72324
+  },
+  "Gullele Kuskuam Block 41": {
+    "lat": 9.05234,
+    "lng": 38.71963
+  },
+  "Gullele Kuskuam Block 42": {
+    "lat": 9.05705,
+    "lng": 38.72715
+  },
+  "Gullele Kuskuam Block 43": {
+    "lat": 9.05022,
+    "lng": 38.71947
+  },
+  "Gullele Kuskuam Block 44": {
+    "lat": 9.05491,
+    "lng": 38.72861
+  },
+  "Gullele Kuskuam Block 45": {
+    "lat": 9.05597,
+    "lng": 38.72237
+  },
+  "Gullele Kuskuam Block 46": {
+    "lat": 9.05187,
+    "lng": 38.72192
+  },
+  "Gullele Kuskuam Block 47": {
+    "lat": 9.05838,
+    "lng": 38.72675
+  },
+  "Gullele Kuskuam Block 48": {
+    "lat": 9.04942,
+    "lng": 38.72068
+  },
+  "Gullele Kuskuam Block 49": {
+    "lat": 9.05112,
+    "lng": 38.72522
+  },
+  "Gullele Kuskuam Block 50": {
+    "lat": 9.05058,
+    "lng": 38.72756
+  },
+  "Gullele Kuskuam Block 51": {
+    "lat": 9.05446,
+    "lng": 38.72326
+  },
+  "Gullele Kuskuam Block 52": {
+    "lat": 9.05068,
+    "lng": 38.72853
+  },
+  "Gullele Kuskuam Block 53": {
+    "lat": 9.05856,
+    "lng": 38.72357
+  },
+  "Gullele Kuskuam Block 54": {
+    "lat": 9.05842,
+    "lng": 38.72108
+  },
+  "Gullele Kuskuam Block 55": {
+    "lat": 9.05470,
+    "lng": 38.72469
+  },
+  "Gullele Kuskuam Block 56": {
+    "lat": 9.05112,
+    "lng": 38.72163
+  },
+  "Gullele Kuskuam Block 57": {
+    "lat": 9.05415,
+    "lng": 38.71889
+  },
+  "Gullele Kuskuam Block 58": {
+    "lat": 9.04964,
+    "lng": 38.72355
+  },
+  "Gullele Kuskuam Block 59": {
+    "lat": 9.05851,
+    "lng": 38.72812
+  },
+  "Gullele Kuskuam Block 60": {
+    "lat": 9.04949,
+    "lng": 38.72178
+  },
+  "Gullele Kuskuam Block 61": {
+    "lat": 9.05326,
+    "lng": 38.72787
+  },
+  "Gullele Kuskuam Block 62": {
+    "lat": 9.05362,
+    "lng": 38.72420
+  },
+  "Gullele Kuskuam Block 63": {
+    "lat": 9.04996,
+    "lng": 38.72432
+  },
+  "Gullele Kuskuam Block 64": {
+    "lat": 9.05575,
+    "lng": 38.72736
+  },
+  "Gullele Kuskuam Block 65": {
+    "lat": 9.05469,
+    "lng": 38.72197
+  },
+  "Gullele Kuskuam Block 66": {
+    "lat": 9.05491,
+    "lng": 38.72639
+  },
+  "Gullele Kuskuam Block 67": {
+    "lat": 9.05418,
+    "lng": 38.72440
+  },
+  "Gullele Kuskuam Block 68": {
+    "lat": 9.05639,
+    "lng": 38.72797
+  },
+  "Gullele Kuskuam Block 69": {
+    "lat": 9.05318,
+    "lng": 38.72563
+  },
+  "Gullele Kuskuam Block 70": {
+    "lat": 9.05379,
+    "lng": 38.72208
+  },
+  "Gullele Kuskuam Block 71": {
+    "lat": 9.05406,
+    "lng": 38.72312
+  },
+  "Gullele Kuskuam Block 72": {
+    "lat": 9.05801,
+    "lng": 38.72658
+  },
+  "Gullele Kuskuam Block 73": {
+    "lat": 9.05244,
+    "lng": 38.72136
+  },
+  "Gullele Kuskuam Block 74": {
+    "lat": 9.05677,
+    "lng": 38.72435
+  },
+  "Gullele Kuskuam Block 75": {
+    "lat": 9.05616,
+    "lng": 38.72620
+  },
+  "Gullele Kuskuam Block 76": {
+    "lat": 9.04898,
+    "lng": 38.72740
+  },
+  "Gullele Kuskuam Block 77": {
+    "lat": 9.05158,
+    "lng": 38.72427
+  },
+  "Gullele Kuskuam Block 78": {
+    "lat": 9.05048,
+    "lng": 38.72605
+  },
+  "Gullele Kuskuam Block 79": {
+    "lat": 9.05317,
+    "lng": 38.72858
+  },
+  "Gullele Kuskuam Block 80": {
+    "lat": 9.05650,
+    "lng": 38.72820
+  },
+  "Gullele Kuskuam Block 81": {
+    "lat": 9.04899,
+    "lng": 38.72646
+  },
+  "Gullele Kuskuam Block 82": {
+    "lat": 9.05403,
+    "lng": 38.72418
+  },
+  "Gullele Kuskuam Block 83": {
+    "lat": 9.05562,
+    "lng": 38.72241
+  },
+  "Gullele Kuskuam Block 84": {
+    "lat": 9.05594,
+    "lng": 38.72660
+  },
+  "Gullele Kuskuam Block 85": {
+    "lat": 9.05029,
+    "lng": 38.72383
+  },
+  "Gullele Kuskuam Block 86": {
+    "lat": 9.05844,
+    "lng": 38.72217
+  },
+  "Gullele Kuskuam Block 87": {
+    "lat": 9.05377,
+    "lng": 38.72470
+  },
+  "Gullele Kuskuam Block 88": {
+    "lat": 9.05195,
+    "lng": 38.72816
+  },
+  "Gullele Kuskuam Block 89": {
+    "lat": 9.05434,
+    "lng": 38.72854
+  },
+  "Gullele Kuskuam Block 90": {
+    "lat": 9.05411,
+    "lng": 38.72245
+  },
+  "Gullele Kuskuam Block 91": {
+    "lat": 9.05195,
+    "lng": 38.72257
+  },
+  "Gullele Kuskuam Block 92": {
+    "lat": 9.05105,
+    "lng": 38.72675
+  },
+  "Gullele Kuskuam Block 93": {
+    "lat": 9.05006,
+    "lng": 38.72571
+  },
+  "Gullele Kuskuam Block 94": {
+    "lat": 9.05026,
+    "lng": 38.72417
+  },
+  "Gullele Kuskuam Block 95": {
+    "lat": 9.05178,
+    "lng": 38.72391
+  },
+  "Gullele Kuskuam Block 96": {
+    "lat": 9.05082,
+    "lng": 38.72442
+  },
+  "Gullele Kuskuam Block 97": {
+    "lat": 9.05688,
+    "lng": 38.72291
+  },
+  "Gullele Kuskuam Block 98": {
+    "lat": 9.05444,
+    "lng": 38.72643
+  },
+  "Gullele Kuskuam Block 99": {
+    "lat": 9.04881,
+    "lng": 38.72114
+  },
+  "Gullele Kuskuam Block 100": {
+    "lat": 9.05473,
+    "lng": 38.72267
+  },
+  "Gullele Entoto Block 1": {
+    "lat": 9.05240,
+    "lng": 38.71892
+  },
+  "Gullele Entoto Block 2": {
+    "lat": 9.04932,
+    "lng": 38.71989
+  },
+  "Gullele Entoto Block 3": {
+    "lat": 9.05506,
+    "lng": 38.72242
+  },
+  "Gullele Entoto Block 4": {
+    "lat": 9.05337,
+    "lng": 38.72412
+  },
+  "Gullele Entoto Block 5": {
+    "lat": 9.05609,
+    "lng": 38.72333
+  },
+  "Gullele Entoto Block 6": {
+    "lat": 9.05827,
+    "lng": 38.72101
+  },
+  "Gullele Entoto Block 7": {
+    "lat": 9.05667,
+    "lng": 38.72002
+  },
+  "Gullele Entoto Block 8": {
+    "lat": 9.05741,
+    "lng": 38.72826
+  },
+  "Gullele Entoto Block 9": {
+    "lat": 9.05421,
+    "lng": 38.72762
+  },
+  "Gullele Entoto Block 10": {
+    "lat": 9.05777,
+    "lng": 38.71966
+  },
+  "Gullele Entoto Block 11": {
+    "lat": 9.05228,
+    "lng": 38.72627
+  },
+  "Gullele Entoto Block 12": {
+    "lat": 9.05703,
+    "lng": 38.72717
+  },
+  "Gullele Entoto Block 13": {
+    "lat": 9.05409,
+    "lng": 38.72867
+  },
+  "Gullele Entoto Block 14": {
+    "lat": 9.05664,
+    "lng": 38.72193
+  },
+  "Gullele Entoto Block 15": {
+    "lat": 9.05408,
+    "lng": 38.72521
+  },
+  "Gullele Entoto Block 16": {
+    "lat": 9.05749,
+    "lng": 38.72442
+  },
+  "Gullele Entoto Block 17": {
+    "lat": 9.05544,
+    "lng": 38.72793
+  },
+  "Gullele Entoto Block 18": {
+    "lat": 9.05163,
+    "lng": 38.72204
+  },
+  "Gullele Entoto Block 19": {
+    "lat": 9.05524,
+    "lng": 38.72033
+  },
+  "Gullele Entoto Block 20": {
+    "lat": 9.05439,
+    "lng": 38.72543
+  },
+  "Gullele Entoto Block 21": {
+    "lat": 9.05453,
+    "lng": 38.71994
+  },
+  "Gullele Entoto Block 22": {
+    "lat": 9.05733,
+    "lng": 38.72606
+  },
+  "Gullele Entoto Block 23": {
+    "lat": 9.05279,
+    "lng": 38.72595
+  },
+  "Gullele Entoto Block 24": {
+    "lat": 9.04981,
+    "lng": 38.72722
+  },
+  "Gullele Entoto Block 25": {
+    "lat": 9.05655,
+    "lng": 38.71870
+  },
+  "Gullele Entoto Block 26": {
+    "lat": 9.05089,
+    "lng": 38.72196
+  },
+  "Gullele Entoto Block 27": {
+    "lat": 9.05144,
+    "lng": 38.72345
+  },
+  "Gullele Entoto Block 28": {
+    "lat": 9.05047,
+    "lng": 38.72293
+  },
+  "Gullele Entoto Block 29": {
+    "lat": 9.05408,
+    "lng": 38.71940
+  },
+  "Gullele Entoto Block 30": {
+    "lat": 9.05842,
+    "lng": 38.72702
+  },
+  "Gullele Entoto Block 31": {
+    "lat": 9.05672,
+    "lng": 38.72560
+  },
+  "Gullele Entoto Block 32": {
+    "lat": 9.05058,
+    "lng": 38.72825
+  },
+  "Gullele Entoto Block 33": {
+    "lat": 9.04910,
+    "lng": 38.72674
+  },
+  "Gullele Entoto Block 34": {
+    "lat": 9.05122,
+    "lng": 38.72225
+  },
+  "Gullele Entoto Block 35": {
+    "lat": 9.05526,
+    "lng": 38.72806
+  },
+  "Gullele Entoto Block 36": {
+    "lat": 9.05809,
+    "lng": 38.72124
+  },
+  "Gullele Entoto Block 37": {
+    "lat": 9.05877,
+    "lng": 38.72191
+  },
+  "Gullele Entoto Block 38": {
+    "lat": 9.05325,
+    "lng": 38.72771
+  },
+  "Gullele Entoto Block 39": {
+    "lat": 9.05666,
+    "lng": 38.72727
+  },
+  "Gullele Entoto Block 40": {
+    "lat": 9.05865,
+    "lng": 38.72610
+  },
+  "Gullele Entoto Block 41": {
+    "lat": 9.05558,
+    "lng": 38.72171
+  },
+  "Gullele Entoto Block 42": {
+    "lat": 9.05155,
+    "lng": 38.72225
+  },
+  "Gullele Entoto Block 43": {
+    "lat": 9.05609,
+    "lng": 38.72323
+  },
+  "Gullele Entoto Block 44": {
+    "lat": 9.04953,
+    "lng": 38.72693
+  },
+  "Gullele Entoto Block 45": {
+    "lat": 9.05366,
+    "lng": 38.71889
+  },
+  "Gullele Entoto Block 46": {
+    "lat": 9.05192,
+    "lng": 38.72864
+  },
+  "Gullele Entoto Block 47": {
+    "lat": 9.05046,
+    "lng": 38.72717
+  },
+  "Gullele Entoto Block 48": {
+    "lat": 9.04990,
+    "lng": 38.72275
+  },
+  "Gullele Entoto Block 49": {
+    "lat": 9.05419,
+    "lng": 38.72037
+  },
+  "Gullele Entoto Block 50": {
+    "lat": 9.05374,
+    "lng": 38.72583
+  },
+  "Gullele Entoto Block 51": {
+    "lat": 9.05757,
+    "lng": 38.72617
+  },
+  "Gullele Entoto Block 52": {
+    "lat": 9.05582,
+    "lng": 38.71917
+  },
+  "Gullele Entoto Block 53": {
+    "lat": 9.05711,
+    "lng": 38.72357
+  },
+  "Gullele Entoto Block 54": {
+    "lat": 9.05699,
+    "lng": 38.72261
+  },
+  "Gullele Entoto Block 55": {
+    "lat": 9.05226,
+    "lng": 38.72042
+  },
+  "Gullele Entoto Block 56": {
+    "lat": 9.05389,
+    "lng": 38.72434
+  },
+  "Gullele Entoto Block 57": {
+    "lat": 9.05144,
+    "lng": 38.72624
+  },
+  "Gullele Entoto Block 58": {
+    "lat": 9.05674,
+    "lng": 38.72020
+  },
+  "Gullele Entoto Block 59": {
+    "lat": 9.05161,
+    "lng": 38.71894
+  },
+  "Gullele Entoto Block 60": {
+    "lat": 9.05615,
+    "lng": 38.72568
+  },
+  "Gullele Entoto Block 61": {
+    "lat": 9.05142,
+    "lng": 38.71880
+  },
+  "Gullele Entoto Block 62": {
+    "lat": 9.05681,
+    "lng": 38.72396
+  },
+  "Gullele Entoto Block 63": {
+    "lat": 9.05683,
+    "lng": 38.72101
+  },
+  "Gullele Entoto Block 64": {
+    "lat": 9.05120,
+    "lng": 38.72133
+  },
+  "Gullele Entoto Block 65": {
+    "lat": 9.05029,
+    "lng": 38.72552
+  },
+  "Gullele Entoto Block 66": {
+    "lat": 9.05366,
+    "lng": 38.72139
+  },
+  "Gullele Entoto Block 67": {
+    "lat": 9.05522,
+    "lng": 38.72811
+  },
+  "Gullele Entoto Block 68": {
+    "lat": 9.05748,
+    "lng": 38.72541
+  },
+  "Gullele Entoto Block 69": {
+    "lat": 9.05306,
+    "lng": 38.72131
+  },
+  "Gullele Entoto Block 70": {
+    "lat": 9.05392,
+    "lng": 38.71870
+  },
+  "Gullele Entoto Block 71": {
+    "lat": 9.05878,
+    "lng": 38.72291
+  },
+  "Gullele Entoto Block 72": {
+    "lat": 9.05769,
+    "lng": 38.72257
+  },
+  "Gullele Entoto Block 73": {
+    "lat": 9.05604,
+    "lng": 38.72833
+  },
+  "Gullele Entoto Block 74": {
+    "lat": 9.04924,
+    "lng": 38.72803
+  },
+  "Gullele Entoto Block 75": {
+    "lat": 9.05483,
+    "lng": 38.72628
+  },
+  "Gullele Entoto Block 76": {
+    "lat": 9.04929,
+    "lng": 38.72716
+  },
+  "Gullele Entoto Block 77": {
+    "lat": 9.04882,
+    "lng": 38.72552
+  },
+  "Gullele Entoto Block 78": {
+    "lat": 9.05214,
+    "lng": 38.72330
+  },
+  "Gullele Entoto Block 79": {
+    "lat": 9.05013,
+    "lng": 38.72646
+  },
+  "Gullele Entoto Block 80": {
+    "lat": 9.05394,
+    "lng": 38.72210
+  },
+  "Gullele Entoto Block 81": {
+    "lat": 9.05809,
+    "lng": 38.71928
+  },
+  "Gullele Entoto Block 82": {
+    "lat": 9.05096,
+    "lng": 38.72709
+  },
+  "Gullele Entoto Block 83": {
+    "lat": 9.05866,
+    "lng": 38.72740
+  },
+  "Gullele Entoto Block 84": {
+    "lat": 9.05774,
+    "lng": 38.72105
+  },
+  "Gullele Entoto Block 85": {
+    "lat": 9.04999,
+    "lng": 38.72663
+  },
+  "Gullele Entoto Block 86": {
+    "lat": 9.04909,
+    "lng": 38.72298
+  },
+  "Gullele Entoto Block 87": {
+    "lat": 9.05191,
+    "lng": 38.72263
+  },
+  "Gullele Entoto Block 88": {
+    "lat": 9.05728,
+    "lng": 38.71875
+  },
+  "Gullele Entoto Block 89": {
+    "lat": 9.05568,
+    "lng": 38.72226
+  },
+  "Gullele Entoto Block 90": {
+    "lat": 9.05071,
+    "lng": 38.72698
+  },
+  "Gullele Entoto Block 91": {
+    "lat": 9.05839,
+    "lng": 38.72838
+  },
+  "Gullele Entoto Block 92": {
+    "lat": 9.05095,
+    "lng": 38.71878
+  },
+  "Gullele Entoto Block 93": {
+    "lat": 9.05331,
+    "lng": 38.72446
+  },
+  "Gullele Entoto Block 94": {
+    "lat": 9.05024,
+    "lng": 38.72558
+  },
+  "Gullele Entoto Block 95": {
+    "lat": 9.04966,
+    "lng": 38.72175
+  },
+  "Gullele Entoto Block 96": {
+    "lat": 9.05294,
+    "lng": 38.72812
+  },
+  "Gullele Entoto Block 97": {
+    "lat": 9.05634,
+    "lng": 38.72534
+  },
+  "Gullele Entoto Block 98": {
+    "lat": 9.05089,
+    "lng": 38.72622
+  },
+  "Gullele Entoto Block 99": {
+    "lat": 9.05512,
+    "lng": 38.72831
+  },
+  "Gullele Entoto Block 100": {
+    "lat": 9.05875,
+    "lng": 38.72785
+  },
+  "Yeka Kotebe Block 1": {
+    "lat": 9.02603,
+    "lng": 38.78735
+  },
+  "Yeka Kotebe Block 2": {
+    "lat": 9.02708,
+    "lng": 38.78589
+  },
+  "Yeka Kotebe Block 3": {
+    "lat": 9.02622,
+    "lng": 38.78935
+  },
+  "Yeka Kotebe Block 4": {
+    "lat": 9.02721,
+    "lng": 38.79126
+  },
+  "Yeka Kotebe Block 5": {
+    "lat": 9.03358,
+    "lng": 38.78713
+  },
+  "Yeka Kotebe Block 6": {
+    "lat": 9.03233,
+    "lng": 38.78920
+  },
+  "Yeka Kotebe Block 7": {
+    "lat": 9.02724,
+    "lng": 38.78766
+  },
+  "Yeka Kotebe Block 8": {
+    "lat": 9.03025,
+    "lng": 38.78877
+  },
+  "Yeka Kotebe Block 9": {
+    "lat": 9.03026,
+    "lng": 38.79149
+  },
+  "Yeka Kotebe Block 10": {
+    "lat": 9.02456,
+    "lng": 38.78771
+  },
+  "Yeka Kotebe Block 11": {
+    "lat": 9.03126,
+    "lng": 38.78369
+  },
+  "Yeka Kotebe Block 12": {
+    "lat": 9.02704,
+    "lng": 38.78628
+  },
+  "Yeka Kotebe Block 13": {
+    "lat": 9.02747,
+    "lng": 38.78477
+  },
+  "Yeka Kotebe Block 14": {
+    "lat": 9.02477,
+    "lng": 38.79095
+  },
+  "Yeka Kotebe Block 15": {
+    "lat": 9.02882,
+    "lng": 38.79219
+  },
+  "Yeka Kotebe Block 16": {
+    "lat": 9.02431,
+    "lng": 38.79000
+  },
+  "Yeka Kotebe Block 17": {
+    "lat": 9.02425,
+    "lng": 38.78810
+  },
+  "Yeka Kotebe Block 18": {
+    "lat": 9.03180,
+    "lng": 38.79002
+  },
+  "Yeka Kotebe Block 19": {
+    "lat": 9.02896,
+    "lng": 38.78373
+  },
+  "Yeka Kotebe Block 20": {
+    "lat": 9.02385,
+    "lng": 38.79095
+  },
+  "Yeka Kotebe Block 21": {
+    "lat": 9.03199,
+    "lng": 38.79168
+  },
+  "Yeka Kotebe Block 22": {
+    "lat": 9.02686,
+    "lng": 38.78700
+  },
+  "Yeka Kotebe Block 23": {
+    "lat": 9.02518,
+    "lng": 38.78968
+  },
+  "Yeka Kotebe Block 24": {
+    "lat": 9.03241,
+    "lng": 38.79080
+  },
+  "Yeka Kotebe Block 25": {
+    "lat": 9.03205,
+    "lng": 38.79163
+  },
+  "Yeka Kotebe Block 26": {
+    "lat": 9.03271,
+    "lng": 38.78904
+  },
+  "Yeka Kotebe Block 27": {
+    "lat": 9.02372,
+    "lng": 38.79102
+  },
+  "Yeka Kotebe Block 28": {
+    "lat": 9.03069,
+    "lng": 38.78848
+  },
+  "Yeka Kotebe Block 29": {
+    "lat": 9.02465,
+    "lng": 38.78697
+  },
+  "Yeka Kotebe Block 30": {
+    "lat": 9.03141,
+    "lng": 38.78358
+  },
+  "Yeka Kotebe Block 31": {
+    "lat": 9.02431,
+    "lng": 38.79229
+  },
+  "Yeka Kotebe Block 32": {
+    "lat": 9.03328,
+    "lng": 38.78610
+  },
+  "Yeka Kotebe Block 33": {
+    "lat": 9.02890,
+    "lng": 38.78368
+  },
+  "Yeka Kotebe Block 34": {
+    "lat": 9.02437,
+    "lng": 38.79020
+  },
+  "Yeka Kotebe Block 35": {
+    "lat": 9.03324,
+    "lng": 38.79132
+  },
+  "Yeka Kotebe Block 36": {
+    "lat": 9.03337,
+    "lng": 38.79242
+  },
+  "Yeka Kotebe Block 37": {
+    "lat": 9.02639,
+    "lng": 38.79083
+  },
+  "Yeka Kotebe Block 38": {
+    "lat": 9.02588,
+    "lng": 38.78315
+  },
+  "Yeka Kotebe Block 39": {
+    "lat": 9.02482,
+    "lng": 38.78552
+  },
+  "Yeka Kotebe Block 40": {
+    "lat": 9.03071,
+    "lng": 38.78547
+  },
+  "Yeka Kotebe Block 41": {
+    "lat": 9.02847,
+    "lng": 38.79099
+  },
+  "Yeka Kotebe Block 42": {
+    "lat": 9.03342,
+    "lng": 38.78292
+  },
+  "Yeka Kotebe Block 43": {
+    "lat": 9.02671,
+    "lng": 38.79230
+  },
+  "Yeka Kotebe Block 44": {
+    "lat": 9.03047,
+    "lng": 38.79135
+  },
+  "Yeka Kotebe Block 45": {
+    "lat": 9.02469,
+    "lng": 38.79008
+  },
+  "Yeka Kotebe Block 46": {
+    "lat": 9.03121,
+    "lng": 38.78748
+  },
+  "Yeka Kotebe Block 47": {
+    "lat": 9.03211,
+    "lng": 38.78544
+  },
+  "Yeka Kotebe Block 48": {
+    "lat": 9.02695,
+    "lng": 38.78719
+  },
+  "Yeka Kotebe Block 49": {
+    "lat": 9.02524,
+    "lng": 38.78792
+  },
+  "Yeka Kotebe Block 50": {
+    "lat": 9.03165,
+    "lng": 38.79007
+  },
+  "Yeka Kotebe Block 51": {
+    "lat": 9.02995,
+    "lng": 38.78576
+  },
+  "Yeka Kotebe Block 52": {
+    "lat": 9.03303,
+    "lng": 38.78621
+  },
+  "Yeka Kotebe Block 53": {
+    "lat": 9.02750,
+    "lng": 38.78379
+  },
+  "Yeka Kotebe Block 54": {
+    "lat": 9.03173,
+    "lng": 38.78422
+  },
+  "Yeka Kotebe Block 55": {
+    "lat": 9.02937,
+    "lng": 38.78472
+  },
+  "Yeka Kotebe Block 56": {
+    "lat": 9.02933,
+    "lng": 38.78499
+  },
+  "Yeka Kotebe Block 57": {
+    "lat": 9.02833,
+    "lng": 38.79133
+  },
+  "Yeka Kotebe Block 58": {
+    "lat": 9.02408,
+    "lng": 38.78920
+  },
+  "Yeka Kotebe Block 59": {
+    "lat": 9.02734,
+    "lng": 38.78714
+  },
+  "Yeka Kotebe Block 60": {
+    "lat": 9.02537,
+    "lng": 38.78635
+  },
+  "Yeka Kotebe Block 61": {
+    "lat": 9.03081,
+    "lng": 38.78385
+  },
+  "Yeka Kotebe Block 62": {
+    "lat": 9.03280,
+    "lng": 38.78385
+  },
+  "Yeka Kotebe Block 63": {
+    "lat": 9.02497,
+    "lng": 38.79012
+  },
+  "Yeka Kotebe Block 64": {
+    "lat": 9.02689,
+    "lng": 38.78767
+  },
+  "Yeka Kotebe Block 65": {
+    "lat": 9.02518,
+    "lng": 38.78363
+  },
+  "Yeka Kotebe Block 66": {
+    "lat": 9.03244,
+    "lng": 38.78755
+  },
+  "Yeka Kotebe Block 67": {
+    "lat": 9.02736,
+    "lng": 38.79193
+  },
+  "Yeka Kotebe Block 68": {
+    "lat": 9.03289,
+    "lng": 38.78746
+  },
+  "Yeka Kotebe Block 69": {
+    "lat": 9.02664,
+    "lng": 38.78552
+  },
+  "Yeka Kotebe Block 70": {
+    "lat": 9.02727,
+    "lng": 38.78799
+  },
+  "Yeka Kotebe Block 71": {
+    "lat": 9.02634,
+    "lng": 38.78750
+  },
+  "Yeka Kotebe Block 72": {
+    "lat": 9.03318,
+    "lng": 38.78426
+  },
+  "Yeka Kotebe Block 73": {
+    "lat": 9.02810,
+    "lng": 38.79156
+  },
+  "Yeka Kotebe Block 74": {
+    "lat": 9.02427,
+    "lng": 38.78492
+  },
+  "Yeka Kotebe Block 75": {
+    "lat": 9.03368,
+    "lng": 38.79139
+  },
+  "Yeka Kotebe Block 76": {
+    "lat": 9.03282,
+    "lng": 38.78558
+  },
+  "Yeka Kotebe Block 77": {
+    "lat": 9.03115,
+    "lng": 38.78506
+  },
+  "Yeka Kotebe Block 78": {
+    "lat": 9.03220,
+    "lng": 38.78579
+  },
+  "Yeka Kotebe Block 79": {
+    "lat": 9.02511,
+    "lng": 38.78605
+  },
+  "Yeka Kotebe Block 80": {
+    "lat": 9.03214,
+    "lng": 38.79226
+  },
+  "Yeka Kotebe Block 81": {
+    "lat": 9.03030,
+    "lng": 38.78950
+  },
+  "Yeka Kotebe Block 82": {
+    "lat": 9.03184,
+    "lng": 38.79242
+  },
+  "Yeka Kotebe Block 83": {
+    "lat": 9.02693,
+    "lng": 38.78584
+  },
+  "Yeka Kotebe Block 84": {
+    "lat": 9.03065,
+    "lng": 38.79211
+  },
+  "Yeka Kotebe Block 85": {
+    "lat": 9.02414,
+    "lng": 38.78403
+  },
+  "Yeka Kotebe Block 86": {
+    "lat": 9.02900,
+    "lng": 38.79131
+  },
+  "Yeka Kotebe Block 87": {
+    "lat": 9.03022,
+    "lng": 38.79130
+  },
+  "Yeka Kotebe Block 88": {
+    "lat": 9.03355,
+    "lng": 38.78289
+  },
+  "Yeka Kotebe Block 89": {
+    "lat": 9.02454,
+    "lng": 38.78518
+  },
+  "Yeka Kotebe Block 90": {
+    "lat": 9.03240,
+    "lng": 38.78460
+  },
+  "Yeka Kotebe Block 91": {
+    "lat": 9.02659,
+    "lng": 38.78489
+  },
+  "Yeka Kotebe Block 92": {
+    "lat": 9.03041,
+    "lng": 38.78617
+  },
+  "Yeka Kotebe Block 93": {
+    "lat": 9.02398,
+    "lng": 38.79203
+  },
+  "Yeka Kotebe Block 94": {
+    "lat": 9.02796,
+    "lng": 38.78326
+  },
+  "Yeka Kotebe Block 95": {
+    "lat": 9.03175,
+    "lng": 38.79017
+  },
+  "Yeka Kotebe Block 96": {
+    "lat": 9.02666,
+    "lng": 38.78755
+  },
+  "Yeka Kotebe Block 97": {
+    "lat": 9.03355,
+    "lng": 38.78396
+  },
+  "Yeka Kotebe Block 98": {
+    "lat": 9.03268,
+    "lng": 38.79177
+  },
+  "Yeka Kotebe Block 99": {
+    "lat": 9.03254,
+    "lng": 38.78782
+  },
+  "Yeka Kotebe Block 100": {
+    "lat": 9.03363,
+    "lng": 38.78987
+  },
+  "Yeka Kara Block 1": {
+    "lat": 9.02622,
+    "lng": 38.78704
+  },
+  "Yeka Kara Block 2": {
+    "lat": 9.02930,
+    "lng": 38.78644
+  },
+  "Yeka Kara Block 3": {
+    "lat": 9.02956,
+    "lng": 38.79270
+  },
+  "Yeka Kara Block 4": {
+    "lat": 9.02468,
+    "lng": 38.78283
+  },
+  "Yeka Kara Block 5": {
+    "lat": 9.02747,
+    "lng": 38.78429
+  },
+  "Yeka Kara Block 6": {
+    "lat": 9.03254,
+    "lng": 38.78621
+  },
+  "Yeka Kara Block 7": {
+    "lat": 9.02383,
+    "lng": 38.79143
+  },
+  "Yeka Kara Block 8": {
+    "lat": 9.02432,
+    "lng": 38.78932
+  },
+  "Yeka Kara Block 9": {
+    "lat": 9.02482,
+    "lng": 38.79252
+  },
+  "Yeka Kara Block 10": {
+    "lat": 9.02474,
+    "lng": 38.78678
+  },
+  "Yeka Kara Block 11": {
+    "lat": 9.03191,
+    "lng": 38.79116
+  },
+  "Yeka Kara Block 12": {
+    "lat": 9.03358,
+    "lng": 38.78643
+  },
+  "Yeka Kara Block 13": {
+    "lat": 9.03056,
+    "lng": 38.78663
+  },
+  "Yeka Kara Block 14": {
+    "lat": 9.02582,
+    "lng": 38.78794
+  },
+  "Yeka Kara Block 15": {
+    "lat": 9.02865,
+    "lng": 38.78799
+  },
+  "Yeka Kara Block 16": {
+    "lat": 9.02784,
+    "lng": 38.78421
+  },
+  "Yeka Kara Block 17": {
+    "lat": 9.03018,
+    "lng": 38.78700
+  },
+  "Yeka Kara Block 18": {
+    "lat": 9.02925,
+    "lng": 38.79002
+  },
+  "Yeka Kara Block 19": {
+    "lat": 9.02860,
+    "lng": 38.79208
+  },
+  "Yeka Kara Block 20": {
+    "lat": 9.02986,
+    "lng": 38.78575
+  },
+  "Yeka Kara Block 21": {
+    "lat": 9.03127,
+    "lng": 38.78407
+  },
+  "Yeka Kara Block 22": {
+    "lat": 9.02549,
+    "lng": 38.78734
+  },
+  "Yeka Kara Block 23": {
+    "lat": 9.02619,
+    "lng": 38.78900
+  },
+  "Yeka Kara Block 24": {
+    "lat": 9.02450,
+    "lng": 38.78984
+  },
+  "Yeka Kara Block 25": {
+    "lat": 9.02791,
+    "lng": 38.78579
+  },
+  "Yeka Kara Block 26": {
+    "lat": 9.03339,
+    "lng": 38.78345
+  },
+  "Yeka Kara Block 27": {
+    "lat": 9.02949,
+    "lng": 38.78365
+  },
+  "Yeka Kara Block 28": {
+    "lat": 9.02922,
+    "lng": 38.78382
+  },
+  "Yeka Kara Block 29": {
+    "lat": 9.02718,
+    "lng": 38.78966
+  },
+  "Yeka Kara Block 30": {
+    "lat": 9.02977,
+    "lng": 38.78792
+  },
+  "Yeka Kara Block 31": {
+    "lat": 9.02838,
+    "lng": 38.78740
+  },
+  "Yeka Kara Block 32": {
+    "lat": 9.03171,
+    "lng": 38.78329
+  },
+  "Yeka Kara Block 33": {
+    "lat": 9.02481,
+    "lng": 38.78361
+  },
+  "Yeka Kara Block 34": {
+    "lat": 9.02533,
+    "lng": 38.79129
+  },
+  "Yeka Kara Block 35": {
+    "lat": 9.02783,
+    "lng": 38.79035
+  },
+  "Yeka Kara Block 36": {
+    "lat": 9.03155,
+    "lng": 38.78906
+  },
+  "Yeka Kara Block 37": {
+    "lat": 9.02462,
+    "lng": 38.79256
+  },
+  "Yeka Kara Block 38": {
+    "lat": 9.02524,
+    "lng": 38.78986
+  },
+  "Yeka Kara Block 39": {
+    "lat": 9.03229,
+    "lng": 38.79002
+  },
+  "Yeka Kara Block 40": {
+    "lat": 9.03287,
+    "lng": 38.78582
+  },
+  "Yeka Kara Block 41": {
+    "lat": 9.02987,
+    "lng": 38.78534
+  },
+  "Yeka Kara Block 42": {
+    "lat": 9.02676,
+    "lng": 38.78350
+  },
+  "Yeka Kara Block 43": {
+    "lat": 9.02484,
+    "lng": 38.79158
+  },
+  "Yeka Kara Block 44": {
+    "lat": 9.02646,
+    "lng": 38.78904
+  },
+  "Yeka Kara Block 45": {
+    "lat": 9.02715,
+    "lng": 38.79077
+  },
+  "Yeka Kara Block 46": {
+    "lat": 9.03291,
+    "lng": 38.78694
+  },
+  "Yeka Kara Block 47": {
+    "lat": 9.02905,
+    "lng": 38.78595
+  },
+  "Yeka Kara Block 48": {
+    "lat": 9.02661,
+    "lng": 38.79126
+  },
+  "Yeka Kara Block 49": {
+    "lat": 9.03112,
+    "lng": 38.78349
+  },
+  "Yeka Kara Block 50": {
+    "lat": 9.02986,
+    "lng": 38.78896
+  },
+  "Yeka Kara Block 51": {
+    "lat": 9.03208,
+    "lng": 38.78738
+  },
+  "Yeka Kara Block 52": {
+    "lat": 9.02893,
+    "lng": 38.79158
+  },
+  "Yeka Kara Block 53": {
+    "lat": 9.02496,
+    "lng": 38.78762
+  },
+  "Yeka Kara Block 54": {
+    "lat": 9.03023,
+    "lng": 38.78534
+  },
+  "Yeka Kara Block 55": {
+    "lat": 9.02541,
+    "lng": 38.78387
+  },
+  "Yeka Kara Block 56": {
+    "lat": 9.02774,
+    "lng": 38.78317
+  },
+  "Yeka Kara Block 57": {
+    "lat": 9.02379,
+    "lng": 38.78920
+  },
+  "Yeka Kara Block 58": {
+    "lat": 9.03208,
+    "lng": 38.78296
+  },
+  "Yeka Kara Block 59": {
+    "lat": 9.02714,
+    "lng": 38.79046
+  },
+  "Yeka Kara Block 60": {
+    "lat": 9.02827,
+    "lng": 38.78537
+  },
+  "Yeka Kara Block 61": {
+    "lat": 9.03070,
+    "lng": 38.78600
+  },
+  "Yeka Kara Block 62": {
+    "lat": 9.02809,
+    "lng": 38.78310
+  },
+  "Yeka Kara Block 63": {
+    "lat": 9.02595,
+    "lng": 38.78612
+  },
+  "Yeka Kara Block 64": {
+    "lat": 9.02704,
+    "lng": 38.78529
+  },
+  "Yeka Kara Block 65": {
+    "lat": 9.02410,
+    "lng": 38.78880
+  },
+  "Yeka Kara Block 66": {
+    "lat": 9.02594,
+    "lng": 38.78780
+  },
+  "Yeka Kara Block 67": {
+    "lat": 9.02657,
+    "lng": 38.78304
+  },
+  "Yeka Kara Block 68": {
+    "lat": 9.02908,
+    "lng": 38.78760
+  },
+  "Yeka Kara Block 69": {
+    "lat": 9.02866,
+    "lng": 38.78619
+  },
+  "Yeka Kara Block 70": {
+    "lat": 9.03271,
+    "lng": 38.79075
+  },
+  "Yeka Kara Block 71": {
+    "lat": 9.03067,
+    "lng": 38.79280
+  },
+  "Yeka Kara Block 72": {
+    "lat": 9.03148,
+    "lng": 38.78732
+  },
+  "Yeka Kara Block 73": {
+    "lat": 9.02689,
+    "lng": 38.78806
+  },
+  "Yeka Kara Block 74": {
+    "lat": 9.03135,
+    "lng": 38.78634
+  },
+  "Yeka Kara Block 75": {
+    "lat": 9.02473,
+    "lng": 38.79070
+  },
+  "Yeka Kara Block 76": {
+    "lat": 9.02470,
+    "lng": 38.78333
+  },
+  "Yeka Kara Block 77": {
+    "lat": 9.03065,
+    "lng": 38.79079
+  },
+  "Yeka Kara Block 78": {
+    "lat": 9.03369,
+    "lng": 38.78949
+  },
+  "Yeka Kara Block 79": {
+    "lat": 9.02424,
+    "lng": 38.78687
+  },
+  "Yeka Kara Block 80": {
+    "lat": 9.03094,
+    "lng": 38.78673
+  },
+  "Yeka Kara Block 81": {
+    "lat": 9.02803,
+    "lng": 38.78526
+  },
+  "Yeka Kara Block 82": {
+    "lat": 9.02422,
+    "lng": 38.79235
+  },
+  "Yeka Kara Block 83": {
+    "lat": 9.02604,
+    "lng": 38.78961
+  },
+  "Yeka Kara Block 84": {
+    "lat": 9.03335,
+    "lng": 38.78309
+  },
+  "Yeka Kara Block 85": {
+    "lat": 9.02572,
+    "lng": 38.78680
+  },
+  "Yeka Kara Block 86": {
+    "lat": 9.03059,
+    "lng": 38.78604
+  },
+  "Yeka Kara Block 87": {
+    "lat": 9.02461,
+    "lng": 38.78392
+  },
+  "Yeka Kara Block 88": {
+    "lat": 9.03064,
+    "lng": 38.78766
+  },
+  "Yeka Kara Block 89": {
+    "lat": 9.03167,
+    "lng": 38.78992
+  },
+  "Yeka Kara Block 90": {
+    "lat": 9.02933,
+    "lng": 38.78489
+  },
+  "Yeka Kara Block 91": {
+    "lat": 9.03326,
+    "lng": 38.79250
+  },
+  "Yeka Kara Block 92": {
+    "lat": 9.02593,
+    "lng": 38.78724
+  },
+  "Yeka Kara Block 93": {
+    "lat": 9.03291,
+    "lng": 38.78839
+  },
+  "Yeka Kara Block 94": {
+    "lat": 9.02817,
+    "lng": 38.78794
+  },
+  "Yeka Kara Block 95": {
+    "lat": 9.03140,
+    "lng": 38.78384
+  },
+  "Yeka Kara Block 96": {
+    "lat": 9.02922,
+    "lng": 38.78364
+  },
+  "Yeka Kara Block 97": {
+    "lat": 9.02576,
+    "lng": 38.79192
+  },
+  "Yeka Kara Block 98": {
+    "lat": 9.02717,
+    "lng": 38.78340
+  },
+  "Yeka Kara Block 99": {
+    "lat": 9.02959,
+    "lng": 38.78936
+  },
+  "Yeka Kara Block 100": {
+    "lat": 9.02697,
+    "lng": 38.78538
+  },
+  "Yeka Ferensay Block 1": {
+    "lat": 9.02786,
+    "lng": 38.79107
+  },
+  "Yeka Ferensay Block 2": {
+    "lat": 9.03304,
+    "lng": 38.78630
+  },
+  "Yeka Ferensay Block 3": {
+    "lat": 9.03215,
+    "lng": 38.78457
+  },
+  "Yeka Ferensay Block 4": {
+    "lat": 9.03284,
+    "lng": 38.78606
+  },
+  "Yeka Ferensay Block 5": {
+    "lat": 9.02983,
+    "lng": 38.79117
+  },
+  "Yeka Ferensay Block 6": {
+    "lat": 9.02612,
+    "lng": 38.79255
+  },
+  "Yeka Ferensay Block 7": {
+    "lat": 9.03320,
+    "lng": 38.78490
+  },
+  "Yeka Ferensay Block 8": {
+    "lat": 9.02652,
+    "lng": 38.79244
+  },
+  "Yeka Ferensay Block 9": {
+    "lat": 9.02639,
+    "lng": 38.78964
+  },
+  "Yeka Ferensay Block 10": {
+    "lat": 9.02807,
+    "lng": 38.78393
+  },
+  "Yeka Ferensay Block 11": {
+    "lat": 9.02506,
+    "lng": 38.78680
+  },
+  "Yeka Ferensay Block 12": {
+    "lat": 9.03161,
+    "lng": 38.78691
+  },
+  "Yeka Ferensay Block 13": {
+    "lat": 9.02540,
+    "lng": 38.79080
+  },
+  "Yeka Ferensay Block 14": {
+    "lat": 9.03126,
+    "lng": 38.78808
+  },
+  "Yeka Ferensay Block 15": {
+    "lat": 9.03206,
+    "lng": 38.78699
+  },
+  "Yeka Ferensay Block 16": {
+    "lat": 9.03346,
+    "lng": 38.78633
+  },
+  "Yeka Ferensay Block 17": {
+    "lat": 9.02991,
+    "lng": 38.78389
+  },
+  "Yeka Ferensay Block 18": {
+    "lat": 9.03174,
+    "lng": 38.78635
+  },
+  "Yeka Ferensay Block 19": {
+    "lat": 9.02448,
+    "lng": 38.78322
+  },
+  "Yeka Ferensay Block 20": {
+    "lat": 9.02421,
+    "lng": 38.78531
+  },
+  "Yeka Ferensay Block 21": {
+    "lat": 9.03002,
+    "lng": 38.78762
+  },
+  "Yeka Ferensay Block 22": {
+    "lat": 9.03361,
+    "lng": 38.78496
+  },
+  "Yeka Ferensay Block 23": {
+    "lat": 9.02676,
+    "lng": 38.78284
+  },
+  "Yeka Ferensay Block 24": {
+    "lat": 9.02933,
+    "lng": 38.78899
+  },
+  "Yeka Ferensay Block 25": {
+    "lat": 9.02533,
+    "lng": 38.78468
+  },
+  "Yeka Ferensay Block 26": {
+    "lat": 9.02728,
+    "lng": 38.78546
+  },
+  "Yeka Ferensay Block 27": {
+    "lat": 9.02669,
+    "lng": 38.78636
+  },
+  "Yeka Ferensay Block 28": {
+    "lat": 9.02852,
+    "lng": 38.78665
+  },
+  "Yeka Ferensay Block 29": {
+    "lat": 9.02402,
+    "lng": 38.78795
+  },
+  "Yeka Ferensay Block 30": {
+    "lat": 9.03081,
+    "lng": 38.79041
+  },
+  "Yeka Ferensay Block 31": {
+    "lat": 9.02592,
+    "lng": 38.78822
+  },
+  "Yeka Ferensay Block 32": {
+    "lat": 9.02652,
+    "lng": 38.78286
+  },
+  "Yeka Ferensay Block 33": {
+    "lat": 9.02876,
+    "lng": 38.78909
+  },
+  "Yeka Ferensay Block 34": {
+    "lat": 9.03222,
+    "lng": 38.79203
+  },
+  "Yeka Ferensay Block 35": {
+    "lat": 9.02595,
+    "lng": 38.78497
+  },
+  "Yeka Ferensay Block 36": {
+    "lat": 9.02616,
+    "lng": 38.78529
+  },
+  "Yeka Ferensay Block 37": {
+    "lat": 9.02853,
+    "lng": 38.78936
+  },
+  "Yeka Ferensay Block 38": {
+    "lat": 9.03344,
+    "lng": 38.78859
+  },
+  "Yeka Ferensay Block 39": {
+    "lat": 9.02654,
+    "lng": 38.78458
+  },
+  "Yeka Ferensay Block 40": {
+    "lat": 9.02660,
+    "lng": 38.78756
+  },
+  "Yeka Ferensay Block 41": {
+    "lat": 9.03133,
+    "lng": 38.78765
+  },
+  "Yeka Ferensay Block 42": {
+    "lat": 9.03293,
+    "lng": 38.78844
+  },
+  "Yeka Ferensay Block 43": {
+    "lat": 9.02615,
+    "lng": 38.79222
+  },
+  "Yeka Ferensay Block 44": {
+    "lat": 9.02875,
+    "lng": 38.79143
+  },
+  "Yeka Ferensay Block 45": {
+    "lat": 9.02502,
+    "lng": 38.78596
+  },
+  "Yeka Ferensay Block 46": {
+    "lat": 9.02809,
+    "lng": 38.79080
+  },
+  "Yeka Ferensay Block 47": {
+    "lat": 9.02801,
+    "lng": 38.78754
+  },
+  "Yeka Ferensay Block 48": {
+    "lat": 9.02433,
+    "lng": 38.79090
+  },
+  "Yeka Ferensay Block 49": {
+    "lat": 9.03242,
+    "lng": 38.79221
+  },
+  "Yeka Ferensay Block 50": {
+    "lat": 9.02522,
+    "lng": 38.78494
+  },
+  "Yeka Ferensay Block 51": {
+    "lat": 9.02982,
+    "lng": 38.79179
+  },
+  "Yeka Ferensay Block 52": {
+    "lat": 9.02733,
+    "lng": 38.78438
+  },
+  "Yeka Ferensay Block 53": {
+    "lat": 9.03196,
+    "lng": 38.78386
+  },
+  "Yeka Ferensay Block 54": {
+    "lat": 9.03364,
+    "lng": 38.79251
+  },
+  "Yeka Ferensay Block 55": {
+    "lat": 9.03177,
+    "lng": 38.79194
+  },
+  "Yeka Ferensay Block 56": {
+    "lat": 9.02871,
+    "lng": 38.78349
+  },
+  "Yeka Ferensay Block 57": {
+    "lat": 9.02855,
+    "lng": 38.78668
+  },
+  "Yeka Ferensay Block 58": {
+    "lat": 9.03068,
+    "lng": 38.78367
+  },
+  "Yeka Ferensay Block 59": {
+    "lat": 9.02401,
+    "lng": 38.78442
+  },
+  "Yeka Ferensay Block 60": {
+    "lat": 9.03138,
+    "lng": 38.78458
+  },
+  "Yeka Ferensay Block 61": {
+    "lat": 9.03077,
+    "lng": 38.78412
+  },
+  "Yeka Ferensay Block 62": {
+    "lat": 9.02393,
+    "lng": 38.78919
+  },
+  "Yeka Ferensay Block 63": {
+    "lat": 9.02802,
+    "lng": 38.78308
+  },
+  "Yeka Ferensay Block 64": {
+    "lat": 9.02516,
+    "lng": 38.78938
+  },
+  "Yeka Ferensay Block 65": {
+    "lat": 9.02771,
+    "lng": 38.78691
+  },
+  "Yeka Ferensay Block 66": {
+    "lat": 9.02806,
+    "lng": 38.78631
+  },
+  "Yeka Ferensay Block 67": {
+    "lat": 9.03096,
+    "lng": 38.79200
+  },
+  "Yeka Ferensay Block 68": {
+    "lat": 9.02507,
+    "lng": 38.78655
+  },
+  "Yeka Ferensay Block 69": {
+    "lat": 9.02722,
+    "lng": 38.78353
+  },
+  "Yeka Ferensay Block 70": {
+    "lat": 9.02627,
+    "lng": 38.79183
+  },
+  "Yeka Ferensay Block 71": {
+    "lat": 9.02886,
+    "lng": 38.79203
+  },
+  "Yeka Ferensay Block 72": {
+    "lat": 9.03218,
+    "lng": 38.78293
+  },
+  "Yeka Ferensay Block 73": {
+    "lat": 9.02460,
+    "lng": 38.78958
+  },
+  "Yeka Ferensay Block 74": {
+    "lat": 9.03184,
+    "lng": 38.78285
+  },
+  "Yeka Ferensay Block 75": {
+    "lat": 9.03248,
+    "lng": 38.78863
+  },
+  "Yeka Ferensay Block 76": {
+    "lat": 9.02426,
+    "lng": 38.78516
+  },
+  "Yeka Ferensay Block 77": {
+    "lat": 9.02965,
+    "lng": 38.78376
+  },
+  "Yeka Ferensay Block 78": {
+    "lat": 9.03084,
+    "lng": 38.78685
+  },
+  "Yeka Ferensay Block 79": {
+    "lat": 9.02812,
+    "lng": 38.78788
+  },
+  "Yeka Ferensay Block 80": {
+    "lat": 9.03241,
+    "lng": 38.79219
+  },
+  "Yeka Ferensay Block 81": {
+    "lat": 9.03218,
+    "lng": 38.78958
+  },
+  "Yeka Ferensay Block 82": {
+    "lat": 9.02529,
+    "lng": 38.78556
+  },
+  "Yeka Ferensay Block 83": {
+    "lat": 9.03343,
+    "lng": 38.79159
+  },
+  "Yeka Ferensay Block 84": {
+    "lat": 9.02892,
+    "lng": 38.78438
+  },
+  "Yeka Ferensay Block 85": {
+    "lat": 9.03289,
+    "lng": 38.78328
+  },
+  "Yeka Ferensay Block 86": {
+    "lat": 9.02405,
+    "lng": 38.79129
+  },
+  "Yeka Ferensay Block 87": {
+    "lat": 9.02926,
+    "lng": 38.79106
+  },
+  "Yeka Ferensay Block 88": {
+    "lat": 9.02841,
+    "lng": 38.78548
+  },
+  "Yeka Ferensay Block 89": {
+    "lat": 9.02908,
+    "lng": 38.78453
+  },
+  "Yeka Ferensay Block 90": {
+    "lat": 9.02885,
+    "lng": 38.79059
+  },
+  "Yeka Ferensay Block 91": {
+    "lat": 9.02444,
+    "lng": 38.78839
+  },
+  "Yeka Ferensay Block 92": {
+    "lat": 9.02430,
+    "lng": 38.79069
+  },
+  "Yeka Ferensay Block 93": {
+    "lat": 9.02835,
+    "lng": 38.78676
+  },
+  "Yeka Ferensay Block 94": {
+    "lat": 9.03133,
+    "lng": 38.78699
+  },
+  "Yeka Ferensay Block 95": {
+    "lat": 9.02451,
+    "lng": 38.78997
+  },
+  "Yeka Ferensay Block 96": {
+    "lat": 9.02707,
+    "lng": 38.78816
+  },
+  "Yeka Ferensay Block 97": {
+    "lat": 9.02597,
+    "lng": 38.78762
+  },
+  "Yeka Ferensay Block 98": {
+    "lat": 9.02967,
+    "lng": 38.79024
+  },
+  "Yeka Ferensay Block 99": {
+    "lat": 9.02493,
+    "lng": 38.78528
+  },
+  "Yeka Ferensay Block 100": {
+    "lat": 9.03318,
+    "lng": 38.79222
+  },
+  "Yeka Kebena Block 1": {
+    "lat": 9.02599,
+    "lng": 38.79137
+  },
+  "Yeka Kebena Block 2": {
+    "lat": 9.02672,
+    "lng": 38.79157
+  },
+  "Yeka Kebena Block 3": {
+    "lat": 9.02889,
+    "lng": 38.78547
+  },
+  "Yeka Kebena Block 4": {
+    "lat": 9.02594,
+    "lng": 38.78926
+  },
+  "Yeka Kebena Block 5": {
+    "lat": 9.02453,
+    "lng": 38.79146
+  },
+  "Yeka Kebena Block 6": {
+    "lat": 9.03047,
+    "lng": 38.78824
+  },
+  "Yeka Kebena Block 7": {
+    "lat": 9.03285,
+    "lng": 38.78559
+  },
+  "Yeka Kebena Block 8": {
+    "lat": 9.03020,
+    "lng": 38.78398
+  },
+  "Yeka Kebena Block 9": {
+    "lat": 9.03251,
+    "lng": 38.79278
+  },
+  "Yeka Kebena Block 10": {
+    "lat": 9.02511,
+    "lng": 38.79009
+  },
+  "Yeka Kebena Block 11": {
+    "lat": 9.02464,
+    "lng": 38.79270
+  },
+  "Yeka Kebena Block 12": {
+    "lat": 9.03025,
+    "lng": 38.78722
+  },
+  "Yeka Kebena Block 13": {
+    "lat": 9.02745,
+    "lng": 38.78795
+  },
+  "Yeka Kebena Block 14": {
+    "lat": 9.02836,
+    "lng": 38.78496
+  },
+  "Yeka Kebena Block 15": {
+    "lat": 9.03033,
+    "lng": 38.78694
+  },
+  "Yeka Kebena Block 16": {
+    "lat": 9.02977,
+    "lng": 38.78855
+  },
+  "Yeka Kebena Block 17": {
+    "lat": 9.03106,
+    "lng": 38.79029
+  },
+  "Yeka Kebena Block 18": {
+    "lat": 9.02511,
+    "lng": 38.78928
+  },
+  "Yeka Kebena Block 19": {
+    "lat": 9.03187,
+    "lng": 38.79117
+  },
+  "Yeka Kebena Block 20": {
+    "lat": 9.03363,
+    "lng": 38.79031
+  },
+  "Yeka Kebena Block 21": {
+    "lat": 9.03067,
+    "lng": 38.78579
+  },
+  "Yeka Kebena Block 22": {
+    "lat": 9.03026,
+    "lng": 38.78868
+  },
+  "Yeka Kebena Block 23": {
+    "lat": 9.03054,
+    "lng": 38.78987
+  },
+  "Yeka Kebena Block 24": {
+    "lat": 9.02712,
+    "lng": 38.79062
+  },
+  "Yeka Kebena Block 25": {
+    "lat": 9.02513,
+    "lng": 38.78804
+  },
+  "Yeka Kebena Block 26": {
+    "lat": 9.03279,
+    "lng": 38.78383
+  },
+  "Yeka Kebena Block 27": {
+    "lat": 9.02657,
+    "lng": 38.79077
+  },
+  "Yeka Kebena Block 28": {
+    "lat": 9.03175,
+    "lng": 38.78331
+  },
+  "Yeka Kebena Block 29": {
+    "lat": 9.02974,
+    "lng": 38.79042
+  },
+  "Yeka Kebena Block 30": {
+    "lat": 9.02739,
+    "lng": 38.78479
+  },
+  "Yeka Kebena Block 31": {
+    "lat": 9.02551,
+    "lng": 38.78684
+  },
+  "Yeka Kebena Block 32": {
+    "lat": 9.02836,
+    "lng": 38.78737
+  },
+  "Yeka Kebena Block 33": {
+    "lat": 9.02605,
+    "lng": 38.79022
+  },
+  "Yeka Kebena Block 34": {
+    "lat": 9.02883,
+    "lng": 38.79106
+  },
+  "Yeka Kebena Block 35": {
+    "lat": 9.02816,
+    "lng": 38.78331
+  },
+  "Yeka Kebena Block 36": {
+    "lat": 9.02971,
+    "lng": 38.79229
+  },
+  "Yeka Kebena Block 37": {
+    "lat": 9.02712,
+    "lng": 38.78831
+  },
+  "Yeka Kebena Block 38": {
+    "lat": 9.02819,
+    "lng": 38.78619
+  },
+  "Yeka Kebena Block 39": {
+    "lat": 9.02875,
+    "lng": 38.78527
+  },
+  "Yeka Kebena Block 40": {
+    "lat": 9.02970,
+    "lng": 38.78529
+  },
+  "Yeka Kebena Block 41": {
+    "lat": 9.02875,
+    "lng": 38.78966
+  },
+  "Yeka Kebena Block 42": {
+    "lat": 9.03181,
+    "lng": 38.78989
+  },
+  "Yeka Kebena Block 43": {
+    "lat": 9.02544,
+    "lng": 38.79202
+  },
+  "Yeka Kebena Block 44": {
+    "lat": 9.02614,
+    "lng": 38.78631
+  },
+  "Yeka Kebena Block 45": {
+    "lat": 9.02642,
+    "lng": 38.78296
+  },
+  "Yeka Kebena Block 46": {
+    "lat": 9.03309,
+    "lng": 38.78539
+  },
+  "Yeka Kebena Block 47": {
+    "lat": 9.02410,
+    "lng": 38.78556
+  },
+  "Yeka Kebena Block 48": {
+    "lat": 9.03261,
+    "lng": 38.78288
+  },
+  "Yeka Kebena Block 49": {
+    "lat": 9.02445,
+    "lng": 38.79106
+  },
+  "Yeka Kebena Block 50": {
+    "lat": 9.03307,
+    "lng": 38.78851
+  },
+  "Yeka Kebena Block 51": {
+    "lat": 9.03320,
+    "lng": 38.78824
+  },
+  "Yeka Kebena Block 52": {
+    "lat": 9.03352,
+    "lng": 38.79168
+  },
+  "Yeka Kebena Block 53": {
+    "lat": 9.03165,
+    "lng": 38.78554
+  },
+  "Yeka Kebena Block 54": {
+    "lat": 9.02747,
+    "lng": 38.78446
+  },
+  "Yeka Kebena Block 55": {
+    "lat": 9.03149,
+    "lng": 38.79042
+  },
+  "Yeka Kebena Block 56": {
+    "lat": 9.02973,
+    "lng": 38.78402
+  },
+  "Yeka Kebena Block 57": {
+    "lat": 9.03138,
+    "lng": 38.78737
+  },
+  "Yeka Kebena Block 58": {
+    "lat": 9.03168,
+    "lng": 38.78939
+  },
+  "Yeka Kebena Block 59": {
+    "lat": 9.02731,
+    "lng": 38.78786
+  },
+  "Yeka Kebena Block 60": {
+    "lat": 9.02865,
+    "lng": 38.78321
+  },
+  "Yeka Kebena Block 61": {
+    "lat": 9.02838,
+    "lng": 38.78723
+  },
+  "Yeka Kebena Block 62": {
+    "lat": 9.02861,
+    "lng": 38.79273
+  },
+  "Yeka Kebena Block 63": {
+    "lat": 9.02876,
+    "lng": 38.78840
+  },
+  "Yeka Kebena Block 64": {
+    "lat": 9.03192,
+    "lng": 38.78599
+  },
+  "Yeka Kebena Block 65": {
+    "lat": 9.03262,
+    "lng": 38.78472
+  },
+  "Yeka Kebena Block 66": {
+    "lat": 9.02917,
+    "lng": 38.78539
+  },
+  "Yeka Kebena Block 67": {
+    "lat": 9.03292,
+    "lng": 38.79036
+  },
+  "Yeka Kebena Block 68": {
+    "lat": 9.03013,
+    "lng": 38.78857
+  },
+  "Yeka Kebena Block 69": {
+    "lat": 9.03173,
+    "lng": 38.79086
+  },
+  "Yeka Kebena Block 70": {
+    "lat": 9.02507,
+    "lng": 38.78814
+  },
+  "Yeka Kebena Block 71": {
+    "lat": 9.03105,
+    "lng": 38.78876
+  },
+  "Yeka Kebena Block 72": {
+    "lat": 9.03343,
+    "lng": 38.78674
+  },
+  "Yeka Kebena Block 73": {
+    "lat": 9.02659,
+    "lng": 38.78632
+  },
+  "Yeka Kebena Block 74": {
+    "lat": 9.02405,
+    "lng": 38.78996
+  },
+  "Yeka Kebena Block 75": {
+    "lat": 9.02515,
+    "lng": 38.78351
+  },
+  "Yeka Kebena Block 76": {
+    "lat": 9.03049,
+    "lng": 38.78332
+  },
+  "Yeka Kebena Block 77": {
+    "lat": 9.02970,
+    "lng": 38.79010
+  },
+  "Yeka Kebena Block 78": {
+    "lat": 9.03102,
+    "lng": 38.78891
+  },
+  "Yeka Kebena Block 79": {
+    "lat": 9.02454,
+    "lng": 38.79156
+  },
+  "Yeka Kebena Block 80": {
+    "lat": 9.03072,
+    "lng": 38.78831
+  },
+  "Yeka Kebena Block 81": {
+    "lat": 9.02522,
+    "lng": 38.78992
+  },
+  "Yeka Kebena Block 82": {
+    "lat": 9.03042,
+    "lng": 38.78758
+  },
+  "Yeka Kebena Block 83": {
+    "lat": 9.02643,
+    "lng": 38.79185
+  },
+  "Yeka Kebena Block 84": {
+    "lat": 9.02442,
+    "lng": 38.78805
+  },
+  "Yeka Kebena Block 85": {
+    "lat": 9.02755,
+    "lng": 38.78608
+  },
+  "Yeka Kebena Block 86": {
+    "lat": 9.03307,
+    "lng": 38.78944
+  },
+  "Yeka Kebena Block 87": {
+    "lat": 9.03226,
+    "lng": 38.79048
+  },
+  "Yeka Kebena Block 88": {
+    "lat": 9.02941,
+    "lng": 38.78702
+  },
+  "Yeka Kebena Block 89": {
+    "lat": 9.03086,
+    "lng": 38.78724
+  },
+  "Yeka Kebena Block 90": {
+    "lat": 9.02471,
+    "lng": 38.78623
+  },
+  "Yeka Kebena Block 91": {
+    "lat": 9.02872,
+    "lng": 38.78432
+  },
+  "Yeka Kebena Block 92": {
+    "lat": 9.03252,
+    "lng": 38.79253
+  },
+  "Yeka Kebena Block 93": {
+    "lat": 9.02616,
+    "lng": 38.78875
+  },
+  "Yeka Kebena Block 94": {
+    "lat": 9.02796,
+    "lng": 38.78754
+  },
+  "Yeka Kebena Block 95": {
+    "lat": 9.03304,
+    "lng": 38.78404
+  },
+  "Yeka Kebena Block 96": {
+    "lat": 9.02794,
+    "lng": 38.78833
+  },
+  "Yeka Kebena Block 97": {
+    "lat": 9.03161,
+    "lng": 38.78322
+  },
+  "Yeka Kebena Block 98": {
+    "lat": 9.03046,
+    "lng": 38.78490
+  },
+  "Yeka Kebena Block 99": {
+    "lat": 9.02429,
+    "lng": 38.78380
+  },
+  "Yeka Kebena Block 100": {
+    "lat": 9.03114,
+    "lng": 38.78571
+  },
+  "Yeka Bena Sefer Block 1": {
+    "lat": 9.02832,
+    "lng": 38.78389
+  },
+  "Yeka Bena Sefer Block 2": {
+    "lat": 9.03078,
+    "lng": 38.78672
+  },
+  "Yeka Bena Sefer Block 3": {
+    "lat": 9.03084,
+    "lng": 38.78916
+  },
+  "Yeka Bena Sefer Block 4": {
+    "lat": 9.03243,
+    "lng": 38.78511
+  },
+  "Yeka Bena Sefer Block 5": {
+    "lat": 9.02580,
+    "lng": 38.78325
+  },
+  "Yeka Bena Sefer Block 6": {
+    "lat": 9.02798,
+    "lng": 38.79010
+  },
+  "Yeka Bena Sefer Block 7": {
+    "lat": 9.02600,
+    "lng": 38.78332
+  },
+  "Yeka Bena Sefer Block 8": {
+    "lat": 9.02389,
+    "lng": 38.78514
+  },
+  "Yeka Bena Sefer Block 9": {
+    "lat": 9.03229,
+    "lng": 38.78597
+  },
+  "Yeka Bena Sefer Block 10": {
+    "lat": 9.03213,
+    "lng": 38.78551
+  },
+  "Yeka Bena Sefer Block 11": {
+    "lat": 9.03027,
+    "lng": 38.78325
+  },
+  "Yeka Bena Sefer Block 12": {
+    "lat": 9.02391,
+    "lng": 38.78397
+  },
+  "Yeka Bena Sefer Block 13": {
+    "lat": 9.03218,
+    "lng": 38.79279
+  },
+  "Yeka Bena Sefer Block 14": {
+    "lat": 9.03352,
+    "lng": 38.78549
+  },
+  "Yeka Bena Sefer Block 15": {
+    "lat": 9.02699,
+    "lng": 38.78564
+  },
+  "Yeka Bena Sefer Block 16": {
+    "lat": 9.03020,
+    "lng": 38.78661
+  },
+  "Yeka Bena Sefer Block 17": {
+    "lat": 9.03359,
+    "lng": 38.78465
+  },
+  "Yeka Bena Sefer Block 18": {
+    "lat": 9.02543,
+    "lng": 38.78506
+  },
+  "Yeka Bena Sefer Block 19": {
+    "lat": 9.02510,
+    "lng": 38.78941
+  },
+  "Yeka Bena Sefer Block 20": {
+    "lat": 9.02942,
+    "lng": 38.78968
+  },
+  "Yeka Bena Sefer Block 21": {
+    "lat": 9.02570,
+    "lng": 38.78457
+  },
+  "Yeka Bena Sefer Block 22": {
+    "lat": 9.02632,
+    "lng": 38.79229
+  },
+  "Yeka Bena Sefer Block 23": {
+    "lat": 9.02620,
+    "lng": 38.78662
+  },
+  "Yeka Bena Sefer Block 24": {
+    "lat": 9.02514,
+    "lng": 38.79006
+  },
+  "Yeka Bena Sefer Block 25": {
+    "lat": 9.02933,
+    "lng": 38.78716
+  },
+  "Yeka Bena Sefer Block 26": {
+    "lat": 9.02374,
+    "lng": 38.78912
+  },
+  "Yeka Bena Sefer Block 27": {
+    "lat": 9.02676,
+    "lng": 38.79181
+  },
+  "Yeka Bena Sefer Block 28": {
+    "lat": 9.02660,
+    "lng": 38.78304
+  },
+  "Yeka Bena Sefer Block 29": {
+    "lat": 9.02765,
+    "lng": 38.78688
+  },
+  "Yeka Bena Sefer Block 30": {
+    "lat": 9.02849,
+    "lng": 38.79196
+  },
+  "Yeka Bena Sefer Block 31": {
+    "lat": 9.02980,
+    "lng": 38.78487
+  },
+  "Yeka Bena Sefer Block 32": {
+    "lat": 9.02510,
+    "lng": 38.78400
+  },
+  "Yeka Bena Sefer Block 33": {
+    "lat": 9.03183,
+    "lng": 38.79121
+  },
+  "Yeka Bena Sefer Block 34": {
+    "lat": 9.03049,
+    "lng": 38.78509
+  },
+  "Yeka Bena Sefer Block 35": {
+    "lat": 9.02432,
+    "lng": 38.78734
+  },
+  "Yeka Bena Sefer Block 36": {
+    "lat": 9.03170,
+    "lng": 38.79069
+  },
+  "Yeka Bena Sefer Block 37": {
+    "lat": 9.03277,
+    "lng": 38.79041
+  },
+  "Yeka Bena Sefer Block 38": {
+    "lat": 9.02549,
+    "lng": 38.78813
+  },
+  "Yeka Bena Sefer Block 39": {
+    "lat": 9.02644,
+    "lng": 38.78755
+  },
+  "Yeka Bena Sefer Block 40": {
+    "lat": 9.02673,
+    "lng": 38.78466
+  },
+  "Yeka Bena Sefer Block 41": {
+    "lat": 9.03096,
+    "lng": 38.78291
+  },
+  "Yeka Bena Sefer Block 42": {
+    "lat": 9.02376,
+    "lng": 38.79017
+  },
+  "Yeka Bena Sefer Block 43": {
+    "lat": 9.03347,
+    "lng": 38.79091
+  },
+  "Yeka Bena Sefer Block 44": {
+    "lat": 9.02802,
+    "lng": 38.78890
+  },
+  "Yeka Bena Sefer Block 45": {
+    "lat": 9.02972,
+    "lng": 38.78645
+  },
+  "Yeka Bena Sefer Block 46": {
+    "lat": 9.02526,
+    "lng": 38.78708
+  },
+  "Yeka Bena Sefer Block 47": {
+    "lat": 9.03314,
+    "lng": 38.78313
+  },
+  "Yeka Bena Sefer Block 48": {
+    "lat": 9.02545,
+    "lng": 38.78376
+  },
+  "Yeka Bena Sefer Block 49": {
+    "lat": 9.03335,
+    "lng": 38.79273
+  },
+  "Yeka Bena Sefer Block 50": {
+    "lat": 9.02457,
+    "lng": 38.79172
+  },
+  "Yeka Bena Sefer Block 51": {
+    "lat": 9.02648,
+    "lng": 38.79273
+  },
+  "Yeka Bena Sefer Block 52": {
+    "lat": 9.02712,
+    "lng": 38.78371
+  },
+  "Yeka Bena Sefer Block 53": {
+    "lat": 9.02783,
+    "lng": 38.78746
+  },
+  "Yeka Bena Sefer Block 54": {
+    "lat": 9.02626,
+    "lng": 38.78406
+  },
+  "Yeka Bena Sefer Block 55": {
+    "lat": 9.03301,
+    "lng": 38.78848
+  },
+  "Yeka Bena Sefer Block 56": {
+    "lat": 9.02755,
+    "lng": 38.78319
+  },
+  "Yeka Bena Sefer Block 57": {
+    "lat": 9.02680,
+    "lng": 38.78506
+  },
+  "Yeka Bena Sefer Block 58": {
+    "lat": 9.03036,
+    "lng": 38.78728
+  },
+  "Yeka Bena Sefer Block 59": {
+    "lat": 9.02471,
+    "lng": 38.79089
+  },
+  "Yeka Bena Sefer Block 60": {
+    "lat": 9.02869,
+    "lng": 38.78833
+  },
+  "Yeka Bena Sefer Block 61": {
+    "lat": 9.02793,
+    "lng": 38.78676
+  },
+  "Yeka Bena Sefer Block 62": {
+    "lat": 9.02910,
+    "lng": 38.78349
+  },
+  "Yeka Bena Sefer Block 63": {
+    "lat": 9.02791,
+    "lng": 38.78772
+  },
+  "Yeka Bena Sefer Block 64": {
+    "lat": 9.03306,
+    "lng": 38.78519
+  },
+  "Yeka Bena Sefer Block 65": {
+    "lat": 9.02954,
+    "lng": 38.78292
+  },
+  "Yeka Bena Sefer Block 66": {
+    "lat": 9.03038,
+    "lng": 38.78827
+  },
+  "Yeka Bena Sefer Block 67": {
+    "lat": 9.02782,
+    "lng": 38.79233
+  },
+  "Yeka Bena Sefer Block 68": {
+    "lat": 9.02529,
+    "lng": 38.79005
+  },
+  "Yeka Bena Sefer Block 69": {
+    "lat": 9.02423,
+    "lng": 38.78888
+  },
+  "Yeka Bena Sefer Block 70": {
+    "lat": 9.02990,
+    "lng": 38.78407
+  },
+  "Yeka Bena Sefer Block 71": {
+    "lat": 9.03078,
+    "lng": 38.78943
+  },
+  "Yeka Bena Sefer Block 72": {
+    "lat": 9.02960,
+    "lng": 38.78535
+  },
+  "Yeka Bena Sefer Block 73": {
+    "lat": 9.03317,
+    "lng": 38.79267
+  },
+  "Yeka Bena Sefer Block 74": {
+    "lat": 9.03007,
+    "lng": 38.79195
+  },
+  "Yeka Bena Sefer Block 75": {
+    "lat": 9.03255,
+    "lng": 38.78532
+  },
+  "Yeka Bena Sefer Block 76": {
+    "lat": 9.02856,
+    "lng": 38.78340
+  },
+  "Yeka Bena Sefer Block 77": {
+    "lat": 9.02915,
+    "lng": 38.78673
+  },
+  "Yeka Bena Sefer Block 78": {
+    "lat": 9.02528,
+    "lng": 38.78695
+  },
+  "Yeka Bena Sefer Block 79": {
+    "lat": 9.03154,
+    "lng": 38.78332
+  },
+  "Yeka Bena Sefer Block 80": {
+    "lat": 9.02689,
+    "lng": 38.78905
+  },
+  "Yeka Bena Sefer Block 81": {
+    "lat": 9.02419,
+    "lng": 38.78803
+  },
+  "Yeka Bena Sefer Block 82": {
+    "lat": 9.03217,
+    "lng": 38.78906
+  },
+  "Yeka Bena Sefer Block 83": {
+    "lat": 9.02463,
+    "lng": 38.79197
+  },
+  "Yeka Bena Sefer Block 84": {
+    "lat": 9.02884,
+    "lng": 38.78408
+  },
+  "Yeka Bena Sefer Block 85": {
+    "lat": 9.02639,
+    "lng": 38.78619
+  },
+  "Yeka Bena Sefer Block 86": {
+    "lat": 9.02594,
+    "lng": 38.78904
+  },
+  "Yeka Bena Sefer Block 87": {
+    "lat": 9.03260,
+    "lng": 38.78483
+  },
+  "Yeka Bena Sefer Block 88": {
+    "lat": 9.02585,
+    "lng": 38.78349
+  },
+  "Yeka Bena Sefer Block 89": {
+    "lat": 9.02774,
+    "lng": 38.79215
+  },
+  "Yeka Bena Sefer Block 90": {
+    "lat": 9.02717,
+    "lng": 38.78553
+  },
+  "Yeka Bena Sefer Block 91": {
+    "lat": 9.03167,
+    "lng": 38.78796
+  },
+  "Yeka Bena Sefer Block 92": {
+    "lat": 9.02858,
+    "lng": 38.78855
+  },
+  "Yeka Bena Sefer Block 93": {
+    "lat": 9.02987,
+    "lng": 38.79146
+  },
+  "Yeka Bena Sefer Block 94": {
+    "lat": 9.02906,
+    "lng": 38.79269
+  },
+  "Yeka Bena Sefer Block 95": {
+    "lat": 9.03027,
+    "lng": 38.79138
+  },
+  "Yeka Bena Sefer Block 96": {
+    "lat": 9.02679,
+    "lng": 38.78465
+  },
+  "Yeka Bena Sefer Block 97": {
+    "lat": 9.03217,
+    "lng": 38.79166
+  },
+  "Yeka Bena Sefer Block 98": {
+    "lat": 9.03016,
+    "lng": 38.79161
+  },
+  "Yeka Bena Sefer Block 99": {
+    "lat": 9.02921,
+    "lng": 38.78488
+  },
+  "Yeka Bena Sefer Block 100": {
+    "lat": 9.02590,
+    "lng": 38.78726
+  },
+  "Yeka Aware Block 1": {
+    "lat": 9.03132,
+    "lng": 38.78487
+  },
+  "Yeka Aware Block 2": {
+    "lat": 9.02735,
+    "lng": 38.79181
+  },
+  "Yeka Aware Block 3": {
+    "lat": 9.03257,
+    "lng": 38.78316
+  },
+  "Yeka Aware Block 4": {
+    "lat": 9.03017,
+    "lng": 38.78865
+  },
+  "Yeka Aware Block 5": {
+    "lat": 9.03308,
+    "lng": 38.78281
+  },
+  "Yeka Aware Block 6": {
+    "lat": 9.02558,
+    "lng": 38.78497
+  },
+  "Yeka Aware Block 7": {
+    "lat": 9.02865,
+    "lng": 38.78326
+  },
+  "Yeka Aware Block 8": {
+    "lat": 9.03269,
+    "lng": 38.78441
+  },
+  "Yeka Aware Block 9": {
+    "lat": 9.02974,
+    "lng": 38.78934
+  },
+  "Yeka Aware Block 10": {
+    "lat": 9.02995,
+    "lng": 38.78647
+  },
+  "Yeka Aware Block 11": {
+    "lat": 9.02718,
+    "lng": 38.78961
+  },
+  "Yeka Aware Block 12": {
+    "lat": 9.02658,
+    "lng": 38.78827
+  },
+  "Yeka Aware Block 13": {
+    "lat": 9.02901,
+    "lng": 38.78446
+  },
+  "Yeka Aware Block 14": {
+    "lat": 9.03337,
+    "lng": 38.78855
+  },
+  "Yeka Aware Block 15": {
+    "lat": 9.03158,
+    "lng": 38.78812
+  },
+  "Yeka Aware Block 16": {
+    "lat": 9.02717,
+    "lng": 38.78717
+  },
+  "Yeka Aware Block 17": {
+    "lat": 9.03086,
+    "lng": 38.79198
+  },
+  "Yeka Aware Block 18": {
+    "lat": 9.02535,
+    "lng": 38.78954
+  },
+  "Yeka Aware Block 19": {
+    "lat": 9.02943,
+    "lng": 38.78845
+  },
+  "Yeka Aware Block 20": {
+    "lat": 9.03093,
+    "lng": 38.78495
+  },
+  "Yeka Aware Block 21": {
+    "lat": 9.03118,
+    "lng": 38.79237
+  },
+  "Yeka Aware Block 22": {
+    "lat": 9.02713,
+    "lng": 38.78609
+  },
+  "Yeka Aware Block 23": {
+    "lat": 9.03232,
+    "lng": 38.79222
+  },
+  "Yeka Aware Block 24": {
+    "lat": 9.02516,
+    "lng": 38.78458
+  },
+  "Yeka Aware Block 25": {
+    "lat": 9.02655,
+    "lng": 38.78694
+  },
+  "Yeka Aware Block 26": {
+    "lat": 9.02923,
+    "lng": 38.78726
+  },
+  "Yeka Aware Block 27": {
+    "lat": 9.02834,
+    "lng": 38.78860
+  },
+  "Yeka Aware Block 28": {
+    "lat": 9.02678,
+    "lng": 38.78774
+  },
+  "Yeka Aware Block 29": {
+    "lat": 9.02480,
+    "lng": 38.79102
+  },
+  "Yeka Aware Block 30": {
+    "lat": 9.02920,
+    "lng": 38.78421
+  },
+  "Yeka Aware Block 31": {
+    "lat": 9.02437,
+    "lng": 38.78483
+  },
+  "Yeka Aware Block 32": {
+    "lat": 9.02743,
+    "lng": 38.78921
+  },
+  "Yeka Aware Block 33": {
+    "lat": 9.02371,
+    "lng": 38.78774
+  },
+  "Yeka Aware Block 34": {
+    "lat": 9.02607,
+    "lng": 38.79113
+  },
+  "Yeka Aware Block 35": {
+    "lat": 9.03043,
+    "lng": 38.79169
+  },
+  "Yeka Aware Block 36": {
+    "lat": 9.02496,
+    "lng": 38.78568
+  },
+  "Yeka Aware Block 37": {
+    "lat": 9.03143,
+    "lng": 38.78918
+  },
+  "Yeka Aware Block 38": {
+    "lat": 9.03099,
+    "lng": 38.78884
+  },
+  "Yeka Aware Block 39": {
+    "lat": 9.02790,
+    "lng": 38.78493
+  },
+  "Yeka Aware Block 40": {
+    "lat": 9.03319,
+    "lng": 38.79194
+  },
+  "Yeka Aware Block 41": {
+    "lat": 9.03183,
+    "lng": 38.78931
+  },
+  "Yeka Aware Block 42": {
+    "lat": 9.02744,
+    "lng": 38.78287
+  },
+  "Yeka Aware Block 43": {
+    "lat": 9.02464,
+    "lng": 38.79216
+  },
+  "Yeka Aware Block 44": {
+    "lat": 9.02857,
+    "lng": 38.78689
+  },
+  "Yeka Aware Block 45": {
+    "lat": 9.02547,
+    "lng": 38.78566
+  },
+  "Yeka Aware Block 46": {
+    "lat": 9.03197,
+    "lng": 38.78370
+  },
+  "Yeka Aware Block 47": {
+    "lat": 9.03369,
+    "lng": 38.79214
+  },
+  "Yeka Aware Block 48": {
+    "lat": 9.03104,
+    "lng": 38.78281
+  },
+  "Yeka Aware Block 49": {
+    "lat": 9.02753,
+    "lng": 38.78903
+  },
+  "Yeka Aware Block 50": {
+    "lat": 9.03243,
+    "lng": 38.78290
+  },
+  "Yeka Aware Block 51": {
+    "lat": 9.02777,
+    "lng": 38.78985
+  },
+  "Yeka Aware Block 52": {
+    "lat": 9.02466,
+    "lng": 38.78624
+  },
+  "Yeka Aware Block 53": {
+    "lat": 9.02630,
+    "lng": 38.78693
+  },
+  "Yeka Aware Block 54": {
+    "lat": 9.02418,
+    "lng": 38.79227
+  },
+  "Yeka Aware Block 55": {
+    "lat": 9.03064,
+    "lng": 38.78465
+  },
+  "Yeka Aware Block 56": {
+    "lat": 9.02825,
+    "lng": 38.78489
+  },
+  "Yeka Aware Block 57": {
+    "lat": 9.03244,
+    "lng": 38.79172
+  },
+  "Yeka Aware Block 58": {
+    "lat": 9.02692,
+    "lng": 38.78298
+  },
+  "Yeka Aware Block 59": {
+    "lat": 9.03267,
+    "lng": 38.79176
+  },
+  "Yeka Aware Block 60": {
+    "lat": 9.02651,
+    "lng": 38.78550
+  },
+  "Yeka Aware Block 61": {
+    "lat": 9.02560,
+    "lng": 38.78335
+  },
+  "Yeka Aware Block 62": {
+    "lat": 9.02572,
+    "lng": 38.79040
+  },
+  "Yeka Aware Block 63": {
+    "lat": 9.03269,
+    "lng": 38.78619
+  },
+  "Yeka Aware Block 64": {
+    "lat": 9.02420,
+    "lng": 38.78555
+  },
+  "Yeka Aware Block 65": {
+    "lat": 9.03154,
+    "lng": 38.79173
+  },
+  "Yeka Aware Block 66": {
+    "lat": 9.03103,
+    "lng": 38.79024
+  },
+  "Yeka Aware Block 67": {
+    "lat": 9.02783,
+    "lng": 38.79027
+  },
+  "Yeka Aware Block 68": {
+    "lat": 9.03281,
+    "lng": 38.78719
+  },
+  "Yeka Aware Block 69": {
+    "lat": 9.02996,
+    "lng": 38.78871
+  },
+  "Yeka Aware Block 70": {
+    "lat": 9.03270,
+    "lng": 38.78503
+  },
+  "Yeka Aware Block 71": {
+    "lat": 9.02429,
+    "lng": 38.78352
+  },
+  "Yeka Aware Block 72": {
+    "lat": 9.03020,
+    "lng": 38.78662
+  },
+  "Yeka Aware Block 73": {
+    "lat": 9.03141,
+    "lng": 38.78865
+  },
+  "Yeka Aware Block 74": {
+    "lat": 9.02470,
+    "lng": 38.78825
+  },
+  "Yeka Aware Block 75": {
+    "lat": 9.02960,
+    "lng": 38.79203
+  },
+  "Yeka Aware Block 76": {
+    "lat": 9.02889,
+    "lng": 38.78360
+  },
+  "Yeka Aware Block 77": {
+    "lat": 9.03005,
+    "lng": 38.78401
+  },
+  "Yeka Aware Block 78": {
+    "lat": 9.02628,
+    "lng": 38.79102
+  },
+  "Yeka Aware Block 79": {
+    "lat": 9.02484,
+    "lng": 38.78715
+  },
+  "Yeka Aware Block 80": {
+    "lat": 9.03336,
+    "lng": 38.78931
+  },
+  "Yeka Aware Block 81": {
+    "lat": 9.02842,
+    "lng": 38.78354
+  },
+  "Yeka Aware Block 82": {
+    "lat": 9.03014,
+    "lng": 38.78929
+  },
+  "Yeka Aware Block 83": {
+    "lat": 9.02881,
+    "lng": 38.79135
+  },
+  "Yeka Aware Block 84": {
+    "lat": 9.02390,
+    "lng": 38.78532
+  },
+  "Yeka Aware Block 85": {
+    "lat": 9.03055,
+    "lng": 38.79189
+  },
+  "Yeka Aware Block 86": {
+    "lat": 9.03338,
+    "lng": 38.78756
+  },
+  "Yeka Aware Block 87": {
+    "lat": 9.02428,
+    "lng": 38.78894
+  },
+  "Yeka Aware Block 88": {
+    "lat": 9.02611,
+    "lng": 38.79250
+  },
+  "Yeka Aware Block 89": {
+    "lat": 9.03248,
+    "lng": 38.78568
+  },
+  "Yeka Aware Block 90": {
+    "lat": 9.02514,
+    "lng": 38.79074
+  },
+  "Yeka Aware Block 91": {
+    "lat": 9.02575,
+    "lng": 38.79112
+  },
+  "Yeka Aware Block 92": {
+    "lat": 9.02454,
+    "lng": 38.78664
+  },
+  "Yeka Aware Block 93": {
+    "lat": 9.02474,
+    "lng": 38.79251
+  },
+  "Yeka Aware Block 94": {
+    "lat": 9.03300,
+    "lng": 38.78609
+  },
+  "Yeka Aware Block 95": {
+    "lat": 9.02477,
+    "lng": 38.79275
+  },
+  "Yeka Aware Block 96": {
+    "lat": 9.02813,
+    "lng": 38.78815
+  },
+  "Yeka Aware Block 97": {
+    "lat": 9.03317,
+    "lng": 38.78551
+  },
+  "Yeka Aware Block 98": {
+    "lat": 9.02789,
+    "lng": 38.78668
+  },
+  "Yeka Aware Block 99": {
+    "lat": 9.02719,
+    "lng": 38.79111
+  },
+  "Yeka Aware Block 100": {
+    "lat": 9.03324,
+    "lng": 38.78700
   }
 };
 
