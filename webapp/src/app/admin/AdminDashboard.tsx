@@ -723,6 +723,9 @@ export default function AdminDashboard() {
                             <div>
                               <h3 className="font-extrabold text-neutral-900">{d.customer_name}</h3>
                               <p className="text-neutral-500 text-sm font-medium">{d.customer_phone}</p>
+                              <p className="text-neutral-400 text-xs font-medium mt-0.5">
+                                Requested: {new Date(d.created_at).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, month: 'short', day: 'numeric' })}
+                              </p>
                             </div>
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap
                               ${d.status === 'Pending' ? 'bg-amber-100 text-amber-800' : ''}
