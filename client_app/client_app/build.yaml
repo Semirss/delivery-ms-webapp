@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        enabled: true
+        options:
+          auto_register: true
+      json_serializable:
+        enabled: true
+        options:
+          create_factory: true
+          create_to_json: true

@@ -1,0 +1,39 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    public_member_api_docs: ignore
+    prefer_single_quotes: ignore ignore
+    always_use_package_imports: ignore
+    sort_constructors_first: ignore
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.config.dart"
+    - "build/**"
+    - "lib/generated/**"
+  
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # Disable rules that conflict with our architecture
+    prefer_relative_imports: false
+    avoid_print: false
+    
+    # Enable additional rules for better code quality
+    always_use_package_imports: true
+    avoid_dynamic_calls: true
+    avoid_slow_async_io: true
+    cancel_subscriptions: true
+    close_sinks: true
+    literal_only_boolean_expressions: true
+    no_adjacent_strings_in_list: true
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    unawaited_futures: true
+    use_build_context_synchronously: true
