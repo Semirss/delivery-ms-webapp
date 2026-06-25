@@ -74,7 +74,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   AppText(
                     'Enter your email to receive a password reset code',
                     variant: AppTextVariant.bodyMedium,
-                    color: AppColors.textSecondary,
+                    color: context.appTextSecondary,
                     textAlign: TextAlign.center,
                   ),
                   kVerticalGap48,

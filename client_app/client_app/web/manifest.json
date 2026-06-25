@@ -1,11 +1,11 @@
 {
-    "name": "flutter_boilerplate",
-    "short_name": "flutter_boilerplate",
+    "name": "MotoBike",
+    "short_name": "MotoBike",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F26A54",
+    "theme_color": "#F26A54",
+    "description": "MotoBike client delivery app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

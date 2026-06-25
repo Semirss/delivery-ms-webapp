@@ -92,7 +92,7 @@ class _VerifyResetPasswordScreenState extends State<VerifyResetPasswordScreen> {
                         ? 'Enter the OTP sent to your phone'
                         : 'Enter the OTP sent to your email',
                     variant: AppTextVariant.bodyLarge,
-                    color: AppColors.textSecondary,
+                    color: context.appTextSecondary,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.xxxl),

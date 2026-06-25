@@ -4,41 +4,41 @@ import 'package:flutter/material.dart';
 abstract class AppColors {
   // Primary Palette
   /// Primary brand color used for main actions and emphasis
-  static const Color primary = Color(0xFFE60000);
+  static const Color primary = Color(0xFFF26A54);
 
   /// Lighter variant of primary color for hover states and accents
-  static const Color primaryLight = Color(0xFFFF4D4D);
+  static const Color primaryLight = Color(0xFFFF9A84);
 
   /// Darker variant of primary color for pressed states
-  static const Color primaryDark = Color(0xFFB30000);
+  static const Color primaryDark = Color(0xFF7A3C8D);
   // Secondary Palette
   /// Secondary brand color for complementary actions
-  static const Color secondary = Color(0xFF3B82F6);
+  static const Color secondary = Color(0xFF2AA7D6);
 
   /// Lighter variant of secondary color
-  static const Color secondaryLight = Color(0xFF60A5FA);
+  static const Color secondaryLight = Color(0xFF67D2F0);
 
   /// Darker variant of secondary color
-  static const Color secondaryDark = Color(0xFF2563EB);
+  static const Color secondaryDark = Color(0xFF1D5E98);
 
   // Accent Colors
   /// Accent color 1 - Cyan
   static const Color accent1 = Color(0xFF06B6D4);
 
   /// Accent color 2 - Green
-  static const Color accent2 = Color(0xFF10B981);
+  static const Color accent2 = Color(0xFF84C84F);
 
   /// Accent color 3 - Amber (Third color)
-  static const Color accent3 = Color(0xFFF59E0B);
+  static const Color accent3 = Color(0xFFFF8A5B);
 
   /// Third brand color
-  static const Color third = Color(0xFFF59E0B);
+  static const Color third = Color(0xFFFF8A5B);
 
   /// Accent color 4 - Red
-  static const Color accent4 = Color(0xFFEF4444);
+  static const Color accent4 = Color(0xFFB14C96);
 
   /// First brand color
-  static const Color accent5 = Color(0xFF865501);
+  static const Color accent5 = Color(0xFF513077);
 
   /// Accent color for backgrounds
   static const Color accent = Color(0xFFF3F4F6);
@@ -63,7 +63,7 @@ abstract class AppColors {
   static const Color textFieldBorder = Color(0xFFDCDCDC);
 
   /// Primary text color for main content
-  static const Color textPrimary = Color(0xFF111827);
+  static const Color textPrimary = Color(0xFF12263D);
 
   /// Secondary text color for supporting content (MRP Text Gray)
   static const Color textSecondary = Color(0xFF9FA0B1);
@@ -87,14 +87,14 @@ abstract class AppColors {
   static const Color textLightGray2 = Color(0xFFE9EAEC);
 
   /// Neutral Blue (#2D8AA7)
-  static const Color neutralBlue = Color(0xFF2D8AA7);
+  static const Color neutralBlue = Color(0xFF183A59);
 
   /// Light Blue bg (#F4F4F7)
   static const Color lightBlueBg = Color(0xFFF4F4F7);
 
   // Semantic Colors
   /// Success color for positive actions and states
-  static const Color success = Color(0xFF10B981);
+  static const Color success = Color(0xFF2DBA87);
 
   /// Warning color for cautionary messages
   static const Color warning = Color(0xFFF59E0B);

@@ -407,8 +407,10 @@ class _AppTextFieldState extends State<AppTextField> {
 
   /// Returns the label color based on style
   Color _getLabelColor() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (!widget.enabled) {
-      return AppColors.textDisabled;
+      return colorScheme.onSurface.withValues(alpha: 0.38);
     }
 
     if (widget.style != null) {
@@ -420,11 +422,13 @@ class _AppTextFieldState extends State<AppTextField> {
       }
     }
 
-    return AppColors.textPrimary;
+    return colorScheme.onSurface;
   }
 
   /// Returns the text color based on style
   Color _getTextColor() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (widget.style != null) {
       switch (widget.style!) {
         case AppTextFieldStyle.light:
@@ -434,11 +438,13 @@ class _AppTextFieldState extends State<AppTextField> {
       }
     }
 
-    return AppColors.textPrimary;
+    return colorScheme.onSurface;
   }
 
   /// Returns the hint color based on style
   Color _getHintColor() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (widget.style != null) {
       switch (widget.style!) {
         case AppTextFieldStyle.light:
@@ -450,11 +456,13 @@ class _AppTextFieldState extends State<AppTextField> {
       }
     }
 
-    return AppColors.textSecondary;
+    return colorScheme.onSurface.withValues(alpha: 0.55);
   }
 
   /// Returns the icon color based on style
   Color _getIconColor() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (widget.style != null) {
       switch (widget.style!) {
         case AppTextFieldStyle.light:
@@ -467,7 +475,7 @@ class _AppTextFieldState extends State<AppTextField> {
       }
     }
 
-    return AppColors.textSecondary;
+    return colorScheme.onSurface.withValues(alpha: 0.62);
   }
 
   /// Returns the fill color based on variant, style, and state
@@ -475,6 +483,8 @@ class _AppTextFieldState extends State<AppTextField> {
     if (widget.fillColor != null) {
       return widget.fillColor!;
     }
+
+    final colorScheme = Theme.of(context).colorScheme;
 
     // Apply style-based colors if style is specified
     if (widget.style != null) {
@@ -498,7 +508,7 @@ class _AppTextFieldState extends State<AppTextField> {
       case AppTextFieldVariant.outlined:
         return Colors.transparent;
       case AppTextFieldVariant.filled:
-        return AppColors.surface;
+        return colorScheme.surfaceContainerHighest;
       case AppTextFieldVariant.underlined:
         return Colors.transparent;
       case AppTextFieldVariant.custom:
@@ -511,6 +521,8 @@ class _AppTextFieldState extends State<AppTextField> {
     if (widget.errorText != null) {
       return AppColors.error;
     }
+
+    final colorScheme = Theme.of(context).colorScheme;
 
     if (widget.borderColor != null) {
       return widget.borderColor!;
@@ -536,14 +548,16 @@ class _AppTextFieldState extends State<AppTextField> {
 
     // Default behavior
     if (_isFocused) {
-      return AppColors.primary;
+      return colorScheme.primary;
     }
 
     if (!widget.enabled) {
-      return AppColors.border.withOpacity(0.5);
+      return colorScheme.outline.withValues(alpha: 0.35);
     }
 
-    return AppColors.border;
+    return colorScheme.outline.withValues(
+      alpha: Theme.of(context).brightness == Brightness.dark ? 0.55 : 1,
+    );
   }
 
   /// Returns the border based on variant, style, and state
@@ -589,7 +603,7 @@ class _AppTextFieldState extends State<AppTextField> {
     // For dark style, use white border when focused
     final Color focusedBorderColor = widget.style == AppTextFieldStyle.dark
         ? Colors.white
-        : (widget.borderColor ?? AppColors.primary);
+        : (widget.borderColor ?? Theme.of(context).colorScheme.primary);
 
     switch (widget.variant) {
       case AppTextFieldVariant.outlined:
@@ -681,7 +695,7 @@ class _AppTextFieldState extends State<AppTextField> {
               style: AppTypography.bodyMedium.copyWith(
                 color: widget.enabled
                     ? _getTextColor()
-                    : AppColors.textDisabled,
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
               ),
               decoration: InputDecoration(
                 hintText: widget.hint,

@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         const Text(
-                          'MOTORIDE',
+                          'MOTOBIKE',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppTextField.outlined(
                           controller: _passwordController,
                           label: 'Password',
-                          hint: '••••••••',
+                          hint: '********',
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: _obscurePassword,
                           suffixIcon: _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,

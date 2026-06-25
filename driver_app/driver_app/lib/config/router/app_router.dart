@@ -11,6 +11,7 @@ import 'package:driver_app/features/auth/presentation/screens/reset_password_scr
 import 'package:driver_app/features/auth/presentation/screens/signup_screen.dart';
 import 'package:driver_app/features/auth/presentation/screens/verify_reset_password_screen.dart';
 import 'package:driver_app/features/home/presentation/screens/home_screen.dart';
+import 'package:driver_app/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:driver_app/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:driver_app/features/search/presentation/screens/search_screen.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
 class AppRouter {
   final IStorageService storageService;
@@ -38,28 +40,26 @@ class AppRouter {
 
   bool get isAuthenticatedSync {
     try {
-      final accessToken = storageService.getData(StorageKeys.accessToken);
-      if (accessToken != null && accessToken.toString().isNotEmpty) {
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session != null && _isUsableToken(session.accessToken)) {
         return true;
       }
-      final loginTimestamp = storageService.getData(StorageKeys.loginTimestamp);
-      if (loginTimestamp != null) {
-        final currentTime = DateTime.now().millisecondsSinceEpoch;
-        const oneDayInMillis = 24 * 60 * 60 * 1000;
-        final timestampInt = loginTimestamp is int
-            ? loginTimestamp
-            : int.tryParse(loginTimestamp.toString()) ?? 0;
 
-        if (currentTime - timestampInt < oneDayInMillis) {
-          final userJson = storageService.getData(StorageKeys.user);
-          return userJson != null;
-        }
-      }
       return false;
     } catch (e) {
       outlog('Error checking auth status: $e');
       return false;
     }
+  }
+
+  bool _isUsableToken(Object? value) {
+    final token = value?.toString().trim() ?? '';
+    if (token.isEmpty) return false;
+
+    final lower = token.toLowerCase();
+    return !lower.startsWith('mock_') &&
+        !lower.contains('placeholder') &&
+        !lower.contains('your_');
   }
 
   bool get hasSelectedProfileSync {
@@ -271,10 +271,7 @@ class AppRouter {
         name: AppRoutes.notification.name,
         path: AppRoutes.notification.path,
         pageBuilder: (context, state) => getPage(
-          child: Scaffold(
-            appBar: AppAppBar(titleText: 'Notifications'),
-            body: const Center(child: AppText('Notifications screen')),
-          ),
+          child: const NotificationsScreen(),
           state: state,
         ),
       ),
@@ -360,7 +357,14 @@ class AppRouter {
         }
 
         // Protected routes that require authentication
-        final protectedRoutes = [AppRoutes.home.path, AppRoutes.profile.path];
+        final protectedRoutes = [
+          AppRoutes.home.path,
+          AppRoutes.profile.path,
+          AppRoutes.personalDetails.path,
+          AppRoutes.notification.path,
+          AppRoutes.changePin.path,
+          AppRoutes.setting.path,
+        ];
 
         // If user is authenticated and on auth pages, redirect to home
         if (isAuthenticatedSync && isInAuthPage && !isOnboardingPage) {

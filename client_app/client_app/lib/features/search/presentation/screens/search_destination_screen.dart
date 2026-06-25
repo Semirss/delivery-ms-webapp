@@ -53,7 +53,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -61,7 +61,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: context.appSurface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -73,25 +73,25 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+                    icon: Icon(Icons.arrow_back_rounded, color: context.appTextPrimary),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceAlt,
+                        color: context.appSurfaceAlt,
                         borderRadius: BorderRadius.circular(AppRadius.lg),
                       ),
                       child: TextField(
                         controller: _searchController,
                         onChanged: _onSearchChanged,
                         autofocus: true,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Where to?',
-                          prefixIcon: Icon(Icons.search_rounded, color: AppColors.textSecondary),
+                          prefixIcon: Icon(Icons.search_rounded, color: context.appTextSecondary),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
                         ),
                       ),
                     ),
@@ -108,17 +108,17 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                       ? const Center(child: Text('No results found.'))
                       : ListView.separated(
                           itemCount: _results.length,
-                          separatorBuilder: (context, index) => const Divider(height: 1),
+                          separatorBuilder: (context, index) => Divider(height: 1, color: context.appBorder),
                           itemBuilder: (context, index) {
                             final place = _results[index];
                             return ListTile(
                               leading: Container(
                                 padding: const EdgeInsets.all(8),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.surfaceAlt,
+                                decoration: BoxDecoration(
+                                  color: context.appSurfaceAlt,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.location_on_rounded, color: AppColors.textSecondary),
+                                child: Icon(Icons.location_on_rounded, color: context.appTextSecondary),
                               ),
                               title: AppText(
                                 place.displayName.split(',').first,
@@ -128,7 +128,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                               subtitle: AppText(
                                 place.displayName,
                                 variant: AppTextVariant.bodySmall,
-                                color: AppColors.textSecondary,
+                                color: context.appTextSecondary,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),

@@ -4,16 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:driver_ui/app_ui.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'config/router/app_router.dart';
 import 'core/config/app_config.dart';
 import 'core/di/injection.dart';
 import 'core/monitoring/sentry_service.dart';
+import 'core/preferences/app_preferences.dart';
 import 'core/storage/storage_adapter.dart';
 import 'core/storage/storage_service.dart';
 import 'core/storage/clear_storage.dart';
+import 'core/versioning/version_gate.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'core/logging/app_logger.dart';
@@ -29,13 +30,21 @@ Future<void> _initializeApp() async {
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
-    // .env file might not exist, continue with defaults
+    // Flutter builds should provide .env as an asset; validation below gives a clear setup error.
+  }
+
+  final supabaseUrl = dotenv.env['SUPABASE_URL']?.trim() ?? '';
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']?.trim() ?? '';
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    throw StateError(
+      'Missing SUPABASE_URL or SUPABASE_ANON_KEY. Create .env from .env.example and use the same Supabase project as the webapp.',
+    );
   }
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? '',
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   // Configure dependency injection
@@ -55,6 +64,9 @@ Future<void> _initializeApp() async {
   final sentryService = getIt<SentryService>();
   await sentryService.initialize();
 
+  final appPreferences = AppPreferences();
+  await appPreferences.load();
+
   // Set system UI overlay style
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
@@ -63,15 +75,13 @@ Future<void> _initializeApp() async {
     ),
   );
 
-  // Initialize Sentry and run app
-  await SentryFlutter.init(
-    (options) => options.dsn = getIt<AppConfig>().sentryDsn,
-    appRunner: () => runApp(const DriverApp()),
-  );
+  runApp(DriverApp(preferences: appPreferences));
 }
 
 class DriverApp extends StatefulWidget {
-  const DriverApp({super.key});
+  const DriverApp({required this.preferences, super.key});
+
+  final AppPreferences preferences;
 
   @override
   State<DriverApp> createState() => _DriverAppState();
@@ -101,18 +111,32 @@ class _DriverAppState extends State<DriverApp> {
                   getIt<AuthBloc>()..add(const CheckAuthStatusEvent()),
             ),
           ],
-          child: MaterialApp.router(
-            title: getIt<AppConfig>().appName,
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.lightTheme,
-            routerConfig: _appRouter.router,
-            builder: (context, widget) {
-              return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: widget!,
-              );
-            },
+          child: AppPreferencesScope(
+            preferences: widget.preferences,
+            child: AnimatedBuilder(
+              animation: widget.preferences,
+              builder: (context, _) {
+                return MaterialApp.router(
+                  title: getIt<AppConfig>().appName,
+                  debugShowCheckedModeBanner: false,
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode: widget.preferences.themeMode,
+                  locale: Locale(widget.preferences.languageCode),
+                  routerConfig: _appRouter.router,
+                  builder: (context, widget) {
+                    return VersionGate(
+                      app: 'driver',
+                      config: getIt<AppConfig>(),
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                        child: widget!,
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         );
       },

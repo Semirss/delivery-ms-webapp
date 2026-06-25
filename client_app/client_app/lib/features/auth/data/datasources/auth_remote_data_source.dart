@@ -17,134 +17,99 @@ abstract class AuthRemoteDataSource {
 }
 
 @Injectable(as: AuthRemoteDataSource)
-class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
+class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
-    final response = await _supabase.auth.signInWithPassword(
-      email: params.email,
-      password: params.password,
+    final data = await _supabase.rpc(
+      'login_client',
+      params: {
+        'p_email': params.email.trim().toLowerCase(),
+        'p_password': params.password,
+      },
     );
 
-    final user = response.user;
-    if (user == null) throw Exception('Login failed: no user returned');
+    final user = UserModel.fromJson(_singleRow(data));
 
     return AuthResponseModel(
-      user: UserModel(
-        id: user.id,
-        email: user.email ?? '',
-        isEmailVerified: user.emailConfirmedAt != null,
-        firstName: user.userMetadata?['first_name'] as String?,
-        lastName: user.userMetadata?['last_name'] as String?,
-        phone: user.phone,
-      ),
-      accessToken: response.session?.accessToken,
+      user: user,
+      accessToken: _clientToken(user),
+      refreshToken: _clientToken(user, refresh: true),
       requiresVerification: false,
     );
   }
 
   @override
   Future<AuthResponseModel> signUp(SignUpParams params) async {
-    final response = await _supabase.auth.signUp(
-      email: params.email,
-      password: params.password,
-      data: {
-        'first_name': params.firstName,
-        'last_name': params.lastName,
-        'phone': params.phone,
+    final data = await _supabase.rpc(
+      'register_client',
+      params: {
+        'p_email': params.email.trim().toLowerCase(),
+        'p_password': params.password,
+        'p_first_name': params.firstName?.trim(),
+        'p_last_name': params.lastName?.trim(),
+        'p_phone': params.phone?.trim(),
       },
     );
 
-    final user = response.user;
-    if (user == null) throw Exception('Sign up failed');
-
-    // Supabase may require email verification
-    final requiresVerification = response.session == null;
+    final user = UserModel.fromJson(_singleRow(data));
 
     return AuthResponseModel(
-      user: UserModel(
-        id: user.id,
-        email: user.email ?? '',
-        isEmailVerified: user.emailConfirmedAt != null,
-        firstName: params.firstName,
-        lastName: params.lastName,
-        phone: params.phone,
-      ),
-      requiresVerification: requiresVerification,
-      verificationKey: user.email, // used as reference for OTP verification
+      user: user,
+      accessToken: _clientToken(user),
+      refreshToken: _clientToken(user, refresh: true),
+      requiresVerification: false,
     );
   }
 
   @override
   Future<AuthResponseModel> verifyOtp(OtpVerificationParams params) async {
-    // verificationKey stores the email
-    final response = await _supabase.auth.verifyOTP(
-      email: params.verificationKey,
-      token: params.otp,
-      type: OtpType.signup,
-    );
-
-    final user = response.user;
-    if (user == null) throw Exception('OTP verification failed');
-
-    return AuthResponseModel(
-      user: UserModel(
-        id: user.id,
-        email: user.email ?? '',
-        isEmailVerified: true,
-        firstName: user.userMetadata?['first_name'] as String?,
-        lastName: user.userMetadata?['last_name'] as String?,
-        phone: user.phone,
-      ),
-      accessToken: response.session?.accessToken,
-    );
+    throw Exception('OTP verification is not used for client table accounts');
   }
 
   @override
   Future<void> resendOtp(String verificationKey) async {
-    await _supabase.auth.resend(type: OtpType.signup, email: verificationKey);
+    throw Exception('OTP resend is not used for client table accounts');
   }
 
   @override
   Future<void> resetPassword(ResetPasswordParams params) async {
-    await _supabase.auth.resetPasswordForEmail(params.email);
+    throw Exception('Password reset is not configured for client table accounts');
   }
 
   @override
   Future<void> verifyResetPassword(VerifyResetPasswordParams params) async {
-    // In Supabase flow, user clicks email link which sets session, then updates password
-    await _supabase.auth.updateUser(UserAttributes(password: params.newPassword));
+    throw Exception('Password reset verification is not configured for client table accounts');
   }
 
   @override
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params) async {
-    final response = await _supabase.auth.refreshSession();
-    final user = response.user;
-    if (user == null) throw Exception('Session refresh failed');
-    return AuthResponseModel(
-      user: UserModel(id: user.id, email: user.email ?? '', isEmailVerified: true),
-      accessToken: response.session?.accessToken,
-    );
+    throw Exception('Client table accounts do not use Supabase Auth refresh tokens');
   }
 
   @override
   Future<void> logout() async {
-    await _supabase.auth.signOut();
+    return;
   }
 
   @override
   Future<UserModel> getCurrentUser() async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) throw Exception('No authenticated user');
+    throw Exception('Client table accounts use the cached local session');
+  }
 
-    return UserModel(
-      id: user.id,
-      email: user.email ?? '',
-      isEmailVerified: user.emailConfirmedAt != null,
-      firstName: user.userMetadata?['first_name'] as String?,
-      lastName: user.userMetadata?['last_name'] as String?,
-      phone: user.phone,
-    );
+  Map<String, dynamic> _singleRow(dynamic data) {
+    if (data is List && data.isNotEmpty) {
+      return Map<String, dynamic>.from(data.first as Map);
+    }
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
+    }
+    throw Exception('Invalid client auth response');
+  }
+
+  String _clientToken(UserModel user, {bool refresh = false}) {
+    final prefix = refresh ? 'client_table_refresh' : 'client_table_access';
+    return '${prefix}_${user.id}_${DateTime.now().millisecondsSinceEpoch}';
   }
 }

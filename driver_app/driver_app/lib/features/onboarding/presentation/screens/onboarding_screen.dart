@@ -26,7 +26,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _OnboardingData(
       icon: Icons.payments_rounded,
       title: 'Earn More Daily',
-      subtitle: 'Set your own hours. The more you ride, the more you earn. No cap on daily income.',
+      subtitle: 'Set your own hours. The more you deliver, the more you earn. No cap on daily income.',
       gradient: [Color(0xFF1A1A1A), Color(0xFF2D0000)],
     ),
     _OnboardingData(
@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     _OnboardingData(
       icon: Icons.verified_rounded,
       title: 'Safe & Trusted',
-      subtitle: 'Verified clients only. Real-time support to keep you safe on every trip.',
+      subtitle: 'Verified clients only. Real-time support to keep you safe on every delivery.',
       gradient: [Color(0xFF1A1A1A), Color(0xFF3D0000)],
     ),
   ];

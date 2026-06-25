@@ -1,15 +1,17 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:driver_ui/app_ui.dart';
+
 import 'package:driver_app/config/router/navigation_helper.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/home/data/repositories/map_repository.dart';
+import 'package:driver_ui/app_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,202 +23,416 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
-  LatLng _currentPosition = const LatLng(8.9806, 38.7578); // Default to Addis Ababa
-  bool _isOnline = false;
-  StreamSubscription<Position>? _positionStream;
-  RealtimeChannel? _ridesChannel;
+  final SupabaseClient _supabase = Supabase.instance.client;
 
-  Map<String, dynamic>? _activeRide;
+  LatLng _currentPosition = const LatLng(8.9806, 38.7578);
+  StreamSubscription<Position>? _positionStream;
+  RealtimeChannel? _deliveriesChannel;
+
+  bool _isOnline = false;
+  bool _isResolvingDriver = false;
+  bool _isUpdating = false;
+  Map<String, dynamic>? _driverRecord;
+  Map<String, dynamic>? _activeDelivery;
   List<LatLng> _routePoints = [];
+  String? _lastNotifiedDeliveryId;
 
   @override
   void initState() {
     super.initState();
     _checkLocationPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDriverRecord());
   }
 
   Future<void> _checkLocationPermission() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
 
-    permission = await Geolocator.checkPermission();
+    var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) return;
     }
 
     if (permission == LocationPermission.deniedForever) return;
-
-    _getCurrentLocation();
+    await _getCurrentLocation();
   }
 
   Future<void> _getCurrentLocation() async {
     final position = await Geolocator.getCurrentPosition();
+    if (!mounted) return;
     setState(() {
       _currentPosition = LatLng(position.latitude, position.longitude);
     });
-    _mapController.move(_currentPosition, 16.0);
+    _mapController.move(_currentPosition, 16);
   }
 
-  void _toggleOnlineStatus() async {
+  Future<Map<String, dynamic>?> _loadDriverRecord() async {
+    if (_isResolvingDriver) return _driverRecord;
+
     final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) return;
-    
-    final userId = authState.user.id;
-    final supabase = Supabase.instance.client;
+    if (authState is! AuthAuthenticated) return null;
 
-    setState(() {
-      _isOnline = !_isOnline;
-      if (!_isOnline) {
-        _activeRide = null;
-        _routePoints = [];
-      }
-    });
-
-    if (_isOnline) {
-      // Start streaming location
-      _positionStream = Geolocator.getPositionStream(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: 10,
-        ),
-      ).listen((Position position) async {
-        setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
-        });
-        
-        await supabase.from('driver_locations').upsert({
-          'id': userId,
-          'lat': position.latitude,
-          'lng': position.longitude,
-          'status': _activeRide != null ? 'busy' : 'online',
-          'updated_at': DateTime.now().toIso8601String(),
-        });
-      });
-
-      // Listen to new ride requests
-      _ridesChannel = supabase
-          .channel('public:rides:pending')
-          .onPostgresChanges(
-            event: PostgresChangeEvent.insert,
-            schema: 'public',
-            table: 'rides',
-            filter: PostgresChangeFilter(
-              type: PostgresChangeFilterType.eq,
-              column: 'status',
-              value: 'pending',
-            ),
-            callback: (payload) {
-              if (mounted && _activeRide == null) {
-                setState(() {
-                  _activeRide = payload.newRecord;
-                });
-                _fetchRouteToPickup();
-              }
-            },
-          )
-          .subscribe();
-
-    } else {
-      // Stop streaming and set status offline
-      _positionStream?.cancel();
-      _ridesChannel?.unsubscribe();
-      await supabase.from('driver_locations').upsert({
-        'id': userId,
-        'lat': _currentPosition.latitude,
-        'lng': _currentPosition.longitude,
-        'status': 'offline',
-        'updated_at': DateTime.now().toIso8601String(),
-      });
-    }
-  }
-
-  Future<void> _fetchRouteToPickup() async {
-    if (_activeRide == null) return;
-    
-    final pickupLat = _activeRide!['pickup_lat'] as double;
-    final pickupLng = _activeRide!['pickup_lng'] as double;
-    final pickupLocation = LatLng(pickupLat, pickupLng);
-
-    final route = await _mapRepository.getRoute(_currentPosition, pickupLocation);
-    if (mounted && route.isNotEmpty) {
+    setState(() => _isResolvingDriver = true);
+    try {
+      final record = await _findOrCreateDriver(authState.user);
+      if (!mounted) return record;
       setState(() {
-        _routePoints = route;
+        _driverRecord = record;
+        _isOnline = record?['status'] == 'Online';
       });
-      final bounds = LatLngBounds.fromPoints([_currentPosition, pickupLocation]);
-      _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+      if (_isOnline && record != null) {
+        _startLocationStreaming(record['id'].toString());
+        await _subscribeToAssignments(record['id'].toString());
+      }
+      return record;
+    } catch (e) {
+      debugPrint('Error loading driver record: $e');
+      if (mounted) {
+        AppToast.show(context: context, message: 'Could not load driver profile.', type: AppToastType.error);
+      }
+      return null;
+    } finally {
+      if (mounted) setState(() => _isResolvingDriver = false);
     }
   }
 
-  Future<void> _acceptRide() async {
-    if (_activeRide == null) return;
+  Future<Map<String, dynamic>?> _findOrCreateDriver(UserEntity user) async {
+    final byId = await _maybeDriverBy('id', user.id);
+    if (byId != null) return byId;
 
-    final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) return;
-    
-    final userId = authState.user.id;
-    final rideId = _activeRide!['id'];
-    final supabase = Supabase.instance.client;
+    final phone = _driverPhone(user);
+    final byPhone = await _maybeDriverBy('phone', phone);
+    if (byPhone != null) return byPhone;
+
+    final name = _driverName(user);
+    final data = await _supabase
+        .from('drivers')
+        .insert({
+          'id': user.id,
+          'name': name,
+          'phone': phone,
+          'password': 'managed-by-supabase-auth',
+          'status': 'Offline',
+          'approval_status': 'Pending',
+          'vehicle_type': 'Bike',
+        })
+        .select()
+        .single();
+
+    if (mounted) {
+      AppToast.show(
+        context: context,
+        message: 'Driver profile created. Waiting for admin approval.',
+        type: AppToastType.info,
+      );
+    }
+
+    return Map<String, dynamic>.from(data);
+  }
+
+  Future<Map<String, dynamic>?> _maybeDriverBy(String column, String value) async {
+    if (value.trim().isEmpty) return null;
+    try {
+      final data = await _supabase.from('drivers').select().eq(column, value).maybeSingle();
+      if (data == null) return null;
+      return Map<String, dynamic>.from(data);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _driverName(UserEntity user) {
+    final name = [user.firstName, user.lastName]
+        .where((part) => part != null && part.trim().isNotEmpty)
+        .join(' ')
+        .trim();
+    return name.isEmpty ? user.email : name;
+  }
+
+  String _driverPhone(UserEntity user) {
+    final phone = user.phone?.trim() ?? '';
+    return phone.isEmpty ? user.email : phone;
+  }
+
+  bool _canGoOnline(Map<String, dynamic> driver) {
+    if (driver['approval_status'] != 'Approved') {
+      AppToast.show(context: context, message: 'Waiting for admin approval.', type: AppToastType.warning);
+      return false;
+    }
+    if (driver['is_active'] == false) {
+      AppToast.show(context: context, message: 'Your driver account is inactive.', type: AppToastType.error);
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _toggleOnlineStatus() async {
+    if (_isUpdating) return;
+
+    final driver = _driverRecord ?? await _loadDriverRecord();
+    if (driver == null) return;
+
+    if (!_isOnline && !_canGoOnline(driver)) return;
+    if (_isOnline && _activeDelivery != null) {
+      AppToast.show(context: context, message: 'Finish the active delivery before going offline.', type: AppToastType.warning);
+      return;
+    }
+
+    setState(() => _isUpdating = true);
+    final driverId = driver['id'].toString();
 
     try {
-      final response = await supabase
-          .from('rides')
-          .update({
-            'driver_id': userId,
-            'status': 'accepted',
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', rideId)
-          .eq('status', 'pending') // Ensure it wasn't accepted by someone else
+      if (_isOnline) {
+        await _positionStream?.cancel();
+        await _deliveriesChannel?.unsubscribe();
+        await _supabase.from('drivers').update({
+          'status': 'Offline',
+          'current_lat': _currentPosition.latitude,
+          'current_lng': _currentPosition.longitude,
+          'last_location_update': DateTime.now().toIso8601String(),
+        }).eq('id', driverId);
+
+        if (!mounted) return;
+        setState(() {
+          _isOnline = false;
+          _activeDelivery = null;
+          _routePoints = [];
+          _driverRecord = {...driver, 'status': 'Offline'};
+        });
+      } else {
+        await _updateDriverLocation(driverId, status: 'Online');
+        _startLocationStreaming(driverId);
+        await _subscribeToAssignments(driverId);
+
+        if (!mounted) return;
+        setState(() {
+          _isOnline = true;
+          _driverRecord = {...driver, 'status': 'Online'};
+        });
+      }
+    } catch (e) {
+      debugPrint('Error toggling online status: $e');
+      if (mounted) {
+        AppToast.show(context: context, message: 'Could not update online status.', type: AppToastType.error);
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  void _startLocationStreaming(String driverId) {
+    _positionStream?.cancel();
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((position) async {
+      if (!mounted) return;
+      setState(() {
+        _currentPosition = LatLng(position.latitude, position.longitude);
+      });
+      await _updateDriverLocation(driverId, status: _activeDelivery == null ? 'Online' : 'Online');
+    });
+  }
+
+  Future<void> _updateDriverLocation(String driverId, {required String status}) async {
+    await _supabase.from('drivers').update({
+      'status': status,
+      'current_lat': _currentPosition.latitude,
+      'current_lng': _currentPosition.longitude,
+      'last_location_update': DateTime.now().toIso8601String(),
+    }).eq('id', driverId);
+  }
+
+  Future<void> _subscribeToAssignments(String driverId) async {
+    await _loadAssignedDelivery(driverId);
+    await _deliveriesChannel?.unsubscribe();
+    _deliveriesChannel = _supabase
+        .channel('public:deliveries:$driverId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'deliveries',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'driver_id',
+            value: driverId,
+          ),
+          callback: (_) => _loadAssignedDelivery(driverId),
+        )
+        .subscribe();
+  }
+
+  Future<void> _loadAssignedDelivery(String driverId) async {
+    try {
+      final data = await _supabase
+          .from('deliveries')
+          .select()
+          .eq('driver_id', driverId)
+          .order('assigned_at', ascending: false)
+          .limit(10);
+
+      final deliveries = List<Map<String, dynamic>>.from(data);
+      final active = deliveries.cast<Map<String, dynamic>?>().firstWhere(
+            (delivery) => delivery != null && ['Assigned', 'Picked Up'].contains(delivery['status']),
+            orElse: () => null,
+          );
+
+      if (!mounted) return;
+      await _setActiveDelivery(active);
+    } catch (e) {
+      debugPrint('Error loading assigned delivery: $e');
+    }
+  }
+
+  Future<void> _setActiveDelivery(Map<String, dynamic>? delivery) async {
+    if (delivery == null) {
+      setState(() {
+        _activeDelivery = null;
+        _routePoints = [];
+      });
+      return;
+    }
+
+    setState(() {
+      _activeDelivery = delivery;
+    });
+
+    final deliveryId = delivery['id']?.toString();
+    if (deliveryId != null &&
+        deliveryId != _lastNotifiedDeliveryId &&
+        delivery['status'] == 'Assigned' &&
+        mounted) {
+      _lastNotifiedDeliveryId = deliveryId;
+      AppToast.show(
+        context: context,
+        message: 'New delivery assigned. Check pickup details.',
+        type: AppToastType.info,
+      );
+    }
+
+    final destination = delivery['status'] == 'Picked Up'
+        ? LatLng(_asDouble(delivery['dropoff_lat']), _asDouble(delivery['dropoff_lng']))
+        : LatLng(_asDouble(delivery['pickup_lat']), _asDouble(delivery['pickup_lng']));
+
+    if (destination.latitude == 0 && destination.longitude == 0) return;
+
+    final route = await _mapRepository.getRoute(_currentPosition, destination);
+    if (!mounted) return;
+    setState(() {
+      _routePoints = route;
+    });
+    final bounds = LatLngBounds.fromPoints([_currentPosition, destination]);
+    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+  }
+
+  Future<void> _rejectDelivery() async {
+    final delivery = _activeDelivery;
+    if (delivery == null) return;
+
+    setState(() => _isUpdating = true);
+    try {
+      await _supabase.from('deliveries').update({
+        'status': 'Pending',
+        'driver_id': null,
+        'assigned_at': null,
+        'cancelled_by': 'driver_reject',
+        'cancellation_reason': 'Rejected from driver app',
+      }).eq('id', delivery['id']);
+
+      if (!mounted) return;
+      setState(() {
+        _activeDelivery = null;
+        _routePoints = [];
+      });
+      AppToast.show(context: context, message: 'Delivery returned to dispatch.', type: AppToastType.info);
+    } catch (e) {
+      debugPrint('Error rejecting delivery: $e');
+      if (mounted) {
+        AppToast.show(context: context, message: 'Could not reject delivery.', type: AppToastType.error);
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  Future<void> _updateDeliveryStatus(String status) async {
+    final delivery = _activeDelivery;
+    final driver = _driverRecord;
+    if (delivery == null || driver == null) return;
+
+    setState(() => _isUpdating = true);
+    try {
+      final updated = await _supabase
+          .from('deliveries')
+          .update({'status': status})
+          .eq('id', delivery['id'])
           .select()
           .single();
 
-      setState(() {
-        _activeRide = response;
-      });
-      
-      // Update driver status to busy
-      await supabase.from('driver_locations').update({'status': 'busy'}).eq('id', userId);
+      if (status == 'Delivered') {
+        final total = _asInt(driver['total_deliveries']) + 1;
+        await _supabase.from('drivers').update({'total_deliveries': total}).eq('id', driver['id']);
+        if (mounted) {
+          setState(() {
+            _driverRecord = {...driver, 'total_deliveries': total};
+          });
+        }
+      }
 
-      AppToast.show(context: context, message: 'Ride Accepted!', type: AppToastType.success);
+      if (!mounted) return;
+      if (status == 'Delivered') {
+        setState(() {
+          _activeDelivery = null;
+          _routePoints = [];
+        });
+        AppToast.show(context: context, message: 'Delivery completed.', type: AppToastType.success);
+      } else {
+        await _setActiveDelivery(Map<String, dynamic>.from(updated));
+        AppToast.show(context: context, message: 'Status updated.', type: AppToastType.success);
+      }
     } catch (e) {
-      setState(() {
-        _activeRide = null;
-        _routePoints = [];
-      });
-      AppToast.show(context: context, message: 'Ride no longer available.', type: AppToastType.error);
+      debugPrint('Error updating delivery status: $e');
+      if (mounted) {
+        AppToast.show(context: context, message: 'Could not update delivery.', type: AppToastType.error);
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
     }
   }
 
-  void _declineRide() {
-    setState(() {
-      _activeRide = null;
-      _routePoints = [];
-    });
-    _mapController.move(_currentPosition, 16.0);
+  double _asDouble(Object? value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  int _asInt(Object? value) {
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   @override
   void dispose() {
     _positionStream?.cancel();
-    _ridesChannel?.unsubscribe();
+    _deliveriesChannel?.unsubscribe();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final delivery = _activeDelivery;
+    final approvalStatus = _driverRecord?['approval_status']?.toString() ?? 'Pending';
+
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Map Layer
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
               initialCenter: _currentPosition,
-              initialZoom: 16.0,
+              initialZoom: 16,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
@@ -229,16 +445,11 @@ class _HomeScreenState extends State<HomeScreen> {
               if (_routePoints.isNotEmpty)
                 PolylineLayer(
                   polylines: [
-                    Polyline(
-                      points: _routePoints,
-                      color: AppColors.primary,
-                      strokeWidth: 4.0,
-                    ),
+                    Polyline(points: _routePoints, color: AppColors.primary, strokeWidth: 4),
                   ],
                 ),
               MarkerLayer(
                 markers: [
-                  // Driver Location Marker
                   Marker(
                     point: _currentPosition,
                     width: 60,
@@ -256,32 +467,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 3),
-                            boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
-                            ],
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))],
                           ),
                           child: const Icon(Icons.motorcycle_rounded, color: Colors.white, size: 14),
                         ),
                       ),
                     ),
                   ),
-                  // Pickup Location Marker
-                  if (_activeRide != null)
+                  if (delivery != null && delivery['pickup_lat'] != null && delivery['pickup_lng'] != null)
                     Marker(
-                      point: LatLng(
-                        _activeRide!['pickup_lat'] as double,
-                        _activeRide!['pickup_lng'] as double,
-                      ),
+                      point: LatLng(_asDouble(delivery['pickup_lat']), _asDouble(delivery['pickup_lng'])),
                       width: 40,
                       height: 40,
-                      child: const Icon(Icons.location_on, color: AppColors.success, size: 40),
+                      child: const Icon(Icons.storefront_rounded, color: AppColors.success, size: 36),
+                    ),
+                  if (delivery != null && delivery['dropoff_lat'] != null && delivery['dropoff_lng'] != null)
+                    Marker(
+                      point: LatLng(_asDouble(delivery['dropoff_lat']), _asDouble(delivery['dropoff_lng'])),
+                      width: 40,
+                      height: 40,
+                      child: const Icon(Icons.location_on, color: AppColors.primary, size: 40),
                     ),
                 ],
               ),
             ],
           ),
-
-          // 2. Top Header
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -299,8 +509,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: () => context.navigator.pushProfileScreen(),
                     ),
                   ),
-                  
-                  // Online/Offline Toggle
                   GestureDetector(
                     onTap: _toggleOnlineStatus,
                     child: Container(
@@ -332,14 +540,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  
-                  const SizedBox(width: 48), // Spacer
+                  const SizedBox(width: 48),
                 ],
               ),
             ),
           ),
-
-          // 3. Bottom Action Sheet
           Positioned(
             left: 0,
             right: 0,
@@ -348,9 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))
-                ],
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
               ),
               child: SafeArea(
                 top: false,
@@ -365,76 +568,84 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      
-                      if (!_isOnline) ...[
-                        const Icon(Icons.power_settings_new_rounded, size: 48, color: AppColors.textSecondary),
-                        const SizedBox(height: AppSpacing.md),
-                        const AppText('You are offline', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                        const SizedBox(height: AppSpacing.xs),
-                        const AppText('Go online to start receiving ride requests', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.primary(label: 'GO ONLINE', fullWidth: true, onPressed: _toggleOnlineStatus),
-                      ] else if (_activeRide == null) ...[
+                      if (_isResolvingDriver) ...[
                         const CircularProgressIndicator(color: AppColors.primary),
                         const SizedBox(height: AppSpacing.lg),
-                        const AppText('Finding requests...', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                        const SizedBox(height: AppSpacing.xs),
-                        const AppText('Stay in high demand areas to get more rides', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
-                      ] else if (_activeRide!['status'] == 'pending') ...[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const AppText('New Ride Request!', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                            AppText('${_activeRide!['price']} ETB', variant: AppTextVariant.heading2, color: AppColors.primary, fontWeight: FontWeight.bold),
-                          ],
+                        const AppText('Checking driver approval...', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+                      ] else if (!_isOnline) ...[
+                        Icon(
+                          approvalStatus == 'Approved' ? Icons.power_settings_new_rounded : Icons.verified_user_outlined,
+                          size: 48,
+                          color: approvalStatus == 'Approved' ? AppColors.textSecondary : AppColors.warning,
                         ),
-                        const Divider(),
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.location_on_rounded, color: AppColors.textSecondary),
-                          title: const AppText('Pickup', variant: AppTextVariant.labelLarge),
-                          subtitle: AppText(_activeRide!['pickup_address'] ?? 'Current Location', variant: AppTextVariant.bodyMedium, maxLines: 1),
-                        ),
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.flag_rounded, color: AppColors.primary),
-                          title: const AppText('Dropoff', variant: AppTextVariant.labelLarge),
-                          subtitle: AppText(_activeRide!['dropoff_address'] ?? 'Destination', variant: AppTextVariant.bodyMedium, maxLines: 1),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppButton.outlinedSecondary(label: 'DECLINE', onPressed: _declineRide),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: AppButton.primary(label: 'ACCEPT', onPressed: _acceptRide),
-                            ),
-                          ],
-                        ),
-                      ] else if (_activeRide!['status'] == 'accepted') ...[
-                        const AppText('Head to Pickup', variant: AppTextVariant.heading2, fontWeight: FontWeight.bold),
                         const SizedBox(height: AppSpacing.md),
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.person_rounded, color: AppColors.textSecondary, size: 40),
-                          title: const AppText('Client', variant: AppTextVariant.labelLarge),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(icon: const Icon(Icons.message_rounded, color: AppColors.primary), onPressed: () {}),
-                              IconButton(icon: const Icon(Icons.call_rounded, color: AppColors.success), onPressed: () {}),
-                            ],
-                          ),
+                        AppText(
+                          approvalStatus == 'Approved' ? 'You are offline' : 'Waiting for approval',
+                          variant: AppTextVariant.heading3,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        AppText(
+                          approvalStatus == 'Approved'
+                              ? 'Go online to receive admin-assigned deliveries.'
+                              : 'An admin must approve your driver profile before you can work.',
+                          variant: AppTextVariant.bodyMedium,
+                          color: AppColors.textSecondary,
+                          textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         AppButton.primary(
-                          label: 'ARRIVED',
+                          label: approvalStatus == 'Approved' ? 'GO ONLINE' : 'CHECK APPROVAL',
                           fullWidth: true,
-                          onPressed: () {
-                            // Proceed to in_progress state
-                          },
+                          isLoading: _isUpdating,
+                          onPressed: approvalStatus == 'Approved' ? _toggleOnlineStatus : _loadDriverRecord,
+                        ),
+                      ] else if (delivery == null) ...[
+                        const CircularProgressIndicator(color: AppColors.primary),
+                        const SizedBox(height: AppSpacing.lg),
+                        const AppText('Waiting for assignments...', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+                        const SizedBox(height: AppSpacing.xs),
+                        const AppText(
+                          'Keep GPS enabled so dispatch can assign nearby deliveries.',
+                          variant: AppTextVariant.bodyMedium,
+                          color: AppColors.textSecondary,
+                          textAlign: TextAlign.center,
+                        ),
+                      ] else if (delivery['status'] == 'Assigned') ...[
+                        _buildDeliveryHeader('Assigned Delivery', delivery),
+                        const Divider(),
+                        _buildDeliveryLocation(Icons.storefront_rounded, 'Pickup', delivery['pickup_location']?.toString() ?? 'Pickup location'),
+                        _buildDeliveryLocation(Icons.flag_rounded, 'Dropoff', delivery['dropoff_location']?.toString() ?? 'Dropoff location'),
+                        const SizedBox(height: AppSpacing.lg),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppButton.outlinedSecondary(
+                                label: 'REJECT',
+                                isLoading: _isUpdating,
+                                onPressed: _rejectDelivery,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: AppButton.primary(
+                                label: 'PICKED UP',
+                                isLoading: _isUpdating,
+                                onPressed: () => _updateDeliveryStatus('Picked Up'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        _buildDeliveryHeader('Deliver Package', delivery),
+                        const Divider(),
+                        _buildDeliveryLocation(Icons.flag_rounded, 'Dropoff', delivery['dropoff_location']?.toString() ?? 'Dropoff location'),
+                        const SizedBox(height: AppSpacing.xl),
+                        AppButton.primary(
+                          label: 'MARK DELIVERED',
+                          fullWidth: true,
+                          isLoading: _isUpdating,
+                          onPressed: () => _updateDeliveryStatus('Delivered'),
                         ),
                       ],
                     ],
@@ -446,7 +657,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 300), // Above bottom sheet
+        padding: const EdgeInsets.only(bottom: 300),
         child: FloatingActionButton(
           backgroundColor: AppColors.background,
           onPressed: _getCurrentLocation,
@@ -454,5 +665,43 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildDeliveryHeader(String title, Map<String, dynamic> delivery) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: AppText(
+            title,
+            variant: AppTextVariant.heading3,
+            fontWeight: FontWeight.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        AppText(
+          _feeLabel(delivery['delivery_fee']),
+          variant: AppTextVariant.heading2,
+          color: AppColors.primary,
+          fontWeight: FontWeight.bold,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDeliveryLocation(IconData icon, String title, String subtitle) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: title == 'Pickup' ? AppColors.success : AppColors.primary),
+      title: AppText(title, variant: AppTextVariant.labelLarge),
+      subtitle: AppText(subtitle, variant: AppTextVariant.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
+  }
+
+  String _feeLabel(Object? value) {
+    final amount = value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+    if (amount == null) return '-- ETB';
+    return '${amount.toStringAsFixed(0)} ETB';
   }
 }

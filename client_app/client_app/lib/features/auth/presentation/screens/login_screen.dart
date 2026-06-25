@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:client_app/config/router/app_routes.dart';
+import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/core/utils/functions/base_functions/validators.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appBackground,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -72,16 +73,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const SizedBox(height: AppSpacing.xl),
                         Container(
-                          padding: const EdgeInsets.all(20),
+                          width: 92,
+                          height: 92,
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.15),
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(26),
                           ),
-                          child: const Icon(Icons.motorcycle_rounded, color: Colors.white, size: 56),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.asset(ImageConstants.appLogo, fit: BoxFit.cover),
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         const Text(
-                          'MOTORIDE',
+                          'MotoBike',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -92,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          'Your city, your speed',
+                          'Fast delivery, live tracking',
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                       ],
@@ -111,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: AppSpacing.lg),
                         const AppText('Welcome back!', variant: AppTextVariant.heading2, fontWeight: FontWeight.bold),
                         const SizedBox(height: 4),
-                        const AppText('Sign in to continue riding', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
+                        AppText('Sign in to manage deliveries', variant: AppTextVariant.bodyMedium, color: context.appTextSecondary),
                         const SizedBox(height: AppSpacing.xl),
 
                         AppTextField.outlined(
@@ -130,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppTextField.outlined(
                           controller: _passwordController,
                           label: 'Password',
-                          hint: '••••••••',
+                          hint: '********',
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: _obscurePassword,
                           suffixIcon: _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,

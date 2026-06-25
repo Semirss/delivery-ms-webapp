@@ -22,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
@@ -32,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _confirmPasswordController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -43,6 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password: _passwordController.text,
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
+          phone: _phoneController.text.trim(),
         ),
       );
     }
@@ -87,7 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppText(
                     'Sign up to get started',
                     variant: AppTextVariant.bodyMedium,
-                    color: AppColors.textSecondary,
+                    color: context.appTextSecondary,
                     textAlign: TextAlign.center,
                   ),
                   kVerticalGap48,
@@ -129,6 +132,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       }
                       if (!isValidEmail(value)) {
                         return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  kVerticalGap16,
+                  AppTextField.outlined(
+                    controller: _phoneController,
+                    label: 'Phone',
+                    hint: '+251912345678',
+                    prefixIcon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter your phone number';
+                      }
+                      if (!isValidPhoneNumber(value.trim())) {
+                        return 'Please enter a valid phone number';
                       }
                       return null;
                     },

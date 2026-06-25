@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:driver_ui/app_ui.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EarningsScreen extends StatefulWidget {
   const EarningsScreen({super.key});
@@ -11,10 +11,12 @@ class EarningsScreen extends StatefulWidget {
 }
 
 class _EarningsScreenState extends State<EarningsScreen> {
-  List<Map<String, dynamic>> _rides = [];
+  List<Map<String, dynamic>> _deliveries = [];
   bool _isLoading = true;
   double _totalEarnings = 0;
-  int _totalRides = 0;
+  int _totalDeliveries = 0;
+  RealtimeChannel? _earningsChannel;
+  String? _driverId;
 
   @override
   void initState() {
@@ -25,31 +27,81 @@ class _EarningsScreenState extends State<EarningsScreen> {
   Future<void> _fetchEarnings() async {
     try {
       final supabase = Supabase.instance.client;
-      final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return;
+      final driverId = await _resolveDriverId(supabase);
+      if (driverId == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+      _driverId = driverId;
 
       final data = await supabase
-          .from('rides')
+          .from('deliveries')
           .select()
-          .eq('driver_id', userId)
-          .eq('status', 'completed')
+          .eq('driver_id', driverId)
+          .eq('status', 'Delivered')
           .order('created_at', ascending: false)
           .limit(50);
 
-      final rides = List<Map<String, dynamic>>.from(data);
-      final total = rides.fold<double>(0, (sum, r) => sum + ((r['price'] as num?)?.toDouble() ?? 0));
+      final deliveries = List<Map<String, dynamic>>.from(data);
+      final total = deliveries.fold<double>(0, (sum, delivery) => sum + _asMoney(delivery['delivery_fee']));
 
       if (mounted) {
         setState(() {
-          _rides = rides;
+          _deliveries = deliveries;
           _totalEarnings = total;
-          _totalRides = rides.length;
+          _totalDeliveries = deliveries.length;
           _isLoading = false;
         });
+        _subscribeToEarnings(driverId);
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _subscribeToEarnings(String driverId) {
+    _earningsChannel?.unsubscribe();
+    _earningsChannel = Supabase.instance.client
+        .channel('public:deliveries:earnings:$driverId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'deliveries',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'driver_id',
+            value: driverId,
+          ),
+          callback: (_) => _fetchEarnings(),
+        )
+        .subscribe();
+  }
+
+  Future<String?> _resolveDriverId(SupabaseClient supabase) async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return null;
+
+    final byId = await supabase.from('drivers').select('id').eq('id', user.id).maybeSingle();
+    if (byId != null) return byId['id']?.toString();
+
+    final phone = user.phone?.trim().isNotEmpty == true
+        ? user.phone!.trim()
+        : user.userMetadata?['phone']?.toString() ?? user.email ?? '';
+    if (phone.isEmpty) return null;
+
+    final byPhone = await supabase.from('drivers').select('id').eq('phone', phone).maybeSingle();
+    return byPhone?['id']?.toString();
+  }
+
+  double _asMoney(Object? value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  @override
+  void dispose() {
+    _earningsChannel?.unsubscribe();
+    super.dispose();
   }
 
   @override
@@ -90,16 +142,20 @@ class _EarningsScreenState extends State<EarningsScreen> {
                                 color: Colors.white,
                                 fontSize: 40,
                                 fontWeight: FontWeight.w900,
-                                letterSpacing: -1,
                               ),
                             ),
                             const SizedBox(height: AppSpacing.md),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _buildStatBadge('$_totalRides', 'Trips'),
-                                Container(width: 1, height: 24, color: Colors.white30, margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg)),
-                                _buildStatBadge('5.0 ★', 'Rating'),
+                                _buildStatBadge('$_totalDeliveries', 'Deliveries'),
+                                Container(
+                                  width: 1,
+                                  height: 24,
+                                  color: Colors.white30,
+                                  margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                                ),
+                                _buildStatBadge('5.0', 'Rating'),
                               ],
                             ),
                           ],
@@ -113,12 +169,12 @@ class _EarningsScreenState extends State<EarningsScreen> {
                   ),
                   actions: [
                     IconButton(
-                      icon: const Icon(Icons.calendar_today_rounded, color: Colors.white),
-                      onPressed: () {},
+                      icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                      onPressed: _fetchEarnings,
                     ),
                   ],
                 ),
-                if (_rides.isEmpty)
+                if (_deliveries.isEmpty)
                   SliverFillRemaining(
                     child: Center(
                       child: Column(
@@ -126,8 +182,8 @@ class _EarningsScreenState extends State<EarningsScreen> {
                         children: [
                           Icon(Icons.payments_outlined, size: 80, color: AppColors.border),
                           const SizedBox(height: AppSpacing.lg),
-                          const AppText('No completed rides yet', variant: AppTextVariant.heading3, color: AppColors.textSecondary),
-                          const AppText('Go online to start earning!', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
+                          const AppText('No completed deliveries yet', variant: AppTextVariant.heading3, color: AppColors.textSecondary),
+                          const AppText('Go online to start earning.', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
                         ],
                       ),
                     ),
@@ -138,12 +194,12 @@ class _EarningsScreenState extends State<EarningsScreen> {
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) {
-                          final ride = _rides[index];
-                          final price = (ride['price'] as num?)?.toStringAsFixed(0) ?? '--';
-                          final createdAt = ride['created_at'] != null
-                              ? DateFormat('dd MMM, hh:mm a').format(DateTime.parse(ride['created_at']).toLocal())
+                          final delivery = _deliveries[index];
+                          final fee = _asMoney(delivery['delivery_fee']).toStringAsFixed(0);
+                          final createdAt = delivery['created_at'] != null
+                              ? DateFormat('dd MMM, hh:mm a').format(DateTime.parse(delivery['created_at'].toString()).toLocal())
                               : '';
-                          final dropoff = ride['dropoff_address'] as String? ?? 'Destination';
+                          final dropoff = delivery['dropoff_location']?.toString() ?? 'Destination';
 
                           return Container(
                             margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -174,7 +230,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                               ),
                               subtitle: AppText(createdAt, variant: AppTextVariant.bodySmall, color: AppColors.textSecondary),
                               trailing: AppText(
-                                '$price ETB',
+                                '$fee ETB',
                                 variant: AppTextVariant.heading3,
                                 color: AppColors.success,
                                 fontWeight: FontWeight.bold,
@@ -182,7 +238,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                             ),
                           );
                         },
-                        childCount: _rides.length,
+                        childCount: _deliveries.length,
                       ),
                     ),
                   ),

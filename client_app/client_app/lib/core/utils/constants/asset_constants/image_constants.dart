@@ -4,7 +4,9 @@ abstract class ImageConstants {
   static const String _root = 'assets/images';
 
   // App images
-  static const String appLogo = '$_root/app_logo.png';
+  static const String appLogo = '$_root/logo.png';
+  static const String bikeCourier = '$_root/bike_pic.png';
+  static const String motorCourier = '$_root/motor_pic_full.png';
   static const String placeholderImage = '$_root/placeholder.png';
   
   // Onboarding images

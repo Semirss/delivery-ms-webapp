@@ -10,7 +10,6 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../models/user_model.dart';
 
 @Injectable(as: AuthRepository)
 class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
@@ -34,8 +33,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
 
         // Cache tokens and user if authentication successful
         if (response.user == null || response.accessToken == null) {
-          logger.warning('Invalid response from server, using mock login');
-          return Right(await _mockLogin(params));
+          return Left(ServerFailure('Invalid login response from server'));
         }
         await localDataSource.cacheAccessToken(response.accessToken!);
         if (response.refreshToken != null) {
@@ -59,15 +57,14 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           ),
         );
       } on ServerException catch (e) {
-        logger.error('Login failed, using mock login', e, StackTrace.current);
-        return Right(await _mockLogin(params));
+        logger.error('Login failed', e, StackTrace.current);
+        return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
-        logger.error('Login error, using mock login', e, stackTrace);
-        return Right(await _mockLogin(params));
+        logger.error('Login error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
-      logger.warning('No internet connection, using mock login');
-      return Right(await _mockLogin(params));
+      return Left(NetworkFailure('No internet connection'));
     }
   }
 
@@ -79,8 +76,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
 
         if (!response.requiresVerification &&
             (response.user == null || response.accessToken == null)) {
-          logger.warning('Invalid response from server, using mock sign up');
-          return Right(await _mockSignUp(params));
+          return Left(ServerFailure('Invalid sign up response from server'));
         }
 
         // Cache verification key if provided
@@ -113,66 +109,15 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           ),
         );
       } on ServerException catch (e) {
-        logger.error(
-          'Sign up failed, using mock sign up',
-          e,
-          StackTrace.current,
-        );
-        return Right(await _mockSignUp(params));
+        logger.error('Sign up failed', e, StackTrace.current);
+        return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
-        logger.error('Sign up error, using mock sign up', e, stackTrace);
-        return Right(await _mockSignUp(params));
+        logger.error('Sign up error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
-      logger.warning('No internet connection, using mock sign up');
-      return Right(await _mockSignUp(params));
+      return Left(NetworkFailure('No internet connection'));
     }
-  }
-
-  Future<AuthResult> _mockLogin(LoginParams params) async {
-    final user = UserModel(
-      id: 'mock-${params.email}',
-      email: params.email,
-      isEmailVerified: true,
-      isPhoneVerified: false,
-      createdAt: DateTime.now(),
-    );
-    await _cacheMockAuth(user);
-    return AuthResult(
-      user: user,
-      accessToken: 'mock_access_token',
-      refreshToken: 'mock_refresh_token',
-      requiresVerification: false,
-    );
-  }
-
-  Future<AuthResult> _mockSignUp(SignUpParams params) async {
-    final user = UserModel(
-      id: 'mock-${params.email}',
-      email: params.email,
-      phone: params.phone,
-      firstName: params.firstName,
-      lastName: params.lastName,
-      isEmailVerified: true,
-      isPhoneVerified: params.phone != null,
-      createdAt: DateTime.now(),
-    );
-    await _cacheMockAuth(user);
-    return AuthResult(
-      user: user,
-      accessToken: 'mock_access_token',
-      refreshToken: 'mock_refresh_token',
-      requiresVerification: false,
-    );
-  }
-
-  Future<void> _cacheMockAuth(UserModel user) async {
-    await localDataSource.cacheUser(user);
-    await localDataSource.cacheAccessToken('mock_access_token');
-    await localDataSource.cacheRefreshToken('mock_refresh_token');
-    await localDataSource.cacheLoginTimestamp(
-      DateTime.now().millisecondsSinceEpoch,
-    );
   }
 
   @override
@@ -322,16 +267,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
-      if (await networkInfo.isConnected) {
-        final refreshToken = await localDataSource.getCachedRefreshToken();
-        if (refreshToken != null) {
-          try {
-            await remoteDataSource.logout();
-          } catch (e) {
-            // Even if logout fails on server, clear local data
-          }
-        }
-      }
+      await remoteDataSource.logout();
       await localDataSource.clearAll();
       return const Right(null);
     } catch (e) {
@@ -342,26 +278,14 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   @override
   Future<Either<Failure, UserEntity>> getCurrentUser() async {
     final cachedUser = await localDataSource.getCachedUser();
-    final hasToken = (await localDataSource.getCachedAccessToken()) != null;
+    final cachedToken = await localDataSource.getCachedAccessToken();
+    final hasToken = _isUsableToken(cachedToken);
 
-    if (await networkInfo.isConnected) {
-      try {
-        final user = await remoteDataSource.getCurrentUser();
-        await localDataSource.cacheUser(user);
-        return Right(user);
-      } catch (e, stackTrace) {
-        logger.error('Failed to get remote user, trying cache', e, stackTrace);
-        if (cachedUser != null && hasToken) {
-          return Right(cachedUser);
-        }
-        return Left(ServerFailure(e.toString()));
-      }
-    } else {
-      if (cachedUser != null && hasToken) {
-        return Right(cachedUser);
-      }
-      return Left(NetworkFailure('No internet connection'));
+    if (cachedUser != null && hasToken) {
+      return Right(cachedUser);
     }
+
+    return Left(CacheFailure('No cached client session'));
   }
 
   @override
@@ -372,5 +296,35 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
+  }
+
+  bool _isUsableToken(String? value) {
+    final token = value?.trim() ?? '';
+    if (token.isEmpty) return false;
+
+    final lower = token.toLowerCase();
+    return !lower.startsWith('mock_') &&
+        !lower.contains('placeholder') &&
+        !lower.contains('your_');
+  }
+
+  String _friendlyError(Object error) {
+    var message = error.toString();
+    message = message.replaceFirst('Exception: ', '');
+    if (message.contains('duplicate key') || message.contains('already exists')) {
+      return 'A client account already exists for this email';
+    }
+    if (message.contains('Invalid email or password')) {
+      return 'Invalid email or password';
+    }
+    if (message.contains('login_client') ||
+        message.contains('register_client') ||
+        message.contains('Could not find the function') ||
+        message.contains('gen_salt') ||
+        message.contains('crypt(') ||
+        message.contains('pgcrypto')) {
+      return 'Client auth database is not installed. Run supabase/schema_v4_app_versions.sql in Supabase.';
+    }
+    return message;
   }
 }

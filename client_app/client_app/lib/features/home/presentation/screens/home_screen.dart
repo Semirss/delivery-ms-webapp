@@ -1,14 +1,68 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:client_ui/app_ui.dart';
 import 'package:client_app/config/router/navigation_helper.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:client_app/core/config/app_config.dart';
+import 'package:client_app/core/di/injection.dart';
+import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
+import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
+import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
+import 'package:client_ui/app_ui.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../../../config/router/app_routes.dart';
+import '../../../../core/preferences/app_preferences.dart';
+
+class _DeliveryPricing {
+  const _DeliveryPricing({
+    required this.title,
+    required this.subtitle,
+    required this.baseFare,
+    required this.perKm,
+    required this.icon,
+  });
+
+  final String title;
+  final String subtitle;
+  final int baseFare;
+  final int perKm;
+  final IconData icon;
+}
+
+const Map<String, _DeliveryPricing> _deliveryPricing = {
+  'Bike': _DeliveryPricing(
+    title: 'Bicycle',
+    subtitle: '40/km ETB',
+    baseFare: 30,
+    perKm: 40,
+    icon: Icons.directions_bike_rounded,
+  ),
+  'Motor': _DeliveryPricing(
+    title: 'Motorbike',
+    subtitle: '50/km ETB',
+    baseFare: 40,
+    perKm: 50,
+    icon: Icons.motorcycle_rounded,
+  ),
+};
+
+const List<String> _packageTypes = [
+  'Documents',
+  'Small Box',
+  'Food/Groceries',
+  'Electronics',
+  'Other',
+];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,233 +72,856 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
-  final LatLng _initialCenter = const LatLng(8.9806, 38.7578); // Addis Ababa, Ethiopia
-  List<Marker> _driverMarkers = [];
-  RealtimeChannel? _driverChannel;
-  RealtimeChannel? _rideChannel;
-
   final MapRepository _mapRepository = MapRepository();
-  MapPlace? _destination;
+  final TextEditingController _otherItemController = TextEditingController();
+  final LatLng _fallbackCenter = const LatLng(8.9806, 38.7578);
+
+  List<Marker> _driverMarkers = [];
   List<LatLng> _routePoints = [];
-  bool _isRequestingRide = false;
-  String? _currentRideId;
-  String _rideStatus = 'none'; // none, pending, accepted
+  RealtimeChannel? _driverChannel;
+  RealtimeChannel? _deliveryChannel;
+
+  MapPlace? _destination;
+  Map<String, dynamic>? _currentDelivery;
+  LatLng? _currentLocation;
+  LatLng? _deliveryPickup;
+  String? _currentDeliveryId;
+  String _deliveryStatus = 'none';
+  String _selectedService = 'parcel';
+  String _selectedVehicleCategory = 'Bike';
+  String _selectedPackageType = 'Documents';
+  double? _distanceKm;
+  bool _hasLoadedActiveDelivery = false;
+  bool _isLoadingActiveDelivery = false;
+  bool _showMap = false;
+  bool _isPreparingDelivery = false;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _listenToDrivers();
+    _loadCurrentLocation();
   }
 
-  void _listenToDrivers() {
-    try {
-      final supabase = Supabase.instance.client;
-      
-      // Fetch initial online drivers
-      supabase
-          .from('driver_locations')
-          .select()
-          .eq('status', 'online')
-          .then((data) {
-        if (mounted) {
-          setState(() {
-            _driverMarkers = (data as List<dynamic>).map((driver) {
-              return _buildDriverMarker(
-                driver['id'] as String,
-                LatLng(driver['lat'] as double, driver['lng'] as double),
-              );
-            }).toList();
-          });
-        }
-      });
+  LatLng get _mapCenter => _deliveryPickup ?? _currentLocation ?? _fallbackCenter;
 
-      // Listen to real-time updates
-      _driverChannel = supabase
-          .channel('public:driver_locations')
+  Future<void> _loadCurrentLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showLocationUnavailable('Turn on GPS to request accurate pickup.');
+        return;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        _showLocationUnavailable('Location permission is required for pickup.');
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      if (!mounted) return;
+
+      final location = LatLng(position.latitude, position.longitude);
+      setState(() => _currentLocation = location);
+      if (!_showMap) return;
+      _mapController.move(location, 14);
+    } catch (e) {
+      debugPrint('Error loading current location: $e');
+      _showLocationUnavailable('Could not read current GPS location.');
+    }
+  }
+
+  void _showLocationUnavailable(String message) {
+    if (!mounted) return;
+    AppToast.show(context: context, message: message, type: AppToastType.warning);
+  }
+
+  Future<void> _listenToDrivers() async {
+    try {
+      await _loadOnlineDrivers();
+      _driverChannel = Supabase.instance.client
+          .channel('public:drivers')
           .onPostgresChanges(
             event: PostgresChangeEvent.all,
             schema: 'public',
-            table: 'driver_locations',
-            callback: (payload) {
-              _handleDriverUpdate(payload);
-            },
+            table: 'drivers',
+            callback: _handleDriverUpdate,
           )
           .subscribe();
     } catch (e) {
-      debugPrint('Error setting up Supabase Realtime: $e');
+      debugPrint('Error setting up driver realtime: $e');
     }
+  }
+
+  Future<void> _loadOnlineDrivers() async {
+    final data = await Supabase.instance.client
+        .from('drivers')
+        .select('id, status, approval_status, is_active, current_lat, current_lng, vehicle_type')
+        .eq('status', 'Online')
+        .eq('approval_status', 'Approved');
+
+    if (!mounted) return;
+    setState(() {
+      _driverMarkers = List<Map<String, dynamic>>.from(data)
+          .where(_isVisibleDriver)
+          .map(
+            (driver) => _buildDriverMarker(
+              driver['id'].toString(),
+              LatLng(_asDouble(driver['current_lat']), _asDouble(driver['current_lng'])),
+              driver['vehicle_type']?.toString() ?? 'Motorbike',
+            ),
+          )
+          .toList();
+    });
+  }
+
+  bool _isVisibleDriver(Map<String, dynamic> driver) {
+    return driver['status'] == 'Online' &&
+        driver['approval_status'] == 'Approved' &&
+        driver['is_active'] != false &&
+        driver['current_lat'] != null &&
+        driver['current_lng'] != null;
   }
 
   void _handleDriverUpdate(PostgresChangePayload payload) {
     if (!mounted) return;
-    
-    final data = payload.newRecord;
-    if (data.isEmpty) {
-      final oldData = payload.oldRecord;
-      setState(() {
-        _driverMarkers.removeWhere((m) => m.key == ValueKey(oldData['id']));
-      });
-      return;
-    }
 
-    final id = data['id'] as String;
-    final status = data['status'] as String;
-    final lat = data['lat'] as double;
-    final lng = data['lng'] as double;
+    final oldId = payload.oldRecord['id']?.toString();
+    final data = Map<String, dynamic>.from(payload.newRecord);
+    final id = data['id']?.toString() ?? oldId;
+    if (id == null) return;
 
     setState(() {
-      _driverMarkers.removeWhere((m) => m.key == ValueKey(id));
-      if (status == 'online') {
-        _driverMarkers.add(_buildDriverMarker(id, LatLng(lat, lng)));
+      _driverMarkers.removeWhere((marker) => marker.key == ValueKey(id));
+      if (data.isNotEmpty && _isVisibleDriver(data)) {
+        _driverMarkers.add(
+          _buildDriverMarker(
+            id,
+            LatLng(_asDouble(data['current_lat']), _asDouble(data['current_lng'])),
+            data['vehicle_type']?.toString() ?? 'Motorbike',
+          ),
+        );
+      }
+      if (_assignedDriverId == id) {
+        final currentDriver = _currentDelivery?['driver'] is Map
+            ? Map<String, dynamic>.from(_currentDelivery!['driver'] as Map)
+            : <String, dynamic>{};
+        _currentDelivery = {
+          ...?_currentDelivery,
+          'driver': {
+            ...currentDriver,
+            ...data,
+          },
+        };
       }
     });
   }
 
-  Marker _buildDriverMarker(String id, LatLng position) {
+  String? get _assignedDriverId {
+    final driver = _currentDelivery?['driver'];
+    if (driver is! Map) return null;
+    return driver['id']?.toString();
+  }
+
+  Marker _buildDriverMarker(String id, LatLng position, String vehicleType) {
+    final icon = _vehicleIconFor(vehicleType);
+    final markerColor = _isBicycle(vehicleType) ? AppColors.secondary : AppColors.primary;
+
     return Marker(
       key: ValueKey(id),
       point: position,
-      width: 40,
-      height: 40,
+      width: 46,
+      height: 46,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Colors.white,
           shape: BoxShape.circle,
+          border: Border.all(color: markerColor, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+              color: Colors.black.withOpacity(0.18),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: const Icon(
-          Icons.motorcycle_rounded,
-          color: AppColors.primary,
-          size: 24,
+        child: Icon(icon, color: markerColor, size: 25),
+      ),
+    );
+  }
+
+  bool _isBicycle(Object? vehicleType) {
+    final type = vehicleType?.toString().toLowerCase() ?? '';
+    if (type.contains('motor')) return false;
+    return type.contains('bike') || type.contains('bicycle') || type.contains('cycle');
+  }
+
+  IconData _vehicleIconFor(Object? vehicleType) {
+    final type = vehicleType?.toString().toLowerCase() ?? '';
+    if (_isBicycle(type)) return Icons.directions_bike_rounded;
+    if (type.contains('truck')) return Icons.local_shipping_rounded;
+    return Icons.motorcycle_rounded;
+  }
+
+  _DeliveryPricing get _selectedPricing => _deliveryPricing[_selectedVehicleCategory]!;
+
+  int? get _estimatedPrice {
+    final distanceKm = _distanceKm;
+    if (distanceKm == null) return null;
+    return _calculateEstimatedPrice(distanceKm, _selectedPricing);
+  }
+
+  void _selectVehicleCategory(String value) {
+    if (_selectedVehicleCategory == value) return;
+    setState(() => _selectedVehicleCategory = value);
+  }
+
+  int _calculateEstimatedPrice(double distanceKm, _DeliveryPricing pricing) {
+    final raw = pricing.baseFare + (distanceKm * pricing.perKm);
+    return (raw / 10).round() * 10;
+  }
+
+  String _distanceLabel() {
+    final distanceKm = _distanceKm;
+    if (distanceKm == null) return 'Select a destination for exact km';
+    return '${distanceKm.toStringAsFixed(1)} km';
+  }
+
+  String? _resolvedPackageType() {
+    if (_selectedPackageType != 'Other') return _selectedPackageType;
+
+    final other = _otherItemController.text.trim();
+    if (other.isEmpty) return null;
+    return 'Other: $other';
+  }
+
+  Future<void> _startDeliveryFlow({String service = 'parcel'}) async {
+    setState(() {
+      _selectedService = service;
+      _showMap = true;
+    });
+
+    await Future<void>.delayed(const Duration(milliseconds: 80));
+    if (!mounted) return;
+    await _handleSearchDestination();
+  }
+
+  Future<void> _handleSearchDestination() async {
+    final result = await Navigator.push<MapPlace>(
+      context,
+      MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
+    );
+
+    if (result == null) {
+      if (!_isPreparingDelivery && _currentDeliveryId == null) {
+        setState(() => _showMap = false);
+      }
+      return;
+    }
+
+    setState(() {
+      _destination = result;
+      _isPreparingDelivery = true;
+      _deliveryStatus = 'none';
+    });
+
+    if (_currentLocation == null) {
+      await _loadCurrentLocation();
+    }
+    final pickup = _currentLocation;
+    if (pickup == null) {
+      AppToast.show(
+        context: context,
+        message: 'Enable GPS so we can price and track the pickup accurately.',
+        type: AppToastType.error,
+      );
+      return;
+    }
+
+    final route = await _mapRepository.getRoute(pickup, result.location);
+    if (!mounted) return;
+
+    setState(() {
+      _deliveryPickup = pickup;
+      _routePoints = route.points.isNotEmpty ? route.points : [pickup, result.location];
+      _distanceKm = route.distanceKm > 0
+          ? route.distanceKm
+          : _mapRepository.straightLineDistanceKm(pickup, result.location);
+    });
+
+    final bounds = LatLngBounds.fromPoints([pickup, result.location]);
+    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+  }
+
+  Future<void> _requestDelivery() async {
+    if (_destination == null || _isSubmitting) return;
+    if (_currentLocation == null) {
+      await _loadCurrentLocation();
+    }
+    final pickup = _currentLocation;
+    if (pickup == null) {
+      AppToast.show(
+        context: context,
+        message: 'Enable GPS before requesting delivery.',
+        type: AppToastType.error,
+      );
+      return;
+    }
+
+    final packageType = _resolvedPackageType();
+    if (packageType == null) {
+      AppToast.show(
+        context: context,
+        message: 'Tell us what the item is for Other.',
+        type: AppToastType.error,
+      );
+      return;
+    }
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) {
+      AppToast.show(
+        context: context,
+        message: 'Please sign in to request delivery.',
+        type: AppToastType.error,
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+      _deliveryStatus = 'Pending';
+    });
+
+    try {
+      final user = authState.user;
+      final customerName = [
+        user.firstName,
+        user.lastName,
+      ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
+      final distanceKm = _distanceKm ??
+          _mapRepository.straightLineDistanceKm(pickup, _destination!.location);
+      final deliveryFee = _calculateEstimatedPrice(distanceKm, _selectedPricing);
+
+      final response = await Supabase.instance.client
+          .from('deliveries')
+          .insert({
+            'customer_name': customerName.isEmpty ? user.email : customerName,
+            'customer_phone': user.phone?.trim().isNotEmpty == true ? user.phone!.trim() : user.email,
+            'client_id': user.id,
+            'pickup_location': 'Current location',
+            'dropoff_location': _destination!.displayName,
+            'package_type': packageType,
+            'service_type': _selectedService,
+            'vehicle_category': _selectedVehicleCategory,
+            'delivery_fee': deliveryFee,
+            'status': 'Pending',
+            'pickup_lat': pickup.latitude,
+            'pickup_lng': pickup.longitude,
+            'dropoff_lat': _destination!.location.latitude,
+            'dropoff_lng': _destination!.location.longitude,
+          })
+          .select('*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)')
+          .single();
+
+      _currentDeliveryId = response['id']?.toString();
+      _subscribeToDelivery();
+
+      if (!mounted) return;
+      setState(() {
+        _currentDelivery = Map<String, dynamic>.from(response);
+        _deliveryStatus = response['status']?.toString() ?? 'Pending';
+      });
+      AppToast.show(context: context, message: 'Delivery request sent.', type: AppToastType.success);
+    } catch (e) {
+      debugPrint('Error requesting delivery: $e');
+      if (!mounted) return;
+      setState(() {
+        _deliveryStatus = 'none';
+      });
+      AppToast.show(context: context, message: 'Failed to request delivery.', type: AppToastType.error);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  void _subscribeToDelivery() {
+    final deliveryId = _currentDeliveryId;
+    if (deliveryId == null) return;
+
+    _deliveryChannel?.unsubscribe();
+    _deliveryChannel = Supabase.instance.client
+        .channel('public:deliveries:$deliveryId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'deliveries',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: deliveryId,
+          ),
+          callback: (_) => _fetchDelivery(deliveryId),
+        )
+        .subscribe();
+  }
+
+  Future<void> _fetchDelivery(String id) async {
+    try {
+      final data = await Supabase.instance.client
+          .from('deliveries')
+          .select('*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)')
+          .eq('id', id)
+          .single();
+
+      if (!mounted) return;
+      final nextStatus = data['status']?.toString() ?? _deliveryStatus;
+      setState(() {
+        _currentDelivery = Map<String, dynamic>.from(data);
+        _deliveryStatus = nextStatus;
+      });
+
+      if (nextStatus == 'Assigned') {
+        AppToast.show(context: context, message: 'Courier assigned.', type: AppToastType.success);
+      } else if (nextStatus == 'Delivered') {
+        AppToast.show(context: context, message: 'Delivery completed.', type: AppToastType.success);
+      } else if (nextStatus == 'Cancelled') {
+        AppToast.show(context: context, message: 'Delivery cancelled.', type: AppToastType.warning);
+      }
+    } catch (e) {
+      debugPrint('Error fetching delivery: $e');
+    }
+  }
+
+  void _ensureActiveDeliveryLoaded(AuthState authState) {
+    if (_hasLoadedActiveDelivery || _isLoadingActiveDelivery) return;
+    if (authState is! AuthAuthenticated) return;
+
+    _hasLoadedActiveDelivery = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadActiveDeliveryForCurrentUser(authState.user);
+    });
+  }
+
+  Future<void> _loadActiveDeliveryForCurrentUser(UserEntity user) async {
+    if (_isLoadingActiveDelivery) return;
+
+    setState(() => _isLoadingActiveDelivery = true);
+    try {
+      final supabase = Supabase.instance.client;
+      final select =
+          '*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)';
+
+      final byClient = await supabase
+          .from('deliveries')
+          .select(select)
+          .eq('client_id', user.id)
+          .order('created_at', ascending: false)
+          .limit(10);
+
+      var delivery = _firstActiveDelivery(byClient);
+      final customerLookup =
+          user.phone?.trim().isNotEmpty == true ? user.phone!.trim() : user.email;
+
+      if (delivery == null && customerLookup.trim().isNotEmpty) {
+        final byPhone = await supabase
+            .from('deliveries')
+            .select(select)
+            .eq('customer_phone', customerLookup)
+            .order('created_at', ascending: false)
+            .limit(10);
+        delivery = _firstActiveDelivery(byPhone);
+      }
+
+      if (!mounted || delivery == null) return;
+      await _adoptDelivery(delivery, showMap: false);
+    } catch (e) {
+      debugPrint('Error loading active delivery: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingActiveDelivery = false);
+    }
+  }
+
+  Map<String, dynamic>? _firstActiveDelivery(Object? value) {
+    if (value is! List) return null;
+
+    for (final item in value) {
+      final delivery = Map<String, dynamic>.from(item as Map);
+      if (_isActiveDeliveryStatus(delivery['status']?.toString())) {
+        return delivery;
+      }
+    }
+    return null;
+  }
+
+  bool _isActiveDeliveryStatus(String? status) {
+    return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
+  }
+
+  Future<void> _adoptDelivery(
+    Map<String, dynamic> delivery, {
+    required bool showMap,
+  }) async {
+    final pickup = _latLngFromFields(
+      delivery['pickup_lat'],
+      delivery['pickup_lng'],
+    );
+    final dropoff = _latLngFromFields(
+      delivery['dropoff_lat'],
+      delivery['dropoff_lng'],
+    );
+    final vehicleCategory = delivery['vehicle_category']?.toString();
+    final packageType = delivery['package_type']?.toString();
+
+    setState(() {
+      _currentDelivery = delivery;
+      _currentDeliveryId = delivery['id']?.toString();
+      _deliveryStatus = delivery['status']?.toString() ?? 'Pending';
+      _deliveryPickup = pickup;
+      _showMap = showMap;
+      _isPreparingDelivery = true;
+      if (vehicleCategory == 'Bike' || vehicleCategory == 'Motor') {
+        _selectedVehicleCategory = vehicleCategory!;
+      }
+      _applyPackageType(packageType);
+      if (dropoff != null) {
+        _destination = MapPlace(
+          displayName: delivery['dropoff_location']?.toString() ?? 'Dropoff',
+          location: dropoff,
+        );
+      }
+    });
+
+    _subscribeToDelivery();
+
+    if (pickup != null && dropoff != null) {
+      final route = await _mapRepository.getRoute(pickup, dropoff);
+      if (!mounted) return;
+      setState(() {
+        _routePoints = route.points.isNotEmpty ? route.points : [pickup, dropoff];
+        _distanceKm = route.distanceKm > 0
+            ? route.distanceKm
+            : _mapRepository.straightLineDistanceKm(pickup, dropoff);
+      });
+      if (showMap) _fitActiveDelivery();
+    }
+  }
+
+  void _applyPackageType(String? packageType) {
+    if (packageType == null || packageType.trim().isEmpty) return;
+    if (packageType.startsWith('Other:')) {
+      _selectedPackageType = 'Other';
+      _otherItemController.text = packageType.replaceFirst('Other:', '').trim();
+    } else if (_packageTypes.contains(packageType)) {
+      _selectedPackageType = packageType;
+      _otherItemController.clear();
+    }
+  }
+
+  LatLng? _latLngFromFields(Object? lat, Object? lng) {
+    final latitude = _asNullableDouble(lat);
+    final longitude = _asNullableDouble(lng);
+    if (latitude == null || longitude == null) return null;
+    return LatLng(latitude, longitude);
+  }
+
+  Future<void> _cancelDeliveryRequest() async {
+    final deliveryId = _currentDeliveryId;
+    if (deliveryId != null && ['Pending', 'Assigned'].contains(_deliveryStatus)) {
+      try {
+        await Supabase.instance.client.from('deliveries').update({
+          'status': 'Cancelled',
+          'driver_id': null,
+          'assigned_at': null,
+          'cancelled_by': 'customer',
+          'cancellation_reason': 'Cancelled from client app',
+        }).eq('id', deliveryId);
+      } catch (e) {
+        debugPrint('Error cancelling delivery: $e');
+      }
+    }
+    _resetDeliveryState();
+  }
+
+  Future<void> _callAssignedDriver() async {
+    final phone = _currentDriver?['phone']?.toString().trim() ?? '';
+    if (phone.isEmpty) {
+      AppToast.show(
+        context: context,
+        message: 'Driver phone is not available yet.',
+        type: AppToastType.warning,
+      );
+      return;
+    }
+
+    final opened = await launchUrl(Uri(scheme: 'tel', path: phone));
+    if (!opened && mounted) {
+      AppToast.show(
+        context: context,
+        message: 'Could not start the call.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  void _closeDrawerThen(VoidCallback action) {
+    Navigator.pop(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      action();
+    });
+  }
+
+  Future<void> _trackCurrentDelivery() async {
+    final deliveryId = _currentDeliveryId;
+    if (deliveryId == null) {
+      AppToast.show(
+        context: context,
+        message: 'No live delivery to track right now.',
+        type: AppToastType.info,
+      );
+      return;
+    }
+
+    await _fetchDelivery(deliveryId);
+    if (!mounted) return;
+
+    setState(() {
+      _showMap = true;
+      _isPreparingDelivery = true;
+    });
+    _fitActiveDelivery();
+  }
+
+  void _fitActiveDelivery() {
+    final points = <LatLng>[
+      if (_deliveryPickup != null) _deliveryPickup!,
+      if (_destination != null) _destination!.location,
+      if (_currentDriverPosition != null) _currentDriverPosition!,
+    ];
+
+    if (points.length >= 2) {
+      _mapController.fitCamera(
+        CameraFit.bounds(
+          bounds: LatLngBounds.fromPoints(points),
+          padding: const EdgeInsets.all(70),
+        ),
+      );
+    } else if (points.length == 1) {
+      _mapController.move(points.first, 15);
+    }
+  }
+
+  Map<String, dynamic>? get _currentDriver {
+    final driver = _currentDelivery?['driver'];
+    if (driver is! Map) return null;
+    return Map<String, dynamic>.from(driver);
+  }
+
+  LatLng? get _currentDriverPosition {
+    final driver = _currentDriver;
+    if (driver == null) return null;
+    return _latLngFromFields(driver['current_lat'], driver['current_lng']);
+  }
+
+  Marker? _buildAssignedDriverMarker(Map<String, dynamic>? driver) {
+    final position = _currentDriverPosition;
+    if (driver == null || position == null) return null;
+
+    return Marker(
+      point: position,
+      width: 58,
+      height: 58,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.success,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 3),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.22),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Icon(
+          _vehicleIconFor(driver['vehicle_type']),
+          color: Colors.white,
+          size: 30,
         ),
       ),
     );
   }
 
-  Future<void> _handleSearchDestination() async {
-    final MapPlace? result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
-    );
-
-    if (result != null) {
-      setState(() {
-        _destination = result;
-        _isRequestingRide = true;
-      });
-
-      // Fetch Route
-      final route = await _mapRepository.getRoute(_initialCenter, result.location);
-      if (mounted && route.isNotEmpty) {
-        setState(() {
-          _routePoints = route;
-        });
-        
-        // Zoom to fit route
-        final bounds = LatLngBounds.fromPoints([_initialCenter, result.location]);
-        _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
-      }
+  void _closeMapView() {
+    if (_currentDeliveryId != null && _isActiveDeliveryStatus(_deliveryStatus)) {
+      setState(() => _showMap = false);
+      return;
     }
+    _resetDeliveryState();
   }
 
-  Future<void> _requestRide() async {
-    if (_destination == null) return;
-    
-    final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) return;
-
+  void _resetDeliveryState() {
     setState(() {
-      _rideStatus = 'pending';
-    });
-
-    try {
-      final supabase = Supabase.instance.client;
-      final response = await supabase.from('rides').insert({
-        'client_id': authState.user.id,
-        'pickup_lat': _initialCenter.latitude,
-        'pickup_lng': _initialCenter.longitude,
-        'pickup_address': 'Current Location',
-        'dropoff_lat': _destination!.location.latitude,
-        'dropoff_lng': _destination!.location.longitude,
-        'dropoff_address': _destination!.displayName,
-        'status': 'pending',
-        'price': 150.0, // Mock price
-      }).select().single();
-
-      _currentRideId = response['id'];
-
-      // Listen for driver acceptance
-      _rideChannel = supabase
-          .channel('public:rides:$_currentRideId')
-          .onPostgresChanges(
-            event: PostgresChangeEvent.update,
-            schema: 'public',
-            table: 'rides',
-            filter: PostgresChangeFilter(
-              type: PostgresChangeFilterType.eq,
-              column: 'id',
-              value: _currentRideId!,
-            ),
-            callback: (payload) {
-              if (mounted) {
-                setState(() {
-                  _rideStatus = payload.newRecord['status'];
-                });
-                if (_rideStatus == 'accepted') {
-                  AppToast.show(context: context, message: 'Driver is on the way!', type: AppToastType.success);
-                }
-              }
-            },
-          )
-          .subscribe();
-
-    } catch (e) {
-      debugPrint('Error requesting ride: $e');
-      setState(() {
-        _rideStatus = 'none';
-        _isRequestingRide = false;
-      });
-      AppToast.show(context: context, message: 'Failed to request ride.', type: AppToastType.error);
-    }
-  }
-
-  void _cancelRideRequest() {
-    setState(() {
-      _isRequestingRide = false;
+      _showMap = false;
+      _isPreparingDelivery = false;
       _destination = null;
       _routePoints = [];
-      _rideStatus = 'none';
+      _distanceKm = null;
+      _deliveryPickup = null;
+      _deliveryStatus = 'none';
+      _currentDeliveryId = null;
+      _currentDelivery = null;
     });
-    _rideChannel?.unsubscribe();
-    // In a real app, you would update the DB status to 'cancelled' here.
-    _mapController.move(_initialCenter, 14.0);
+    _deliveryChannel?.unsubscribe();
+    _mapController.move(_mapCenter, 14);
+  }
+
+  double _asDouble(Object? value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  double? _asNullableDouble(Object? value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString());
   }
 
   @override
   void dispose() {
     _driverChannel?.unsubscribe();
-    _rideChannel?.unsubscribe();
+    _deliveryChannel?.unsubscribe();
+    _otherItemController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _ensureActiveDeliveryLoaded(context.watch<AuthBloc>().state);
+    final driver = _currentDelivery?['driver'] is Map
+        ? Map<String, dynamic>.from(_currentDelivery!['driver'] as Map)
+        : null;
+
+    return _showMap ? _buildMapExperience(driver) : _buildStartExperience();
+  }
+
+  Widget _buildStartExperience() {
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: context.appBackground,
+      drawer: _buildHomeDrawer(),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 110),
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          ImageConstants.appLogo,
+                          width: 54,
+                          height: 54,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AppText(
+                            'MotoBike',
+                            variant: AppTextVariant.heading1,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w900,
+                          ),
+                          const SizedBox(height: 0),
+                          Row(
+                            children: [
+                              const SizedBox(width: AppSpacing.xs),
+                              const AppText(
+                                'Your delivery companion',
+                                color: AppColors.textSecondary,
+                                variant: AppTextVariant.bodyMedium,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.menu_rounded, color: context.appTextPrimary),
+                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            if (_currentDeliveryId != null &&
+                _isActiveDeliveryStatus(_deliveryStatus)) ...[
+              _buildActiveDeliveryCard(),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+            const AppText('Choose courier type', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+            const SizedBox(height: AppSpacing.sm),
+            _buildVehicleSelector(compact: false),
+            const SizedBox(height: AppSpacing.lg),
+            _buildWhereToCard(),
+            const SizedBox(height: AppSpacing.lg),
+            _buildPromoCard(),
+            const SizedBox(height: AppSpacing.lg),
+            _buildInfoRow(
+              icon: _selectedPricing.icon,
+              title: 'Live ${_selectedPricing.title.toLowerCase()} tracking',
+              subtitle: 'Map pins show approved bicycle and motor couriers by vehicle.',
+              trailing: 'Live',
+            ),
+            const Divider(),
+            _buildInfoRow(
+              icon: Icons.admin_panel_settings_outlined,
+              title: 'Admin dispatch',
+              subtitle: 'Deliveries are assigned from the control panel.',
+              trailing: 'Ready',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMapExperience(Map<String, dynamic>? driver) {
+    final assignedDriverMarker = _buildAssignedDriverMarker(driver);
+    final pickupMarkerPoint = _deliveryPickup ?? _currentLocation;
+
     return Scaffold(
       body: Stack(
         children: [
-          // 1. Map Layer
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: _initialCenter,
-              initialZoom: 14.0,
+              initialCenter: _mapCenter,
+              initialZoom: 14,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
@@ -259,261 +936,1065 @@ class _HomeScreenState extends State<HomeScreen> {
                   polylines: [
                     Polyline(
                       points: _routePoints,
-                      color: AppColors.primary,
-                      strokeWidth: 4.0,
+                      color: AppColors.success,
+                      strokeWidth: 5,
                     ),
                   ],
                 ),
               MarkerLayer(markers: _driverMarkers),
+              if (assignedDriverMarker != null)
+                MarkerLayer(markers: [assignedDriverMarker]),
               MarkerLayer(
                 markers: [
-                  // User location marker
-                  Marker(
-                    point: _initialCenter,
-                    width: 40,
-                    height: 40,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 2),
+                  if (pickupMarkerPoint != null)
+                    Marker(
+                      point: pickupMarkerPoint,
+                      width: 44,
+                      height: 44,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withOpacity(0.18),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  // Destination marker
                   if (_destination != null)
                     Marker(
                       point: _destination!.location,
-                      width: 40,
-                      height: 40,
-                      child: const Icon(Icons.location_on, color: AppColors.primary, size: 40),
+                      width: 44,
+                      height: 44,
+                      child: const Icon(Icons.location_on_rounded, color: AppColors.primary, size: 42),
                     ),
                 ],
               ),
             ],
           ),
-
-          // 2. Top Header (Menu & Branding)
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+              padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  _roundMapButton(Icons.arrow_back_rounded, _closeMapView),
                   Container(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)
-                      ],
+                      color: context.appSurface,
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14)],
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.menu_rounded, color: AppColors.textPrimary),
-                      onPressed: () => context.navigator.pushProfileScreen(),
-                    ),
-                  ),
-                  const Text(
-                    'MOTORIDE',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      fontStyle: FontStyle.italic,
-                      letterSpacing: -1,
+                    child: AppText(
+                      'Delivery map',
+                      variant: AppTextVariant.labelLarge,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(width: 48),
+                  _roundMapButton(Icons.search_rounded, _handleSearchDestination),
                 ],
               ),
             ),
           ),
-
-          // 3. Bottom Sheet Layer
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      
-                      if (!_isRequestingRide) ...[
-                        // Default State
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              _buildTransportOption('Ride', Icons.motorcycle_rounded, true),
-                              const SizedBox(width: AppSpacing.sm),
-                              _buildTransportOption('Delivery', Icons.local_shipping_rounded, false),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        GestureDetector(
-                          onTap: _handleSearchDestination,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceAlt,
-                              borderRadius: BorderRadius.circular(AppRadius.full),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.search_rounded, color: AppColors.textSecondary),
-                                const SizedBox(width: AppSpacing.sm),
-                                const AppText('Where to?', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(color: AppColors.background, shape: BoxShape.circle),
-                                  child: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textPrimary),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        _buildRecentPlace('Work', 'Bole, Addis Ababa', '12 min'),
-                        const Divider(),
-                        _buildRecentPlace('Home', 'CMC, Addis Ababa', '40 min'),
-                      ] else if (_rideStatus == 'none') ...[
-                        // Request State
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.close_rounded),
-                              onPressed: _cancelRideRequest,
-                            ),
-                            Expanded(
-                              child: AppText(
-                                _destination!.displayName.split(',').first,
-                                variant: AppTextVariant.heading3,
-                                fontWeight: FontWeight.bold,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        ListTile(
-                          leading: const Icon(Icons.motorcycle_rounded, color: AppColors.primary, size: 32),
-                          title: const AppText('Motorbike Ride', variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
-                          subtitle: const AppText('2 mins away', variant: AppTextVariant.bodySmall),
-                          trailing: const AppText('150 ETB', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        AppButton.primary(
-                          label: 'REQUEST RIDE',
-                          fullWidth: true,
-                          onPressed: _requestRide,
-                        ),
-                      ] else if (_rideStatus == 'pending') ...[
-                        // Waiting State
-                        const Center(child: CircularProgressIndicator(color: AppColors.primary)),
-                        const SizedBox(height: AppSpacing.lg),
-                        const Center(
-                          child: AppText(
-                            'Finding your driver...',
-                            variant: AppTextVariant.heading3,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.outlinedSecondary(
-                          label: 'CANCEL REQUEST',
-                          fullWidth: true,
-                          onPressed: _cancelRideRequest,
-                        ),
-                      ] else if (_rideStatus == 'accepted') ...[
-                        // Accepted State
-                        const Center(
-                          child: Icon(Icons.check_circle_rounded, color: AppColors.success, size: 64),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        const Center(
-                          child: AppText(
-                            'Driver is on the way!',
-                            variant: AppTextVariant.heading2,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.primary(
-                          label: 'VIEW DRIVER DETAILS',
-                          fullWidth: true,
-                          onPressed: () {},
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            child: _buildBottomSheet(driver),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTransportOption(String title, IconData icon, bool isSelected) {
+  void _showSettingsSheet() {
+    final preferences = AppPreferencesScope.of(context);
+
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: context.appSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      builder: (sheetContext) {
+        return AnimatedBuilder(
+          animation: preferences,
+          builder: (context, _) {
+            return SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 42,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.appBorder,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    const AppText(
+                      'Settings',
+                      variant: AppTextVariant.heading2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildSettingsTile(
+                      icon: Icons.dark_mode_outlined,
+                      title: 'Theme',
+                      subtitle: 'Light, dark, or system',
+                      trailing: DropdownButton<ThemeMode>(
+                        value: preferences.themeMode,
+                        dropdownColor: context.appSurface,
+                        style: TextStyle(color: context.appTextPrimary),
+                        underline: const SizedBox.shrink(),
+                        items: const [
+                          DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+                          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+                          DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) preferences.setThemeMode(value);
+                        },
+                      ),
+                    ),
+                    _buildSettingsTile(
+                      icon: Icons.language_rounded,
+                      title: 'Language',
+                      subtitle: 'English and Amharic',
+                      trailing: DropdownButton<String>(
+                        value: preferences.languageCode,
+                        dropdownColor: context.appSurface,
+                        style: TextStyle(color: context.appTextPrimary),
+                        underline: const SizedBox.shrink(),
+                        items: const [
+                          DropdownMenuItem(value: 'en', child: Text('English')),
+                          DropdownMenuItem(value: 'am', child: Text('Amharic')),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) preferences.setLanguageCode(value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+  }) {
     return Container(
-      width: 100,
-      padding: const EdgeInsets.all(AppSpacing.sm),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.surfaceAlt : AppColors.background,
+        color: context.appSurfaceAlt,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: isSelected ? Colors.transparent : AppColors.border),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.primary),
+        title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
+        subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
+        trailing: trailing,
+      ),
+    );
+  }
+
+  Future<void> _showFeedbackDialog() async {
+    final controller = TextEditingController();
+    final feedback = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: dialogContext.appSurface,
+          title: const Text('App Feedback'),
+          content: TextField(
+            controller: controller,
+            maxLines: 4,
+            style: TextStyle(color: dialogContext.appTextPrimary),
+            decoration: InputDecoration(
+              hintText: 'Tell us what to improve',
+              hintStyle: TextStyle(color: dialogContext.appTextSecondary),
+              filled: true,
+              fillColor: dialogContext.appSurfaceAlt,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: BorderSide(color: dialogContext.appBorder),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: BorderSide(color: dialogContext.appBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final text = controller.text.trim();
+                if (text.isEmpty) return;
+                Navigator.pop(dialogContext, text);
+              },
+              child: const Text('Send'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+
+    if (!mounted || feedback == null) return;
+    await _submitAppFeedback(feedback);
+  }
+
+  Future<void> _submitAppFeedback(String feedback) async {
+    final authState = context.read<AuthBloc>().state;
+    final user = authState is AuthAuthenticated ? authState.user : null;
+    final userName = user == null
+        ? 'Guest'
+        : [
+            user.firstName,
+            user.lastName,
+          ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
+    final payload = {
+      'feedback': feedback,
+      'user_name': userName.isEmpty ? user?.email ?? 'Guest' : userName,
+      'phone': user?.phone?.trim(),
+      'email': user?.email.trim(),
+    };
+
+    try {
+      await _postFeedbackToWebApi(payload);
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Feedback sent.',
+        type: AppToastType.success,
+      );
+      return;
+    } catch (e) {
+      debugPrint('Error sending app feedback through web API: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Could not send feedback right now.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  Future<void> _postFeedbackToWebApi(Map<String, dynamic> payload) async {
+    final configuredBaseUrl = getIt<AppConfig>().apiBaseUrl.trim();
+    var baseUrl = configuredBaseUrl.isEmpty ||
+            configuredBaseUrl.contains('your-webapp-domain')
+        ? 'https://www.motobikedeliveryservice.com'
+        : configuredBaseUrl;
+    final uri = Uri.tryParse(baseUrl);
+    if (uri != null && uri.host == 'motobikedeliveryservice.com') {
+      baseUrl = uri.replace(host: 'www.motobikedeliveryservice.com').toString();
+    }
+    final normalizedBaseUrl = baseUrl.replaceAll(RegExp(r'/+$'), '');
+
+    final response = await Dio().post<void>(
+      '$normalizedBaseUrl/api/client-feedback',
+      data: payload,
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+        validateStatus: (status) => status != null && status < 500,
+      ),
+    );
+
+    if ((response.statusCode ?? 500) >= 400) {
+      throw StateError('Feedback API returned ${response.statusCode}');
+    }
+  }
+
+  Widget _buildHomeDrawer() {
+    return Drawer(
+      backgroundColor: context.appSurface,
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      ImageConstants.appLogo,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  const Expanded(
+                    child: AppText(
+                      'MotoBike',
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: context.appBorder),
+            _drawerTile(
+              icon: Icons.route_rounded,
+              title: 'Live Tracking',
+              onTap: () => _closeDrawerThen(_trackCurrentDelivery),
+            ),
+            _drawerTile(
+              icon: Icons.settings_rounded,
+              title: 'Setting',
+              onTap: () => _closeDrawerThen(_showSettingsSheet),
+            ),
+            _drawerTile(
+              icon: Icons.receipt_long_rounded,
+              title: 'My Orders',
+              onTap: () => _closeDrawerThen(() {
+                Navigator.push<void>(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => const RideHistoryScreen(),
+                  ),
+                );
+              }),
+            ),
+            _drawerTile(
+              icon: Icons.feedback_outlined,
+              title: 'App Feedback',
+              onTap: () => _closeDrawerThen(_showFeedbackDialog),
+            ),
+            _drawerTile(
+              icon: Icons.person_rounded,
+              title: 'Profile',
+              onTap: () => _closeDrawerThen(context.navigator.navigateToProfileTab),
+            ),
+            _drawerTile(
+              icon: Icons.notifications_rounded,
+              title: 'Notification',
+              onTap: () => _closeDrawerThen(() {
+                context.pushNamed(AppRoutes.notification.name);
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primary),
+      title: AppText(title, variant: AppTextVariant.bodyMedium),
+      trailing: Icon(Icons.chevron_right_rounded, color: context.appTextSecondary),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildActiveDeliveryCard() {
+    final driver = _currentDriver;
+    final packageType = _currentDelivery?['package_type']?.toString() ?? 'Package';
+    final destination = _currentDelivery?['dropoff_location']?.toString() ?? 'Dropoff';
+    final fee = _currentDelivery?['delivery_fee'];
+    final driverHasGps = _currentDriverPosition != null;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.appBorder),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 40, color: isSelected ? AppColors.textPrimary : AppColors.textSecondary),
+          Row(
+            children: [
+              const Icon(Icons.delivery_dining_rounded, color: AppColors.primary),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: AppText(
+                  'Current live package delivery',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              AppText(
+                _deliveryStatus,
+                variant: AppTextVariant.bodySmall,
+                color: AppColors.success,
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          AppText(packageType, variant: AppTextVariant.bodyMedium),
           const SizedBox(height: AppSpacing.xs),
-          AppText(title, variant: AppTextVariant.bodySmall, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
+          AppText(
+            destination,
+            variant: AppTextVariant.bodySmall,
+            color: context.appTextSecondary,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          if (fee != null) ...[
+            const SizedBox(height: AppSpacing.xs),
+            AppText(
+              '${_asDouble(fee).toStringAsFixed(0)} ETB',
+              variant: AppTextVariant.bodySmall,
+              fontWeight: FontWeight.bold,
+            ),
+          ],
+          const SizedBox(height: AppSpacing.sm),
+          AppText(
+            driver == null
+                ? 'Waiting for driver assignment.'
+                : driverHasGps
+                    ? 'Driver GPS is live.'
+                    : 'Driver assigned. Waiting for GPS update.',
+            variant: AppTextVariant.bodySmall,
+            color: context.appTextSecondary,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.primary(
+                  label: 'TRACK',
+                  icon: Icons.route_rounded,
+                  onPressed: _trackCurrentDelivery,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: AppButton.outlinedSecondary(
+                  label: 'CALL',
+                  icon: Icons.call_rounded,
+                  onPressed: driver == null ? null : _callAssignedDriver,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildRecentPlace(String title, String subtitle, String eta) {
+  Widget _buildBottomSheet(Map<String, dynamic>? driver) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 24, offset: const Offset(0, -6))],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(color: context.appBorder, borderRadius: BorderRadius.circular(2)),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              if (!_isPreparingDelivery) ...[
+                _buildWhereToCard(),
+              ] else if (_deliveryStatus == 'none') ...[
+                _buildPackageTypeSelector(),
+                const SizedBox(height: AppSpacing.md),
+                _buildVehicleSelector(compact: true),
+                const SizedBox(height: AppSpacing.md),
+                _buildDeliverySummary(),
+                const SizedBox(height: AppSpacing.lg),
+                AppButton.primary(
+                  label: 'REQUEST DELIVERY',
+                  fullWidth: true,
+                  isLoading: _isSubmitting,
+                  onPressed: _requestDelivery,
+                ),
+              ] else if (_deliveryStatus == 'Pending') ...[
+                const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                const SizedBox(height: AppSpacing.lg),
+                const AppText(
+                  'Waiting for admin dispatch...',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                AppButton.outlinedSecondary(
+                  label: 'CANCEL REQUEST',
+                  fullWidth: true,
+                  onPressed: _cancelDeliveryRequest,
+                ),
+              ] else if (['Assigned', 'Picked Up'].contains(_deliveryStatus)) ...[
+                Icon(
+                  _deliveryStatus == 'Assigned' ? Icons.assignment_turned_in_rounded : Icons.delivery_dining_rounded,
+                  color: AppColors.success,
+                  size: 56,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppText(
+                  _deliveryStatus == 'Assigned' ? 'Courier assigned' : 'Package on the way',
+                  variant: AppTextVariant.heading2,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                ),
+                if (driver != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  _buildInfoTile(
+                    icon: _vehicleIconFor(driver['vehicle_type']),
+                    title: driver['name']?.toString() ?? 'Courier',
+                    subtitle: '${driver['vehicle_type'] ?? 'Motorbike'} - ${driver['phone'] ?? 'phone unavailable'}',
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.xl),
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppButton.primary(
+                        label: 'TRACK',
+                        icon: Icons.route_rounded,
+                        onPressed: _trackCurrentDelivery,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: AppButton.outlinedSecondary(
+                        label: 'CALL',
+                        icon: Icons.call_rounded,
+                        onPressed: driver == null ? null : _callAssignedDriver,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppButton.outlinedSecondary(
+                  label: 'REFRESH STATUS',
+                  fullWidth: true,
+                  onPressed: () {
+                    final id = _currentDeliveryId;
+                    if (id != null) _fetchDelivery(id);
+                  },
+                ),
+              ] else ...[
+                Icon(
+                  _deliveryStatus == 'Delivered' ? Icons.check_circle_rounded : Icons.info_rounded,
+                  color: _deliveryStatus == 'Delivered' ? AppColors.success : AppColors.warning,
+                  size: 64,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppText(
+                  _deliveryStatus == 'Delivered' ? 'Delivered' : _deliveryStatus,
+                  variant: AppTextVariant.heading2,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                AppButton.primary(label: 'DONE', fullWidth: true, onPressed: _resetDeliveryState),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPackageTypeSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AppText(
+          'What are you sending?',
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.bold,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        DropdownButtonFormField<String>(
+          value: _selectedPackageType,
+          dropdownColor: context.appSurface,
+          style: TextStyle(color: context.appTextPrimary, fontWeight: FontWeight.w600),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: context.appSurfaceAlt,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: BorderSide(color: context.appBorder),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: BorderSide(color: context.appBorder),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            ),
+          ),
+          items: _packageTypes
+              .map(
+                (type) => DropdownMenuItem<String>(
+                  value: type,
+                  child: Text(type),
+                ),
+              )
+              .toList(),
+          onChanged: (value) {
+            if (value == null) return;
+            setState(() {
+              _selectedPackageType = value;
+              if (value != 'Other') _otherItemController.clear();
+            });
+          },
+        ),
+        if (_selectedPackageType == 'Other') ...[
+          const SizedBox(height: AppSpacing.sm),
+          TextField(
+            controller: _otherItemController,
+            maxLines: 2,
+            onChanged: (_) => setState(() {}),
+            style: TextStyle(color: context.appTextPrimary),
+            decoration: InputDecoration(
+              hintText: 'Type what the item is',
+              hintStyle: TextStyle(color: context.appTextSecondary),
+              filled: true,
+              fillColor: context.appSurfaceAlt,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                borderSide: BorderSide(color: context.appBorder),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                borderSide: BorderSide(color: context.appBorder),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _roundMapButton(IconData icon, VoidCallback onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        shape: BoxShape.circle,
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14)],
+      ),
+      child: IconButton(icon: Icon(icon, color: context.appTextPrimary), onPressed: onPressed),
+    );
+  }
+
+  Widget _buildWhereToCard() {
+    return InkWell(
+      borderRadius: BorderRadius.circular(22),
+      onTap: () => _startDeliveryFlow(service: _selectedService),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+        decoration: BoxDecoration(
+          color: context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: context.appBorder),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: context.appSurface, shape: BoxShape.circle),
+              child: const Icon(Icons.place_rounded, color: AppColors.primary),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            const Expanded(
+              child: AppText(
+                'Where should we deliver?',
+                variant: AppTextVariant.heading3,
+                fontWeight: FontWeight.bold,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Icon(Icons.arrow_forward_rounded, color: context.appTextPrimary),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVehicleSelector({required bool compact}) {
+    if (!compact) {
+      return SizedBox(
+        height: 176,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: _buildVehicleShowcaseChoice('Bike'),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _buildVehicleShowcaseChoice('Motor'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          child: _buildVehicleChoice('Bike', compact: compact),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _buildVehicleChoice('Motor', compact: compact),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVehicleShowcaseChoice(String category) {
+    final pricing = _deliveryPricing[category]!;
+    final selected = _selectedVehicleCategory == category;
+    final accent = category == 'Bike' ? AppColors.secondary : AppColors.primary;
+    final imagePath = category == 'Bike'
+        ? ImageConstants.bikeCourier
+        : ImageConstants.motorCourier;
+    final titleColor = selected ? Colors.white : context.appTextPrimary;
+    final subtitleColor =
+        selected ? Colors.white.withValues(alpha: 0.82) : context.appTextSecondary;
+    final imageHeight = category == 'Bike' ? 206.0 : 226.0;
+    final imageTop = category == 'Bike' ? 24.0 : 24.0;
+    const imageAngle = 0.04;
+    final imageEnd = category == 'Bike' ? -14.0 : -16.0;
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: '${pricing.title} courier',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () => _selectVehicleCategory(category),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned.fill(
+              top: 28,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: selected
+                        ? [
+                            accent,
+                            Color.lerp(accent, Colors.black, 0.18)!,
+                          ]
+                        : [
+                            context.appSurfaceAlt,
+                            context.appSurface,
+                          ],
+                  ),
+                  border: Border.all(
+                    color: selected ? accent : context.appBorder,
+                    width: selected ? 2 : 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: selected
+                          ? accent.withValues(alpha: 0.30)
+                          : Colors.black.withValues(alpha: 0.08),
+                      blurRadius: selected ? 24 : 14,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              top: imageTop,
+              end: imageEnd,
+              child: IgnorePointer(
+                child: Transform.rotate(
+                  angle: imageAngle,
+                  child: Transform.scale(
+                    scaleX: category == 'Motor' ? 1 : 1,
+                    child: _buildCourierArtwork(imagePath, imageHeight),
+                  ),
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              top: 28 + AppSpacing.lg,
+              start: AppSpacing.md,
+              width: 132,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppText(
+                    pricing.title,
+                    variant: AppTextVariant.heading3,
+                    color: titleColor,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  AppText(
+                    pricing.subtitle,
+                    variant: AppTextVariant.bodySmall,
+                    color: subtitleColor,
+                    fontWeight: FontWeight.w700,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (selected)
+              Positioned(
+                top: 38,
+                right: AppSpacing.sm,
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.check_rounded, color: accent, size: 16),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCourierArtwork(String imagePath, double height) {
+    if (kIsWeb) {
+      final fileName = imagePath.split('/').last;
+      return Image.network(
+        'assets/images/$fileName',
+        height: height,
+        fit: BoxFit.contain,
+      );
+    }
+
+    return Image.asset(
+      imagePath,
+      height: height,
+      fit: BoxFit.contain,
+    );
+  }
+
+  Widget _buildVehicleChoice(String category, {required bool compact}) {
+    final pricing = _deliveryPricing[category]!;
+    final selected = _selectedVehicleCategory == category;
+    final accent = category == 'Bike' ? AppColors.secondary : AppColors.primary;
+    final foreground = selected ? Colors.white : context.appTextPrimary;
+    final subtitleColor = selected ? Colors.white.withValues(alpha: 0.82) : context.appTextSecondary;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: () => _selectVehicleCategory(category),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
+        decoration: BoxDecoration(
+          color: selected ? accent : context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: selected ? accent : context.appBorder),
+        ),
+        child: Row(
+          children: [
+            Icon(pricing.icon, color: foreground, size: compact ? 22 : 30),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    pricing.title,
+                    variant: AppTextVariant.bodyMedium,
+                    color: foreground,
+                    fontWeight: FontWeight.bold,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  AppText(
+                    pricing.subtitle,
+                    variant: AppTextVariant.bodySmall,
+                    color: subtitleColor,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromoCard() {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.neutralBlue,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                AppText(
+                  'Fast city delivery',
+                  variant: AppTextVariant.heading2,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+                SizedBox(height: AppSpacing.sm),
+                AppText(
+                  'Choose bicycle or motorbike and see the estimated fee before dispatch.',
+                  variant: AppTextVariant.bodyMedium,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.primary,
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 44),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeliverySummary() {
+    final pricing = _selectedPricing;
+    final price = _estimatedPrice;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.close_rounded, color: context.appTextPrimary),
+              onPressed: _cancelDeliveryRequest,
+            ),
+            Expanded(
+              child: AppText(
+                _destination?.displayName.split(',').first ?? 'Destination',
+                variant: AppTextVariant.heading3,
+                fontWeight: FontWeight.bold,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        Divider(color: context.appBorder),
+        ListTile(
+          leading: Icon(
+            pricing.icon,
+            color: _selectedVehicleCategory == 'Bike' ? AppColors.secondary : AppColors.primary,
+            size: 32,
+          ),
+          title: AppText(
+            '${pricing.title} delivery',
+            variant: AppTextVariant.bodyMedium,
+            fontWeight: FontWeight.bold,
+          ),
+          subtitle: AppText(
+            '${_distanceLabel()} - ${pricing.baseFare} base + ${pricing.perKm} Birr/km',
+            variant: AppTextVariant.bodySmall,
+            color: context.appTextSecondary,
+          ),
+          trailing: AppText(
+            price == null ? 'Estimating' : '$price ETB',
+            variant: AppTextVariant.heading3,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String trailing,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(color: AppColors.surfaceAlt, shape: BoxShape.circle),
-            child: const Icon(Icons.location_on_rounded, color: AppColors.textSecondary, size: 20),
+            decoration: BoxDecoration(color: context.appSurfaceAlt, shape: BoxShape.circle),
+            child: Icon(icon, color: context.appTextSecondary, size: 20),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -521,12 +2002,31 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppText(title, variant: AppTextVariant.labelLarge, fontWeight: FontWeight.bold),
-                AppText(subtitle, variant: AppTextVariant.bodySmall, color: AppColors.textSecondary),
+                AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
               ],
             ),
           ),
-          AppText(eta, variant: AppTextVariant.bodySmall, color: AppColors.textSecondary),
+          AppText(trailing, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
         ],
+      ),
+    );
+  }
+
+  Widget _buildInfoTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.primary),
+        title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
+        subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
       ),
     );
   }

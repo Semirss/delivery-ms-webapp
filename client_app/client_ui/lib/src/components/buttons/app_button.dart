@@ -388,6 +388,8 @@ class AppButton extends StatelessWidget {
       return customBackgroundColor!;
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     switch (variant) {
       case AppButtonVariant.primary:
         return AppColors.primary;
@@ -400,11 +402,11 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.outlinedDanger:
         return Colors.transparent;
       case AppButtonVariant.inactive:
-        return AppColors.lightBlueBg;
+        return colorScheme.surfaceContainerHighest;
       case AppButtonVariant.secondOption:
         return AppColors.gray2;
       case AppButtonVariant.tertiary:
-        return AppColors.accent;
+        return colorScheme.surfaceContainerHighest;
       case AppButtonVariant.ghost:
         return Colors.transparent;
       case AppButtonVariant.custom:
@@ -417,6 +419,8 @@ class AppButton extends StatelessWidget {
     if (customForegroundColor != null) {
       return customForegroundColor!;
     }
+
+    final colorScheme = Theme.of(context).colorScheme;
 
     switch (variant) {
       case AppButtonVariant.primary:
@@ -431,10 +435,10 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.outlinedDanger:
         return AppColors.error;
       case AppButtonVariant.inactive:
-        return AppColors.textGray;
+        return colorScheme.onSurface.withValues(alpha: 0.5);
       case AppButtonVariant.tertiary:
       case AppButtonVariant.ghost:
-        return AppColors.textPrimary;
+        return colorScheme.onSurface;
       case AppButtonVariant.custom:
         return customForegroundColor ?? Colors.white;
     }

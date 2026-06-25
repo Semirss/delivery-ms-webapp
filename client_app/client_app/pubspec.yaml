@@ -63,6 +63,7 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.4
   package_info_plus: ^9.0.0
+  url_launcher: ^6.3.2
   
   # Error Handling & Monitoring
   sentry_flutter: ^8.0.0
@@ -120,6 +121,8 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/bike_pic.png
+    - assets/images/motor_pic.png
     - assets/icons/
     - assets/fonts/
     - .env
@@ -129,19 +132,19 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/images/logo.png"
   min_sdk_android: 21
-  adaptive_icon_background: "#E60000" #primary color
+  adaptive_icon_background: "#F26A54" #primary color
   adaptive_icon_foreground: "assets/images/logo.png"
   remove_alpha_ios: true
-  android_adaptive_icon_background_color: "#E60000" #primary color
+  android_adaptive_icon_background_color: "#F26A54" #primary color
 
 flutter_native_splash:
-  color: "#E60000" #primary color
+  color: "#F26A54" #primary color
   image: assets/images/logo.png
   fullscreen: false
   android_12:
-    color: "#E60000" #primary color
+    color: "#F26A54" #primary color
     image: assets/images/logo.png
-    icon_background_color: "#E60000" #primary color
+    icon_background_color: "#F26A54" #primary color
   android: true
   ios: true
   web: false

@@ -1,10 +1,13 @@
+import 'package:driver_app/config/router/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:driver_ui/app_ui.dart';
+import 'package:driver_app/core/preferences/app_preferences.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/presentation/screens/earnings_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -16,11 +19,12 @@ class ProfileScreen extends StatelessWidget {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (_) => false);
+            context.goNamed(AppRoutes.login.name);
           }
         },
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
+            final preferences = AppPreferencesScope.of(context);
             final user = state is AuthAuthenticated ? state.user : null;
             final name = (user?.firstName != null && user?.lastName != null)
                 ? '${user!.firstName} ${user.lastName}'
@@ -80,7 +84,7 @@ class ProfileScreen extends StatelessWidget {
                                 const Icon(Icons.star_rounded, color: Colors.amber, size: 16),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '5.0 • Motorbike Driver',
+                                  '5.0 - Motorbike Driver',
                                   style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 13),
                                 ),
                               ],
@@ -92,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.goNamed(AppRoutes.home.name),
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -104,7 +108,7 @@ class ProfileScreen extends StatelessWidget {
                         // Stats Row
                         Row(
                           children: [
-                            _buildStatCard('0', 'Total Trips', Icons.motorcycle_rounded),
+                            _buildStatCard('0', 'Deliveries', Icons.motorcycle_rounded),
                             const SizedBox(width: AppSpacing.md),
                             _buildStatCard('0 ETB', 'Earnings', Icons.payments_rounded),
                             const SizedBox(width: AppSpacing.md),
@@ -116,7 +120,7 @@ class ProfileScreen extends StatelessWidget {
                           _buildTile(
                             icon: Icons.payments_outlined,
                             title: 'Earnings',
-                            subtitle: 'View your income & trip history',
+                            subtitle: 'View your income & delivery history',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EarningsScreen())),
                           ),
                           _buildTile(
@@ -144,7 +148,43 @@ class ProfileScreen extends StatelessWidget {
                             icon: Icons.notifications_outlined,
                             title: 'Notifications',
                             subtitle: 'Manage your preferences',
-                            onTap: () {},
+                            onTap: () => context.pushNamed(AppRoutes.notification.name),
+                          ),
+                        ]),
+                        const SizedBox(height: AppSpacing.lg),
+                        _buildSection('App Preferences', [
+                          _buildPreferenceTile(
+                            icon: Icons.dark_mode_outlined,
+                            title: 'Theme',
+                            subtitle: 'Choose how the app looks',
+                            trailing: DropdownButton<ThemeMode>(
+                              value: preferences.themeMode,
+                              underline: const SizedBox.shrink(),
+                              items: const [
+                                DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+                                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
+                                DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) preferences.setThemeMode(value);
+                              },
+                            ),
+                          ),
+                          _buildPreferenceTile(
+                            icon: Icons.language_rounded,
+                            title: 'Language',
+                            subtitle: 'English and Amharic ready',
+                            trailing: DropdownButton<String>(
+                              value: preferences.languageCode,
+                              underline: const SizedBox.shrink(),
+                              items: const [
+                                DropdownMenuItem(value: 'en', child: Text('English')),
+                                DropdownMenuItem(value: 'am', child: Text('Amharic')),
+                              ],
+                              onChanged: (value) {
+                                if (value != null) preferences.setLanguageCode(value);
+                              },
+                            ),
                           ),
                         ]),
                         const SizedBox(height: AppSpacing.lg),
@@ -241,6 +281,27 @@ class ProfileScreen extends StatelessWidget {
       title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
       subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: AppColors.textSecondary),
       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+    );
+  }
+
+  Widget _buildPreferenceTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 20),
+      ),
+      title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
+      subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: AppColors.textSecondary),
+      trailing: trailing,
     );
   }
 }

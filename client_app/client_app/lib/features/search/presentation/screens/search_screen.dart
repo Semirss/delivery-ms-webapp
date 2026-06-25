@@ -218,11 +218,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   label: AppText(
                     filter,
                     variant: AppTextVariant.bodySmall,
-                    color: isActive ? Colors.white : AppColors.textPrimary,
+                    color: isActive ? Colors.white : context.appTextPrimary,
                   ),
                   selected: isActive,
                   selectedColor: AppColors.primary,
-                  backgroundColor: AppColors.surfaceAlt,
+                  backgroundColor: context.appSurfaceAlt,
 
                   onSelected: (_) {
                     setState(() {
@@ -254,7 +254,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: AppColors.surfaceAlt,
+                                color: context.appSurfaceAlt,
                                 borderRadius: BorderRadius.circular(
                                   AppRadius.md,
                                 ),
@@ -278,7 +278,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   AppText(
                                     item.subtitle,
                                     variant: AppTextVariant.bodySmall,
-                                    color: AppColors.textSecondary,
+                                    color: context.appTextSecondary,
                                   ),
                                   if (item.preview != null) ...[
                                     const SizedBox(height: AppSpacing.sm),
@@ -287,9 +287,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ],
                               ),
                             ),
-                            const AppIcon(
+                            AppIcon(
                               icon: Icons.chevron_right_rounded,
-                              color: AppColors.textSecondary,
+                              color: context.appTextSecondary,
                               size: 18,
                             ),
                           ],
@@ -364,9 +364,9 @@ class _EmptySearchState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const AppIcon(
+            AppIcon(
               icon: Icons.search_off_rounded,
-              color: AppColors.textSecondary,
+              color: context.appTextSecondary,
               size: 48,
             ),
             const SizedBox(height: AppSpacing.md),
@@ -380,7 +380,7 @@ class _EmptySearchState extends StatelessWidget {
                   ? 'Find settings, help, and features in one place.'
                   : 'Try adjusting your keywords or filters.',
               variant: AppTextVariant.bodyMedium,
-              color: AppColors.textSecondary,
+              color: context.appTextSecondary,
               textAlign: TextAlign.center,
             ),
           ],

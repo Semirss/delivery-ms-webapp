@@ -25,9 +25,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final List<_OnboardingData> _pages = const [
     _OnboardingData(
       icon: Icons.motorcycle_rounded,
-      title: 'Ride in Minutes',
-      subtitle: 'Get a motorbike to your door in under 2 minutes. Fast, safe, and affordable.',
-      gradient: [Color(0xFFE60000), Color(0xFFB30000)],
+      title: 'Delivery in Minutes',
+      subtitle: 'Book a motorbike courier for parcels and errands. Fast, safe, and affordable.',
+      gradient: [Color(0xFFF26A54), Color(0xFF7A3C8D)],
     ),
     _OnboardingData(
       icon: Icons.map_rounded,
@@ -37,9 +37,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ),
     _OnboardingData(
       icon: Icons.payments_rounded,
-      title: 'Affordable Fares',
-      subtitle: 'Transparent pricing, no hidden fees. Pay cash or with your phone.',
-      gradient: [Color(0xFFE60000), Color(0xFF8B0000)],
+      title: 'Clear Delivery Fees',
+      subtitle: 'Choose bicycle or motorbike and see the kilometer-based estimate before dispatch.',
+      gradient: [Color(0xFFF26A54), Color(0xFF7A3C8D)],
     ),
   ];
 

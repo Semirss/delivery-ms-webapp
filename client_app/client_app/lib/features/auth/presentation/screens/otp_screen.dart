@@ -111,7 +111,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 AppText(
                   'Enter the 6-digit code sent to your email',
                   variant: AppTextVariant.bodyMedium,
-                  color: AppColors.textSecondary,
+                  color: context.appTextSecondary,
                   textAlign: TextAlign.center,
                 ),
                 kVerticalGap48,
