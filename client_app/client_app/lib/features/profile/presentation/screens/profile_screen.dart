@@ -49,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 220,
+                  expandedHeight: 226,
                   backgroundColor: AppColors.primary,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -67,15 +67,24 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             const SizedBox(height: 40),
                             Container(
-                              width: 86,
-                              height: 86,
+                              width: 96,
+                              height: 96,
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(24),
-                                border: Border.all(color: Colors.white.withOpacity(0.28)),
+                                color: Colors.white.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.30),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.16),
+                                    blurRadius: 22,
+                                    offset: const Offset(0, 12),
+                                  ),
+                                ],
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(28),
                                 child: Image.asset(
                                   ImageConstants.appLogo,
                                   fit: BoxFit.cover,
@@ -97,8 +106,8 @@ class ProfileScreen extends StatelessWidget {
                               name,
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -168,25 +177,6 @@ class ProfileScreen extends StatelessWidget {
                               },
                             ),
                           ),
-                          _buildPreferenceTile(
-                            context,
-                            icon: Icons.language_rounded,
-                            title: 'Language',
-                            subtitle: 'English and Amharic ready',
-                            trailing: DropdownButton<String>(
-                              value: preferences.languageCode,
-                              dropdownColor: context.appSurface,
-                              style: TextStyle(color: context.appTextPrimary),
-                              underline: const SizedBox.shrink(),
-                              items: const [
-                                DropdownMenuItem(value: 'en', child: Text('English')),
-                                DropdownMenuItem(value: 'am', child: Text('Amharic')),
-                              ],
-                              onChanged: (value) {
-                                if (value != null) preferences.setLanguageCode(value);
-                              },
-                            ),
-                          ),
                         ]),
                         const SizedBox(height: AppSpacing.lg),
                         _buildSection(context, 'Support', [
@@ -237,13 +227,25 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppText(title, variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-        const SizedBox(height: AppSpacing.sm),
+        AppText(
+          title,
+          variant: AppTextVariant.heading3,
+          fontWeight: FontWeight.w900,
+        ),
+        const SizedBox(height: AppSpacing.md),
         Container(
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: context.appSurface,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             children: tiles
@@ -253,7 +255,11 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         e.value,
                         if (e.key < tiles.length - 1)
-                          const Divider(height: 1, indent: 56),
+                          Divider(
+                            height: 1,
+                            indent: 72,
+                            color: context.appBorder,
+                          ),
                       ],
                     ))
                 .toList(),
@@ -272,17 +278,48 @@ class ProfileScreen extends StatelessWidget {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
       ),
-      title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
-      subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
-      trailing: Icon(Icons.chevron_right_rounded, color: context.appTextSecondary),
+      leading: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary.withValues(alpha: 0.18),
+              AppColors.primaryLight.withValues(alpha: 0.10),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 22),
+      ),
+      title: AppText(
+        title,
+        variant: AppTextVariant.bodyMedium,
+        fontWeight: FontWeight.w900,
+      ),
+      subtitle: AppText(
+        subtitle,
+        variant: AppTextVariant.bodySmall,
+        color: context.appTextSecondary,
+      ),
+      trailing: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          Icons.chevron_right_rounded,
+          color: context.appTextSecondary,
+        ),
+      ),
     );
   }
 
@@ -294,16 +331,29 @@ class ProfileScreen extends StatelessWidget {
     required Widget trailing,
   }) {
     return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
       ),
-      title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
-      subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
+      leading: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 22),
+      ),
+      title: AppText(
+        title,
+        variant: AppTextVariant.bodyMedium,
+        fontWeight: FontWeight.w900,
+      ),
+      subtitle: AppText(
+        subtitle,
+        variant: AppTextVariant.bodySmall,
+        color: context.appTextSecondary,
+      ),
       trailing: trailing,
     );
   }

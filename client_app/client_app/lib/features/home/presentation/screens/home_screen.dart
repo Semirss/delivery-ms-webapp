@@ -1,6 +1,4 @@
 import 'package:client_app/config/router/navigation_helper.dart';
-import 'package:client_app/core/config/app_config.dart';
-import 'package:client_app/core/di/injection.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -9,14 +7,13 @@ import 'package:client_app/features/home/data/repositories/map_repository.dart';
 import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
 import 'package:client_ui/app_ui.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:latlong2/latlong.dart' hide Path;
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -91,7 +88,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _deliveryStatus = 'none';
   String _selectedService = 'parcel';
   String _selectedVehicleCategory = 'Bike';
+  String? _lastPulsedVehicleCategory;
   String _selectedPackageType = 'Documents';
+  int _vehicleSelectionPulse = 0;
   double? _distanceKm;
   bool _hasLoadedActiveDelivery = false;
   bool _isLoadingActiveDelivery = false;
@@ -282,8 +281,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _selectVehicleCategory(String value) {
-    if (_selectedVehicleCategory == value) return;
-    setState(() => _selectedVehicleCategory = value);
+    setState(() {
+      _selectedVehicleCategory = value;
+      _lastPulsedVehicleCategory = value;
+      _vehicleSelectionPulse++;
+    });
   }
 
   int _calculateEstimatedPrice(double distanceKm, _DeliveryPricing pricing) {
@@ -825,10 +827,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: context.appBackground,
-      drawer: _buildHomeDrawer(),
+      endDrawer: _buildHomeDrawer(),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 110),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            110,
+          ),
           children: [
             Row(
               children: [
@@ -871,9 +878,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.menu_rounded, color: context.appTextPrimary),
-                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: context.appSurface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: context.appBorder),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.06),
+                        blurRadius: 14,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: IconButton(
+                    tooltip: 'Menu',
+                    icon: Icon(
+                      Icons.menu_rounded,
+                      color: context.appTextPrimary,
+                    ),
+                    onPressed: () =>
+                        _scaffoldKey.currentState?.openEndDrawer(),
+                  ),
                 ),
               ],
             ),
@@ -883,7 +911,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildActiveDeliveryCard(),
               const SizedBox(height: AppSpacing.lg),
             ],
-            const AppText('Choose courier type', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+            // const AppText('', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
             const SizedBox(height: AppSpacing.sm),
             _buildVehicleSelector(compact: false),
             const SizedBox(height: AppSpacing.lg),
@@ -891,19 +919,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: AppSpacing.lg),
             _buildPromoCard(),
             const SizedBox(height: AppSpacing.lg),
-            _buildInfoRow(
-              icon: _selectedPricing.icon,
-              title: 'Live ${_selectedPricing.title.toLowerCase()} tracking',
-              subtitle: 'Map pins show approved bicycle and motor couriers by vehicle.',
-              trailing: 'Live',
-            ),
-            const Divider(),
-            _buildInfoRow(
-              icon: Icons.admin_panel_settings_outlined,
-              title: 'Admin dispatch',
-              subtitle: 'Deliveries are assigned from the control panel.',
-              trailing: 'Ready',
-            ),
+            _buildUpcomingAdsSection(),
           ],
         ),
       ),
@@ -1021,17 +1037,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: context.appSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
-      ),
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return AnimatedBuilder(
           animation: preferences,
           builder: (context, _) {
             return SafeArea(
               top: false,
-              child: Padding(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.appSurface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(26),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.18),
+                      blurRadius: 28,
+                      offset: const Offset(0, -10),
+                    ),
+                  ],
+                ),
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -1048,13 +1075,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    const AppText(
+                    AppText(
                       'Settings',
                       variant: AppTextVariant.heading2,
+                      color: context.appTextPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _buildSettingsTile(
+                      context,
                       icon: Icons.dark_mode_outlined,
                       title: 'Theme',
                       subtitle: 'Light, dark, or system',
@@ -1073,24 +1102,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                     ),
-                    _buildSettingsTile(
-                      icon: Icons.language_rounded,
-                      title: 'Language',
-                      subtitle: 'English and Amharic',
-                      trailing: DropdownButton<String>(
-                        value: preferences.languageCode,
-                        dropdownColor: context.appSurface,
-                        style: TextStyle(color: context.appTextPrimary),
-                        underline: const SizedBox.shrink(),
-                        items: const [
-                          DropdownMenuItem(value: 'en', child: Text('English')),
-                          DropdownMenuItem(value: 'am', child: Text('Amharic')),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) preferences.setLanguageCode(value);
-                        },
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -1101,7 +1112,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSettingsTile({
+  Widget _buildSettingsTile(
+    BuildContext tileContext, {
     required IconData icon,
     required String title,
     required String subtitle,
@@ -1110,133 +1122,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: context.appSurfaceAlt,
+        color: tileContext.appSurfaceAlt,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: context.appBorder),
+        border: Border.all(color: tileContext.appBorder),
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
-        title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
-        subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
+        title: AppText(
+          title,
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitle: AppText(
+          subtitle,
+          variant: AppTextVariant.bodySmall,
+          color: tileContext.appTextSecondary,
+        ),
         trailing: trailing,
       ),
     );
-  }
-
-  Future<void> _showFeedbackDialog() async {
-    final controller = TextEditingController();
-    final feedback = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: dialogContext.appSurface,
-          title: const Text('App Feedback'),
-          content: TextField(
-            controller: controller,
-            maxLines: 4,
-            style: TextStyle(color: dialogContext.appTextPrimary),
-            decoration: InputDecoration(
-              hintText: 'Tell us what to improve',
-              hintStyle: TextStyle(color: dialogContext.appTextSecondary),
-              filled: true,
-              fillColor: dialogContext.appSurfaceAlt,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                borderSide: BorderSide(color: dialogContext.appBorder),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                borderSide: BorderSide(color: dialogContext.appBorder),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final text = controller.text.trim();
-                if (text.isEmpty) return;
-                Navigator.pop(dialogContext, text);
-              },
-              child: const Text('Send'),
-            ),
-          ],
-        );
-      },
-    );
-    controller.dispose();
-
-    if (!mounted || feedback == null) return;
-    await _submitAppFeedback(feedback);
-  }
-
-  Future<void> _submitAppFeedback(String feedback) async {
-    final authState = context.read<AuthBloc>().state;
-    final user = authState is AuthAuthenticated ? authState.user : null;
-    final userName = user == null
-        ? 'Guest'
-        : [
-            user.firstName,
-            user.lastName,
-          ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
-    final payload = {
-      'feedback': feedback,
-      'user_name': userName.isEmpty ? user?.email ?? 'Guest' : userName,
-      'phone': user?.phone?.trim(),
-      'email': user?.email.trim(),
-    };
-
-    try {
-      await _postFeedbackToWebApi(payload);
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'Feedback sent.',
-        type: AppToastType.success,
-      );
-      return;
-    } catch (e) {
-      debugPrint('Error sending app feedback through web API: $e');
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'Could not send feedback right now.',
-        type: AppToastType.error,
-      );
-    }
-  }
-
-  Future<void> _postFeedbackToWebApi(Map<String, dynamic> payload) async {
-    final configuredBaseUrl = getIt<AppConfig>().apiBaseUrl.trim();
-    var baseUrl = configuredBaseUrl.isEmpty ||
-            configuredBaseUrl.contains('your-webapp-domain')
-        ? 'https://www.motobikedeliveryservice.com'
-        : configuredBaseUrl;
-    final uri = Uri.tryParse(baseUrl);
-    if (uri != null && uri.host == 'motobikedeliveryservice.com') {
-      baseUrl = uri.replace(host: 'www.motobikedeliveryservice.com').toString();
-    }
-    final normalizedBaseUrl = baseUrl.replaceAll(RegExp(r'/+$'), '');
-
-    final response = await Dio().post<void>(
-      '$normalizedBaseUrl/api/client-feedback',
-      data: payload,
-      options: Options(
-        headers: {'Content-Type': 'application/json'},
-        validateStatus: (status) => status != null && status < 500,
-      ),
-    );
-
-    if ((response.statusCode ?? 500) >= 400) {
-      throw StateError('Feedback API returned ${response.statusCode}');
-    }
   }
 
   Widget _buildHomeDrawer() {
@@ -1278,7 +1182,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             _drawerTile(
               icon: Icons.settings_rounded,
-              title: 'Setting',
+              title: 'Settings',
               onTap: () => _closeDrawerThen(_showSettingsSheet),
             ),
             _drawerTile(
@@ -1292,11 +1196,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-            ),
-            _drawerTile(
-              icon: Icons.feedback_outlined,
-              title: 'App Feedback',
-              onTap: () => _closeDrawerThen(_showFeedbackDialog),
             ),
             _drawerTile(
               icon: Icons.person_rounded,
@@ -1324,7 +1223,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
       title: AppText(title, variant: AppTextVariant.bodyMedium),
-      trailing: Icon(Icons.chevron_right_rounded, color: context.appTextSecondary),
+      trailing: Icon(
+        Icons.chevron_left_rounded,
+        color: context.appTextSecondary,
+      ),
       onTap: onTap,
     );
   }
@@ -1715,107 +1617,107 @@ class _HomeScreenState extends State<HomeScreen> {
     const imageAngle = 0.04;
     final imageEnd = category == 'Bike' ? -14.0 : -16.0;
 
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: '${pricing.title} courier',
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: () => _selectVehicleCategory(category),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Positioned.fill(
-              top: 28,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: selected
-                        ? [
-                            accent,
-                            Color.lerp(accent, Colors.black, 0.18)!,
-                          ]
-                        : [
-                            context.appSurfaceAlt,
-                            context.appSurface,
-                          ],
-                  ),
-                  border: Border.all(
-                    color: selected ? accent : context.appBorder,
-                    width: selected ? 2 : 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: selected
-                          ? accent.withValues(alpha: 0.30)
-                          : Colors.black.withValues(alpha: 0.08),
-                      blurRadius: selected ? 24 : 14,
-                      offset: const Offset(0, 12),
+    return _buildVehicleTapPulse(
+      category,
+      Semantics(
+        button: true,
+        selected: selected,
+        label: '${pricing.title} courier',
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: () => _selectVehicleCategory(category),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Positioned.fill(
+                top: 28,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: selected
+                          ? [
+                              accent,
+                              Color.lerp(accent, Colors.black, 0.18)!,
+                            ]
+                          : [
+                              context.appSurfaceAlt,
+                              context.appSurface,
+                            ],
                     ),
-                  ],
+                    border: Border.all(
+                      color: selected ? accent : context.appBorder,
+                      width: selected ? 2 : 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: selected
+                            ? accent.withValues(alpha: 0.30)
+                            : Colors.black.withValues(alpha: 0.08),
+                        blurRadius: selected ? 24 : 14,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            PositionedDirectional(
-              top: imageTop,
-              end: imageEnd,
-              child: IgnorePointer(
-                child: Transform.rotate(
-                  angle: imageAngle,
-                  child: Transform.scale(
-                    scaleX: category == 'Motor' ? 1 : 1,
+              PositionedDirectional(
+                top: imageTop,
+                end: imageEnd,
+                child: IgnorePointer(
+                  child: Transform.rotate(
+                    angle: imageAngle,
                     child: _buildCourierArtwork(imagePath, imageHeight),
                   ),
                 ),
               ),
-            ),
-            PositionedDirectional(
-              top: 28 + AppSpacing.lg,
-              start: AppSpacing.md,
-              width: 132,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppText(
-                    pricing.title,
-                    variant: AppTextVariant.heading3,
-                    color: titleColor,
-                    fontWeight: FontWeight.w900,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  AppText(
-                    pricing.subtitle,
-                    variant: AppTextVariant.bodySmall,
-                    color: subtitleColor,
-                    fontWeight: FontWeight.w700,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            if (selected)
-              Positioned(
-                top: 38,
-                right: AppSpacing.sm,
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.check_rounded, color: accent, size: 16),
+              PositionedDirectional(
+                top: 28 + AppSpacing.lg,
+                start: AppSpacing.md,
+                width: 132,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppText(
+                      pricing.title,
+                      variant: AppTextVariant.heading3,
+                      color: titleColor,
+                      fontWeight: FontWeight.w900,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      pricing.subtitle,
+                      variant: AppTextVariant.bodySmall,
+                      color: subtitleColor,
+                      fontWeight: FontWeight.w700,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
-          ],
+              if (selected)
+                Positioned(
+                  top: 38,
+                  right: AppSpacing.sm,
+                  child: Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.check_rounded, color: accent, size: 16),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -1845,89 +1747,189 @@ class _HomeScreenState extends State<HomeScreen> {
     final foreground = selected ? Colors.white : context.appTextPrimary;
     final subtitleColor = selected ? Colors.white.withValues(alpha: 0.82) : context.appTextSecondary;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () => _selectVehicleCategory(category),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
-        decoration: BoxDecoration(
-          color: selected ? accent : context.appSurfaceAlt,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: selected ? accent : context.appBorder),
-        ),
-        child: Row(
-          children: [
-            Icon(pricing.icon, color: foreground, size: compact ? 22 : 30),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppText(
-                    pricing.title,
-                    variant: AppTextVariant.bodyMedium,
-                    color: foreground,
-                    fontWeight: FontWeight.bold,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  AppText(
-                    pricing.subtitle,
-                    variant: AppTextVariant.bodySmall,
-                    color: subtitleColor,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+    return _buildVehicleTapPulse(
+      category,
+      InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => _selectVehicleCategory(category),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
+          decoration: BoxDecoration(
+            color: selected ? accent : context.appSurfaceAlt,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: selected ? accent : context.appBorder),
+          ),
+          child: Row(
+            children: [
+              Icon(pricing.icon, color: foreground, size: compact ? 22 : 30),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      pricing.title,
+                      variant: AppTextVariant.bodyMedium,
+                      color: foreground,
+                      fontWeight: FontWeight.bold,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      pricing.subtitle,
+                      variant: AppTextVariant.bodySmall,
+                      color: subtitleColor,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildVehicleTapPulse(String category, Widget child) {
+    final pulseKey =
+        _lastPulsedVehicleCategory == category ? _vehicleSelectionPulse : 0;
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey('vehicle-pulse-$category-$pulseKey'),
+      tween: Tween<double>(begin: pulseKey == 0 ? 1 : 1.08, end: 1),
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeOutBack,
+      child: child,
+      builder: (context, scale, child) {
+        return Transform.scale(
+          scale: scale,
+          alignment: Alignment.center,
+          child: child,
+        );
+      },
+    );
+  }
+
   Widget _buildPromoCard() {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.neutralBlue,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                AppText(
-                  'Fast city delivery',
-                  variant: AppTextVariant.heading2,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
-                SizedBox(height: AppSpacing.sm),
-                AppText(
-                  'Choose bicycle or motorbike and see the estimated fee before dispatch.',
-                  variant: AppTextVariant.bodyMedium,
-                  color: Colors.white,
-                ),
+    return _AnimatedDeliveryMapCard(
+      onTap: () => _startDeliveryFlow(service: _selectedService),
+    );
+  }
+
+  Widget _buildUpcomingAdsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AppText(
+          'Upcoming',
+          variant: AppTextVariant.heading3,
+          fontWeight: FontWeight.bold,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Container(
+          height: 150,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFFFF3EF),
+                Color(0xFFEFF8FF),
               ],
             ),
+            border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                blurRadius: 22,
+                offset: const Offset(0, 12),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.md),
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
+          child: Stack(
+            children: [
+              PositionedDirectional(
+                end: -6,
+                bottom: -18,
+                child: Transform.rotate(
+                  angle: 0.03,
+                  child: Image.asset(
+                    ImageConstants.motorCourier,
+                    height: 144,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              PositionedDirectional(
+                start: AppSpacing.lg,
+                top: AppSpacing.lg,
+                end: 148,
+                bottom: AppSpacing.md,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppText(
+                      'Deals are coming',
+                      variant: AppTextVariant.heading3,
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    const AppText(
+                      'MotoBike is launching soon with exciting deals and offers for our first users. Stay tuned!',
+                      variant: AppTextVariant.bodySmall,
+                      color: AppColors.textSecondary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          childAspectRatio: 1.45,
+          crossAxisSpacing: AppSpacing.sm,
+          mainAxisSpacing: AppSpacing.sm,
+          children: const [
+            _PromoGridAdCard(
+              icon: Icons.local_offer_rounded,
+              title: 'Launch deals',
+              subtitle: 'Save on first deliveries',
               color: AppColors.primary,
-              borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(Icons.delivery_dining_rounded, color: Colors.white, size: 44),
-          ),
-        ],
-      ),
+            _PromoGridAdCard(
+              icon: Icons.storefront_rounded,
+              title: 'Partner perks',
+              subtitle: 'Offers from local shops',
+              color: AppColors.secondary,
+            ),
+            _PromoGridAdCard(
+              icon: Icons.bolt_rounded,
+              title: 'Express hour',
+              subtitle: 'Faster pickup windows',
+              color: AppColors.warning,
+            ),
+            _PromoGridAdCard(
+              icon: Icons.card_giftcard_rounded,
+              title: 'Rewards',
+              subtitle: 'Points and coupons soon',
+              color: AppColors.success,
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -1958,7 +1960,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ListTile(
           leading: Icon(
             pricing.icon,
-            color: _selectedVehicleCategory == 'Bike' ? AppColors.secondary : AppColors.primary,
+            color: _selectedVehicleCategory == 'Bike'
+                ? AppColors.secondary
+                : AppColors.primary,
             size: 32,
           ),
           title: AppText(
@@ -1981,37 +1985,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String trailing,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: context.appSurfaceAlt, shape: BoxShape.circle),
-            child: Icon(icon, color: context.appTextSecondary, size: 20),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(title, variant: AppTextVariant.labelLarge, fontWeight: FontWeight.bold),
-                AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
-              ],
-            ),
-          ),
-          AppText(trailing, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInfoTile({
     required IconData icon,
     required String title,
@@ -2027,6 +2000,404 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Icon(icon, color: AppColors.primary),
         title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
         subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
+      ),
+    );
+  }
+}
+
+class _PreviewRouteOverlayPainter extends CustomPainter {
+  const _PreviewRouteOverlayPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = _deliveryPreviewOverlayPath(size);
+    final metric = path.computeMetrics().first;
+    final activePath = metric.extractPath(
+      0,
+      metric.length * _clampUnit(progress),
+    );
+
+    final routeShadow = Paint()
+      ..color = Colors.white.withValues(alpha: 0.70)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 10;
+    final routeBase = Paint()
+      ..color = AppColors.neutralBlue.withValues(alpha: 0.18)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 6;
+    final activeRoute = Paint()
+      ..color = AppColors.secondary.withValues(alpha: 0.86)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 6;
+
+    canvas
+      ..drawPath(path, routeShadow)
+      ..drawPath(path, routeBase)
+      ..drawPath(activePath, activeRoute);
+
+    _paintPin(
+      canvas,
+      _deliveryPreviewOverlayPoint(size, 0),
+      AppColors.secondary,
+    );
+    _paintPin(
+      canvas,
+      _deliveryPreviewOverlayPoint(size, 1),
+      AppColors.primary,
+    );
+  }
+
+  void _paintPin(Canvas canvas, Offset center, Color color) {
+    final shadow = Paint()
+      ..color = Colors.black.withValues(alpha: 0.18)
+      ..style = PaintingStyle.fill;
+    final shell = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    final fill = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    canvas
+      ..drawCircle(center + const Offset(0, 3), 15, shadow)
+      ..drawCircle(center, 15, shell)
+      ..drawCircle(center, 7, fill);
+  }
+
+  @override
+  bool shouldRepaint(covariant _PreviewRouteOverlayPainter oldDelegate) {
+    return oldDelegate.progress != progress;
+  }
+}
+
+class _PromoGridAdCard extends StatelessWidget {
+  const _PromoGridAdCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: context.appBorder),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.10),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          PositionedDirectional(
+            end: -18,
+            bottom: -24,
+            child: Container(
+              width: 78,
+              height: 78,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const Spacer(),
+              AppText(
+                title,
+                variant: AppTextVariant.bodyMedium,
+                fontWeight: FontWeight.w900,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              AppText(
+                subtitle,
+                variant: AppTextVariant.bodySmall,
+                color: context.appTextSecondary,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+const LatLng _deliveryPreviewCenter = LatLng(8.9806, 38.7578);
+
+double _clampUnit(double value) {
+  if (value < 0) return 0;
+  if (value > 1) return 1;
+  return value;
+}
+
+Path _deliveryPreviewOverlayPath(Size size) {
+  return Path()
+    ..moveTo(size.width * 0.18, size.height * 0.72)
+    ..cubicTo(
+      size.width * 0.34,
+      size.height * 0.56,
+      size.width * 0.54,
+      size.height * 0.44,
+      size.width * 0.74,
+      size.height * 0.56,
+    );
+}
+
+Offset _deliveryPreviewOverlayPoint(Size size, double progress) {
+  final metric = _deliveryPreviewOverlayPath(size).computeMetrics().first;
+  final tangent = metric.getTangentForOffset(
+    metric.length * _clampUnit(progress),
+  );
+
+  return tangent?.position ?? Offset(size.width * 0.18, size.height * 0.72);
+}
+
+class _AnimatedDeliveryMapCard extends StatefulWidget {
+  const _AnimatedDeliveryMapCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_AnimatedDeliveryMapCard> createState() =>
+      _AnimatedDeliveryMapCardState();
+}
+
+class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 8200),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Animated delivery map preview',
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          height: 214,
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: context.appSurface,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.neutralBlue.withValues(alpha: 0.22),
+                blurRadius: 26,
+                offset: const Offset(0, 14),
+              ),
+            ],
+          ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            child: FlutterMap(
+              options: const MapOptions(
+                initialCenter: _deliveryPreviewCenter,
+                initialZoom: 13.6,
+                interactionOptions: InteractionOptions(
+                  flags: InteractiveFlag.none,
+                ),
+              ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.delivery.client',
+                ),
+              ],
+            ),
+            builder: (context, staticMap) {
+              final sweepProgress = _controller.value <= 0.5
+                  ? _controller.value * 2
+                  : (1 - _controller.value) * 2;
+              final progress = Curves.easeInOutCubic.transform(sweepProgress);
+              final movingForward = _controller.value <= 0.5;
+
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final size = Size(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                  );
+                  final bikeOffset = _deliveryPreviewOverlayPoint(
+                    size,
+                    progress,
+                  );
+
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: staticMap ?? const SizedBox.shrink(),
+                      ),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.46),
+                                Colors.black.withValues(alpha: 0.12),
+                                Colors.black.withValues(alpha: 0.50),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            painter: _PreviewRouteOverlayPainter(
+                              progress: progress,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: bikeOffset.dx - 44,
+                        top: bikeOffset.dy - 34,
+                        child: _buildPreviewBikeMarker(
+                          movingForward: movingForward,
+                        ),
+                      ),
+                      PositionedDirectional(
+                        start: AppSpacing.lg,
+                        top: AppSpacing.lg,
+                        end: AppSpacing.lg,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AppText(
+                              'Fast city delivery',
+                              variant: AppTextVariant.heading2,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            AppText(
+                              'A live route preview from pickup to drop-off.',
+                              variant: AppTextVariant.bodySmall,
+                              color: Colors.white.withValues(alpha: 0.88),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      PositionedDirectional(
+                        end: AppSpacing.lg,
+                        bottom: AppSpacing.lg,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(999),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.35,
+                                ),
+                                blurRadius: 14,
+                                offset: const Offset(0, 7),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppText(
+                                'Tap to request',
+                                variant: AppTextVariant.bodySmall,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                              SizedBox(width: AppSpacing.xs),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewBikeMarker({required bool movingForward}) {
+    return SizedBox(
+      width: 88,
+      height: 68,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Transform.scale(
+            scaleX: movingForward ? 1 : -1,
+            child: Image.asset(
+              ImageConstants.bikeCourier,
+              width: 86,
+              height: 64,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }
