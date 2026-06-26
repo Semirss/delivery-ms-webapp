@@ -1,5 +1,8 @@
+import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -33,10 +36,40 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _resolveDriverRecipient() async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final byId = await _supabase
+          .from('drivers')
+          .select('id, phone')
+          .eq('id', authState.user.id)
+          .maybeSingle();
+      if (byId != null) {
+        _driverId = byId['id']?.toString();
+        _driverPhone = _cleanRecipient(byId['phone']?.toString());
+        return;
+      }
+
+      final phone = _cleanRecipient(authState.user.phone);
+      if (phone != null) {
+        final byPhone = await _supabase
+            .from('drivers')
+            .select('id, phone')
+            .eq('phone', phone)
+            .maybeSingle();
+        _driverId = byPhone?['id']?.toString();
+        _driverPhone = _cleanRecipient(byPhone?['phone']?.toString()) ?? phone;
+        return;
+      }
+    }
+
     final user = _supabase.auth.currentUser;
     if (user == null) return;
 
-    final byId = await _supabase.from('drivers').select('id, phone').eq('id', user.id).maybeSingle();
+    final byId = await _supabase
+        .from('drivers')
+        .select('id, phone')
+        .eq('id', user.id)
+        .maybeSingle();
     if (byId != null) {
       _driverId = byId['id']?.toString();
       _driverPhone = _cleanRecipient(byId['phone']?.toString());
@@ -50,7 +83,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     _driverPhone = phone;
 
     if (phone == null) return;
-    final byPhone = await _supabase.from('drivers').select('id, phone').eq('phone', phone).maybeSingle();
+    final byPhone = await _supabase
+        .from('drivers')
+        .select('id, phone')
+        .eq('phone', phone)
+        .maybeSingle();
     _driverId = byPhone?['id']?.toString();
     _driverPhone = _cleanRecipient(byPhone?['phone']?.toString()) ?? phone;
   }
@@ -64,9 +101,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           .order('created_at', ascending: false)
           .limit(100);
 
-      final notifications = List<Map<String, dynamic>>.from(data)
-          .where(_matchesCurrentDriver)
-          .toList();
+      final notifications = List<Map<String, dynamic>>.from(
+        data,
+      ).where(_matchesCurrentDriver).toList();
 
       if (!mounted) return;
       setState(() {
@@ -77,7 +114,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Notifications are not ready yet. Run schema_v4 in Supabase.';
+        _errorMessage =
+            'Notifications are not ready yet. Run schema_v4 in Supabase.';
         _isLoading = false;
       });
     }
@@ -86,7 +124,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void _subscribe() {
     _channel?.unsubscribe();
     _channel = _supabase
-        .channel('public:app_notifications:driver:${_driverId ?? _driverPhone ?? 'anonymous'}')
+        .channel(
+          'public:app_notifications:driver:${_driverId ?? _driverPhone ?? 'anonymous'}',
+        )
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
@@ -121,9 +161,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final id = notification['id']?.toString();
     if (id == null) return;
 
-    await _supabase.from('app_notifications').update({
-      'read_at': DateTime.now().toUtc().toIso8601String(),
-    }).eq('id', id);
+    await _supabase
+        .from('app_notifications')
+        .update({'read_at': DateTime.now().toUtc().toIso8601String()})
+        .eq('id', id);
 
     await _fetchNotifications();
   }
@@ -144,7 +185,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
     }
 
     if (_errorMessage != null) {
@@ -168,7 +211,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           children: const [
             SizedBox(height: 160),
-            Icon(Icons.notifications_none_rounded, size: 72, color: AppColors.border),
+            Icon(
+              Icons.notifications_none_rounded,
+              size: 72,
+              color: AppColors.border,
+            ),
             SizedBox(height: AppSpacing.md),
             Center(
               child: AppText(
@@ -200,10 +247,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({
-    required this.notification,
-    required this.onTap,
-  });
+  const _NotificationCard({required this.notification, required this.onTap});
 
   final Map<String, dynamic> notification;
   final VoidCallback onTap;
@@ -218,16 +262,25 @@ class _NotificationCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isUnread ? AppColors.primary.withOpacity(0.06) : AppColors.background,
+          color: isUnread
+              ? AppColors.primary.withOpacity(0.06)
+              : AppColors.background,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isUnread ? AppColors.primary.withOpacity(0.2) : AppColors.border),
+          border: Border.all(
+            color: isUnread
+                ? AppColors.primary.withOpacity(0.2)
+                : AppColors.border,
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
               backgroundColor: AppColors.primary.withOpacity(0.1),
-              child: Icon(_iconForType(notification['type']), color: AppColors.primary),
+              child: Icon(
+                _iconForType(notification['type']),
+                color: AppColors.primary,
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -240,7 +293,9 @@ class _NotificationCard extends StatelessWidget {
                         child: AppText(
                           notification['title']?.toString() ?? 'Notification',
                           variant: AppTextVariant.bodyMedium,
-                          fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                          fontWeight: isUnread
+                              ? FontWeight.bold
+                              : FontWeight.w600,
                         ),
                       ),
                       if (isUnread)

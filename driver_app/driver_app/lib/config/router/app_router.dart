@@ -20,7 +20,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' show Supabase;
 
 class AppRouter {
   final IStorageService storageService;
@@ -40,12 +39,11 @@ class AppRouter {
 
   bool get isAuthenticatedSync {
     try {
-      final session = Supabase.instance.client.auth.currentSession;
-      if (session != null && _isUsableToken(session.accessToken)) {
-        return true;
-      }
-
-      return false;
+      final accessToken = storageService.getData(StorageKeys.accessToken);
+      final user = storageService.getData(StorageKeys.user);
+      return _isUsableToken(accessToken) &&
+          user != null &&
+          user.toString().trim().isNotEmpty;
     } catch (e) {
       outlog('Error checking auth status: $e');
       return false;
@@ -270,10 +268,8 @@ class AppRouter {
       GoRoute(
         name: AppRoutes.notification.name,
         path: AppRoutes.notification.path,
-        pageBuilder: (context, state) => getPage(
-          child: const NotificationsScreen(),
-          state: state,
-        ),
+        pageBuilder: (context, state) =>
+            getPage(child: const NotificationsScreen(), state: state),
       ),
       GoRoute(
         name: AppRoutes.changePin.name,
@@ -427,7 +423,7 @@ class AppRouter {
   }
 }
 
-// Main screen with bottom navigation
+// Main screen for the shell routes.
 class MainScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -441,17 +437,7 @@ class MainScreen extends StatelessWidget {
           context.goNamed(AppRoutes.login.name);
         }
       },
-      child: Scaffold(
-        body: navigationShell,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: navigationShell.currentIndex,
-          onTap: (index) => navigationShell.goBranch(index),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
-        ),
-      ),
+      child: Scaffold(body: navigationShell),
     );
   }
 }

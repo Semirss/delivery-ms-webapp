@@ -84,10 +84,10 @@ class _OtpScreenState extends State<OtpScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            AppToast.error(
+            AppModal.error<void>(
               context: context,
               title: 'Error',
-              message: state.message,
+              contentText: state.message,
             );
           } else if (state is AuthAuthenticated) {
             // Navigation handled by router

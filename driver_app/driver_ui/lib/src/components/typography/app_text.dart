@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../config/theme/app_typography.dart';
-import '../../config/constants/app_colors.dart';
 
 /// Enum defining the visual variants of AppText
 enum AppTextVariant {
@@ -107,7 +106,7 @@ class AppText extends StatelessWidget {
 
     // Apply color, weight overrides if provided
     final effectiveStyle = baseStyle.copyWith(
-      color: color ?? AppColors.textPrimary,
+      color: color ?? Theme.of(context).colorScheme.onSurface,
       fontWeight: fontWeight,
     );
 

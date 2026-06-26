@@ -49,18 +49,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUseCase(
       LoginParams(email: event.email, password: event.password),
     );
-    result.fold(
-      (failure) => emit(AuthError(message: failure.errMessage)),
-      (authResult) {
-        if (authResult.requiresVerification) {
-          emit(AuthVerificationRequired(
-            verificationKey: authResult.verificationKey ?? '',
-          ));
-        } else {
-          emit(AuthAuthenticated(user: authResult.user));
+    result.fold((failure) => emit(AuthError(message: failure.errMessage)), (
+      authResult,
+    ) {
+      if (authResult.requiresVerification) {
+        if (authResult.verificationKey == 'driver_approval_pending') {
+          emit(
+            const AuthApprovalPending(
+              message:
+                  'Application submitted. Please wait for admin approval before signing in.',
+            ),
+          );
+          return;
         }
-      },
-    );
+        emit(
+          AuthVerificationRequired(
+            verificationKey: authResult.verificationKey ?? '',
+          ),
+        );
+      } else {
+        emit(AuthAuthenticated(user: authResult.user));
+      }
+    });
   }
 
   Future<void> _onSignUp(SignUpEvent event, Emitter<AuthState> emit) async {
@@ -72,20 +82,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         firstName: event.firstName,
         lastName: event.lastName,
         phone: event.phone,
+        telegramUsername: event.telegramUsername,
+        plateNumber: event.plateNumber,
+        vehicleType: event.vehicleType,
+        personalIdBytes: event.personalIdBytes,
+        personalIdFileName: event.personalIdFileName,
+        personalIdMimeType: event.personalIdMimeType,
       ),
     );
-    result.fold(
-      (failure) => emit(AuthError(message: failure.errMessage)),
-      (authResult) {
-        if (authResult.requiresVerification) {
-          emit(AuthVerificationRequired(
+    result.fold((failure) => emit(AuthError(message: failure.errMessage)), (
+      authResult,
+    ) {
+      if (authResult.requiresVerification) {
+        emit(
+          AuthVerificationRequired(
             verificationKey: authResult.verificationKey ?? '',
-          ));
-        } else {
-          emit(AuthAuthenticated(user: authResult.user));
-        }
-      },
-    );
+          ),
+        );
+      } else {
+        emit(AuthAuthenticated(user: authResult.user));
+      }
+    });
   }
 
   Future<void> _onVerifyOtp(
@@ -168,4 +185,3 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 }
-

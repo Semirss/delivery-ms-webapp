@@ -15,6 +15,7 @@ export 'src/config/constants/app_shadows.dart';
 // Design Tokens - Theme
 export 'src/config/theme/app_typography.dart';
 export 'src/config/theme/app_theme.dart';
+export 'src/config/theme/app_theme_colors.dart';
 
 //Components - Typography
 export 'src/components/typography/app_text.dart';

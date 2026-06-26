@@ -38,6 +38,15 @@ class AuthVerificationRequired extends AuthState {
   List<Object> get props => [verificationKey];
 }
 
+class AuthApprovalPending extends AuthState {
+  final String message;
+
+  const AuthApprovalPending({required this.message});
+
+  @override
+  List<Object> get props => [message];
+}
+
 class AuthError extends AuthState {
   final String message;
 
@@ -54,4 +63,3 @@ class ResetPasswordSuccess extends AuthState {
 class ResetPasswordVerified extends AuthState {
   const ResetPasswordVerified();
 }
-

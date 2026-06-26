@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../../../core/base/base_bloc.dart';
 
 abstract class AuthEvent extends BaseEvent {
@@ -23,6 +25,12 @@ class SignUpEvent extends AuthEvent {
   final String? firstName;
   final String? lastName;
   final String? phone;
+  final String? telegramUsername;
+  final String? plateNumber;
+  final String? vehicleType;
+  final Uint8List? personalIdBytes;
+  final String? personalIdFileName;
+  final String? personalIdMimeType;
 
   const SignUpEvent({
     required this.email,
@@ -30,20 +38,35 @@ class SignUpEvent extends AuthEvent {
     this.firstName,
     this.lastName,
     this.phone,
+    this.telegramUsername,
+    this.plateNumber,
+    this.vehicleType,
+    this.personalIdBytes,
+    this.personalIdFileName,
+    this.personalIdMimeType,
   });
 
   @override
-  List<Object?> get props => [email, password, firstName, lastName, phone];
+  List<Object?> get props => [
+    email,
+    password,
+    firstName,
+    lastName,
+    phone,
+    telegramUsername,
+    plateNumber,
+    vehicleType,
+    personalIdBytes,
+    personalIdFileName,
+    personalIdMimeType,
+  ];
 }
 
 class VerifyOtpEvent extends AuthEvent {
   final String verificationKey;
   final String otp;
 
-  const VerifyOtpEvent({
-    required this.verificationKey,
-    required this.otp,
-  });
+  const VerifyOtpEvent({required this.verificationKey, required this.otp});
 
   @override
   List<Object> get props => [verificationKey, otp];
@@ -89,4 +112,3 @@ class LogoutEvent extends AuthEvent {
 class CheckAuthStatusEvent extends AuthEvent {
   const CheckAuthStatusEvent();
 }
-

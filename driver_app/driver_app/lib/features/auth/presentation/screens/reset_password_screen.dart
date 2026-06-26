@@ -40,10 +40,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            AppToast.error(
+            AppModal.error<void>(
               context: context,
               title: 'Error',
-              message: state.message,
+              contentText: state.message,
             );
           } else if (state is ResetPasswordSuccess) {
             AppToast.success(

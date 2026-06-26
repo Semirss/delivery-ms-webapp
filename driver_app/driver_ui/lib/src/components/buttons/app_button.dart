@@ -4,7 +4,6 @@ import '../typography/app_text.dart';
 import '../../config/constants/app_colors.dart';
 import '../../config/constants/app_spacing.dart';
 import '../../config/constants/app_radius.dart';
-import '../../config/theme/app_typography.dart';
 
 /// Enum defining the visual variants of AppButton
 /// Enum defining the visual variants of AppButton
@@ -365,11 +364,6 @@ class AppButton extends StatelessWidget {
     }
   }
 
-  /// Returns the text style based on button size
-  TextStyle get _textStyle {
-    return AppTypography.button;
-  }
-
   /// Returns the icon size based on button size
   double get _iconSize {
     switch (size) {
@@ -388,6 +382,8 @@ class AppButton extends StatelessWidget {
       return customBackgroundColor!;
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     switch (variant) {
       case AppButtonVariant.primary:
         return AppColors.primary;
@@ -400,11 +396,11 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.outlinedDanger:
         return Colors.transparent;
       case AppButtonVariant.inactive:
-        return AppColors.lightBlueBg;
+        return colorScheme.surfaceContainerHighest;
       case AppButtonVariant.secondOption:
         return AppColors.gray2;
       case AppButtonVariant.tertiary:
-        return AppColors.accent;
+        return colorScheme.surfaceContainerHighest;
       case AppButtonVariant.ghost:
         return Colors.transparent;
       case AppButtonVariant.custom:
@@ -417,6 +413,8 @@ class AppButton extends StatelessWidget {
     if (customForegroundColor != null) {
       return customForegroundColor!;
     }
+
+    final colorScheme = Theme.of(context).colorScheme;
 
     switch (variant) {
       case AppButtonVariant.primary:
@@ -431,10 +429,10 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.outlinedDanger:
         return AppColors.error;
       case AppButtonVariant.inactive:
-        return AppColors.textGray;
+        return colorScheme.onSurface.withValues(alpha: 0.5);
       case AppButtonVariant.tertiary:
       case AppButtonVariant.ghost:
-        return AppColors.textPrimary;
+        return colorScheme.onSurface;
       case AppButtonVariant.custom:
         return customForegroundColor ?? Colors.white;
     }
@@ -466,7 +464,6 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isIconOnly = label.isEmpty && icon != null;
     final foregroundColor = _foregroundColor(context);
     final borderSide = _borderSide(context);
     final backgroundColor = _backgroundColor(context);

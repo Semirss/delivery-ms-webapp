@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:driver_app/core/base/base_repository.dart';
 import 'package:driver_app/core/connection/network_info.dart';
 import 'package:driver_app/core/errors/expentions.dart';
@@ -10,7 +11,6 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
-import '../models/user_model.dart';
 
 @Injectable(as: AuthRepository)
 class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
@@ -34,8 +34,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
 
         // Cache tokens and user if authentication successful
         if (response.user == null || response.accessToken == null) {
-          logger.warning('Invalid response from server, using mock login');
-          return Right(await _mockLogin(params));
+          return Left(ServerFailure('Invalid login response from server'));
         }
         await localDataSource.cacheAccessToken(response.accessToken!);
         if (response.refreshToken != null) {
@@ -59,15 +58,14 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           ),
         );
       } on ServerException catch (e) {
-        logger.error('Login failed, using mock login', e, StackTrace.current);
-        return Right(await _mockLogin(params));
+        logger.error('Login failed', e, StackTrace.current);
+        return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
-        logger.error('Login error, using mock login', e, stackTrace);
-        return Right(await _mockLogin(params));
+        logger.error('Login error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
-      logger.warning('No internet connection, using mock login');
-      return Right(await _mockLogin(params));
+      return Left(NetworkFailure('No internet connection'));
     }
   }
 
@@ -79,8 +77,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
 
         if (!response.requiresVerification &&
             (response.user == null || response.accessToken == null)) {
-          logger.warning('Invalid response from server, using mock sign up');
-          return Right(await _mockSignUp(params));
+          return Left(ServerFailure('Invalid sign up response from server'));
         }
 
         // Cache verification key if provided
@@ -113,66 +110,15 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           ),
         );
       } on ServerException catch (e) {
-        logger.error(
-          'Sign up failed, using mock sign up',
-          e,
-          StackTrace.current,
-        );
-        return Right(await _mockSignUp(params));
+        logger.error('Sign up failed', e, StackTrace.current);
+        return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
-        logger.error('Sign up error, using mock sign up', e, stackTrace);
-        return Right(await _mockSignUp(params));
+        logger.error('Sign up error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
-      logger.warning('No internet connection, using mock sign up');
-      return Right(await _mockSignUp(params));
+      return Left(NetworkFailure('No internet connection'));
     }
-  }
-
-  Future<AuthResult> _mockLogin(LoginParams params) async {
-    final user = UserModel(
-      id: 'mock-${params.email}',
-      email: params.email,
-      isEmailVerified: true,
-      isPhoneVerified: false,
-      createdAt: DateTime.now(),
-    );
-    await _cacheMockAuth(user);
-    return AuthResult(
-      user: user,
-      accessToken: 'mock_access_token',
-      refreshToken: 'mock_refresh_token',
-      requiresVerification: false,
-    );
-  }
-
-  Future<AuthResult> _mockSignUp(SignUpParams params) async {
-    final user = UserModel(
-      id: 'mock-${params.email}',
-      email: params.email,
-      phone: params.phone,
-      firstName: params.firstName,
-      lastName: params.lastName,
-      isEmailVerified: true,
-      isPhoneVerified: params.phone != null,
-      createdAt: DateTime.now(),
-    );
-    await _cacheMockAuth(user);
-    return AuthResult(
-      user: user,
-      accessToken: 'mock_access_token',
-      refreshToken: 'mock_refresh_token',
-      requiresVerification: false,
-    );
-  }
-
-  Future<void> _cacheMockAuth(UserModel user) async {
-    await localDataSource.cacheUser(user);
-    await localDataSource.cacheAccessToken('mock_access_token');
-    await localDataSource.cacheRefreshToken('mock_refresh_token');
-    await localDataSource.cacheLoginTimestamp(
-      DateTime.now().millisecondsSinceEpoch,
-    );
   }
 
   @override
@@ -372,5 +318,33 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
+  }
+
+  String _friendlyError(Object error) {
+    var message = error.toString().replaceFirst('Exception: ', '');
+    if (error is DioException) {
+      final data = error.response?.data;
+      if (data is Map && data['error'] != null) {
+        message = data['error'].toString();
+      } else if (error.message?.trim().isNotEmpty == true) {
+        message = error.message!.trim();
+      }
+    }
+    if (message.contains('duplicate key') ||
+        message.contains('already exists')) {
+      return 'A driver account already exists with these details.';
+    }
+    if (message.contains('Invalid name or password') ||
+        message.contains('Invalid credentials')) {
+      return 'Invalid name or password.';
+    }
+    if (message.contains('driver_ids')) {
+      return 'Could not upload the ID photo. Check the driver_ids storage bucket.';
+    }
+    if (message.contains('permission denied') ||
+        message.contains('row-level security')) {
+      return 'Driver database permissions are not ready. Check Supabase policies for the drivers table and driver_ids bucket.';
+    }
+    return message;
   }
 }

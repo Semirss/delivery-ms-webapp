@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:driver_app/config/router/navigation_helper.dart';
+import 'package:driver_app/core/preferences/app_preferences.dart';
+import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
@@ -21,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -89,7 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       debugPrint('Error loading driver record: $e');
       if (mounted) {
-        AppToast.show(context: context, message: 'Could not load driver profile.', type: AppToastType.error);
+        AppToast.show(
+          context: context,
+          message: 'Could not load driver profile.',
+          type: AppToastType.error,
+        );
       }
       return null;
     } finally {
@@ -106,35 +113,23 @@ class _HomeScreenState extends State<HomeScreen> {
     if (byPhone != null) return byPhone;
 
     final name = _driverName(user);
-    final data = await _supabase
-        .from('drivers')
-        .insert({
-          'id': user.id,
-          'name': name,
-          'phone': phone,
-          'password': 'managed-by-supabase-auth',
-          'status': 'Offline',
-          'approval_status': 'Pending',
-          'vehicle_type': 'Bike',
-        })
-        .select()
-        .single();
+    final byName = await _maybeDriverBy('name', name);
+    if (byName != null) return byName;
 
-    if (mounted) {
-      AppToast.show(
-        context: context,
-        message: 'Driver profile created. Waiting for admin approval.',
-        type: AppToastType.info,
-      );
-    }
-
-    return Map<String, dynamic>.from(data);
+    throw Exception('Driver profile not found. Please sign in again.');
   }
 
-  Future<Map<String, dynamic>?> _maybeDriverBy(String column, String value) async {
+  Future<Map<String, dynamic>?> _maybeDriverBy(
+    String column,
+    String value,
+  ) async {
     if (value.trim().isEmpty) return null;
     try {
-      final data = await _supabase.from('drivers').select().eq(column, value).maybeSingle();
+      final data = await _supabase
+          .from('drivers')
+          .select()
+          .eq(column, value)
+          .maybeSingle();
       if (data == null) return null;
       return Map<String, dynamic>.from(data);
     } catch (_) {
@@ -143,10 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _driverName(UserEntity user) {
-    final name = [user.firstName, user.lastName]
-        .where((part) => part != null && part.trim().isNotEmpty)
-        .join(' ')
-        .trim();
+    final name = [
+      user.firstName,
+      user.lastName,
+    ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
     return name.isEmpty ? user.email : name;
   }
 
@@ -157,11 +152,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool _canGoOnline(Map<String, dynamic> driver) {
     if (driver['approval_status'] != 'Approved') {
-      AppToast.show(context: context, message: 'Waiting for admin approval.', type: AppToastType.warning);
+      AppToast.show(
+        context: context,
+        message: 'Waiting for admin approval.',
+        type: AppToastType.warning,
+      );
       return false;
     }
     if (driver['is_active'] == false) {
-      AppToast.show(context: context, message: 'Your driver account is inactive.', type: AppToastType.error);
+      AppToast.show(
+        context: context,
+        message: 'Your driver account is inactive.',
+        type: AppToastType.error,
+      );
       return false;
     }
     return true;
@@ -175,7 +178,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (!_isOnline && !_canGoOnline(driver)) return;
     if (_isOnline && _activeDelivery != null) {
-      AppToast.show(context: context, message: 'Finish the active delivery before going offline.', type: AppToastType.warning);
+      AppToast.show(
+        context: context,
+        message: 'Finish the active delivery before going offline.',
+        type: AppToastType.warning,
+      );
       return;
     }
 
@@ -186,12 +193,15 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_isOnline) {
         await _positionStream?.cancel();
         await _deliveriesChannel?.unsubscribe();
-        await _supabase.from('drivers').update({
-          'status': 'Offline',
-          'current_lat': _currentPosition.latitude,
-          'current_lng': _currentPosition.longitude,
-          'last_location_update': DateTime.now().toIso8601String(),
-        }).eq('id', driverId);
+        await _supabase
+            .from('drivers')
+            .update({
+              'status': 'Offline',
+              'current_lat': _currentPosition.latitude,
+              'current_lng': _currentPosition.longitude,
+              'last_location_update': DateTime.now().toIso8601String(),
+            })
+            .eq('id', driverId);
 
         if (!mounted) return;
         setState(() {
@@ -214,7 +224,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       debugPrint('Error toggling online status: $e');
       if (mounted) {
-        AppToast.show(context: context, message: 'Could not update online status.', type: AppToastType.error);
+        AppToast.show(
+          context: context,
+          message: 'Could not update online status.',
+          type: AppToastType.error,
+        );
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -223,27 +237,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _startLocationStreaming(String driverId) {
     _positionStream?.cancel();
-    _positionStream = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      ),
-    ).listen((position) async {
-      if (!mounted) return;
-      setState(() {
-        _currentPosition = LatLng(position.latitude, position.longitude);
-      });
-      await _updateDriverLocation(driverId, status: _activeDelivery == null ? 'Online' : 'Online');
-    });
+    _positionStream =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 10,
+          ),
+        ).listen((position) async {
+          if (!mounted) return;
+          setState(() {
+            _currentPosition = LatLng(position.latitude, position.longitude);
+          });
+          await _updateDriverLocation(
+            driverId,
+            status: _activeDelivery == null ? 'Online' : 'Online',
+          );
+        });
   }
 
-  Future<void> _updateDriverLocation(String driverId, {required String status}) async {
-    await _supabase.from('drivers').update({
-      'status': status,
-      'current_lat': _currentPosition.latitude,
-      'current_lng': _currentPosition.longitude,
-      'last_location_update': DateTime.now().toIso8601String(),
-    }).eq('id', driverId);
+  Future<void> _updateDriverLocation(
+    String driverId, {
+    required String status,
+  }) async {
+    await _supabase
+        .from('drivers')
+        .update({
+          'status': status,
+          'current_lat': _currentPosition.latitude,
+          'current_lng': _currentPosition.longitude,
+          'last_location_update': DateTime.now().toIso8601String(),
+        })
+        .eq('id', driverId);
   }
 
   Future<void> _subscribeToAssignments(String driverId) async {
@@ -276,9 +300,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final deliveries = List<Map<String, dynamic>>.from(data);
       final active = deliveries.cast<Map<String, dynamic>?>().firstWhere(
-            (delivery) => delivery != null && ['Assigned', 'Picked Up'].contains(delivery['status']),
-            orElse: () => null,
-          );
+        (delivery) =>
+            delivery != null &&
+            ['Assigned', 'Picked Up'].contains(delivery['status']),
+        orElse: () => null,
+      );
 
       if (!mounted) return;
       await _setActiveDelivery(active);
@@ -314,8 +340,14 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final destination = delivery['status'] == 'Picked Up'
-        ? LatLng(_asDouble(delivery['dropoff_lat']), _asDouble(delivery['dropoff_lng']))
-        : LatLng(_asDouble(delivery['pickup_lat']), _asDouble(delivery['pickup_lng']));
+        ? LatLng(
+            _asDouble(delivery['dropoff_lat']),
+            _asDouble(delivery['dropoff_lng']),
+          )
+        : LatLng(
+            _asDouble(delivery['pickup_lat']),
+            _asDouble(delivery['pickup_lng']),
+          );
 
     if (destination.latitude == 0 && destination.longitude == 0) return;
 
@@ -325,33 +357,48 @@ class _HomeScreenState extends State<HomeScreen> {
       _routePoints = route;
     });
     final bounds = LatLngBounds.fromPoints([_currentPosition, destination]);
-    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+    _mapController.fitCamera(
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
+    );
   }
 
   Future<void> _rejectDelivery() async {
     final delivery = _activeDelivery;
     if (delivery == null) return;
+    final deliveryId = delivery['id']?.toString();
+    if (deliveryId == null) return;
 
     setState(() => _isUpdating = true);
     try {
-      await _supabase.from('deliveries').update({
-        'status': 'Pending',
-        'driver_id': null,
-        'assigned_at': null,
-        'cancelled_by': 'driver_reject',
-        'cancellation_reason': 'Rejected from driver app',
-      }).eq('id', delivery['id']);
+      await _supabase
+          .from('deliveries')
+          .update({
+            'status': 'Pending',
+            'driver_id': null,
+            'assigned_at': null,
+            'cancelled_by': 'driver_reject',
+            'cancellation_reason': 'Rejected from driver app',
+          })
+          .eq('id', deliveryId);
 
       if (!mounted) return;
       setState(() {
         _activeDelivery = null;
         _routePoints = [];
       });
-      AppToast.show(context: context, message: 'Delivery returned to dispatch.', type: AppToastType.info);
+      AppToast.show(
+        context: context,
+        message: 'Delivery returned to dispatch.',
+        type: AppToastType.info,
+      );
     } catch (e) {
       debugPrint('Error rejecting delivery: $e');
       if (mounted) {
-        AppToast.show(context: context, message: 'Could not reject delivery.', type: AppToastType.error);
+        AppToast.show(
+          context: context,
+          message: 'Could not reject delivery.',
+          type: AppToastType.error,
+        );
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -362,19 +409,25 @@ class _HomeScreenState extends State<HomeScreen> {
     final delivery = _activeDelivery;
     final driver = _driverRecord;
     if (delivery == null || driver == null) return;
+    final deliveryId = delivery['id']?.toString();
+    final driverId = driver['id']?.toString();
+    if (deliveryId == null || driverId == null) return;
 
     setState(() => _isUpdating = true);
     try {
       final updated = await _supabase
           .from('deliveries')
           .update({'status': status})
-          .eq('id', delivery['id'])
+          .eq('id', deliveryId)
           .select()
           .single();
 
       if (status == 'Delivered') {
         final total = _asInt(driver['total_deliveries']) + 1;
-        await _supabase.from('drivers').update({'total_deliveries': total}).eq('id', driver['id']);
+        await _supabase
+            .from('drivers')
+            .update({'total_deliveries': total})
+            .eq('id', driverId);
         if (mounted) {
           setState(() {
             _driverRecord = {...driver, 'total_deliveries': total};
@@ -388,15 +441,27 @@ class _HomeScreenState extends State<HomeScreen> {
           _activeDelivery = null;
           _routePoints = [];
         });
-        AppToast.show(context: context, message: 'Delivery completed.', type: AppToastType.success);
+        AppToast.show(
+          context: context,
+          message: 'Delivery completed.',
+          type: AppToastType.success,
+        );
       } else {
         await _setActiveDelivery(Map<String, dynamic>.from(updated));
-        AppToast.show(context: context, message: 'Status updated.', type: AppToastType.success);
+        AppToast.show(
+          context: context,
+          message: 'Status updated.',
+          type: AppToastType.success,
+        );
       }
     } catch (e) {
       debugPrint('Error updating delivery status: $e');
       if (mounted) {
-        AppToast.show(context: context, message: 'Could not update delivery.', type: AppToastType.error);
+        AppToast.show(
+          context: context,
+          message: 'Could not update delivery.',
+          type: AppToastType.error,
+        );
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -423,9 +488,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final delivery = _activeDelivery;
-    final approvalStatus = _driverRecord?['approval_status']?.toString() ?? 'Pending';
+    final approvalStatus =
+        _driverRecord?['approval_status']?.toString() ?? 'Pending';
 
     return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: context.appBackground,
+      endDrawer: _buildHomeDrawer(),
       body: Stack(
         children: [
           FlutterMap(
@@ -445,7 +514,11 @@ class _HomeScreenState extends State<HomeScreen> {
               if (_routePoints.isNotEmpty)
                 PolylineLayer(
                   polylines: [
-                    Polyline(points: _routePoints, color: AppColors.primary, strokeWidth: 4),
+                    Polyline(
+                      points: _routePoints,
+                      color: AppColors.primary,
+                      strokeWidth: 4,
+                    ),
                   ],
                 ),
               MarkerLayer(
@@ -467,26 +540,54 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColors.primary,
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 3),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))],
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                          child: const Icon(Icons.motorcycle_rounded, color: Colors.white, size: 14),
+                          child: const Icon(
+                            Icons.motorcycle_rounded,
+                            color: Colors.white,
+                            size: 14,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  if (delivery != null && delivery['pickup_lat'] != null && delivery['pickup_lng'] != null)
+                  if (delivery != null &&
+                      delivery['pickup_lat'] != null &&
+                      delivery['pickup_lng'] != null)
                     Marker(
-                      point: LatLng(_asDouble(delivery['pickup_lat']), _asDouble(delivery['pickup_lng'])),
+                      point: LatLng(
+                        _asDouble(delivery['pickup_lat']),
+                        _asDouble(delivery['pickup_lng']),
+                      ),
                       width: 40,
                       height: 40,
-                      child: const Icon(Icons.storefront_rounded, color: AppColors.success, size: 36),
+                      child: const Icon(
+                        Icons.storefront_rounded,
+                        color: AppColors.success,
+                        size: 36,
+                      ),
                     ),
-                  if (delivery != null && delivery['dropoff_lat'] != null && delivery['dropoff_lng'] != null)
+                  if (delivery != null &&
+                      delivery['dropoff_lat'] != null &&
+                      delivery['dropoff_lng'] != null)
                     Marker(
-                      point: LatLng(_asDouble(delivery['dropoff_lat']), _asDouble(delivery['dropoff_lng'])),
+                      point: LatLng(
+                        _asDouble(delivery['dropoff_lat']),
+                        _asDouble(delivery['dropoff_lng']),
+                      ),
                       width: 40,
                       height: 40,
-                      child: const Icon(Icons.location_on, color: AppColors.primary, size: 40),
+                      child: const Icon(
+                        Icons.location_on,
+                        color: AppColors.primary,
+                        size: 40,
+                      ),
                     ),
                 ],
               ),
@@ -494,29 +595,58 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: context.appSurface,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                      border: Border.all(color: context.appBorder),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.10),
+                          blurRadius: 10,
+                        ),
+                      ],
                     ),
                     child: IconButton(
-                      icon: const Icon(Icons.menu_rounded, color: AppColors.textPrimary),
-                      onPressed: () => context.navigator.pushProfileScreen(),
+                      tooltip: 'Menu',
+                      icon: Icon(
+                        Icons.menu_rounded,
+                        color: context.appTextPrimary,
+                      ),
+                      onPressed: () =>
+                          _scaffoldKey.currentState?.openEndDrawer(),
                     ),
                   ),
                   GestureDetector(
                     onTap: _toggleOnlineStatus,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm,
+                      ),
                       decoration: BoxDecoration(
-                        color: _isOnline ? AppColors.success : AppColors.background,
+                        color: _isOnline
+                            ? AppColors.success
+                            : context.appSurface,
                         borderRadius: BorderRadius.circular(AppRadius.full),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                        border: Border.all(
+                          color: _isOnline
+                              ? AppColors.success
+                              : context.appBorder,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.10),
+                            blurRadius: 10,
+                          ),
+                        ],
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -525,7 +655,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             width: 10,
                             height: 10,
                             decoration: BoxDecoration(
-                              color: _isOnline ? Colors.white : AppColors.textSecondary,
+                              color: _isOnline
+                                  ? Colors.white
+                                  : AppColors.textSecondary,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -533,7 +665,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           AppText(
                             _isOnline ? 'ONLINE' : 'OFFLINE',
                             variant: AppTextVariant.labelLarge,
-                            color: _isOnline ? Colors.white : AppColors.textPrimary,
+                            color: _isOnline
+                                ? Colors.white
+                                : context.appTextPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ],
@@ -551,9 +685,18 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
+                color: context.appSurface,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
+                border: Border(top: BorderSide(color: context.appBorder)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, -5),
+                  ),
+                ],
               ),
               child: SafeArea(
                 top: false,
@@ -565,22 +708,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         width: 40,
                         height: 4,
-                        decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
+                        decoration: BoxDecoration(
+                          color: context.appBorder,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       if (_isResolvingDriver) ...[
-                        const CircularProgressIndicator(color: AppColors.primary),
+                        const CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                         const SizedBox(height: AppSpacing.lg),
-                        const AppText('Checking driver approval...', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+                        const AppText(
+                          'Checking driver approval...',
+                          variant: AppTextVariant.heading3,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ] else if (!_isOnline) ...[
                         Icon(
-                          approvalStatus == 'Approved' ? Icons.power_settings_new_rounded : Icons.verified_user_outlined,
+                          approvalStatus == 'Approved'
+                              ? Icons.power_settings_new_rounded
+                              : Icons.verified_user_outlined,
                           size: 48,
-                          color: approvalStatus == 'Approved' ? AppColors.textSecondary : AppColors.warning,
+                          color: approvalStatus == 'Approved'
+                              ? context.appTextSecondary
+                              : AppColors.warning,
                         ),
                         const SizedBox(height: AppSpacing.md),
                         AppText(
-                          approvalStatus == 'Approved' ? 'You are offline' : 'Waiting for approval',
+                          approvalStatus == 'Approved'
+                              ? 'You are offline'
+                              : 'Waiting for approval',
                           variant: AppTextVariant.heading3,
                           fontWeight: FontWeight.bold,
                         ),
@@ -590,32 +748,52 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? 'Go online to receive admin-assigned deliveries.'
                               : 'An admin must approve your driver profile before you can work.',
                           variant: AppTextVariant.bodyMedium,
-                          color: AppColors.textSecondary,
+                          color: context.appTextSecondary,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         AppButton.primary(
-                          label: approvalStatus == 'Approved' ? 'GO ONLINE' : 'CHECK APPROVAL',
+                          label: approvalStatus == 'Approved'
+                              ? 'GO ONLINE'
+                              : 'CHECK APPROVAL',
                           fullWidth: true,
                           isLoading: _isUpdating,
-                          onPressed: approvalStatus == 'Approved' ? _toggleOnlineStatus : _loadDriverRecord,
+                          onPressed: approvalStatus == 'Approved'
+                              ? _toggleOnlineStatus
+                              : _loadDriverRecord,
                         ),
                       ] else if (delivery == null) ...[
-                        const CircularProgressIndicator(color: AppColors.primary),
+                        const CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                         const SizedBox(height: AppSpacing.lg),
-                        const AppText('Waiting for assignments...', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
-                        const SizedBox(height: AppSpacing.xs),
                         const AppText(
+                          'Waiting for assignments...',
+                          variant: AppTextVariant.heading3,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        AppText(
                           'Keep GPS enabled so dispatch can assign nearby deliveries.',
                           variant: AppTextVariant.bodyMedium,
-                          color: AppColors.textSecondary,
+                          color: context.appTextSecondary,
                           textAlign: TextAlign.center,
                         ),
                       ] else if (delivery['status'] == 'Assigned') ...[
                         _buildDeliveryHeader('Assigned Delivery', delivery),
-                        const Divider(),
-                        _buildDeliveryLocation(Icons.storefront_rounded, 'Pickup', delivery['pickup_location']?.toString() ?? 'Pickup location'),
-                        _buildDeliveryLocation(Icons.flag_rounded, 'Dropoff', delivery['dropoff_location']?.toString() ?? 'Dropoff location'),
+                        Divider(color: context.appBorder),
+                        _buildDeliveryLocation(
+                          Icons.storefront_rounded,
+                          'Pickup',
+                          delivery['pickup_location']?.toString() ??
+                              'Pickup location',
+                        ),
+                        _buildDeliveryLocation(
+                          Icons.flag_rounded,
+                          'Dropoff',
+                          delivery['dropoff_location']?.toString() ??
+                              'Dropoff location',
+                        ),
                         const SizedBox(height: AppSpacing.lg),
                         Row(
                           children: [
@@ -631,15 +809,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: AppButton.primary(
                                 label: 'PICKED UP',
                                 isLoading: _isUpdating,
-                                onPressed: () => _updateDeliveryStatus('Picked Up'),
+                                onPressed: () =>
+                                    _updateDeliveryStatus('Picked Up'),
                               ),
                             ),
                           ],
                         ),
                       ] else ...[
                         _buildDeliveryHeader('Deliver Package', delivery),
-                        const Divider(),
-                        _buildDeliveryLocation(Icons.flag_rounded, 'Dropoff', delivery['dropoff_location']?.toString() ?? 'Dropoff location'),
+                        Divider(color: context.appBorder),
+                        _buildDeliveryLocation(
+                          Icons.flag_rounded,
+                          'Dropoff',
+                          delivery['dropoff_location']?.toString() ??
+                              'Dropoff location',
+                        ),
                         const SizedBox(height: AppSpacing.xl),
                         AppButton.primary(
                           label: 'MARK DELIVERED',
@@ -659,11 +843,240 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 300),
         child: FloatingActionButton(
-          backgroundColor: AppColors.background,
+          backgroundColor: context.appSurface,
           onPressed: _getCurrentLocation,
-          child: const Icon(Icons.my_location_rounded, color: AppColors.primary),
+          child: const Icon(
+            Icons.my_location_rounded,
+            color: AppColors.primary,
+          ),
         ),
       ),
+    );
+  }
+
+  void _closeDrawerThen(VoidCallback action) {
+    Navigator.pop(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      action();
+    });
+  }
+
+  void _showSettingsSheet() {
+    final preferences = AppPreferencesScope.of(context);
+
+    showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return AnimatedBuilder(
+          animation: preferences,
+          builder: (context, _) {
+            return SafeArea(
+              top: false,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: context.appSurface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(26),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.18),
+                      blurRadius: 28,
+                      offset: const Offset(0, -10),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 42,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.appBorder,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppText(
+                      'Settings',
+                      variant: AppTextVariant.heading2,
+                      color: context.appTextPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildSettingsTile(
+                      context,
+                      icon: Icons.dark_mode_outlined,
+                      title: 'Theme',
+                      subtitle: 'Light, dark, or system',
+                      trailing: DropdownButton<ThemeMode>(
+                        value: preferences.themeMode,
+                        dropdownColor: context.appSurface,
+                        style: TextStyle(color: context.appTextPrimary),
+                        underline: const SizedBox.shrink(),
+                        items: const [
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) preferences.setThemeMode(value);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSettingsTile(
+    BuildContext tileContext, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: tileContext.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: tileContext.appBorder),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: AppColors.primary),
+        title: AppText(
+          title,
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitle: AppText(
+          subtitle,
+          variant: AppTextVariant.bodySmall,
+          color: tileContext.appTextSecondary,
+        ),
+        trailing: trailing,
+      ),
+    );
+  }
+
+  Widget _buildHomeDrawer() {
+    final name = _driverRecord?['name']?.toString() ?? 'Driver';
+    final approvalStatus =
+        _driverRecord?['approval_status']?.toString() ?? 'Pending';
+
+    return Drawer(
+      backgroundColor: context.appSurface,
+      child: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.asset(
+                      ImageConstants.appLogo,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText(
+                          name,
+                          variant: AppTextVariant.heading3,
+                          fontWeight: FontWeight.w900,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        AppText(
+                          approvalStatus,
+                          variant: AppTextVariant.bodySmall,
+                          color: approvalStatus == 'Approved'
+                              ? AppColors.success
+                              : AppColors.warning,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(color: context.appBorder),
+            _drawerTile(
+              icon: Icons.home_rounded,
+              title: 'Home',
+              onTap: () =>
+                  _closeDrawerThen(context.navigator.navigateToHomeTab),
+            ),
+            _drawerTile(
+              icon: Icons.notifications_rounded,
+              title: 'Notifications',
+              onTap: () =>
+                  _closeDrawerThen(context.navigator.pushNotificationScreen),
+            ),
+            _drawerTile(
+              icon: Icons.person_rounded,
+              title: 'Profile',
+              onTap: () =>
+                  _closeDrawerThen(context.navigator.pushProfileScreen),
+            ),
+            Divider(color: context.appBorder),
+            _drawerTile(
+              icon: Icons.settings_rounded,
+              title: 'Settings',
+              onTap: () => _closeDrawerThen(_showSettingsSheet),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primary),
+      title: AppText(title, variant: AppTextVariant.bodyMedium),
+      trailing: Icon(
+        Icons.chevron_left_rounded,
+        color: context.appTextSecondary,
+      ),
+      onTap: onTap,
     );
   }
 
@@ -693,14 +1106,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDeliveryLocation(IconData icon, String title, String subtitle) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: title == 'Pickup' ? AppColors.success : AppColors.primary),
+      leading: Icon(
+        icon,
+        color: title == 'Pickup' ? AppColors.success : AppColors.primary,
+      ),
       title: AppText(title, variant: AppTextVariant.labelLarge),
-      subtitle: AppText(subtitle, variant: AppTextVariant.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: AppText(
+        subtitle,
+        variant: AppTextVariant.bodyMedium,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
   String _feeLabel(Object? value) {
-    final amount = value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+    final amount = value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
     if (amount == null) return '-- ETB';
     return '${amount.toStringAsFixed(0)} ETB';
   }

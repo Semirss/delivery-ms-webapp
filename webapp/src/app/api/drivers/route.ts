@@ -4,6 +4,16 @@ import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+    return new NextResponse(null, { status: 204, headers: corsHeaders });
+}
+
 export async function GET() {
     const { data, error } = await supabase
         .from('drivers')
@@ -12,9 +22,9 @@ export async function GET() {
 
     if (error) {
         console.error('[GET /api/drivers] Supabase error:', error);
-        return NextResponse.json({ error: error.message, details: error.details, hint: error.hint }, { status: 500 });
+        return NextResponse.json({ error: error.message, details: error.details, hint: error.hint }, { status: 500, headers: corsHeaders });
     }
-    return NextResponse.json(data);
+    return NextResponse.json(data, { headers: corsHeaders });
 }
 
 export async function POST(request: Request) {
@@ -38,8 +48,8 @@ export async function POST(request: Request) {
             status = formData.get('status') as string;
 
             if (file && file.size > 0) {
-                if (file.size > 5 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
-                    return NextResponse.json({ error: "Image must be under 2MB" }, { status: 400 });
+                if (file.size > 5 * 1024 * 1024) {
+                    return NextResponse.json({ error: "Image must be under 5MB" }, { status: 400, headers: corsHeaders });
                 }
 
                 const fileExt = file.name.split('.').pop();
@@ -50,13 +60,13 @@ export async function POST(request: Request) {
                 const arrayBuffer = await file.arrayBuffer();
                 const buffer = Buffer.from(arrayBuffer);
 
-                const { data: uploadData, error: uploadError } = await supabase.storage
+                const { error: uploadError } = await supabase.storage
                     .from('driver_ids')
                     .upload(filePath, buffer, { contentType: file.type });
 
                 if (uploadError) {
                     console.error('[POST /api/drivers] Upload error:', uploadError);
-                    return NextResponse.json({ error: `Upload error: ${uploadError.message}` }, { status: 500 });
+                    return NextResponse.json({ error: `Upload error: ${uploadError.message}` }, { status: 500, headers: corsHeaders });
                 }
 
                 const { data: publicUrlData } = supabase.storage.from('driver_ids').getPublicUrl(filePath);
@@ -98,7 +108,7 @@ export async function POST(request: Request) {
                 details: error.details,
                 hint: error.hint,
                 code: error.code
-            }, { status: 500 });
+            }, { status: 500, headers: corsHeaders });
         }
 
         try {
@@ -114,9 +124,10 @@ export async function POST(request: Request) {
             console.error('Broadcast failed', e);
         }
 
-        return NextResponse.json(data, { status: 201 });
-    } catch (err: any) {
-        console.error('[POST /api/drivers] Caught exception:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json(data, { status: 201, headers: corsHeaders });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        console.error('[POST /api/drivers] Caught exception:', message);
+        return NextResponse.json({ error: message }, { status: 500, headers: corsHeaders });
     }
 }

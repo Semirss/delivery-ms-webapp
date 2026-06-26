@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
 
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+    return new NextResponse(null, { status: 204, headers: corsHeaders });
+}
+
 export async function POST(request: Request) {
     try {
         const { name, password } = await request.json();
@@ -13,11 +23,12 @@ export async function POST(request: Request) {
             .single();
 
         if (error || !data) {
-            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401, headers: corsHeaders });
         }
 
-        return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        return NextResponse.json(data, { headers: corsHeaders });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500, headers: corsHeaders });
     }
 }

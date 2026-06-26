@@ -105,7 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadCurrentLocation();
   }
 
-  LatLng get _mapCenter => _deliveryPickup ?? _currentLocation ?? _fallbackCenter;
+  LatLng get _mapCenter =>
+      _deliveryPickup ?? _currentLocation ?? _fallbackCenter;
 
   Future<void> _loadCurrentLocation() async {
     try {
@@ -142,7 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showLocationUnavailable(String message) {
     if (!mounted) return;
-    AppToast.show(context: context, message: message, type: AppToastType.warning);
+    AppToast.show(
+      context: context,
+      message: message,
+      type: AppToastType.warning,
+    );
   }
 
   Future<void> _listenToDrivers() async {
@@ -165,7 +170,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadOnlineDrivers() async {
     final data = await Supabase.instance.client
         .from('drivers')
-        .select('id, status, approval_status, is_active, current_lat, current_lng, vehicle_type')
+        .select(
+          'id, status, approval_status, is_active, current_lat, current_lng, vehicle_type',
+        )
         .eq('status', 'Online')
         .eq('approval_status', 'Approved');
 
@@ -176,7 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
           .map(
             (driver) => _buildDriverMarker(
               driver['id'].toString(),
-              LatLng(_asDouble(driver['current_lat']), _asDouble(driver['current_lng'])),
+              LatLng(
+                _asDouble(driver['current_lat']),
+                _asDouble(driver['current_lng']),
+              ),
               driver['vehicle_type']?.toString() ?? 'Motorbike',
             ),
           )
@@ -206,7 +216,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _driverMarkers.add(
           _buildDriverMarker(
             id,
-            LatLng(_asDouble(data['current_lat']), _asDouble(data['current_lng'])),
+            LatLng(
+              _asDouble(data['current_lat']),
+              _asDouble(data['current_lng']),
+            ),
             data['vehicle_type']?.toString() ?? 'Motorbike',
           ),
         );
@@ -217,10 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : <String, dynamic>{};
         _currentDelivery = {
           ...?_currentDelivery,
-          'driver': {
-            ...currentDriver,
-            ...data,
-          },
+          'driver': {...currentDriver, ...data},
         };
       }
     });
@@ -234,7 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Marker _buildDriverMarker(String id, LatLng position, String vehicleType) {
     final icon = _vehicleIconFor(vehicleType);
-    final markerColor = _isBicycle(vehicleType) ? AppColors.secondary : AppColors.primary;
+    final markerColor = _isBicycle(vehicleType)
+        ? AppColors.secondary
+        : AppColors.primary;
 
     return Marker(
       key: ValueKey(id),
@@ -262,7 +274,9 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isBicycle(Object? vehicleType) {
     final type = vehicleType?.toString().toLowerCase() ?? '';
     if (type.contains('motor')) return false;
-    return type.contains('bike') || type.contains('bicycle') || type.contains('cycle');
+    return type.contains('bike') ||
+        type.contains('bicycle') ||
+        type.contains('cycle');
   }
 
   IconData _vehicleIconFor(Object? vehicleType) {
@@ -272,7 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Icons.motorcycle_rounded;
   }
 
-  _DeliveryPricing get _selectedPricing => _deliveryPricing[_selectedVehicleCategory]!;
+  _DeliveryPricing get _selectedPricing =>
+      _deliveryPricing[_selectedVehicleCategory]!;
 
   int? get _estimatedPrice {
     final distanceKm = _distanceKm;
@@ -355,14 +370,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _deliveryPickup = pickup;
-      _routePoints = route.points.isNotEmpty ? route.points : [pickup, result.location];
+      _routePoints = route.points.isNotEmpty
+          ? route.points
+          : [pickup, result.location];
       _distanceKm = route.distanceKm > 0
           ? route.distanceKm
           : _mapRepository.straightLineDistanceKm(pickup, result.location);
     });
 
     final bounds = LatLngBounds.fromPoints([pickup, result.location]);
-    _mapController.fitCamera(CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)));
+    _mapController.fitCamera(
+      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
+    );
   }
 
   Future<void> _requestDelivery() async {
@@ -407,19 +426,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final user = authState.user;
-      final customerName = [
-        user.firstName,
-        user.lastName,
-      ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
-      final distanceKm = _distanceKm ??
+      final customerName = [user.firstName, user.lastName]
+          .where((part) => part != null && part.trim().isNotEmpty)
+          .join(' ')
+          .trim();
+      final distanceKm =
+          _distanceKm ??
           _mapRepository.straightLineDistanceKm(pickup, _destination!.location);
-      final deliveryFee = _calculateEstimatedPrice(distanceKm, _selectedPricing);
+      final deliveryFee = _calculateEstimatedPrice(
+        distanceKm,
+        _selectedPricing,
+      );
 
       final response = await Supabase.instance.client
           .from('deliveries')
           .insert({
             'customer_name': customerName.isEmpty ? user.email : customerName,
-            'customer_phone': user.phone?.trim().isNotEmpty == true ? user.phone!.trim() : user.email,
+            'customer_phone': user.phone?.trim().isNotEmpty == true
+                ? user.phone!.trim()
+                : user.email,
             'client_id': user.id,
             'pickup_location': 'Current location',
             'dropoff_location': _destination!.displayName,
@@ -433,7 +458,9 @@ class _HomeScreenState extends State<HomeScreen> {
             'dropoff_lat': _destination!.location.latitude,
             'dropoff_lng': _destination!.location.longitude,
           })
-          .select('*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)')
+          .select(
+            '*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)',
+          )
           .single();
 
       _currentDeliveryId = response['id']?.toString();
@@ -444,14 +471,22 @@ class _HomeScreenState extends State<HomeScreen> {
         _currentDelivery = Map<String, dynamic>.from(response);
         _deliveryStatus = response['status']?.toString() ?? 'Pending';
       });
-      AppToast.show(context: context, message: 'Delivery request sent.', type: AppToastType.success);
+      AppToast.show(
+        context: context,
+        message: 'Delivery request sent.',
+        type: AppToastType.success,
+      );
     } catch (e) {
       debugPrint('Error requesting delivery: $e');
       if (!mounted) return;
       setState(() {
         _deliveryStatus = 'none';
       });
-      AppToast.show(context: context, message: 'Failed to request delivery.', type: AppToastType.error);
+      AppToast.show(
+        context: context,
+        message: 'Failed to request delivery.',
+        type: AppToastType.error,
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -486,7 +521,9 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final data = await Supabase.instance.client
           .from('deliveries')
-          .select('*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)')
+          .select(
+            '*, driver:drivers(id, name, phone, vehicle_type, current_lat, current_lng)',
+          )
           .eq('id', id)
           .single();
 
@@ -498,11 +535,23 @@ class _HomeScreenState extends State<HomeScreen> {
       });
 
       if (nextStatus == 'Assigned') {
-        AppToast.show(context: context, message: 'Courier assigned.', type: AppToastType.success);
+        AppToast.show(
+          context: context,
+          message: 'Courier assigned.',
+          type: AppToastType.success,
+        );
       } else if (nextStatus == 'Delivered') {
-        AppToast.show(context: context, message: 'Delivery completed.', type: AppToastType.success);
+        AppToast.show(
+          context: context,
+          message: 'Delivery completed.',
+          type: AppToastType.success,
+        );
       } else if (nextStatus == 'Cancelled') {
-        AppToast.show(context: context, message: 'Delivery cancelled.', type: AppToastType.warning);
+        AppToast.show(
+          context: context,
+          message: 'Delivery cancelled.',
+          type: AppToastType.warning,
+        );
       }
     } catch (e) {
       debugPrint('Error fetching delivery: $e');
@@ -536,8 +585,9 @@ class _HomeScreenState extends State<HomeScreen> {
           .limit(10);
 
       var delivery = _firstActiveDelivery(byClient);
-      final customerLookup =
-          user.phone?.trim().isNotEmpty == true ? user.phone!.trim() : user.email;
+      final customerLookup = user.phone?.trim().isNotEmpty == true
+          ? user.phone!.trim()
+          : user.email;
 
       if (delivery == null && customerLookup.trim().isNotEmpty) {
         final byPhone = await supabase
@@ -614,7 +664,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final route = await _mapRepository.getRoute(pickup, dropoff);
       if (!mounted) return;
       setState(() {
-        _routePoints = route.points.isNotEmpty ? route.points : [pickup, dropoff];
+        _routePoints = route.points.isNotEmpty
+            ? route.points
+            : [pickup, dropoff];
         _distanceKm = route.distanceKm > 0
             ? route.distanceKm
             : _mapRepository.straightLineDistanceKm(pickup, dropoff);
@@ -643,15 +695,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _cancelDeliveryRequest() async {
     final deliveryId = _currentDeliveryId;
-    if (deliveryId != null && ['Pending', 'Assigned'].contains(_deliveryStatus)) {
+    if (deliveryId != null &&
+        ['Pending', 'Assigned'].contains(_deliveryStatus)) {
       try {
-        await Supabase.instance.client.from('deliveries').update({
-          'status': 'Cancelled',
-          'driver_id': null,
-          'assigned_at': null,
-          'cancelled_by': 'customer',
-          'cancellation_reason': 'Cancelled from client app',
-        }).eq('id', deliveryId);
+        await Supabase.instance.client
+            .from('deliveries')
+            .update({
+              'status': 'Cancelled',
+              'driver_id': null,
+              'assigned_at': null,
+              'cancelled_by': 'customer',
+              'cancellation_reason': 'Cancelled from client app',
+            })
+            .eq('id', deliveryId);
       } catch (e) {
         debugPrint('Error cancelling delivery: $e');
       }
@@ -771,7 +827,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _closeMapView() {
-    if (_currentDeliveryId != null && _isActiveDeliveryStatus(_deliveryStatus)) {
+    if (_currentDeliveryId != null &&
+        _isActiveDeliveryStatus(_deliveryStatus)) {
       setState(() => _showMap = false);
       return;
     }
@@ -834,7 +891,7 @@ class _HomeScreenState extends State<HomeScreen> {
             AppSpacing.lg,
             AppSpacing.lg,
             AppSpacing.lg,
-            110,
+            AppSpacing.xl,
           ),
           children: [
             Row(
@@ -899,8 +956,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Icons.menu_rounded,
                       color: context.appTextPrimary,
                     ),
-                    onPressed: () =>
-                        _scaffoldKey.currentState?.openEndDrawer(),
+                    onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
                   ),
                 ),
               ],
@@ -915,7 +971,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: AppSpacing.sm),
             _buildVehicleSelector(compact: false),
             const SizedBox(height: AppSpacing.lg),
-            _buildWhereToCard(),
+            _buildFoodDeliveryEntrySection(),
             const SizedBox(height: AppSpacing.lg),
             _buildPromoCard(),
             const SizedBox(height: AppSpacing.lg),
@@ -990,7 +1046,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       point: _destination!.location,
                       width: 44,
                       height: 44,
-                      child: const Icon(Icons.location_on_rounded, color: AppColors.primary, size: 42),
+                      child: const Icon(
+                        Icons.location_on_rounded,
+                        color: AppColors.primary,
+                        size: 42,
+                      ),
                     ),
                 ],
               ),
@@ -1004,11 +1064,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _roundMapButton(Icons.arrow_back_rounded, _closeMapView),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
                     decoration: BoxDecoration(
                       color: context.appSurface,
                       borderRadius: BorderRadius.circular(AppRadius.full),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14)],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 14,
+                        ),
+                      ],
                     ),
                     child: AppText(
                       'Delivery map',
@@ -1016,7 +1084,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  _roundMapButton(Icons.search_rounded, _handleSearchDestination),
+                  _roundMapButton(
+                    Icons.search_rounded,
+                    _handleSearchDestination,
+                  ),
                 ],
               ),
             ),
@@ -1093,9 +1164,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(color: context.appTextPrimary),
                         underline: const SizedBox.shrink(),
                         items: const [
-                          DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-                          DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-                          DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                          DropdownMenuItem(
+                            value: ThemeMode.light,
+                            child: Text('Light'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.dark,
+                            child: Text('Dark'),
+                          ),
+                          DropdownMenuItem(
+                            value: ThemeMode.system,
+                            child: Text('System'),
+                          ),
                         ],
                         onChanged: (value) {
                           if (value != null) preferences.setThemeMode(value);
@@ -1176,14 +1256,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Divider(color: context.appBorder),
             _drawerTile(
-              icon: Icons.route_rounded,
-              title: 'Live Tracking',
-              onTap: () => _closeDrawerThen(_trackCurrentDelivery),
-            ),
-            _drawerTile(
-              icon: Icons.settings_rounded,
-              title: 'Settings',
-              onTap: () => _closeDrawerThen(_showSettingsSheet),
+              icon: Icons.home_rounded,
+              title: 'Home',
+              onTap: () =>
+                  _closeDrawerThen(context.navigator.navigateToHomeTab),
             ),
             _drawerTile(
               icon: Icons.receipt_long_rounded,
@@ -1198,16 +1274,28 @@ class _HomeScreenState extends State<HomeScreen> {
               }),
             ),
             _drawerTile(
-              icon: Icons.person_rounded,
-              title: 'Profile',
-              onTap: () => _closeDrawerThen(context.navigator.navigateToProfileTab),
+              icon: Icons.route_rounded,
+              title: 'Live Tracking',
+              onTap: () => _closeDrawerThen(_trackCurrentDelivery),
             ),
             _drawerTile(
               icon: Icons.notifications_rounded,
-              title: 'Notification',
+              title: 'Notifications',
               onTap: () => _closeDrawerThen(() {
                 context.pushNamed(AppRoutes.notification.name);
               }),
+            ),
+            _drawerTile(
+              icon: Icons.person_rounded,
+              title: 'Profile',
+              onTap: () =>
+                  _closeDrawerThen(context.navigator.navigateToProfileTab),
+            ),
+            Divider(color: context.appBorder),
+            _drawerTile(
+              icon: Icons.settings_rounded,
+              title: 'Settings',
+              onTap: () => _closeDrawerThen(_showSettingsSheet),
             ),
           ],
         ),
@@ -1233,8 +1321,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildActiveDeliveryCard() {
     final driver = _currentDriver;
-    final packageType = _currentDelivery?['package_type']?.toString() ?? 'Package';
-    final destination = _currentDelivery?['dropoff_location']?.toString() ?? 'Dropoff';
+    final packageType =
+        _currentDelivery?['package_type']?.toString() ?? 'Package';
+    final destination =
+        _currentDelivery?['dropoff_location']?.toString() ?? 'Dropoff';
     final fee = _currentDelivery?['delivery_fee'];
     final driverHasGps = _currentDriverPosition != null;
 
@@ -1250,7 +1340,10 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.delivery_dining_rounded, color: AppColors.primary),
+              const Icon(
+                Icons.delivery_dining_rounded,
+                color: AppColors.primary,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: AppText(
@@ -1290,8 +1383,8 @@ class _HomeScreenState extends State<HomeScreen> {
             driver == null
                 ? 'Waiting for driver assignment.'
                 : driverHasGps
-                    ? 'Driver GPS is live.'
-                    : 'Driver assigned. Waiting for GPS update.',
+                ? 'Driver GPS is live.'
+                : 'Driver assigned. Waiting for GPS update.',
             variant: AppTextVariant.bodySmall,
             color: context.appTextSecondary,
           ),
@@ -1325,7 +1418,13 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: context.appSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 24, offset: const Offset(0, -6))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, -6),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -1337,7 +1436,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: 42,
                 height: 4,
-                decoration: BoxDecoration(color: context.appBorder, borderRadius: BorderRadius.circular(2)),
+                decoration: BoxDecoration(
+                  color: context.appBorder,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
               const SizedBox(height: AppSpacing.lg),
               if (!_isPreparingDelivery) ...[
@@ -1356,7 +1458,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: _requestDelivery,
                 ),
               ] else if (_deliveryStatus == 'Pending') ...[
-                const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 const AppText(
                   'Waiting for admin dispatch...',
@@ -1370,15 +1474,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   fullWidth: true,
                   onPressed: _cancelDeliveryRequest,
                 ),
-              ] else if (['Assigned', 'Picked Up'].contains(_deliveryStatus)) ...[
+              ] else if ([
+                'Assigned',
+                'Picked Up',
+              ].contains(_deliveryStatus)) ...[
                 Icon(
-                  _deliveryStatus == 'Assigned' ? Icons.assignment_turned_in_rounded : Icons.delivery_dining_rounded,
+                  _deliveryStatus == 'Assigned'
+                      ? Icons.assignment_turned_in_rounded
+                      : Icons.delivery_dining_rounded,
                   color: AppColors.success,
                   size: 56,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AppText(
-                  _deliveryStatus == 'Assigned' ? 'Courier assigned' : 'Package on the way',
+                  _deliveryStatus == 'Assigned'
+                      ? 'Courier assigned'
+                      : 'Package on the way',
                   variant: AppTextVariant.heading2,
                   fontWeight: FontWeight.bold,
                   textAlign: TextAlign.center,
@@ -1388,7 +1499,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildInfoTile(
                     icon: _vehicleIconFor(driver['vehicle_type']),
                     title: driver['name']?.toString() ?? 'Courier',
-                    subtitle: '${driver['vehicle_type'] ?? 'Motorbike'} - ${driver['phone'] ?? 'phone unavailable'}',
+                    subtitle:
+                        '${driver['vehicle_type'] ?? 'Motorbike'} - ${driver['phone'] ?? 'phone unavailable'}',
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xl),
@@ -1422,19 +1534,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ] else ...[
                 Icon(
-                  _deliveryStatus == 'Delivered' ? Icons.check_circle_rounded : Icons.info_rounded,
-                  color: _deliveryStatus == 'Delivered' ? AppColors.success : AppColors.warning,
+                  _deliveryStatus == 'Delivered'
+                      ? Icons.check_circle_rounded
+                      : Icons.info_rounded,
+                  color: _deliveryStatus == 'Delivered'
+                      ? AppColors.success
+                      : AppColors.warning,
                   size: 64,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AppText(
-                  _deliveryStatus == 'Delivered' ? 'Delivered' : _deliveryStatus,
+                  _deliveryStatus == 'Delivered'
+                      ? 'Delivered'
+                      : _deliveryStatus,
                   variant: AppTextVariant.heading2,
                   fontWeight: FontWeight.bold,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                AppButton.primary(label: 'DONE', fullWidth: true, onPressed: _resetDeliveryState),
+                AppButton.primary(
+                  label: 'DONE',
+                  fullWidth: true,
+                  onPressed: _resetDeliveryState,
+                ),
               ],
             ],
           ),
@@ -1456,7 +1578,10 @@ class _HomeScreenState extends State<HomeScreen> {
         DropdownButtonFormField<String>(
           value: _selectedPackageType,
           dropdownColor: context.appSurface,
-          style: TextStyle(color: context.appTextPrimary, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            color: context.appTextPrimary,
+            fontWeight: FontWeight.w600,
+          ),
           decoration: InputDecoration(
             filled: true,
             fillColor: context.appSurfaceAlt,
@@ -1479,10 +1604,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           items: _packageTypes
               .map(
-                (type) => DropdownMenuItem<String>(
-                  value: type,
-                  child: Text(type),
-                ),
+                (type) =>
+                    DropdownMenuItem<String>(value: type, child: Text(type)),
               )
               .toList(),
           onChanged: (value) {
@@ -1515,7 +1638,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -1529,9 +1655,14 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: context.appSurface,
         shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14),
+        ],
       ),
-      child: IconButton(icon: Icon(icon, color: context.appTextPrimary), onPressed: onPressed),
+      child: IconButton(
+        icon: Icon(icon, color: context.appTextPrimary),
+        onPressed: onPressed,
+      ),
     );
   }
 
@@ -1540,7 +1671,10 @@ class _HomeScreenState extends State<HomeScreen> {
       borderRadius: BorderRadius.circular(22),
       onTap: () => _startDeliveryFlow(service: _selectedService),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
         decoration: BoxDecoration(
           color: context.appSurfaceAlt,
           borderRadius: BorderRadius.circular(22),
@@ -1550,7 +1684,10 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: context.appSurface, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: context.appSurface,
+                shape: BoxShape.circle,
+              ),
               child: const Icon(Icons.place_rounded, color: AppColors.primary),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -1577,13 +1714,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Expanded(
-              child: _buildVehicleShowcaseChoice('Bike'),
-            ),
+            Expanded(child: _buildVehicleShowcaseChoice('Bike')),
             const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: _buildVehicleShowcaseChoice('Motor'),
-            ),
+            Expanded(child: _buildVehicleShowcaseChoice('Motor')),
           ],
         ),
       );
@@ -1591,14 +1724,173 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Row(
       children: [
-        Expanded(
-          child: _buildVehicleChoice('Bike', compact: compact),
-        ),
+        Expanded(child: _buildVehicleChoice('Bike', compact: compact)),
         const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _buildVehicleChoice('Motor', compact: compact),
-        ),
+        Expanded(child: _buildVehicleChoice('Motor', compact: compact)),
       ],
+    );
+  }
+
+  Widget _buildFoodDeliveryEntrySection() {
+    return SizedBox(
+      height: 306,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          PositionedDirectional(
+            top: 0,
+            start: 0,
+            end: 0,
+            child: _buildFoodDeliveryShowcaseCard(),
+          ),
+          PositionedDirectional(
+            top: 210,
+            start: 0,
+            end: 0,
+            child: _buildWhereToCard(),
+          ),
+          PositionedDirectional(
+            top: -12,
+            end: -8,
+            child: IgnorePointer(
+              child: _buildCourierArtwork(
+                ImageConstants.foodDeliveryCharacter,
+                238,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFoodDeliveryShowcaseCard() {
+    return Semantics(
+      button: true,
+      label: 'Food delivery',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () {
+          setState(() {
+            _selectedPackageType = 'Food/Groceries';
+            _selectedService = 'food';
+          });
+          _startDeliveryFlow(service: 'food');
+        },
+        child: Container(
+          height: 188,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            150,
+            AppSpacing.lg,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.warning.withValues(alpha: 0.14),
+                context.appSurface,
+              ],
+            ),
+            border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.warning.withValues(alpha: 0.12),
+                blurRadius: 20,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              PositionedDirectional(
+                top: 0,
+                start: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.72),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: AppColors.warning.withValues(alpha: 0.22),
+                    ),
+                  ),
+                  child: const AppText(
+                    'Fast delivery',
+                    variant: AppTextVariant.labelSmall,
+                    color: AppColors.warning,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              PositionedDirectional(
+                start: 0,
+                bottom: 2,
+                end: 0,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppText(
+                      'Food delivery',
+                      variant: AppTextVariant.heading3,
+                      color: context.appTextPrimary,
+                      fontWeight: FontWeight.w900,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: AppText(
+                            'Restaurant orders',
+                            variant: AppTextVariant.bodySmall,
+                            color: context.appTextSecondary,
+                            fontWeight: FontWeight.w700,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: AppColors.warning,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.warning.withValues(
+                                  alpha: 0.25,
+                                ),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1610,8 +1902,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ? ImageConstants.bikeCourier
         : ImageConstants.motorCourier;
     final titleColor = selected ? Colors.white : context.appTextPrimary;
-    final subtitleColor =
-        selected ? Colors.white.withValues(alpha: 0.82) : context.appTextSecondary;
+    final subtitleColor = selected
+        ? Colors.white.withValues(alpha: 0.82)
+        : context.appTextSecondary;
     final imageHeight = category == 'Bike' ? 206.0 : 226.0;
     final imageTop = category == 'Bike' ? 24.0 : 24.0;
     const imageAngle = 0.04;
@@ -1640,14 +1933,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: selected
-                          ? [
-                              accent,
-                              Color.lerp(accent, Colors.black, 0.18)!,
-                            ]
-                          : [
-                              context.appSurfaceAlt,
-                              context.appSurface,
-                            ],
+                          ? [accent, Color.lerp(accent, Colors.black, 0.18)!]
+                          : [context.appSurfaceAlt, context.appSurface],
                     ),
                     border: Border.all(
                       color: selected ? accent : context.appBorder,
@@ -1733,11 +2020,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return Image.asset(
-      imagePath,
-      height: height,
-      fit: BoxFit.contain,
-    );
+    return Image.asset(imagePath, height: height, fit: BoxFit.contain);
   }
 
   Widget _buildVehicleChoice(String category, {required bool compact}) {
@@ -1745,7 +2028,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final selected = _selectedVehicleCategory == category;
     final accent = category == 'Bike' ? AppColors.secondary : AppColors.primary;
     final foreground = selected ? Colors.white : context.appTextPrimary;
-    final subtitleColor = selected ? Colors.white.withValues(alpha: 0.82) : context.appTextSecondary;
+    final subtitleColor = selected
+        ? Colors.white.withValues(alpha: 0.82)
+        : context.appTextSecondary;
 
     return _buildVehicleTapPulse(
       category,
@@ -1795,8 +2080,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildVehicleTapPulse(String category, Widget child) {
-    final pulseKey =
-        _lastPulsedVehicleCategory == category ? _vehicleSelectionPulse : 0;
+    final pulseKey = _lastPulsedVehicleCategory == category
+        ? _vehicleSelectionPulse
+        : 0;
 
     return TweenAnimationBuilder<double>(
       key: ValueKey('vehicle-pulse-$category-$pulseKey'),
@@ -1838,10 +2124,7 @@ class _HomeScreenState extends State<HomeScreen> {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFFFF3EF),
-                Color(0xFFEFF8FF),
-              ],
+              colors: [Color(0xFFFFF3EF), Color(0xFFEFF8FF)],
             ),
             border: Border.all(color: context.appBorder),
             boxShadow: [
@@ -1998,8 +2281,16 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: ListTile(
         leading: Icon(icon, color: AppColors.primary),
-        title: AppText(title, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
-        subtitle: AppText(subtitle, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
+        title: AppText(
+          title,
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.bold,
+        ),
+        subtitle: AppText(
+          subtitle,
+          variant: AppTextVariant.bodySmall,
+          color: context.appTextSecondary,
+        ),
       ),
     );
   }
@@ -2045,11 +2336,7 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
       _deliveryPreviewOverlayPoint(size, 0),
       AppColors.secondary,
     );
-    _paintPin(
-      canvas,
-      _deliveryPreviewOverlayPoint(size, 1),
-      AppColors.primary,
-    );
+    _paintPin(canvas, _deliveryPreviewOverlayPoint(size, 1), AppColors.primary);
   }
 
   void _paintPin(Canvas canvas, Offset center, Color color) {

@@ -32,11 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            LoginEvent(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        LoginEvent(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -47,7 +47,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            AppToast.error(context: context, title: 'Login Failed', message: state.message);
+            AppModal.error<void>(
+              context: context,
+              title: 'Login Failed',
+              contentText: state.message,
+            );
           }
         },
         builder: (context, state) {
@@ -65,7 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       end: Alignment.bottomRight,
                       colors: [AppColors.primaryDark, AppColors.primary],
                     ),
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(40),
+                    ),
                   ),
                   child: SafeArea(
                     child: Column(
@@ -81,7 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(ImageConstants.appLogo, fit: BoxFit.cover),
+                            child: Image.asset(
+                              ImageConstants.appLogo,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
@@ -114,9 +123,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: AppSpacing.lg),
-                        const AppText('Welcome back!', variant: AppTextVariant.heading2, fontWeight: FontWeight.bold),
+                        const AppText(
+                          'Welcome back!',
+                          variant: AppTextVariant.heading2,
+                          fontWeight: FontWeight.bold,
+                        ),
                         const SizedBox(height: 4),
-                        AppText('Sign in to manage deliveries', variant: AppTextVariant.bodyMedium, color: context.appTextSecondary),
+                        AppText(
+                          'Sign in to manage deliveries',
+                          variant: AppTextVariant.bodyMedium,
+                          color: context.appTextSecondary,
+                        ),
                         const SizedBox(height: AppSpacing.xl),
 
                         AppTextField.outlined(
@@ -126,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Email is required';
+                            if (v == null || v.isEmpty)
+                              return 'Email is required';
                             if (!isValidEmail(v)) return 'Enter a valid email';
                             return null;
                           },
@@ -138,10 +156,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           hint: '********',
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: _obscurePassword,
-                          suffixIcon: _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          onSuffixPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          suffixIcon: _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          onSuffixPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Password is required';
+                            if (v == null || v.isEmpty)
+                              return 'Password is required';
                             if (v.length < 6) return 'Min. 6 characters';
                             return null;
                           },
@@ -150,8 +173,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () => context.pushNamed(AppRoutes.resetPassword.name),
-                            child: const Text('Forgot Password?', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                            onPressed: () =>
+                                context.pushNamed(AppRoutes.resetPassword.name),
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
@@ -165,12 +195,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const AppText("Don't have an account? ", variant: AppTextVariant.bodyMedium),
+                            const AppText(
+                              "Don't have an account? ",
+                              variant: AppTextVariant.bodyMedium,
+                            ),
                             GestureDetector(
-                              onTap: () => context.pushNamed(AppRoutes.signUp.name),
+                              onTap: () =>
+                                  context.pushNamed(AppRoutes.signUp.name),
                               child: const Text(
                                 'Sign Up',
-                                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 15),
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ],

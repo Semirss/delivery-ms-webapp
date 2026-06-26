@@ -42,10 +42,7 @@ Future<void> _initializeApp() async {
   }
 
   // Initialize Supabase
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
   // Configure dependency injection
   await configureDependencies();
@@ -116,6 +113,32 @@ class _DriverAppState extends State<DriverApp> {
             child: AnimatedBuilder(
               animation: widget.preferences,
               builder: (context, _) {
+                final platformBrightness = WidgetsBinding
+                    .instance
+                    .platformDispatcher
+                    .platformBrightness;
+                final isDark =
+                    widget.preferences.themeMode == ThemeMode.dark ||
+                    (widget.preferences.themeMode == ThemeMode.system &&
+                        platformBrightness == Brightness.dark);
+
+                SystemChrome.setSystemUIOverlayStyle(
+                  SystemUiOverlayStyle(
+                    statusBarColor: isDark
+                        ? AppColors.darkBackground
+                        : AppColors.background,
+                    statusBarIconBrightness: isDark
+                        ? Brightness.light
+                        : Brightness.dark,
+                    systemNavigationBarColor: isDark
+                        ? AppColors.darkBackground
+                        : AppColors.background,
+                    systemNavigationBarIconBrightness: isDark
+                        ? Brightness.light
+                        : Brightness.dark,
+                  ),
+                );
+
                 return MaterialApp.router(
                   title: getIt<AppConfig>().appName,
                   debugShowCheckedModeBanner: false,
@@ -129,7 +152,9 @@ class _DriverAppState extends State<DriverApp> {
                       app: 'driver',
                       config: getIt<AppConfig>(),
                       child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(textScaleFactor: 1.0),
                         child: widget!,
                       ),
                     );

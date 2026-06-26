@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:driver_app/config/router/app_routes.dart';
-import 'package:driver_app/core/utils/functions/base_functions/validators.dart';
+import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
@@ -31,22 +31,26 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            LoginEvent(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        LoginEvent(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appBackground,
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            AppToast.error(context: context, title: 'Login Failed', message: state.message);
+            AppModal.error<void>(
+              context: context,
+              title: 'Login Failed',
+              contentText: state.message,
+            );
           }
         },
         builder: (context, state) {
@@ -54,24 +58,25 @@ class _LoginScreenState extends State<LoginScreen> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                // Hero Header - Dark theme for driver
+                // Hero Header
                 Container(
                   width: double.infinity,
                   height: 300,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Color(0xFF1A1A1A), Color(0xFF2D0000)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppColors.primaryDark, AppColors.primary],
                     ),
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(40),
+                    ),
                   ),
                   child: SafeArea(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: AppSpacing.xl),
-                        // Driver badge icon
                         Stack(
                           alignment: Alignment.center,
                           children: [
@@ -86,11 +91,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               width: 80,
                               height: 80,
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
-                                shape: BoxShape.circle,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.22),
+                                ),
                               ),
-                              child: const Icon(Icons.motorcycle_rounded, color: Colors.white, size: 44),
+                              clipBehavior: Clip.antiAlias,
+                              child: Image.asset(
+                                ImageConstants.appLogo,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ],
                         ),
@@ -107,15 +119,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+                            border: Border.all(
+                              color: AppColors.primary.withOpacity(0.5),
+                            ),
                           ),
                           child: const Text(
                             'DRIVER PORTAL',
-                            style: TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2),
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
                       ],
@@ -132,20 +154,28 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: AppSpacing.lg),
-                        const AppText('Driver Sign In', variant: AppTextVariant.heading2, fontWeight: FontWeight.bold),
+                        const AppText(
+                          'Driver Sign In',
+                          variant: AppTextVariant.heading2,
+                          fontWeight: FontWeight.bold,
+                        ),
                         const SizedBox(height: 4),
-                        const AppText('Access your driver dashboard', variant: AppTextVariant.bodyMedium, color: AppColors.textSecondary),
+                        AppText(
+                          'Access your driver dashboard',
+                          variant: AppTextVariant.bodyMedium,
+                          color: context.appTextSecondary,
+                        ),
                         const SizedBox(height: AppSpacing.xl),
 
                         AppTextField.outlined(
                           controller: _emailController,
-                          label: 'Email Address',
-                          hint: 'driver@email.com',
-                          prefixIcon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
+                          label: 'Full Name',
+                          hint: 'e.g. John Doe',
+                          prefixIcon: Icons.person_outline_rounded,
+                          textInputAction: TextInputAction.next,
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Email is required';
-                            if (!isValidEmail(v)) return 'Enter a valid email';
+                            if (v == null || v.isEmpty)
+                              return 'Full name is required';
                             return null;
                           },
                         ),
@@ -156,10 +186,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           hint: '********',
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: _obscurePassword,
-                          suffixIcon: _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          onSuffixPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          suffixIcon: _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          onSuffixPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Password is required';
+                            if (v == null || v.isEmpty)
+                              return 'Password is required';
                             if (v.length < 6) return 'Min. 6 characters';
                             return null;
                           },
@@ -168,8 +203,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () => context.pushNamed(AppRoutes.resetPassword.name),
-                            child: const Text('Forgot Password?', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                            onPressed: () =>
+                                context.pushNamed(AppRoutes.resetPassword.name),
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
@@ -183,12 +225,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const AppText("New driver? ", variant: AppTextVariant.bodyMedium),
+                            const AppText(
+                              "New driver? ",
+                              variant: AppTextVariant.bodyMedium,
+                            ),
                             GestureDetector(
-                              onTap: () => context.pushNamed(AppRoutes.signUp.name),
+                              onTap: () =>
+                                  context.pushNamed(AppRoutes.signUp.name),
                               child: const Text(
                                 'Register Here',
-                                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 15),
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ],

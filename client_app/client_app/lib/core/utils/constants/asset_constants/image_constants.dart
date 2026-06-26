@@ -7,6 +7,8 @@ abstract class ImageConstants {
   static const String appLogo = '$_root/logo.png';
   static const String bikeCourier = '$_root/bike_pic.png';
   static const String motorCourier = '$_root/motor_pic_full.png';
+  static const String foodDeliveryCharacter =
+      '$_root/food_delivery_character.png';
   static const String placeholderImage = '$_root/placeholder.png';
   
   // Onboarding images
