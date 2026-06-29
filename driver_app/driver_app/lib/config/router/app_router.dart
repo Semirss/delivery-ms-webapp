@@ -175,11 +175,6 @@ class AppRouter {
             listener: (context, authState) {
               if (authState is AuthAuthenticated) {
                 context.goNamed(AppRoutes.home.name);
-              } else if (authState is AuthVerificationRequired) {
-                context.goNamed(
-                  AppRoutes.otp.name,
-                  extra: authState.verificationKey,
-                );
               }
             },
             child: const LoginScreen(),
@@ -195,11 +190,6 @@ class AppRouter {
             listener: (context, authState) {
               if (authState is AuthAuthenticated) {
                 context.goNamed(AppRoutes.home.name);
-              } else if (authState is AuthVerificationRequired) {
-                context.goNamed(
-                  AppRoutes.otp.name,
-                  extra: authState.verificationKey,
-                );
               }
             },
             child: const SignUpScreen(),

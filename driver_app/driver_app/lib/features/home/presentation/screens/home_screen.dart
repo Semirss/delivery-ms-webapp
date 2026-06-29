@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
   RealtimeChannel? _deliveriesChannel;
+  RealtimeChannel? _notificationsChannel;
 
   bool _isOnline = false;
   bool _isResolvingDriver = false;
@@ -39,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _activeDelivery;
   List<LatLng> _routePoints = [];
   String? _lastNotifiedDeliveryId;
+  final Set<String> _ratingPromptedDeliveries = <String>{};
+  int _unreadNotificationCount = 0;
 
   @override
   void initState() {
@@ -84,6 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _driverRecord = record;
         _isOnline = record?['status'] == 'Online';
       });
+      if (record != null) {
+        await _loadUnreadNotificationCount();
+        _subscribeToNotifications();
+      }
       if (_isOnline && record != null) {
         _startLocationStreaming(record['id'].toString());
         await _subscribeToAssignments(record['id'].toString());
@@ -289,6 +296,70 @@ class _HomeScreenState extends State<HomeScreen> {
         .subscribe();
   }
 
+  Future<void> _loadUnreadNotificationCount() async {
+    final driver = _driverRecord;
+    if (driver == null) return;
+
+    try {
+      final data = await _supabase
+          .from('app_notifications')
+          .select('id, recipient_id, recipient_phone, read_at')
+          .eq('app', 'driver')
+          .order('created_at', ascending: false)
+          .limit(100);
+
+      final count = List<Map<String, dynamic>>.from(data)
+          .where(_matchesDriverNotification)
+          .where((notification) => notification['read_at'] == null)
+          .length;
+
+      if (!mounted) return;
+      setState(() => _unreadNotificationCount = count);
+    } catch (e) {
+      debugPrint('Error loading driver notifications: $e');
+    }
+  }
+
+  void _subscribeToNotifications() {
+    _notificationsChannel?.unsubscribe();
+    _notificationsChannel = _supabase
+        .channel('public:app_notifications:driver-home')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'app_notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'app',
+            value: 'driver',
+          ),
+          callback: (_) => _loadUnreadNotificationCount(),
+        )
+        .subscribe();
+  }
+
+  bool _matchesDriverNotification(Map<String, dynamic> notification) {
+    final driver = _driverRecord;
+    if (driver == null) return false;
+
+    final recipientId = notification['recipient_id']?.toString();
+    final recipientPhone = _cleanRecipient(
+      notification['recipient_phone']?.toString(),
+    );
+    final driverId = driver['id']?.toString();
+    final driverPhone = _cleanRecipient(driver['phone']?.toString());
+
+    if (recipientId == null && recipientPhone == null) return true;
+    if (driverId != null && recipientId == driverId) return true;
+    if (driverPhone != null && recipientPhone == driverPhone) return true;
+    return false;
+  }
+
+  String? _cleanRecipient(String? value) {
+    final trimmed = value?.trim();
+    return trimmed == null || trimmed.isEmpty ? null : trimmed;
+  }
+
   Future<void> _loadAssignedDelivery(String driverId) async {
     try {
       final data = await _supabase
@@ -437,6 +508,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (!mounted) return;
       if (status == 'Delivered') {
+        final deliveredDelivery = Map<String, dynamic>.from({
+          ...delivery,
+          ...Map<String, dynamic>.from(updated),
+        });
         setState(() {
           _activeDelivery = null;
           _routePoints = [];
@@ -446,8 +521,12 @@ class _HomeScreenState extends State<HomeScreen> {
           message: 'Delivery completed.',
           type: AppToastType.success,
         );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showDriverRatingPrompt(deliveredDelivery);
+        });
       } else {
         await _setActiveDelivery(Map<String, dynamic>.from(updated));
+        if (!mounted) return;
         AppToast.show(
           context: context,
           message: 'Status updated.',
@@ -468,6 +547,163 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> _showDriverRatingPrompt(
+    Map<String, dynamic> delivery, {
+    bool force = false,
+  }) async {
+    final deliveryId = delivery['id']?.toString();
+    final driverId = _driverRecord?['id']?.toString();
+    final clientId = delivery['client_id']?.toString();
+    final customerPhone = delivery['customer_phone']?.toString();
+    final rateeId = clientId?.trim().isNotEmpty == true
+        ? clientId!.trim()
+        : customerPhone?.trim();
+
+    if (deliveryId == null || driverId == null || rateeId == null) return;
+    if (!force && !_ratingPromptedDeliveries.add(deliveryId)) return;
+
+    try {
+      final existing = await _supabase
+          .from('delivery_ratings')
+          .select('rating')
+          .eq('delivery_id', deliveryId)
+          .eq('rater_type', 'driver')
+          .eq('rater_id', driverId)
+          .eq('ratee_type', 'client')
+          .eq('ratee_id', rateeId)
+          .maybeSingle();
+
+      if (existing != null && !force) return;
+      if (!mounted) return;
+
+      final initialRating = existing == null
+          ? 5
+          : int.tryParse(existing['rating']?.toString() ?? '') ?? 5;
+      final rating = await _showRatingSheet(
+        title: 'Rate this customer',
+        subtitle: delivery['customer_name']?.toString() ?? 'How was this trip?',
+        initialRating: initialRating,
+      );
+      if (rating == null) return;
+
+      await _supabase.from('delivery_ratings').upsert(
+        {
+          'delivery_id': deliveryId,
+          'rater_type': 'driver',
+          'rater_id': driverId,
+          'ratee_type': 'client',
+          'ratee_id': rateeId,
+          'rating': rating,
+        },
+        onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id',
+      );
+
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Rating saved.',
+        type: AppToastType.success,
+      );
+    } catch (e) {
+      debugPrint('Error saving client rating: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Ratings are not ready. Run supabase/schema_v5_ratings.sql.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  Future<int?> _showRatingSheet({
+    required String title,
+    required String subtitle,
+    required int initialRating,
+  }) {
+    var selectedRating = initialRating.clamp(1, 5).toInt();
+
+    return showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: context.appSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: context.appBorder,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppText(
+                      title,
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.bold,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    AppText(
+                      subtitle,
+                      variant: AppTextVariant.bodyMedium,
+                      color: context.appTextSecondary,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final value = index + 1;
+                        return IconButton(
+                          tooltip: '$value star',
+                          onPressed: () {
+                            setSheetState(() => selectedRating = value);
+                          },
+                          icon: Icon(
+                            value <= selectedRating
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: Colors.amber,
+                            size: 38,
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton.primary(
+                      label: 'SUBMIT RATING',
+                      fullWidth: true,
+                      onPressed: () =>
+                          Navigator.of(sheetContext).pop(selectedRating),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      child: AppText(
+                        'Skip',
+                        variant: AppTextVariant.button,
+                        color: context.appTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   double _asDouble(Object? value) {
     if (value is num) return value.toDouble();
     return double.tryParse(value?.toString() ?? '') ?? 0;
@@ -482,6 +718,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _positionStream?.cancel();
     _deliveriesChannel?.unsubscribe();
+    _notificationsChannel?.unsubscribe();
     super.dispose();
   }
 
@@ -674,7 +911,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 48),
+                  _buildNotificationBell(),
                 ],
               ),
             ),
@@ -917,10 +1154,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.dark_mode_outlined,
                       title: 'Theme',
                       subtitle: 'Light, dark, or system',
-                      trailing: DropdownButton<ThemeMode>(
-                        value: preferences.themeMode,
-                        dropdownColor: context.appSurface,
-                        style: TextStyle(color: context.appTextPrimary),
+                    trailing: DropdownButton<ThemeMode>(
+                      value: preferences.themeMode,
+                      dropdownColor: context.appSurface,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      style: TextStyle(color: context.appTextPrimary),
                         underline: const SizedBox.shrink(),
                         items: const [
                           DropdownMenuItem(
@@ -1060,6 +1298,65 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildNotificationBell() {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        shape: BoxShape.circle,
+        border: Border.all(color: context.appBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.10),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          IconButton(
+            tooltip: 'Notifications',
+            icon: Icon(
+              Icons.notifications_rounded,
+              color: context.appTextPrimary,
+            ),
+            onPressed: () {
+              context.navigator.pushNotificationScreen();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _loadUnreadNotificationCount();
+              });
+            },
+          ),
+          if (_unreadNotificationCount > 0)
+            PositionedDirectional(
+              top: -2,
+              end: -2,
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                  border: Border.all(color: context.appSurface, width: 2),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _unreadNotificationCount > 9
+                      ? '9+'
+                      : _unreadNotificationCount.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

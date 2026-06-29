@@ -53,18 +53,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       authResult,
     ) {
       if (authResult.requiresVerification) {
-        if (authResult.verificationKey == 'driver_approval_pending') {
-          emit(
-            const AuthApprovalPending(
-              message:
-                  'Application submitted. Please wait for admin approval before signing in.',
-            ),
-          );
-          return;
-        }
         emit(
-          AuthVerificationRequired(
-            verificationKey: authResult.verificationKey ?? '',
+          const AuthError(
+            message:
+                'Waiting for approval. You cannot login until the admin approves your account.',
           ),
         );
       } else {
@@ -95,8 +87,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ) {
       if (authResult.requiresVerification) {
         emit(
-          AuthVerificationRequired(
-            verificationKey: authResult.verificationKey ?? '',
+          const AuthApprovalPending(
+            message:
+                'Application submitted. Please wait for admin approval before signing in.',
           ),
         );
       } else {

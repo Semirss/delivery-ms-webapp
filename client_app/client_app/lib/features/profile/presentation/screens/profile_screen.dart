@@ -9,6 +9,7 @@ import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/core/preferences/app_preferences.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -65,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 20),
                             Container(
                               width: 96,
                               height: 96,
@@ -114,9 +115,43 @@ class ProfileScreen extends StatelessWidget {
                             Text(
                               user?.email ?? '',
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 14,
                               ),
+                            ),
+                            const SizedBox(height: 6),
+                            FutureBuilder<_RatingSummary>(
+                              future: user == null
+                                  ? Future<_RatingSummary>.value(
+                                      const _RatingSummary.empty(),
+                                    )
+                                  : _loadRatingSummary('client', user.id),
+                              builder: (context, snapshot) {
+                                final rating =
+                                    snapshot.data ?? const _RatingSummary.empty();
+                                final label = rating.hasRatings
+                                    ? '${rating.average.toStringAsFixed(1)} client rating'
+                                    : 'No ratings yet';
+
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.amber,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      label,
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.85),
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -165,6 +200,7 @@ class ProfileScreen extends StatelessWidget {
                             trailing: DropdownButton<ThemeMode>(
                               value: preferences.themeMode,
                               dropdownColor: context.appSurface,
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
                               style: TextStyle(color: context.appTextPrimary),
                               underline: const SizedBox.shrink(),
                               items: const [
@@ -221,6 +257,36 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<_RatingSummary> _loadRatingSummary(
+    String rateeType,
+    String rateeId,
+  ) async {
+    try {
+      final data = await Supabase.instance.client
+          .from('delivery_ratings')
+          .select('rating')
+          .eq('ratee_type', rateeType)
+          .eq('ratee_id', rateeId);
+
+      if (data.isEmpty) return const _RatingSummary.empty();
+      final ratings = data
+          .map(
+            (row) => int.tryParse(row['rating']?.toString() ?? ''),
+          )
+          .whereType<int>()
+          .toList();
+      if (ratings.isEmpty) return const _RatingSummary.empty();
+
+      final total = ratings.fold<int>(0, (sum, rating) => sum + rating);
+      return _RatingSummary(
+        average: total / ratings.length,
+        count: ratings.length,
+      );
+    } catch (_) {
+      return const _RatingSummary.empty();
+    }
   }
 
   Widget _buildSection(BuildContext context, String title, List<Widget> tiles) {
@@ -357,4 +423,20 @@ class ProfileScreen extends StatelessWidget {
       trailing: trailing,
     );
   }
+}
+
+class _RatingSummary {
+  const _RatingSummary({
+    required this.average,
+    required this.count,
+  });
+
+  const _RatingSummary.empty()
+      : average = 0,
+        count = 0;
+
+  final double average;
+  final int count;
+
+  bool get hasRatings => count > 0;
 }

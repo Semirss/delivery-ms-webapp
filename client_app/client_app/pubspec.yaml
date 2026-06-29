@@ -83,6 +83,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   logger: ^2.5.0
   http_parser: ^4.0.2
+  image_picker: ^1.1.2
   
   # Development & Debug
   chuck_interceptor: ^2.3.2
@@ -121,6 +122,7 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/brand/
     - assets/images/bike_pic.png
     - assets/images/motor_pic.png
     - assets/icons/
@@ -130,21 +132,21 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/brand/launcher_icon.png"
   min_sdk_android: 21
-  adaptive_icon_background: "#F26A54" #primary color
-  adaptive_icon_foreground: "assets/images/logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/brand/adaptive_icon_foreground.png"
   remove_alpha_ios: true
-  android_adaptive_icon_background_color: "#F26A54" #primary color
+  android_adaptive_icon_background_color: "#FFFFFF"
 
 flutter_native_splash:
-  color: "#F26A54" #primary color
-  image: assets/images/logo.png
+  color: "#FFFFFF"
+  image: assets/images/brand/splash_logo.png
   fullscreen: false
   android_12:
-    color: "#F26A54" #primary color
-    image: assets/images/logo.png
-    icon_background_color: "#F26A54" #primary color
+    color: "#FFFFFF"
+    image: assets/images/brand/splash_logo.png
+    icon_background_color: "#FFFFFF"
   android: true
   ios: true
   web: false

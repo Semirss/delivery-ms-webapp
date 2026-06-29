@@ -3,6 +3,7 @@ import 'package:client_app/core/utils/constants/asset_constants/image_constants.
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:client_app/features/food_marketplace/presentation/screens/food_marketplace_screen.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
 import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
@@ -97,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showMap = false;
   bool _isPreparingDelivery = false;
   bool _isSubmitting = false;
+  final Set<String> _ratingPromptedDeliveries = <String>{};
 
   @override
   void initState() {
@@ -546,6 +548,10 @@ class _HomeScreenState extends State<HomeScreen> {
           message: 'Delivery completed.',
           type: AppToastType.success,
         );
+        final deliveredDelivery = Map<String, dynamic>.from(data);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showClientRatingPrompt(deliveredDelivery);
+        });
       } else if (nextStatus == 'Cancelled') {
         AppToast.show(
           context: context,
@@ -556,6 +562,167 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       debugPrint('Error fetching delivery: $e');
     }
+  }
+
+  Future<void> _showClientRatingPrompt(
+    Map<String, dynamic> delivery, {
+    bool force = false,
+  }) async {
+    final deliveryId = delivery['id']?.toString();
+    final driver = delivery['driver'] is Map
+        ? Map<String, dynamic>.from(delivery['driver'] as Map)
+        : null;
+    final driverId =
+        delivery['driver_id']?.toString() ?? driver?['id']?.toString();
+    final authState = context.read<AuthBloc>().state;
+
+    if (deliveryId == null ||
+        driverId == null ||
+        authState is! AuthAuthenticated) {
+      return;
+    }
+    if (!force && !_ratingPromptedDeliveries.add(deliveryId)) return;
+
+    try {
+      final existing = await Supabase.instance.client
+          .from('delivery_ratings')
+          .select('rating')
+          .eq('delivery_id', deliveryId)
+          .eq('rater_type', 'client')
+          .eq('rater_id', authState.user.id)
+          .eq('ratee_type', 'driver')
+          .eq('ratee_id', driverId)
+          .maybeSingle();
+
+      if (existing != null && !force) return;
+      if (!mounted) return;
+
+      final initialRating = existing == null
+          ? 5
+          : int.tryParse(existing['rating']?.toString() ?? '') ?? 5;
+      final rating = await _showRatingSheet(
+        title: 'Rate your driver',
+        subtitle: driver?['name']?.toString() ?? 'How was this delivery?',
+        initialRating: initialRating,
+      );
+      if (rating == null) return;
+
+      await Supabase.instance.client.from('delivery_ratings').upsert(
+        {
+          'delivery_id': deliveryId,
+          'rater_type': 'client',
+          'rater_id': authState.user.id,
+          'ratee_type': 'driver',
+          'ratee_id': driverId,
+          'rating': rating,
+        },
+        onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id',
+      );
+
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Rating saved.',
+        type: AppToastType.success,
+      );
+    } catch (e) {
+      debugPrint('Error saving driver rating: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Ratings are not ready. Run supabase/schema_v5_ratings.sql.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  Future<int?> _showRatingSheet({
+    required String title,
+    required String subtitle,
+    required int initialRating,
+  }) {
+    var selectedRating = initialRating.clamp(1, 5).toInt();
+
+    return showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: context.appSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: context.appBorder,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppText(
+                      title,
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    AppText(
+                      subtitle,
+                      variant: AppTextVariant.bodyMedium,
+                      color: context.appTextSecondary,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final value = index + 1;
+                        return IconButton(
+                          tooltip: '$value star',
+                          onPressed: () {
+                            setSheetState(() => selectedRating = value);
+                          },
+                          icon: Icon(
+                            value <= selectedRating
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: Colors.amber,
+                            size: 38,
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton.primary(
+                      label: 'SUBMIT RATING',
+                      fullWidth: true,
+                      onPressed: () =>
+                          Navigator.of(sheetContext).pop(selectedRating),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      child: AppText(
+                        'Skip',
+                        variant: AppTextVariant.button,
+                        color: context.appTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _ensureActiveDeliveryLoaded(AuthState authState) {
@@ -1161,6 +1328,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       trailing: DropdownButton<ThemeMode>(
                         value: preferences.themeMode,
                         dropdownColor: context.appSurface,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
                         style: TextStyle(color: context.appTextPrimary),
                         underline: const SizedBox.shrink(),
                         items: const [
@@ -1552,6 +1720,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: AppSpacing.xl),
+                if (_deliveryStatus == 'Delivered' && driver != null) ...[
+                  AppButton.outlinedSecondary(
+                    label: 'RATE DRIVER',
+                    icon: Icons.star_rounded,
+                    fullWidth: true,
+                    onPressed: () {
+                      final delivery = _currentDelivery;
+                      if (delivery != null) {
+                        _showClientRatingPrompt(delivery, force: true);
+                      }
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 AppButton.primary(
                   label: 'DONE',
                   fullWidth: true,
@@ -1578,6 +1760,7 @@ class _HomeScreenState extends State<HomeScreen> {
         DropdownButtonFormField<String>(
           value: _selectedPackageType,
           dropdownColor: context.appSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           style: TextStyle(
             color: context.appTextPrimary,
             fontWeight: FontWeight.w600,
@@ -1775,7 +1958,12 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedPackageType = 'Food/Groceries';
             _selectedService = 'food';
           });
-          _startDeliveryFlow(service: 'food');
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => const FoodMarketplaceScreen(),
+            ),
+          );
         },
         child: Container(
           height: 188,

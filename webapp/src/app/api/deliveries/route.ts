@@ -32,6 +32,8 @@ export async function POST(request: Request) {
             pickup_location,
             dropoff_location,
             package_type,
+            service_type,
+            payment_method,
             delivery_fee,
             vehicle_category,
             pickup_lat,
@@ -46,6 +48,8 @@ export async function POST(request: Request) {
             pickup_location,
             dropoff_location,
             package_type,
+            service_type: service_type ?? 'parcel',
+            payment_method: payment_method ?? 'Telebirr',
             delivery_fee: delivery_fee ?? null,
             vehicle_category: vehicle_category ?? null,
             pickup_lat: pickup_lat ?? null,
@@ -73,6 +77,7 @@ export async function POST(request: Request) {
                 payload: {
                     delivery_id: data.id,
                     customer_name: data.customer_name,
+                    service_type: data.service_type,
                     created_at: data.created_at,
                 },
             });

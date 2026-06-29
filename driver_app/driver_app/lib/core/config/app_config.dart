@@ -13,7 +13,7 @@ class AppConfig {
   static const String _enableChuckInterceptor = 'ENABLE_CHUCK_INTERCEPTOR';
 
   String get environment => dotenv.get(_environment, fallback: 'development');
-  String get appName => dotenv.get(_appName, fallback: 'MOTOBIKE Driver');
+  String get appName => dotenv.get(_appName, fallback: 'MotoBike Driver');
   String get apiBaseUrl => dotenv.get(_apiBaseUrl, fallback: '');
   int get apiTimeout => int.parse(dotenv.get(_apiTimeout, fallback: '30000'));
   String get sentryDsn => dotenv.get(_sentryDsn, fallback: '');

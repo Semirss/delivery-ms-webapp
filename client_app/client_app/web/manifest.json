@@ -3,7 +3,7 @@
     "short_name": "MotoBike",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#F26A54",
+    "background_color": "#FFFFFF",
     "theme_color": "#F26A54",
     "description": "MotoBike client delivery app.",
     "orientation": "portrait-primary",

@@ -7,6 +7,7 @@ import NetworkStatus from "../components/NetworkStatus";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import AppVersionManager from "./AppVersionManager";
+import FoodMarketplaceManager from "./FoodMarketplaceManager";
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 const AllDriversMap = dynamic(() => import('../components/AllDriversMap'), { ssr: false });
@@ -20,6 +21,7 @@ type Delivery = {
   pickup_location: string;
   dropoff_location: string;
   package_type: string;
+  service_type?: string | null;
   vehicle_category?: string;
   delivery_fee: string | null;
   status: string;
@@ -105,13 +107,35 @@ function getLast7Days(deliveries: Delivery[]) {
   return days;
 }
 
+function isFoodDelivery(delivery: Delivery): boolean {
+  return delivery.service_type === 'food_marketplace' || delivery.package_type?.toLowerCase().startsWith('food:');
+}
+
+function foodItemName(delivery: Delivery): string {
+  return delivery.package_type?.replace(/^food:\s*/i, '').trim() || 'Food order';
+}
+
+function pickupParts(delivery: Delivery): { place: string; phone?: string; address?: string } {
+  const parts = delivery.pickup_location.split(' - ').map((part) => part.trim()).filter(Boolean);
+  if (parts.length >= 3) {
+    return { place: parts[0], phone: parts[1], address: parts.slice(2).join(' - ') };
+  }
+  const [place, phone] = parts;
+  return { place: place || delivery.pickup_location, phone };
+}
+
+function coordinateLabel(lat?: number, lng?: number): string {
+  if (lat == null || lng == null) return 'Not set';
+  return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "versions">("deliveries");
+  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "versions" | "food">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -562,6 +586,7 @@ export default function AdminDashboard() {
             { key: 'map', label: 'Live Map', icon: '🗺️' },
             { key: 'drivers', label: 'Drivers', icon: '👤', badge: activeDrivers.length },
             { key: 'analytics', label: 'Analytics', icon: '📊' },
+            { key: 'food', label: 'Food Market', icon: 'Food' },
             { key: 'versions', label: 'App Versions', icon: 'V' },
           ] as const).map(tab => (
             <button
@@ -610,7 +635,7 @@ export default function AdminDashboard() {
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <h2 className="text-xl md:text-2xl font-extrabold text-neutral-800 capitalize truncate">
-              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab}
+              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab === 'food' ? 'Food Marketplace' : activeTab}
             </h2>
           </div>
           <div className="flex items-center space-x-4 flex-shrink-0">
@@ -719,11 +744,18 @@ export default function AdminDashboard() {
                     {displayedDeliveries.map(d => {
                       const secsLeft = d.status === 'Assigned' ? getSecondsLeft(d.assigned_at) : 0;
                       const isTimingOut = d.status === 'Assigned' && secsLeft > 0 && secsLeft < 60;
+                      const foodDelivery = isFoodDelivery(d);
+                      const pickup = pickupParts(d);
                       return (
-                        <div key={d.id} className={`bg-white rounded-2xl border shadow-sm p-5 flex flex-col relative group hover:shadow-md transition-shadow ${isTimingOut ? 'border-amber-300' : 'border-neutral-200'}`}>
+                        <div key={d.id} className={`rounded-2xl border shadow-sm p-5 flex flex-col relative group hover:shadow-md transition-shadow ${foodDelivery ? 'bg-orange-50/50 border-orange-200' : 'bg-white'} ${isTimingOut ? 'border-amber-300' : foodDelivery ? 'border-orange-200' : 'border-neutral-200'}`}>
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h3 className="font-extrabold text-neutral-900">{d.customer_name}</h3>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="font-extrabold text-neutral-900">{d.customer_name}</h3>
+                                {foodDelivery && (
+                                  <span className="rounded-full bg-orange-100 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-orange-700">Food order</span>
+                                )}
+                              </div>
                               <p className="text-neutral-500 text-sm font-medium">{d.customer_phone}</p>
                               <p className="text-neutral-400 text-xs font-medium mt-0.5">
                                 Requested: {new Date(d.created_at).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, month: 'short', day: 'numeric' })}
@@ -756,6 +788,38 @@ export default function AdminDashboard() {
                           )}
 
                           <div className="flex-1 space-y-2 mb-4">
+                            {foodDelivery ? (
+                              <div className="space-y-3">
+                                <div className="rounded-2xl border border-orange-100 bg-white p-3">
+                                  <p className="text-[10px] uppercase font-extrabold tracking-wide text-orange-500">Food item</p>
+                                  <p className="mt-1 text-lg font-extrabold text-neutral-900 line-clamp-2">{foodItemName(d)}</p>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                  <div className="rounded-xl bg-white p-3 border border-orange-100">
+                                    <p className="text-[10px] uppercase font-bold text-neutral-400">Restaurant / pickup</p>
+                                    <p className="mt-1 text-sm font-extrabold text-neutral-800 line-clamp-2">{pickup.place}</p>
+                                    {pickup.phone && <p className="mt-1 text-xs font-bold text-neutral-500">Seller phone: {pickup.phone}</p>}
+                                    {pickup.address && <p className="mt-1 text-xs font-bold text-neutral-600 line-clamp-2">Pickup address: {pickup.address}</p>}
+                                    <p className="mt-1 text-[11px] font-semibold text-neutral-400">Map point: {coordinateLabel(d.pickup_lat, d.pickup_lng)}</p>
+                                  </div>
+                                  <div className="rounded-xl bg-white p-3 border border-orange-100">
+                                    <p className="text-[10px] uppercase font-bold text-neutral-400">Customer dropoff</p>
+                                    <p className="mt-1 text-sm font-extrabold text-neutral-800 line-clamp-2">{d.dropoff_location}</p>
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="bg-white p-2.5 rounded-lg border border-orange-100">
+                                    <p className="text-[10px] uppercase font-bold text-neutral-400">Vehicle</p>
+                                    <p className="text-xs font-bold text-neutral-700 truncate">{d.vehicle_category === 'Motor' ? 'Motorbike' : 'Bike'}</p>
+                                  </div>
+                                  <div className="bg-white p-2.5 rounded-lg border border-orange-100">
+                                    <p className="text-[10px] uppercase font-bold text-neutral-400">Delivery fee</p>
+                                    <p className="text-xs font-bold text-orange-700 truncate">{d.delivery_fee ? `${d.delivery_fee} Br` : 'Set after review'}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
                             <div className="flex items-start bg-neutral-50 p-2.5 rounded-xl">
                               <span className="text-blue-500 mr-2 flex-shrink-0">🟢</span>
                               <span className="text-sm font-medium text-neutral-800 line-clamp-2">{d.pickup_location}</span>
@@ -778,6 +842,8 @@ export default function AdminDashboard() {
                                 <p className="text-xs font-bold text-amber-700 truncate">{d.delivery_fee ? `${d.delivery_fee} Br` : '—'}</p>
                               </div>
                             </div>
+                              </>
+                            )}
                           </div>
 
                           <div className="mt-auto pt-3 border-t border-neutral-100">
@@ -848,6 +914,9 @@ export default function AdminDashboard() {
                       <div>
                         <p className="font-bold text-blue-800 text-sm">📦 Assigning delivery for: <span className="font-extrabold">{assigningDelivery.customer_name}</span></p>
                         <p className="text-xs text-blue-600 mt-0.5">Pickup: {assigningDelivery.pickup_location}</p>
+                        {isFoodDelivery(assigningDelivery) && (
+                          <p className="text-xs text-blue-600 mt-0.5">Food: {foodItemName(assigningDelivery)} - Dropoff: {assigningDelivery.dropoff_location}</p>
+                        )}
                         <p className="text-xs text-blue-500 mt-0.5">Select the driver closest to the pickup pin on the map.</p>
                       </div>
                       <button onClick={() => setAssigningDelivery(null)} className="text-blue-400 hover:text-blue-700 font-bold text-xs px-3 py-1 rounded-lg hover:bg-blue-100 transition-colors flex-shrink-0 ml-3">
@@ -1061,6 +1130,10 @@ export default function AdminDashboard() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {activeTab === 'food' && (
+                <FoodMarketplaceManager />
               )}
 
               {activeTab === 'versions' && (

@@ -354,6 +354,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         DropdownButtonFormField<String>(
           value: _selectedVehicleType,
           dropdownColor: context.appSurface,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           style: TextStyle(
             color: context.appTextPrimary,
             fontWeight: FontWeight.w600,
