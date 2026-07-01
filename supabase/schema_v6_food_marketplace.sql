@@ -120,6 +120,22 @@ CREATE INDEX IF NOT EXISTS food_marketplace_items_restaurant_idx
 CREATE INDEX IF NOT EXISTS food_marketplace_items_active_sort_idx
     ON public.food_marketplace_items(is_active, is_featured, sort_order, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS public.food_item_ratings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    food_item_id UUID NOT NULL REFERENCES public.food_marketplace_items(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    CONSTRAINT food_item_ratings_unique_user UNIQUE (food_item_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS food_item_ratings_food_item_idx
+    ON public.food_item_ratings(food_item_id);
+
+CREATE INDEX IF NOT EXISTS food_item_ratings_user_idx
+    ON public.food_item_ratings(user_id);
+
 DROP TRIGGER IF EXISTS set_food_categories_updated_at
     ON public.food_categories;
 CREATE TRIGGER set_food_categories_updated_at
@@ -141,9 +157,17 @@ CREATE TRIGGER set_food_marketplace_items_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.set_updated_at();
 
+DROP TRIGGER IF EXISTS set_food_item_ratings_updated_at
+    ON public.food_item_ratings;
+CREATE TRIGGER set_food_item_ratings_updated_at
+    BEFORE UPDATE ON public.food_item_ratings
+    FOR EACH ROW
+    EXECUTE FUNCTION public.set_updated_at();
+
 ALTER TABLE public.food_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.food_restaurants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.food_marketplace_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.food_item_ratings ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Allow public all on food_categories"
     ON public.food_categories;
@@ -165,6 +189,14 @@ DROP POLICY IF EXISTS "Allow public all on food_marketplace_items"
     ON public.food_marketplace_items;
 CREATE POLICY "Allow public all on food_marketplace_items"
     ON public.food_marketplace_items
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public all on food_item_ratings"
+    ON public.food_item_ratings;
+CREATE POLICY "Allow public all on food_item_ratings"
+    ON public.food_item_ratings
     FOR ALL
     USING (true)
     WITH CHECK (true);

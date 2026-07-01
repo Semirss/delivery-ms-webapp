@@ -1,11 +1,12 @@
+import 'dart:async';
+
 import 'package:client_app/config/router/navigation_helper.dart';
+import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:client_app/features/food_marketplace/presentation/screens/food_marketplace_screen.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
-import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:flutter/foundation.dart';
@@ -98,57 +99,183 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showMap = false;
   bool _isPreparingDelivery = false;
   bool _isSubmitting = false;
+  Future<bool>? _locationReadyFuture;
   final Set<String> _ratingPromptedDeliveries = <String>{};
+  late final VoidCallback _homeAction;
+  late final VoidCallback _primaryDeliveryAction;
 
   @override
   void initState() {
     super.initState();
+    _homeAction = _returnToHomeFromNav;
+    NavigationService().setHomeAction(_homeAction);
+    _primaryDeliveryAction = () =>
+        _startDeliveryFlow(service: _selectedService);
+    NavigationService().setPrimaryDeliveryAction(_primaryDeliveryAction);
     _listenToDrivers();
-    _loadCurrentLocation();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(_loadCurrentLocation());
+    });
   }
 
   LatLng get _mapCenter =>
       _deliveryPickup ?? _currentLocation ?? _fallbackCenter;
 
-  Future<void> _loadCurrentLocation() async {
+  Future<bool> _loadCurrentLocation() async {
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _showLocationUnavailable('Turn on GPS to request accurate pickup.');
-        return;
-      }
-
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        _showLocationUnavailable('Location permission is required for pickup.');
-        return;
-      }
+      final canReadLocation = await _ensureLocationReady();
+      if (!canReadLocation) return false;
 
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      if (!mounted) return;
+      if (!mounted) return false;
 
       final location = LatLng(position.latitude, position.longitude);
       setState(() => _currentLocation = location);
-      if (!_showMap) return;
+      if (!_showMap) return true;
       _mapController.move(location, 14);
+      return true;
     } catch (e) {
       debugPrint('Error loading current location: $e');
-      _showLocationUnavailable('Could not read current GPS location.');
+      if (!mounted) return false;
+      await _showLocationRequiredDialog(
+        title: 'GPS required',
+        message:
+            'We could not read your current GPS position. Keep GPS on and check again so pickup stays accurate.',
+        primaryLabel: 'Open GPS settings',
+        onPrimaryPressed: Geolocator.openLocationSettings,
+      );
+      return false;
     }
   }
 
-  void _showLocationUnavailable(String message) {
+  Future<bool> _ensureLocationReady() {
+    final inFlight = _locationReadyFuture;
+    if (inFlight != null) return inFlight;
+
+    late final Future<bool> nextCheck;
+    nextCheck = _ensureLocationReadyLoop().whenComplete(() {
+      if (identical(_locationReadyFuture, nextCheck)) {
+        _locationReadyFuture = null;
+      }
+    });
+    _locationReadyFuture = nextCheck;
+    return nextCheck;
+  }
+
+  Future<bool> _ensureLocationReadyLoop() async {
+    while (mounted) {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!mounted) return false;
+      if (!serviceEnabled) {
+        await _showLocationRequiredDialog(
+          title: 'Turn on GPS',
+          message:
+              'MotoBike needs GPS to set your pickup point, calculate distance, and track the delivery. Turn on GPS, then tap Check again.',
+          primaryLabel: 'Open GPS settings',
+          onPrimaryPressed: Geolocator.openLocationSettings,
+        );
+        continue;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (!mounted) return false;
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (!mounted) return false;
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        await _showLocationRequiredDialog(
+          title: 'Allow location',
+          message:
+              'Location permission is blocked. Open app settings, allow location, then tap Check again.',
+          primaryLabel: 'Open app settings',
+          onPrimaryPressed: Geolocator.openAppSettings,
+        );
+        continue;
+      }
+
+      if (permission == LocationPermission.denied) {
+        await _showLocationRequiredDialog(
+          title: 'Allow location',
+          message:
+              'Location permission is required before you can request a delivery. Allow it, then tap Check again.',
+          primaryLabel: 'Open app settings',
+          onPrimaryPressed: Geolocator.openAppSettings,
+        );
+        continue;
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> _showLocationRequiredDialog({
+    required String title,
+    required String message,
+    required String primaryLabel,
+    required Future<bool> Function() onPrimaryPressed,
+  }) async {
     if (!mounted) return;
-    AppToast.show(
+
+    await showDialog<void>(
       context: context,
-      message: message,
-      type: AppToastType.warning,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          title: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.gps_fixed_rounded,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: AppText(
+                  title,
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+          content: AppText(
+            message,
+            variant: AppTextVariant.bodyMedium,
+            color: dialogContext.appTextSecondary,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const AppText(
+                'Check again',
+                variant: AppTextVariant.button,
+              ),
+            ),
+            FilledButton.icon(
+              onPressed: () => unawaited(onPrimaryPressed()),
+              icon: const Icon(Icons.settings_rounded, size: 18),
+              label: Text(primaryLabel),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -325,6 +452,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _startDeliveryFlow({String service = 'parcel'}) async {
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation || !mounted) return;
+
     setState(() {
       _selectedService = service;
       _showMap = true;
@@ -340,6 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
     );
+    if (!mounted) return;
 
     if (result == null) {
       if (!_isPreparingDelivery && _currentDeliveryId == null) {
@@ -354,16 +485,11 @@ class _HomeScreenState extends State<HomeScreen> {
       _deliveryStatus = 'none';
     });
 
-    if (_currentLocation == null) {
-      await _loadCurrentLocation();
-    }
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation) return;
+    if (!mounted) return;
     final pickup = _currentLocation;
     if (pickup == null) {
-      AppToast.show(
-        context: context,
-        message: 'Enable GPS so we can price and track the pickup accurately.',
-        type: AppToastType.error,
-      );
       return;
     }
 
@@ -388,16 +514,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _requestDelivery() async {
     if (_destination == null || _isSubmitting) return;
-    if (_currentLocation == null) {
-      await _loadCurrentLocation();
-    }
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation) return;
+    if (!mounted) return;
     final pickup = _currentLocation;
     if (pickup == null) {
-      AppToast.show(
-        context: context,
-        message: 'Enable GPS before requesting delivery.',
-        type: AppToastType.error,
-      );
       return;
     }
 
@@ -607,17 +728,14 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       if (rating == null) return;
 
-      await Supabase.instance.client.from('delivery_ratings').upsert(
-        {
-          'delivery_id': deliveryId,
-          'rater_type': 'client',
-          'rater_id': authState.user.id,
-          'ratee_type': 'driver',
-          'ratee_id': driverId,
-          'rating': rating,
-        },
-        onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id',
-      );
+      await Supabase.instance.client.from('delivery_ratings').upsert({
+        'delivery_id': deliveryId,
+        'rater_type': 'client',
+        'rater_id': authState.user.id,
+        'ratee_type': 'driver',
+        'ratee_id': driverId,
+        'rating': rating,
+      }, onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id');
 
       if (!mounted) return;
       AppToast.show(
@@ -1002,6 +1120,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _resetDeliveryState();
   }
 
+  void _returnToHomeFromNav() {
+    if (!mounted || !_showMap) return;
+    _closeMapView();
+  }
+
   void _resetDeliveryState() {
     setState(() {
       _showMap = false;
@@ -1031,6 +1154,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    NavigationService().clearHomeAction(_homeAction);
+    NavigationService().clearPrimaryDeliveryAction(_primaryDeliveryAction);
     _driverChannel?.unsubscribe();
     _deliveryChannel?.unsubscribe();
     _otherItemController.dispose();
@@ -1433,12 +1558,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icons.receipt_long_rounded,
               title: 'My Orders',
               onTap: () => _closeDrawerThen(() {
-                Navigator.push<void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => const RideHistoryScreen(),
-                  ),
-                );
+                NavigationService().navigateToTab(1);
               }),
             ),
             _drawerTile(
@@ -1958,12 +2078,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _selectedPackageType = 'Food/Groceries';
             _selectedService = 'food';
           });
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (_) => const FoodMarketplaceScreen(),
-            ),
-          );
+          NavigationService().navigateToTab(2);
         },
         child: Container(
           height: 188,

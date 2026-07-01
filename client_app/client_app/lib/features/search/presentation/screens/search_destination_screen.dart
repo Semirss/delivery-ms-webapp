@@ -22,8 +22,8 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose();
     _debounce?.cancel();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -34,6 +34,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     if (normalizedQuery.isEmpty) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
         _results = MapRepository.majorAddisPlaces;
@@ -42,6 +43,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     }
 
     _debounce = Timer(const Duration(milliseconds: 420), () async {
+      if (!mounted) return;
       setState(() => _isLoading = true);
 
       final results = await _mapRepository.searchAddress(normalizedQuery);
@@ -82,36 +84,36 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                       ),
                     )
                   : _results.isEmpty
-                      ? _NoDestinationResults(query: _searchController.text)
-                      : ListView.separated(
-                          keyboardDismissBehavior:
-                              ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.lg,
-                            AppSpacing.lg,
-                            AppSpacing.lg,
-                            AppSpacing.xl,
-                          ),
-                          itemCount: _results.length + 1,
-                          separatorBuilder: (_, index) => SizedBox(
-                            height: index == 0 ? AppSpacing.md : AppSpacing.sm,
-                          ),
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return _DestinationSectionIntro(
-                                hasQuery: hasQuery,
-                                count: _results.length,
-                              );
-                            }
+                  ? _NoDestinationResults(query: _searchController.text)
+                  : ListView.separated(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.xl,
+                      ),
+                      itemCount: _results.length + 1,
+                      separatorBuilder: (_, index) => SizedBox(
+                        height: index == 0 ? AppSpacing.md : AppSpacing.sm,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return _DestinationSectionIntro(
+                            hasQuery: hasQuery,
+                            count: _results.length,
+                          );
+                        }
 
-                            final place = _results[index - 1];
-                            return _DestinationTile(
-                              place: place,
-                              index: index - 1,
-                              onTap: () => Navigator.pop(context, place),
-                            );
-                          },
-                        ),
+                        final place = _results[index - 1];
+                        return _DestinationTile(
+                          place: place,
+                          index: index - 1,
+                          onTap: () => Navigator.pop(context, place),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
@@ -314,11 +316,7 @@ class _DestinationTile extends StatelessWidget {
                   color: accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  Icons.location_on_rounded,
-                  color: accent,
-                  size: 24,
-                ),
+                child: Icon(Icons.location_on_rounded, color: accent, size: 24),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(

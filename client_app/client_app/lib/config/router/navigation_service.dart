@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:client_app/config/router/app_routes.dart';
 import 'package:go_router/go_router.dart';
@@ -10,17 +12,124 @@ class NavigationService {
 
   // Reference to the StatefulNavigationShell
   StatefulNavigationShell? _navigationShell;
+  VoidCallback? _homeAction;
+  VoidCallback? _primaryDeliveryAction;
+  int? _pendingTabIndex;
+  bool _pendingInitialLocation = false;
+  bool _tabNavigationScheduled = false;
+  VoidCallback? _pendingTabAction;
+  int _navigationRetryCount = 0;
+
+  static const int _maxNavigationRetries = 3;
 
   // Set the navigation shell reference
   void setNavigationShell(StatefulNavigationShell shell) {
     _navigationShell = shell;
   }
 
-  // Navigate to a specific tab
-  void navigateToTab(int index) {
-    if (_navigationShell != null) {
-      _navigationShell!.goBranch(index, initialLocation: index == 0);
+  void setPrimaryDeliveryAction(VoidCallback action) {
+    _primaryDeliveryAction = action;
+  }
+
+  void setHomeAction(VoidCallback action) {
+    _homeAction = action;
+  }
+
+  void clearPrimaryDeliveryAction(VoidCallback action) {
+    if (_primaryDeliveryAction == action) {
+      _primaryDeliveryAction = null;
     }
+  }
+
+  void clearHomeAction(VoidCallback action) {
+    if (_homeAction == action) {
+      _homeAction = null;
+    }
+  }
+
+  void triggerHomeAction() {
+    navigateToTab(0, initialLocation: true, afterNavigation: _homeAction);
+  }
+
+  void triggerPrimaryDeliveryAction() {
+    navigateToTab(
+      0,
+      initialLocation: true,
+      afterNavigation: _primaryDeliveryAction,
+    );
+  }
+
+  // Navigate to a specific tab
+  void navigateToTab(
+    int index, {
+    bool initialLocation = false,
+    VoidCallback? afterNavigation,
+  }) {
+    _pendingTabIndex = index;
+    _pendingInitialLocation = initialLocation;
+    _pendingTabAction = afterNavigation;
+    _scheduleTabNavigation();
+  }
+
+  void _scheduleTabNavigation([
+    Duration delay = const Duration(milliseconds: 16),
+  ]) {
+    if (_tabNavigationScheduled) return;
+
+    _tabNavigationScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Timer(delay, _flushTabNavigation);
+    });
+  }
+
+  void _flushTabNavigation() {
+    _tabNavigationScheduled = false;
+
+    final shell = _navigationShell;
+    final index = _pendingTabIndex;
+    if (shell == null || index == null) return;
+
+    final initialLocation = _pendingInitialLocation;
+    final afterNavigation = _pendingTabAction;
+    _pendingTabIndex = null;
+    _pendingInitialLocation = false;
+    _pendingTabAction = null;
+
+    try {
+      shell.goBranch(index, initialLocation: initialLocation);
+      _navigationRetryCount = 0;
+    } catch (error, stackTrace) {
+      if (_isNavigatorLocked(error) &&
+          _navigationRetryCount < _maxNavigationRetries) {
+        _navigationRetryCount++;
+        _pendingTabIndex = index;
+        _pendingInitialLocation = initialLocation;
+        _pendingTabAction = afterNavigation;
+        _scheduleTabNavigation(const Duration(milliseconds: 48));
+        return;
+      }
+
+      _navigationRetryCount = 0;
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stackTrace,
+          library: 'navigation_service',
+          context: ErrorDescription('while switching app tabs'),
+        ),
+      );
+      return;
+    }
+
+    if (afterNavigation != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Timer(const Duration(milliseconds: 16), afterNavigation);
+      });
+    }
+  }
+
+  bool _isNavigatorLocked(Object error) {
+    return error is AssertionError && error.toString().contains('_debugLocked');
   }
 
   // Navigate to a specific tab by route name
@@ -32,8 +141,12 @@ class NavigationService {
 
     if (routeName == AppRoutes.home.name) {
       tabIndex = 0;
-    } else if (routeName == AppRoutes.profile.name) {
+    } else if (routeName == AppRoutes.activity.name) {
       tabIndex = 1;
+    } else if (routeName == AppRoutes.food.name) {
+      tabIndex = 2;
+    } else if (routeName == AppRoutes.profile.name) {
+      tabIndex = 3;
     }
 
     if (tabIndex != null) {

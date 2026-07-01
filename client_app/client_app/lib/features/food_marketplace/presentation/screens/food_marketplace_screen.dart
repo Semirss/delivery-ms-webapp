@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_ui/app_ui.dart';
@@ -7,6 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+
+int _clampFoodRating(int value) {
+  if (value < 1) return 1;
+  if (value > 5) return 5;
+  return value;
+}
 
 class FoodMarketplaceScreen extends StatefulWidget {
   const FoodMarketplaceScreen({super.key});
@@ -16,9 +23,12 @@ class FoodMarketplaceScreen extends StatefulWidget {
 }
 
 class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
+  static const double _bottomNavClearance = 120;
+
   final SupabaseClient _supabase = Supabase.instance.client;
   final ImagePicker _imagePicker = ImagePicker();
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _restaurantNameController =
       TextEditingController();
@@ -56,6 +66,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
 
   @override
   void dispose() {
+    _searchFocusNode.dispose();
     _searchController.dispose();
     _titleController.dispose();
     _restaurantNameController.dispose();
@@ -69,6 +80,10 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
   Future<void> _loadFoodMarketplace() async {
     setState(() => _isLoading = true);
     try {
+      final authState = context.read<AuthBloc>().state;
+      final currentUserId = authState is AuthAuthenticated
+          ? authState.user.id
+          : null;
       final categoriesData = await _supabase
           .from('food_categories')
           .select()
@@ -98,6 +113,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       final items = List<Map<String, dynamic>>.from(
         itemsData,
       ).map(_FoodItem.fromMap).toList();
+      final ratedItems = await _attachFoodRatings(items, currentUserId);
       final restaurants = List<Map<String, dynamic>>.from(
         restaurantsData,
       ).map(_RestaurantFeature.fromMap).toList();
@@ -105,7 +121,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       if (!mounted) return;
       setState(() {
         _categories = categories.isEmpty ? _sampleCategories : categories;
-        _items = items.isEmpty ? _sampleItems : items;
+        _items = ratedItems.isEmpty ? _sampleItems : ratedItems;
         _restaurants = restaurants.isEmpty ? _featuredRestaurants : restaurants;
         _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
         _isLoading = false;
@@ -142,6 +158,213 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                   _sameText(item.sellerName, _restaurantFilterName)));
       return matchesQuery && matchesCategory && matchesRestaurant;
     }).toList();
+  }
+
+  Future<List<_FoodItem>> _attachFoodRatings(
+    List<_FoodItem> items,
+    String? currentUserId,
+  ) async {
+    final ids = items
+        .map((item) => item.id)
+        .where((id) => id.isNotEmpty && !id.startsWith('sample-'))
+        .toList();
+    if (ids.isEmpty) return items;
+
+    try {
+      final data = await _supabase
+          .from('food_item_ratings')
+          .select('food_item_id,user_id,rating')
+          .filter('food_item_id', 'in', '(${ids.join(',')})');
+      final totals = <String, int>{};
+      final counts = <String, int>{};
+      final userRatings = <String, int>{};
+
+      for (final row in List<Map<String, dynamic>>.from(data)) {
+        final itemId = row['food_item_id']?.toString();
+        final rating = int.tryParse(row['rating']?.toString() ?? '');
+        if (itemId == null || rating == null) continue;
+
+        totals[itemId] = (totals[itemId] ?? 0) + rating;
+        counts[itemId] = (counts[itemId] ?? 0) + 1;
+
+        if (currentUserId != null &&
+            row['user_id']?.toString() == currentUserId) {
+          userRatings[itemId] = rating;
+        }
+      }
+
+      return items.map((item) {
+        final count = counts[item.id] ?? 0;
+        if (count == 0) return item;
+
+        return item.copyWith(
+          ratingAverage: (totals[item.id] ?? 0) / count,
+          ratingCount: count,
+          userRating: userRatings[item.id],
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Food ratings unavailable: $e');
+      return items;
+    }
+  }
+
+  Future<void> _openFoodRatingSheet(_FoodItem item) async {
+    final state = context.read<AuthBloc>().state;
+    if (state is! AuthAuthenticated) {
+      AppToast.show(
+        context: context,
+        message: 'Please sign in before rating food.',
+        type: AppToastType.error,
+      );
+      return;
+    }
+
+    final initialRating =
+        item.userRating ??
+        (item.ratingCount > 0 ? item.ratingAverage.round() : 5);
+    final rating = await _showFoodRatingSheet(
+      item: item,
+      initialRating: _clampFoodRating(initialRating),
+    );
+    if (rating == null) return;
+    if (!mounted) return;
+
+    if (item.id.startsWith('sample-')) {
+      _applyLocalFoodRating(item.id, rating);
+      AppToast.show(
+        context: context,
+        message: 'Rating saved.',
+        type: AppToastType.success,
+      );
+      return;
+    }
+
+    try {
+      await _supabase.from('food_item_ratings').upsert({
+        'food_item_id': item.id,
+        'user_id': state.user.id,
+        'rating': rating,
+      }, onConflict: 'food_item_id,user_id');
+
+      if (!mounted) return;
+      _applyLocalFoodRating(item.id, rating);
+      AppToast.show(
+        context: context,
+        message: 'Rating saved.',
+        type: AppToastType.success,
+      );
+    } catch (e) {
+      debugPrint('Food rating error: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message:
+            'Food ratings are not ready. Run schema_v6_food_marketplace.sql.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  void _applyLocalFoodRating(String itemId, int rating) {
+    if (!mounted) return;
+    setState(() {
+      _items = _items
+          .map((item) => item.id == itemId ? item.withUserRating(rating) : item)
+          .toList();
+    });
+  }
+
+  Future<int?> _showFoodRatingSheet({
+    required _FoodItem item,
+    required int initialRating,
+  }) {
+    var selectedRating = _clampFoodRating(initialRating);
+
+    return showModalBottomSheet<int>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: context.appSurface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, setSheetState) {
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: sheetContext.appBorder,
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _FoodRatingBadge(item: item, large: true),
+                    const SizedBox(height: AppSpacing.md),
+                    AppText(
+                      'Rate ${item.title}',
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    AppText(
+                      'Your rating helps other users choose faster.',
+                      variant: AppTextVariant.bodyMedium,
+                      color: sheetContext.appTextSecondary,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        final value = index + 1;
+                        return IconButton(
+                          tooltip: '$value star',
+                          onPressed: () =>
+                              setSheetState(() => selectedRating = value),
+                          icon: Icon(
+                            value <= selectedRating
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: Colors.amber,
+                            size: 40,
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton.primary(
+                      label: 'SAVE RATING',
+                      fullWidth: true,
+                      onPressed: () =>
+                          Navigator.of(sheetContext).pop(selectedRating),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      child: AppText(
+                        'Cancel',
+                        variant: AppTextVariant.button,
+                        color: sheetContext.appTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _selectRestaurant(_RestaurantFeature restaurant) {
@@ -329,32 +552,33 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
   }
 
   Future<void> _openOrderSheet(_FoodItem item) async {
-    final addressController = TextEditingController();
-    final phoneController = TextEditingController();
     final state = context.read<AuthBloc>().state;
-    if (state is AuthAuthenticated) {
-      phoneController.text = state.user.phone ?? '';
-    }
+    final initialPhone = state is AuthAuthenticated
+        ? state.user.phone ?? ''
+        : '';
 
     await showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: context.appSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (sheetContext) {
-        return _buildOrderSheet(
-          sheetContext: sheetContext,
-          item: item,
-          addressController: addressController,
-          phoneController: phoneController,
+        return _FoodOrderSheetControllerHost(
+          initialPhone: initialPhone,
+          builder: (addressController, phoneController) {
+            return _buildOrderSheet(
+              sheetContext: sheetContext,
+              item: item,
+              addressController: addressController,
+              phoneController: phoneController,
+            );
+          },
         );
       },
     );
-
-    addressController.dispose();
-    phoneController.dispose();
   }
 
   Widget _buildOrderSheet({
@@ -373,7 +597,8 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           left: AppSpacing.lg,
           right: AppSpacing.lg,
           top: AppSpacing.md,
-          bottom: MediaQuery.of(sheetContext).viewInsets.bottom + AppSpacing.lg,
+          bottom:
+              MediaQuery.of(sheetContext).viewInsets.bottom + AppSpacing.xxxl,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -437,12 +662,25 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            AppText(
-              item.title,
-              variant: AppTextVariant.heading2,
-              fontWeight: FontWeight.w900,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _FoodRatingBadge(
+                  item: item,
+                  large: true,
+                  onTap: () => _openFoodRatingSheet(item),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AppText(
+                    item.title,
+                    variant: AppTextVariant.heading2,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.sm),
             Wrap(
@@ -564,6 +802,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     String address,
     String phone,
   ) async {
+    if (!mounted) return;
     final state = context.read<AuthBloc>().state;
     if (state is! AuthAuthenticated) {
       AppToast.show(
@@ -622,6 +861,19 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     }
   }
 
+  void _focusMarketplaceSearch() {
+    if (_tab != 'for_you') {
+      setState(() => _tab = 'for_you');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _searchFocusNode.requestFocus();
+      });
+      return;
+    }
+
+    _searchFocusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -648,6 +900,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                 SliverToBoxAdapter(child: _buildPicksHeader()),
                 _buildFoodGrid(_visibleItems),
               ],
+              const SliverToBoxAdapter(
+                child: SizedBox(height: _bottomNavClearance),
+              ),
             ],
           ),
         ),
@@ -669,7 +924,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           Row(
             children: [
               IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: NavigationService().triggerHomeAction,
                 icon: Icon(
                   Icons.arrow_back_rounded,
                   color: context.appTextPrimary,
@@ -686,11 +941,11 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: _focusMarketplaceSearch,
                 icon: Icon(Icons.search_rounded, color: context.appTextPrimary),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () => NavigationService().navigateToTab(3),
                 icon: Icon(
                   Icons.person_outline_rounded,
                   color: context.appTextPrimary,
@@ -723,6 +978,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           const SizedBox(height: AppSpacing.md),
           TextField(
             controller: _searchController,
+            focusNode: _searchFocusNode,
             onChanged: (_) => setState(() {}),
             decoration: InputDecoration(
               hintText: 'Search foods',
@@ -915,6 +1171,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           (context, index) => _FoodItemCard(
             item: items[index],
             onTap: () => _openOrderSheet(items[index]),
+            onRatingTap: () => _openFoodRatingSheet(items[index]),
           ),
           childCount: items.length,
         ),
@@ -982,6 +1239,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       itemBuilder: (context, index) => _FoodItemCard(
         item: items[index],
         onTap: () => _openOrderSheet(items[index]),
+        onRatingTap: () => _openFoodRatingSheet(items[index]),
       ),
     );
   }
@@ -1140,10 +1398,15 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
 }
 
 class _FoodItemCard extends StatelessWidget {
-  const _FoodItemCard({required this.item, required this.onTap});
+  const _FoodItemCard({
+    required this.item,
+    required this.onTap,
+    required this.onRatingTap,
+  });
 
   final _FoodItem item;
   final VoidCallback onTap;
+  final VoidCallback onRatingTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1187,16 +1450,26 @@ class _FoodItemCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Row(
+                    children: [
+                      _FoodRatingBadge(item: item, onTap: onRatingTap),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: AppText(
+                          item.title,
+                          variant: AppTextVariant.bodySmall,
+                          fontWeight: FontWeight.w900,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
                   AppText(
                     '${item.priceLabel} ETB',
-                    variant: AppTextVariant.bodyMedium,
+                    variant: AppTextVariant.labelSmall,
                     fontWeight: FontWeight.w900,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  AppText(
-                    item.title,
-                    variant: AppTextVariant.bodySmall,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1212,6 +1485,58 @@ class _FoodItemCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FoodRatingBadge extends StatelessWidget {
+  const _FoodRatingBadge({required this.item, this.onTap, this.large = false});
+
+  final _FoodItem item;
+  final VoidCallback? onTap;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasRating = item.ratingCount > 0;
+    final label = hasRating ? item.ratingAverage.toStringAsFixed(1) : 'Rate';
+    final countLabel = hasRating ? ' (${item.ratingCount})' : '';
+    final iconSize = large ? 20.0 : 15.0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: large ? 10 : 7,
+            vertical: large ? 7 : 4,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.amber.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            border: Border.all(color: Colors.amber.withValues(alpha: 0.36)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.star_rounded, color: Colors.amber, size: iconSize),
+              const SizedBox(width: 3),
+              AppText(
+                '$label$countLabel',
+                variant: large
+                    ? AppTextVariant.bodySmall
+                    : AppTextVariant.labelSmall,
+                color: context.appTextPrimary,
+                fontWeight: FontWeight.w900,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1329,6 +1654,49 @@ class _ImageUploadBox extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _FoodOrderSheetControllerHost extends StatefulWidget {
+  const _FoodOrderSheetControllerHost({
+    required this.initialPhone,
+    required this.builder,
+  });
+
+  final String initialPhone;
+  final Widget Function(
+    TextEditingController addressController,
+    TextEditingController phoneController,
+  )
+  builder;
+
+  @override
+  State<_FoodOrderSheetControllerHost> createState() =>
+      _FoodOrderSheetControllerHostState();
+}
+
+class _FoodOrderSheetControllerHostState
+    extends State<_FoodOrderSheetControllerHost> {
+  late final TextEditingController _addressController;
+  late final TextEditingController _phoneController;
+
+  @override
+  void initState() {
+    super.initState();
+    _addressController = TextEditingController();
+    _phoneController = TextEditingController(text: widget.initialPhone);
+  }
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.builder(_addressController, _phoneController);
   }
 }
 
@@ -1607,6 +1975,9 @@ class _FoodItem {
     required this.restaurantId,
     required this.restaurantName,
     required this.isFeatured,
+    this.ratingAverage = 0,
+    this.ratingCount = 0,
+    this.userRating,
   });
 
   factory _FoodItem.fromMap(Map<String, dynamic> map) {
@@ -1634,6 +2005,8 @@ class _FoodItem {
       restaurantName:
           linkedRestaurantName ?? map['restaurant_name']?.toString() ?? '',
       isFeatured: map['is_featured'] == true,
+      ratingAverage: _asNullableDouble(map['rating_average']) ?? 0,
+      ratingCount: int.tryParse(map['rating_count']?.toString() ?? '') ?? 0,
     );
   }
 
@@ -1652,6 +2025,9 @@ class _FoodItem {
   final String? restaurantId;
   final String restaurantName;
   final bool isFeatured;
+  final double ratingAverage;
+  final int ratingCount;
+  final int? userRating;
 
   String get priceLabel => price == price.roundToDouble()
       ? price.toStringAsFixed(0)
@@ -1665,6 +2041,49 @@ class _FoodItem {
   String? get pickupCoordinateLabel {
     if (pickupLat == null || pickupLng == null) return null;
     return '${pickupLat!.toStringAsFixed(5)}, ${pickupLng!.toStringAsFixed(5)}';
+  }
+
+  _FoodItem copyWith({
+    double? ratingAverage,
+    int? ratingCount,
+    int? userRating,
+  }) {
+    return _FoodItem(
+      id: id,
+      title: title,
+      description: description,
+      price: price,
+      imageUrl: imageUrl,
+      sellerName: sellerName,
+      sellerPhone: sellerPhone,
+      pickupLocation: pickupLocation,
+      pickupLat: pickupLat,
+      pickupLng: pickupLng,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      restaurantId: restaurantId,
+      restaurantName: restaurantName,
+      isFeatured: isFeatured,
+      ratingAverage: ratingAverage ?? this.ratingAverage,
+      ratingCount: ratingCount ?? this.ratingCount,
+      userRating: userRating ?? this.userRating,
+    );
+  }
+
+  _FoodItem withUserRating(int rating) {
+    final safeRating = _clampFoodRating(rating);
+    final previousRating = userRating;
+    final nextCount = previousRating == null ? ratingCount + 1 : ratingCount;
+    final previousTotal = ratingAverage * ratingCount;
+    final nextTotal = previousRating == null
+        ? previousTotal + safeRating
+        : previousTotal - previousRating + safeRating;
+
+    return copyWith(
+      ratingAverage: nextCount == 0 ? 0 : nextTotal / nextCount,
+      ratingCount: nextCount,
+      userRating: safeRating,
+    );
   }
 
   static double? _asNullableDouble(Object? value) {
@@ -1749,6 +2168,8 @@ const List<_FoodItem> _sampleItems = [
     restaurantId: 'sample-simple-pistro',
     restaurantName: 'Simple pistro',
     isFeatured: true,
+    ratingAverage: 4.8,
+    ratingCount: 42,
   ),
   _FoodItem(
     id: 'sample-chicken',
@@ -1767,6 +2188,8 @@ const List<_FoodItem> _sampleItems = [
     restaurantId: 'sample-amrogn-chiken',
     restaurantName: 'Amrogn chiken',
     isFeatured: true,
+    ratingAverage: 4.6,
+    ratingCount: 31,
   ),
   _FoodItem(
     id: 'sample-doro',
@@ -1785,6 +2208,8 @@ const List<_FoodItem> _sampleItems = [
     restaurantId: null,
     restaurantName: '',
     isFeatured: false,
+    ratingAverage: 4.9,
+    ratingCount: 18,
   ),
   _FoodItem(
     id: 'sample-bowl',
@@ -1803,5 +2228,7 @@ const List<_FoodItem> _sampleItems = [
     restaurantId: null,
     restaurantName: '',
     isFeatured: false,
+    ratingAverage: 4.5,
+    ratingCount: 15,
   ),
 ];

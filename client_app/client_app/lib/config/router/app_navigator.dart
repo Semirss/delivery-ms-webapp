@@ -55,12 +55,12 @@ class AppNavigatorImpl implements AppNavigator {
   // Tab navigation
   @override
   void navigateToHomeTab() {
-    NavigationService().navigateToTab(0);
+    NavigationService().triggerHomeAction();
   }
 
   @override
   void navigateToProfileTab() {
-    NavigationService().navigateToTab(1);
+    NavigationService().navigateToTab(3);
   }
 
   @override
@@ -149,7 +149,7 @@ class AppNavigatorImpl implements AppNavigator {
   // User profile and settings
   @override
   void pushProfileScreen() {
-    NavigationService().navigateToTab(1);
+    NavigationService().navigateToTab(3);
   }
 
   @override

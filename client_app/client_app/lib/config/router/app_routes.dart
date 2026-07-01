@@ -2,6 +2,8 @@ enum AppRoutes {
   // Main routes
   main(name: 'main', path: '/main'),
   home(name: 'home', path: '/home'),
+  activity(name: 'activity', path: '/activity'),
+  food(name: 'food', path: '/food'),
 
   // Auth routes
   auth(name: 'auth', path: '/auth'),

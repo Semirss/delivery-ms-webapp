@@ -1,4 +1,5 @@
 import 'package:client_app/config/router/app_routes.dart';
+import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +7,6 @@ import 'package:client_ui/app_ui.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/core/preferences/app_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
@@ -15,10 +15,15 @@ import 'package:url_launcher/url_launcher.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static final Uri _websiteUri = Uri.parse('https://www.motobikedeliveryservice.com/');
+  static final Uri _websiteUri = Uri.parse(
+    'https://www.motobikedeliveryservice.com/',
+  );
 
   Future<void> _openWebsite(BuildContext context) async {
-    final opened = await launchUrl(_websiteUri, mode: LaunchMode.externalApplication);
+    final opened = await launchUrl(
+      _websiteUri,
+      mode: LaunchMode.externalApplication,
+    );
     if (!opened && context.mounted) {
       AppToast.show(
         context: context,
@@ -128,7 +133,8 @@ class ProfileScreen extends StatelessWidget {
                                   : _loadRatingSummary('client', user.id),
                               builder: (context, snapshot) {
                                 final rating =
-                                    snapshot.data ?? const _RatingSummary.empty();
+                                    snapshot.data ??
+                                    const _RatingSummary.empty();
                                 final label = rating.hasRatings
                                     ? '${rating.average.toStringAsFixed(1)} client rating'
                                     : 'No ratings yet';
@@ -145,7 +151,9 @@ class ProfileScreen extends StatelessWidget {
                                     Text(
                                       label,
                                       style: TextStyle(
-                                        color: Colors.white.withValues(alpha: 0.85),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.85,
+                                        ),
                                         fontSize: 13,
                                       ),
                                     ),
@@ -159,8 +167,11 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                    onPressed: () => context.goNamed(AppRoutes.home.name),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
+                    onPressed: NavigationService().triggerHomeAction,
                   ),
                 ),
                 SliverToBoxAdapter(
@@ -175,19 +186,15 @@ class ProfileScreen extends StatelessWidget {
                             icon: Icons.history_rounded,
                             title: 'Delivery History',
                             subtitle: 'View all your past deliveries',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (_) => const RideHistoryScreen(),
-                              ),
-                            ),
+                            onTap: () => NavigationService().navigateToTab(1),
                           ),
                           _buildTile(
                             context,
                             icon: Icons.notifications_rounded,
                             title: 'Notifications',
                             subtitle: 'Manage your preferences',
-                            onTap: () => context.pushNamed(AppRoutes.notification.name),
+                            onTap: () =>
+                                context.pushNamed(AppRoutes.notification.name),
                           ),
                         ]),
                         const SizedBox(height: AppSpacing.lg),
@@ -204,12 +211,22 @@ class ProfileScreen extends StatelessWidget {
                               style: TextStyle(color: context.appTextPrimary),
                               underline: const SizedBox.shrink(),
                               items: const [
-                                DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
-                                DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-                                DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                                DropdownMenuItem(
+                                  value: ThemeMode.light,
+                                  child: Text('Light'),
+                                ),
+                                DropdownMenuItem(
+                                  value: ThemeMode.dark,
+                                  child: Text('Dark'),
+                                ),
+                                DropdownMenuItem(
+                                  value: ThemeMode.system,
+                                  child: Text('System'),
+                                ),
                               ],
                               onChanged: (value) {
-                                if (value != null) preferences.setThemeMode(value);
+                                if (value != null)
+                                  preferences.setThemeMode(value);
                               },
                             ),
                           ),
@@ -272,9 +289,7 @@ class ProfileScreen extends StatelessWidget {
 
       if (data.isEmpty) return const _RatingSummary.empty();
       final ratings = data
-          .map(
-            (row) => int.tryParse(row['rating']?.toString() ?? ''),
-          )
+          .map((row) => int.tryParse(row['rating']?.toString() ?? ''))
           .whereType<int>()
           .toList();
       if (ratings.isEmpty) return const _RatingSummary.empty();
@@ -317,17 +332,19 @@ class ProfileScreen extends StatelessWidget {
             children: tiles
                 .asMap()
                 .entries
-                .map((e) => Column(
-                      children: [
-                        e.value,
-                        if (e.key < tiles.length - 1)
-                          Divider(
-                            height: 1,
-                            indent: 72,
-                            color: context.appBorder,
-                          ),
-                      ],
-                    ))
+                .map(
+                  (e) => Column(
+                    children: [
+                      e.value,
+                      if (e.key < tiles.length - 1)
+                        Divider(
+                          height: 1,
+                          indent: 72,
+                          color: context.appBorder,
+                        ),
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         ),
@@ -426,14 +443,9 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class _RatingSummary {
-  const _RatingSummary({
-    required this.average,
-    required this.count,
-  });
+  const _RatingSummary({required this.average, required this.count});
 
-  const _RatingSummary.empty()
-      : average = 0,
-        count = 0;
+  const _RatingSummary.empty() : average = 0, count = 0;
 
   final double average;
   final int count;

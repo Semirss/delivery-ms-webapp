@@ -10,6 +10,8 @@ import 'package:client_app/features/auth/presentation/screens/otp_screen.dart';
 import 'package:client_app/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:client_app/features/auth/presentation/screens/signup_screen.dart';
 import 'package:client_app/features/auth/presentation/screens/verify_reset_password_screen.dart';
+import 'package:client_app/features/food_marketplace/presentation/screens/food_marketplace_screen.dart';
+import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/home/presentation/screens/home_screen.dart';
 import 'package:client_app/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:client_app/features/onboarding/presentation/screens/onboarding_screen.dart';
@@ -29,6 +31,10 @@ class AppRouter {
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeTabNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> activityTabNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> foodTabNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> profileTabNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -139,6 +145,30 @@ class AppRouter {
                         getPage(child: const SearchScreen(), state: state),
                   ),
                 ],
+              ),
+            ],
+          ),
+          // Activity tab
+          StatefulShellBranch(
+            navigatorKey: activityTabNavigatorKey,
+            routes: [
+              GoRoute(
+                name: AppRoutes.activity.name,
+                path: AppRoutes.activity.path,
+                pageBuilder: (context, state) =>
+                    getPage(child: const RideHistoryScreen(), state: state),
+              ),
+            ],
+          ),
+          // Food tab
+          StatefulShellBranch(
+            navigatorKey: foodTabNavigatorKey,
+            routes: [
+              GoRoute(
+                name: AppRoutes.food.name,
+                path: AppRoutes.food.path,
+                pageBuilder: (context, state) =>
+                    getPage(child: const FoodMarketplaceScreen(), state: state),
               ),
             ],
           ),
@@ -268,10 +298,8 @@ class AppRouter {
       GoRoute(
         name: AppRoutes.notification.name,
         path: AppRoutes.notification.path,
-        pageBuilder: (context, state) => getPage(
-          child: const NotificationsScreen(),
-          state: state,
-        ),
+        pageBuilder: (context, state) =>
+            getPage(child: const NotificationsScreen(), state: state),
       ),
       GoRoute(
         name: AppRoutes.changePin.name,
@@ -357,6 +385,8 @@ class AppRouter {
         // Protected routes that require authentication
         final protectedRoutes = [
           AppRoutes.home.path,
+          AppRoutes.activity.path,
+          AppRoutes.food.path,
           AppRoutes.profile.path,
           AppRoutes.personalDetails.path,
           AppRoutes.notification.path,
@@ -416,13 +446,7 @@ class AppRouter {
     required Widget child,
     required GoRouterState state,
   }) {
-    return CustomTransitionPage(
-      key: state.pageKey,
-      child: child,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(opacity: animation, child: child);
-      },
-    );
+    return NoTransitionPage(key: state.pageKey, child: child);
   }
 }
 
@@ -434,6 +458,8 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomGap = MediaQuery.viewPaddingOf(context).bottom + 10;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
@@ -441,7 +467,261 @@ class MainScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        body: navigationShell,
+        extendBody: true,
+        body: Stack(
+          children: [
+            Positioned.fill(child: navigationShell),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: bottomGap,
+              child: _GlassBottomNavBar(
+                currentIndex: navigationShell.currentIndex,
+                onHomeTap: NavigationService().triggerHomeAction,
+                onActivityTap: () => NavigationService().navigateToTab(1),
+                onDeliverTap: NavigationService().triggerPrimaryDeliveryAction,
+                onFoodTap: () => NavigationService().navigateToTab(2),
+                onProfileTap: () => NavigationService().navigateToTab(3),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassBottomNavBar extends StatelessWidget {
+  const _GlassBottomNavBar({
+    required this.currentIndex,
+    required this.onHomeTap,
+    required this.onActivityTap,
+    required this.onDeliverTap,
+    required this.onFoodTap,
+    required this.onProfileTap,
+  });
+
+  final int currentIndex;
+  final VoidCallback onHomeTap;
+  final VoidCallback onActivityTap;
+  final VoidCallback onDeliverTap;
+  final VoidCallback onFoodTap;
+  final VoidCallback onProfileTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final barColor = Color.alphaBlend(
+      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.12 : 0.06),
+      context.appSurface,
+    );
+    final borderColor = Color.alphaBlend(
+      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.24 : 0.14),
+      context.appBorder,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SizedBox(
+        height: 78,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: barColor.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: borderColor),
+                  ),
+                  child: SizedBox(
+                    height: 58,
+                    child: Row(
+                      children: [
+                        _GlassNavItem(
+                          icon: Icons.home_rounded,
+                          label: 'Home',
+                          selected: currentIndex == 0,
+                          onTap: onHomeTap,
+                        ),
+                        _GlassNavItem(
+                          icon: Icons.receipt_long_rounded,
+                          label: 'Activity',
+                          selected: currentIndex == 1,
+                          onTap: onActivityTap,
+                        ),
+                        const Expanded(child: SizedBox.shrink()),
+                        _GlassNavItem(
+                          icon: Icons.restaurant_menu_rounded,
+                          label: 'Food',
+                          selected: currentIndex == 2,
+                          onTap: onFoodTap,
+                        ),
+                        _GlassNavItem(
+                          icon: Icons.person_rounded,
+                          label: 'Profile',
+                          selected: currentIndex == 3,
+                          onTap: onProfileTap,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              child: _AnimatedMotorAction(onTap: onDeliverTap),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassNavItem extends StatelessWidget {
+  const _GlassNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = selected ? colorScheme.primary : context.appTextSecondary;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: color, size: 23),
+                  const SizedBox(height: 3),
+                  AppText(
+                    label,
+                    variant: AppTextVariant.labelSmall,
+                    color: color,
+                    fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              if (selected)
+                Positioned(
+                  bottom: -1,
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AnimatedMotorAction extends StatefulWidget {
+  const _AnimatedMotorAction({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  State<_AnimatedMotorAction> createState() => _AnimatedMotorActionState();
+}
+
+class _AnimatedMotorActionState extends State<_AnimatedMotorAction>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 420),
+    );
+    _scale = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1, end: 1.12), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 1.12, end: 0.96), weight: 25),
+      TweenSequenceItem(tween: Tween(begin: 0.96, end: 1), weight: 40),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    _controller.forward(from: 0);
+    widget.onTap();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: _handleTap,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(0, -2 * _controller.value),
+            child: Transform.scale(scale: _scale.value, child: child),
+          );
+        },
+        child: Container(
+          width: 68,
+          height: 68,
+          decoration: BoxDecoration(
+            color: colorScheme.primary,
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: colorScheme.onPrimary.withValues(alpha: 0.18),
+            ),
+          ),
+          child: Icon(
+            Icons.motorcycle_rounded,
+            color: colorScheme.onPrimary,
+            size: 34,
+          ),
+        ),
       ),
     );
   }

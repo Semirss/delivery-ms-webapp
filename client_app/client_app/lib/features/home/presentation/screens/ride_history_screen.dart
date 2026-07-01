@@ -1,4 +1,5 @@
 import 'package:client_ui/app_ui.dart';
+import 'package:client_app/config/router/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -76,7 +77,9 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
   }
 
   void _subscribeToDeliveryHistory({String? clientId, required String phone}) {
-    final filterColumn = clientId?.isNotEmpty == true ? 'client_id' : 'customer_phone';
+    final filterColumn = clientId?.isNotEmpty == true
+        ? 'client_id'
+        : 'customer_phone';
     final filterValue = clientId?.isNotEmpty == true ? clientId! : phone;
     if (filterValue.isEmpty) return;
 
@@ -140,97 +143,138 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
       appBar: AppBar(
         backgroundColor: context.appBackground,
         elevation: 0,
-        title: const AppText('My Deliveries', variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+        title: const AppText(
+          'My Deliveries',
+          variant: AppTextVariant.heading3,
+          fontWeight: FontWeight.bold,
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_rounded, color: context.appTextPrimary),
-          onPressed: () => Navigator.pop(context),
+          onPressed: NavigationService().triggerHomeAction,
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : _deliveries.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.inventory_2_rounded, size: 80, color: context.appBorder),
-                      const SizedBox(height: AppSpacing.lg),
-                      AppText('No deliveries yet', variant: AppTextVariant.heading3, color: context.appTextSecondary),
-                      AppText('Create your first delivery request.', variant: AppTextVariant.bodyMedium, color: context.appTextSecondary),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.inventory_2_rounded,
+                    size: 80,
+                    color: context.appBorder,
                   ),
-                )
-              : RefreshIndicator(
-                  color: AppColors.primary,
-                  onRefresh: _fetchDeliveries,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    itemCount: _deliveries.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, index) {
-                      final delivery = _deliveries[index];
-                      final status = delivery['status']?.toString() ?? 'Pending';
-                      final fee = _feeLabel(delivery['delivery_fee']);
-                      final createdAt = delivery['created_at'] != null
-                          ? DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.parse(delivery['created_at'].toString()).toLocal())
-                          : '';
+                  const SizedBox(height: AppSpacing.lg),
+                  AppText(
+                    'No deliveries yet',
+                    variant: AppTextVariant.heading3,
+                    color: context.appTextSecondary,
+                  ),
+                  AppText(
+                    'Create your first delivery request.',
+                    variant: AppTextVariant.bodyMedium,
+                    color: context.appTextSecondary,
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              color: AppColors.primary,
+              onRefresh: _fetchDeliveries,
+              child: ListView.separated(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                itemCount: _deliveries.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: AppSpacing.sm),
+                itemBuilder: (context, index) {
+                  final delivery = _deliveries[index];
+                  final status = delivery['status']?.toString() ?? 'Pending';
+                  final fee = _feeLabel(delivery['delivery_fee']);
+                  final createdAt = delivery['created_at'] != null
+                      ? DateFormat('dd MMM yyyy, hh:mm a').format(
+                          DateTime.parse(
+                            delivery['created_at'].toString(),
+                          ).toLocal(),
+                        )
+                      : '';
 
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: context.appSurface,
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
-                          border: Border.all(color: context.appBorder),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: context.appSurface,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(color: context.appBorder),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Icon(_statusIcon(status), color: _statusColor(status), size: 18),
-                                      const SizedBox(width: 6),
-                                      AppText(
-                                        status.toUpperCase(),
-                                        variant: AppTextVariant.labelLarge,
-                                        color: _statusColor(status),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ],
+                                  Icon(
+                                    _statusIcon(status),
+                                    color: _statusColor(status),
+                                    size: 18,
                                   ),
-                                  AppText(fee, variant: AppTextVariant.heading3, fontWeight: FontWeight.bold),
+                                  const SizedBox(width: 6),
+                                  AppText(
+                                    status.toUpperCase(),
+                                    variant: AppTextVariant.labelLarge,
+                                    color: _statusColor(status),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ],
                               ),
-                              const Divider(height: AppSpacing.lg),
-                              _buildLocationRow(
-                                icon: Icons.my_location_rounded,
-                                color: AppColors.primary,
-                                label: delivery['pickup_location']?.toString() ?? 'Pickup location',
+                              AppText(
+                                fee,
+                                variant: AppTextVariant.heading3,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: AppSpacing.xs),
-                              _buildLocationRow(
-                                icon: Icons.location_on_rounded,
-                                color: context.appTextPrimary,
-                                label: delivery['dropoff_location']?.toString() ?? 'Dropoff location',
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              AppText(createdAt, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
                             ],
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                          const Divider(height: AppSpacing.lg),
+                          _buildLocationRow(
+                            icon: Icons.my_location_rounded,
+                            color: AppColors.primary,
+                            label:
+                                delivery['pickup_location']?.toString() ??
+                                'Pickup location',
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          _buildLocationRow(
+                            icon: Icons.location_on_rounded,
+                            color: context.appTextPrimary,
+                            label:
+                                delivery['dropoff_location']?.toString() ??
+                                'Dropoff location',
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          AppText(
+                            createdAt,
+                            variant: AppTextVariant.bodySmall,
+                            color: context.appTextSecondary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 
   String _feeLabel(Object? value) {
-    final amount = value is num ? value.toDouble() : double.tryParse(value?.toString() ?? '');
+    final amount = value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
     if (amount == null) return '-- ETB';
     return '${amount.toStringAsFixed(0)} ETB';
   }
@@ -245,7 +289,12 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         Icon(icon, color: color, size: 16),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
-          child: AppText(label, variant: AppTextVariant.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
+          child: AppText(
+            label,
+            variant: AppTextVariant.bodyMedium,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
