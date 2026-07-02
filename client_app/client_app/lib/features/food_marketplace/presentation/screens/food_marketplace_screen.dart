@@ -3,11 +3,43 @@ import 'dart:typed_data';
 import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:client_app/features/home/data/repositories/map_repository.dart';
+import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+
+class _FoodDeliveryPricing {
+  const _FoodDeliveryPricing({
+    required this.title,
+    required this.baseFare,
+    required this.perKm,
+    required this.icon,
+  });
+
+  final String title;
+  final int baseFare;
+  final int perKm;
+  final IconData icon;
+}
+
+const Map<String, _FoodDeliveryPricing> _foodDeliveryPricing = {
+  'Bike': _FoodDeliveryPricing(
+    title: 'Bicycle',
+    baseFare: 30,
+    perKm: 40,
+    icon: Icons.directions_bike_rounded,
+  ),
+  'Motor': _FoodDeliveryPricing(
+    title: 'Motorbike',
+    baseFare: 40,
+    perKm: 50,
+    icon: Icons.motorcycle_rounded,
+  ),
+};
 
 int _clampFoodRating(int value) {
   if (value < 1) return 1;
@@ -23,9 +55,10 @@ class FoodMarketplaceScreen extends StatefulWidget {
 }
 
 class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
-  static const double _bottomNavClearance = 120;
+  static const double _bottomNavClearance = 132;
 
   final SupabaseClient _supabase = Supabase.instance.client;
+  final MapRepository _mapRepository = MapRepository();
   final ImagePicker _imagePicker = ImagePicker();
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
@@ -568,12 +601,23 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       builder: (sheetContext) {
         return _FoodOrderSheetControllerHost(
           initialPhone: initialPhone,
-          builder: (addressController, phoneController) {
+          builder: (
+            addressController,
+            phoneController,
+            selectedVehicle,
+            onVehicleChanged,
+            selectedDestination,
+            onDestinationChanged,
+          ) {
             return _buildOrderSheet(
               sheetContext: sheetContext,
               item: item,
               addressController: addressController,
               phoneController: phoneController,
+              selectedVehicle: selectedVehicle,
+              onVehicleChanged: onVehicleChanged,
+              selectedDestination: selectedDestination,
+              onDestinationChanged: onDestinationChanged,
             );
           },
         );
@@ -586,10 +630,20 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     required _FoodItem item,
     required TextEditingController addressController,
     required TextEditingController phoneController,
+    required String? selectedVehicle,
+    required ValueChanged<String> onVehicleChanged,
+    required MapPlace? selectedDestination,
+    required ValueChanged<MapPlace> onDestinationChanged,
   }) {
     final description = item.description.trim().isEmpty
         ? 'No description added.'
         : item.description.trim();
+    final estimate = selectedVehicle == null
+        ? null
+        : _calculateFoodDeliveryFee(item, selectedDestination, selectedVehicle);
+    final estimateDistance = selectedVehicle == null
+        ? null
+        : _foodDeliveryDistanceKm(item, selectedDestination);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -759,10 +813,24 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SheetField(
-              controller: addressController,
-              label: 'Delivery address',
-              icon: Icons.location_on_outlined,
+            _FoodDeliveryAddressPicker(
+              address: selectedDestination?.displayName,
+              onTap: () => _pickFoodDeliveryAddress(
+                addressController: addressController,
+                onDestinationChanged: onDestinationChanged,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _FoodVehicleSelector(
+              selectedVehicle: selectedVehicle,
+              onChanged: onVehicleChanged,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _FoodDeliveryEstimateCard(
+              vehicleCategory: selectedVehicle,
+              estimate: estimate,
+              distanceKm: estimateDistance,
+              hasExactAddress: selectedDestination != null,
             ),
             const SizedBox(height: AppSpacing.md),
             _SheetField(
@@ -777,18 +845,43 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
               icon: Icons.delivery_dining_rounded,
               fullWidth: true,
               onPressed: () async {
-                final address = addressController.text.trim();
                 final phone = phoneController.text.trim();
-                if (address.isEmpty || phone.isEmpty) {
+                if (selectedDestination == null) {
                   AppToast.show(
                     context: context,
-                    message: 'Add delivery address and phone.',
+                    message: 'Choose a delivery address.',
+                    type: AppToastType.error,
+                  );
+                  return;
+                }
+                if (selectedVehicle == null) {
+                  AppToast.show(
+                    context: context,
+                    message: 'Choose Bike or Motor.',
+                    type: AppToastType.error,
+                  );
+                  return;
+                }
+                if (phone.isEmpty) {
+                  AppToast.show(
+                    context: context,
+                    message: 'Add phone number.',
                     type: AppToastType.error,
                   );
                   return;
                 }
                 Navigator.of(sheetContext).pop();
-                await _requestFoodDelivery(item, address, phone);
+                await _requestFoodDelivery(
+                  item,
+                  selectedDestination,
+                  selectedVehicle,
+                  estimate ?? _calculateFoodDeliveryFee(
+                    item,
+                    selectedDestination,
+                    selectedVehicle,
+                  ),
+                  phone,
+                );
               },
             ),
           ],
@@ -797,9 +890,54 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     );
   }
 
+  Future<void> _pickFoodDeliveryAddress({
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final destination = await Navigator.of(context, rootNavigator: true)
+        .push<MapPlace>(
+          MaterialPageRoute(
+            builder: (context) => const SearchDestinationScreen(),
+          ),
+        );
+    if (destination == null || !mounted) return;
+
+    addressController.text = destination.displayName;
+    onDestinationChanged(destination);
+  }
+
+  double _foodDeliveryDistanceKm(_FoodItem item, MapPlace? destination) {
+    if (destination == null ||
+        item.pickupLat == null ||
+        item.pickupLng == null) {
+      return 3;
+    }
+
+    final distanceKm = _mapRepository.straightLineDistanceKm(
+      LatLng(item.pickupLat!, item.pickupLng!),
+      destination.location,
+    );
+    final cityRoadEstimate = distanceKm * 1.25;
+    return cityRoadEstimate < 1 ? 1 : cityRoadEstimate;
+  }
+
+  int _calculateFoodDeliveryFee(
+    _FoodItem item,
+    MapPlace? destination,
+    String vehicleCategory,
+  ) {
+    final pricing =
+        _foodDeliveryPricing[vehicleCategory] ?? _foodDeliveryPricing['Motor']!;
+    final distanceKm = _foodDeliveryDistanceKm(item, destination);
+    final raw = pricing.baseFare + (distanceKm * pricing.perKm);
+    return (raw / 10).round() * 10;
+  }
+
   Future<void> _requestFoodDelivery(
     _FoodItem item,
-    String address,
+    MapPlace destination,
+    String vehicleCategory,
+    int deliveryFee,
     String phone,
   ) async {
     if (!mounted) return;
@@ -836,11 +974,13 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         'pickup_location': pickupDetails,
         'pickup_lat': item.pickupLat,
         'pickup_lng': item.pickupLng,
-        'dropoff_location': address,
+        'dropoff_location': destination.displayName,
+        'dropoff_lat': destination.location.latitude,
+        'dropoff_lng': destination.location.longitude,
         'package_type': 'Food: $packageDetails',
         'service_type': 'food_marketplace',
-        'vehicle_category': 'Motor',
-        'delivery_fee': null,
+        'vehicle_category': vehicleCategory,
+        'delivery_fee': deliveryFee,
         'status': 'Pending',
       });
 
@@ -1179,7 +1319,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           crossAxisCount: 2,
           mainAxisSpacing: 1,
           crossAxisSpacing: 1,
-          childAspectRatio: 0.72,
+          childAspectRatio: 0.66,
         ),
       ),
     );
@@ -1234,7 +1374,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         crossAxisCount: 2,
         mainAxisSpacing: 1,
         crossAxisSpacing: 1,
-        childAspectRatio: 0.72,
+        childAspectRatio: 0.66,
       ),
       itemBuilder: (context, index) => _FoodItemCard(
         item: items[index],
@@ -1450,20 +1590,12 @@ class _FoodItemCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      _FoodRatingBadge(item: item, onTap: onRatingTap),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: AppText(
-                          item.title,
-                          variant: AppTextVariant.bodySmall,
-                          fontWeight: FontWeight.w900,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+                  AppText(
+                    item.title,
+                    variant: AppTextVariant.bodySmall,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   AppText(
@@ -1480,6 +1612,11 @@ class _FoodItemCard extends StatelessWidget {
                     color: context.appTextSecondary,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: _FoodRatingBadge(item: item, onTap: onRatingTap),
                   ),
                 ],
               ),
@@ -1667,8 +1804,11 @@ class _FoodOrderSheetControllerHost extends StatefulWidget {
   final Widget Function(
     TextEditingController addressController,
     TextEditingController phoneController,
-  )
-  builder;
+    String? selectedVehicle,
+    ValueChanged<String> onVehicleChanged,
+    MapPlace? selectedDestination,
+    ValueChanged<MapPlace> onDestinationChanged,
+  ) builder;
 
   @override
   State<_FoodOrderSheetControllerHost> createState() =>
@@ -1679,6 +1819,8 @@ class _FoodOrderSheetControllerHostState
     extends State<_FoodOrderSheetControllerHost> {
   late final TextEditingController _addressController;
   late final TextEditingController _phoneController;
+  String? _selectedVehicle;
+  MapPlace? _selectedDestination;
 
   @override
   void initState() {
@@ -1696,7 +1838,14 @@ class _FoodOrderSheetControllerHostState
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(_addressController, _phoneController);
+    return widget.builder(
+      _addressController,
+      _phoneController,
+      _selectedVehicle,
+      (value) => setState(() => _selectedVehicle = value),
+      _selectedDestination,
+      (value) => setState(() => _selectedDestination = value),
+    );
   }
 }
 
@@ -1787,6 +1936,250 @@ class _SheetField extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.lg),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
+      ),
+    );
+  }
+}
+
+class _FoodDeliveryAddressPicker extends StatelessWidget {
+  const _FoodDeliveryAddressPicker({required this.address, required this.onTap});
+
+  final String? address;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasAddress = address != null && address!.trim().isNotEmpty;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(
+            color: hasAddress ? AppColors.primary : context.appBorder,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              color: hasAddress ? AppColors.primary : context.appTextSecondary,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    'Delivery address',
+                    variant: AppTextVariant.labelSmall,
+                    color: context.appTextSecondary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  const SizedBox(height: 2),
+                  AppText(
+                    hasAddress ? address! : 'Choose where to deliver',
+                    variant: AppTextVariant.bodyMedium,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Icon(Icons.chevron_right_rounded, color: context.appTextSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FoodVehicleSelector extends StatelessWidget {
+  const _FoodVehicleSelector({
+    required this.selectedVehicle,
+    required this.onChanged,
+  });
+
+  final String? selectedVehicle;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const AppText(
+          'Choose delivery vehicle',
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.w900,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            Expanded(
+              child: _FoodVehicleOption(
+                vehicleCategory: 'Bike',
+                selected: selectedVehicle == 'Bike',
+                onTap: () => onChanged('Bike'),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: _FoodVehicleOption(
+                vehicleCategory: 'Motor',
+                selected: selectedVehicle == 'Motor',
+                onTap: () => onChanged('Motor'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _FoodVehicleOption extends StatelessWidget {
+  const _FoodVehicleOption({
+    required this.vehicleCategory,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String vehicleCategory;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final pricing = _foodDeliveryPricing[vehicleCategory]!;
+    final accent = vehicleCategory == 'Bike'
+        ? AppColors.secondary
+        : AppColors.primary;
+    final foreground = selected ? Colors.white : context.appTextPrimary;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: selected ? accent : context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: selected ? accent : context.appBorder),
+        ),
+        child: Row(
+          children: [
+            Icon(pricing.icon, color: foreground, size: 24),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppText(
+                    pricing.title,
+                    variant: AppTextVariant.bodyMedium,
+                    color: foreground,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  AppText(
+                    '${pricing.perKm} ETB/km',
+                    variant: AppTextVariant.labelSmall,
+                    color: selected
+                        ? Colors.white.withValues(alpha: 0.82)
+                        : context.appTextSecondary,
+                    fontWeight: FontWeight.w800,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FoodDeliveryEstimateCard extends StatelessWidget {
+  const _FoodDeliveryEstimateCard({
+    required this.vehicleCategory,
+    required this.estimate,
+    required this.distanceKm,
+    required this.hasExactAddress,
+  });
+
+  final String? vehicleCategory;
+  final int? estimate;
+  final double? distanceKm;
+  final bool hasExactAddress;
+
+  @override
+  Widget build(BuildContext context) {
+    final pricing = vehicleCategory == null
+        ? null
+        : _foodDeliveryPricing[vehicleCategory];
+    final subtitle = vehicleCategory == null
+        ? 'Select Bike or Motor to see the delivery estimate.'
+        : hasExactAddress
+            ? '${distanceKm!.toStringAsFixed(1)} km estimate - '
+                  '${pricing!.baseFare} base + ${pricing.perKm} ETB/km'
+            : 'Choose address for a more exact estimate.';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.payments_outlined, color: AppColors.primary),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText(
+                  'Delivery estimate',
+                  variant: AppTextVariant.labelSmall,
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: 2),
+                AppText(
+                  subtitle,
+                  variant: AppTextVariant.bodySmall,
+                  color: context.appTextSecondary,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          AppText(
+            estimate == null ? '--' : '$estimate ETB',
+            variant: AppTextVariant.heading3,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w900,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

@@ -263,7 +263,10 @@ class ProfileScreen extends StatelessWidget {
                             context.read<AuthBloc>().add(const LogoutEvent());
                           },
                         ),
-                        const SizedBox(height: AppSpacing.xl),
+                        SizedBox(
+                          height:
+                              MediaQuery.viewPaddingOf(context).bottom + 132,
+                        ),
                       ],
                     ),
                   ),

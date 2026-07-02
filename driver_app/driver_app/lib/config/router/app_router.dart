@@ -13,7 +13,13 @@ import 'package:driver_app/features/auth/presentation/screens/verify_reset_passw
 import 'package:driver_app/features/home/presentation/screens/home_screen.dart';
 import 'package:driver_app/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:driver_app/features/onboarding/presentation/screens/onboarding_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/driver_documents_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/driver_statistics_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/earnings_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/personal_details_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/privacy_policy_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/profile_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/support_screen.dart';
 import 'package:driver_app/features/search/presentation/screens/search_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +35,10 @@ class AppRouter {
   static final GlobalKey<NavigatorState> parentNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> homeTabNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> notificationsTabNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> earningsTabNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> profileTabNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -142,6 +152,48 @@ class AppRouter {
               ),
             ],
           ),
+          // Notifications tab
+          StatefulShellBranch(
+            navigatorKey: notificationsTabNavigatorKey,
+            routes: [
+              GoRoute(
+                name: AppRoutes.notification.name,
+                path: AppRoutes.notification.path,
+                pageBuilder: (context, state) => getPage(
+                  child: BlocListener<AuthBloc, AuthState>(
+                    listener: (context, authState) {
+                      if (authState is AuthUnauthenticated) {
+                        context.goNamed(AppRoutes.login.name);
+                      }
+                    },
+                    child: const NotificationsScreen(),
+                  ),
+                  state: state,
+                ),
+              ),
+            ],
+          ),
+          // Earnings tab
+          StatefulShellBranch(
+            navigatorKey: earningsTabNavigatorKey,
+            routes: [
+              GoRoute(
+                name: AppRoutes.earnings.name,
+                path: AppRoutes.earnings.path,
+                pageBuilder: (context, state) => getPage(
+                  child: BlocListener<AuthBloc, AuthState>(
+                    listener: (context, authState) {
+                      if (authState is AuthUnauthenticated) {
+                        context.goNamed(AppRoutes.login.name);
+                      }
+                    },
+                    child: const EarningsScreen(showBackButton: false),
+                  ),
+                  state: state,
+                ),
+              ),
+            ],
+          ),
           // Profile tab
           StatefulShellBranch(
             navigatorKey: profileTabNavigatorKey,
@@ -243,23 +295,36 @@ class AppRouter {
         },
       ),
 
-      // Placeholder routes for profile screens
+      // Profile detail routes
       GoRoute(
         name: AppRoutes.personalDetails.name,
         path: AppRoutes.personalDetails.path,
-        pageBuilder: (context, state) => getPage(
-          child: Scaffold(
-            appBar: AppAppBar(titleText: 'Personal Details'),
-            body: const Center(child: AppText('Personal details screen')),
-          ),
-          state: state,
-        ),
+        pageBuilder: (context, state) =>
+            getPage(child: const PersonalDetailsScreen(), state: state),
       ),
       GoRoute(
-        name: AppRoutes.notification.name,
-        path: AppRoutes.notification.path,
+        name: AppRoutes.driverDocuments.name,
+        path: AppRoutes.driverDocuments.path,
         pageBuilder: (context, state) =>
-            getPage(child: const NotificationsScreen(), state: state),
+            getPage(child: const DriverDocumentsScreen(), state: state),
+      ),
+      GoRoute(
+        name: AppRoutes.driverStatistics.name,
+        path: AppRoutes.driverStatistics.path,
+        pageBuilder: (context, state) =>
+            getPage(child: const DriverStatisticsScreen(), state: state),
+      ),
+      GoRoute(
+        name: AppRoutes.support.name,
+        path: AppRoutes.support.path,
+        pageBuilder: (context, state) =>
+            getPage(child: const SupportScreen(), state: state),
+      ),
+      GoRoute(
+        name: AppRoutes.privacy.name,
+        path: AppRoutes.privacy.path,
+        pageBuilder: (context, state) =>
+            getPage(child: const PrivacyPolicyScreen(), state: state),
       ),
       GoRoute(
         name: AppRoutes.changePin.name,
@@ -345,9 +410,14 @@ class AppRouter {
         // Protected routes that require authentication
         final protectedRoutes = [
           AppRoutes.home.path,
+          AppRoutes.notification.path,
+          AppRoutes.earnings.path,
           AppRoutes.profile.path,
           AppRoutes.personalDetails.path,
-          AppRoutes.notification.path,
+          AppRoutes.driverDocuments.path,
+          AppRoutes.driverStatistics.path,
+          AppRoutes.support.path,
+          AppRoutes.privacy.path,
           AppRoutes.changePin.path,
           AppRoutes.setting.path,
         ];
@@ -372,6 +442,7 @@ class AppRouter {
       }
     },
     errorBuilder: (context, state) => Scaffold(
+      backgroundColor: context.appBackground,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -403,31 +474,205 @@ class AppRouter {
     required Widget child,
     required GoRouterState state,
   }) {
-    return CustomTransitionPage(
-      key: state.pageKey,
-      child: child,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(opacity: animation, child: child);
-      },
-    );
+    return NoTransitionPage(key: state.pageKey, child: child);
   }
 }
 
-// Main screen for the shell routes.
+// Main screen with driver bottom navigation.
 class MainScreen extends StatelessWidget {
-  final StatefulNavigationShell navigationShell;
-
   const MainScreen({super.key, required this.navigationShell});
+
+  final StatefulNavigationShell navigationShell;
 
   @override
   Widget build(BuildContext context) {
+    final bottomGap = MediaQuery.viewPaddingOf(context).bottom + 10;
+    final reservedBottom = bottomGap + _DriverBottomNavBar.height + 8;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
           context.goNamed(AppRoutes.login.name);
         }
       },
-      child: Scaffold(body: navigationShell),
+      child: Scaffold(
+        extendBody: true,
+        backgroundColor: context.appBackground,
+        body: Stack(
+          children: [
+            Positioned.fill(
+              bottom: reservedBottom,
+              child: navigationShell,
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: bottomGap,
+              child: _DriverBottomNavBar(
+                currentIndex: navigationShell.currentIndex,
+                onHomeTap: () => NavigationService().navigateToTab(0),
+                onAlertsTap: () => NavigationService().navigateToTab(1),
+                onEarningsTap: () => NavigationService().navigateToTab(2),
+                onProfileTap: () => NavigationService().navigateToTab(3),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DriverBottomNavBar extends StatelessWidget {
+  const _DriverBottomNavBar({
+    required this.currentIndex,
+    required this.onHomeTap,
+    required this.onAlertsTap,
+    required this.onEarningsTap,
+    required this.onProfileTap,
+  });
+
+  static const double height = 68;
+
+  final int currentIndex;
+  final VoidCallback onHomeTap;
+  final VoidCallback onAlertsTap;
+  final VoidCallback onEarningsTap;
+  final VoidCallback onProfileTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final barColor = Color.alphaBlend(
+      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.12 : 0.06),
+      context.appSurface,
+    );
+    final borderColor = Color.alphaBlend(
+      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.24 : 0.14),
+      context.appBorder,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: barColor.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: context.isAppDark ? 0.32 : 0.13,
+                ),
+                blurRadius: 22,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: height,
+            child: Row(
+              children: [
+                _DriverNavItem(
+                  icon: Icons.map_rounded,
+                  label: 'Home',
+                  selected: currentIndex == 0,
+                  onTap: onHomeTap,
+                ),
+                _DriverNavItem(
+                  icon: Icons.notifications_rounded,
+                  label: 'Alerts',
+                  selected: currentIndex == 1,
+                  onTap: onAlertsTap,
+                ),
+                _DriverNavItem(
+                  icon: Icons.payments_rounded,
+                  label: 'Earnings',
+                  selected: currentIndex == 2,
+                  onTap: onEarningsTap,
+                ),
+                _DriverNavItem(
+                  icon: Icons.person_rounded,
+                  label: 'Profile',
+                  selected: currentIndex == 3,
+                  onTap: onProfileTap,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DriverNavItem extends StatelessWidget {
+  const _DriverNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = selected ? colorScheme.primary : context.appTextSecondary;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          margin: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: selected
+                ? colorScheme.primary.withValues(alpha: 0.09)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, color: color, size: 23),
+                  const SizedBox(height: 3),
+                  AppText(
+                    label,
+                    variant: AppTextVariant.labelSmall,
+                    color: color,
+                    fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              if (selected)
+                Positioned(
+                  bottom: 1,
+                  child: Container(
+                    width: 28,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primary,
+                      borderRadius: BorderRadius.circular(AppRadius.full),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

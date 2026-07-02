@@ -10,11 +10,12 @@ import 'app_routes.dart';
 abstract class AppNavigator {
   // Tab navigation
   void navigateToHomeTab();
+  void navigateToNotificationsTab();
+  void navigateToEarningsTab();
   void navigateToProfileTab();
 
   // Auth and initialization
   void pushOnboardingScreen();
-  void pushLanguageScreen();
   void pushLoginScreen();
   void pushSignUpScreen();
   void pushOtpVerificationScreen({String? verificationKey});
@@ -59,18 +60,23 @@ class AppNavigatorImpl implements AppNavigator {
   }
 
   @override
-  void navigateToProfileTab() {
+  void navigateToNotificationsTab() {
     NavigationService().navigateToTab(1);
+  }
+
+  @override
+  void navigateToEarningsTab() {
+    NavigationService().navigateToTab(2);
+  }
+
+  @override
+  void navigateToProfileTab() {
+    NavigationService().navigateToTab(3);
   }
 
   @override
   void pushOnboardingScreen() {
     context.goNamed(AppRoutes.onBoarding.name);
-  }
-
-  @override
-  void pushLanguageScreen() {
-    context.pushNamed(AppRoutes.language.name);
   }
 
   @override
@@ -149,7 +155,7 @@ class AppNavigatorImpl implements AppNavigator {
   // User profile and settings
   @override
   void pushProfileScreen() {
-    NavigationService().navigateToTab(1);
+    NavigationService().navigateToTab(3);
   }
 
   @override
@@ -169,7 +175,7 @@ class AppNavigatorImpl implements AppNavigator {
 
   @override
   void pushNotificationScreen() {
-    context.pushNamed(AppRoutes.notification.name);
+    NavigationService().navigateToTab(1);
   }
 
   @override

@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EarningsScreen extends StatefulWidget {
-  const EarningsScreen({super.key});
+  const EarningsScreen({this.showBackButton = true, super.key});
+
+  final bool showBackButton;
 
   @override
   State<EarningsScreen> createState() => _EarningsScreenState();
@@ -138,7 +140,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.appBackground,
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
@@ -201,13 +203,15 @@ class _EarningsScreenState extends State<EarningsScreen> {
                       ),
                     ),
                   ),
-                  leading: IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_rounded,
-                      color: Colors.white,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
+                  leading: widget.showBackButton
+                      ? IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back_rounded,
+                            color: Colors.white,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        )
+                      : null,
                   actions: [
                     IconButton(
                       icon: const Icon(
@@ -227,18 +231,17 @@ class _EarningsScreenState extends State<EarningsScreen> {
                           Icon(
                             Icons.payments_outlined,
                             size: 80,
-                            color: AppColors.border,
+                            color: context.appBorder,
                           ),
                           const SizedBox(height: AppSpacing.lg),
-                          const AppText(
+                          AppText(
                             'No completed deliveries yet',
                             variant: AppTextVariant.heading3,
-                            color: AppColors.textSecondary,
+                            color: context.appTextSecondary,
                           ),
                           const AppText(
                             'Go online to start earning.',
                             variant: AppTextVariant.bodyMedium,
-                            color: AppColors.textSecondary,
                           ),
                         ],
                       ),
@@ -246,7 +249,12 @@ class _EarningsScreenState extends State<EarningsScreen> {
                   )
                 else
                   SliverPadding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      AppSpacing.md,
+                      MediaQuery.viewPaddingOf(context).bottom + AppSpacing.xl,
+                    ),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final delivery = _deliveries[index];
@@ -267,9 +275,9 @@ class _EarningsScreenState extends State<EarningsScreen> {
                         return Container(
                           margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: context.appSurface,
                             borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: context.appBorder),
                           ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
@@ -279,7 +287,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                             leading: Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.1),
+                                color: AppColors.success.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -297,7 +305,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                             subtitle: AppText(
                               createdAt,
                               variant: AppTextVariant.bodySmall,
-                              color: AppColors.textSecondary,
+                              color: context.appTextSecondary,
                             ),
                             trailing: AppText(
                               '$fee ETB',

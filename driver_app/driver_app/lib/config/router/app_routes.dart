@@ -13,7 +13,6 @@ enum AppRoutes {
 
   // Init routes
   onBoarding(name: 'onBoarding', path: '/onBoarding'),
-  language(name: 'language', path: '/language'),
 
   // Profile flow routes
   profileSelection(name: 'profileSelection', path: '/profile-selection'),
@@ -28,9 +27,14 @@ enum AppRoutes {
 
   // Profile and settings
   profile(name: 'profile', path: '/profile'),
+  earnings(name: 'earnings', path: '/earnings'),
   setting(name: 'setting', path: '/setting'),
   changePin(name: 'changePin', path: '/change-pin'),
   personalDetails(name: 'personalDetails', path: '/personal-details'),
+  driverDocuments(name: 'driverDocuments', path: '/driver-documents'),
+  driverStatistics(name: 'driverStatistics', path: '/driver-statistics'),
+  support(name: 'support', path: '/support'),
+  privacy(name: 'privacy', path: '/privacy'),
   notification(name: 'notification', path: '/notification'),
   search(name: 'search', path: 'search');
 

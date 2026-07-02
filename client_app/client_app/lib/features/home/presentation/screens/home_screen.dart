@@ -64,13 +64,31 @@ const List<String> _packageTypes = [
 ];
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key})
+    : deliveryPage = false,
+      initialVehicleCategory = 'Bike',
+      initialService = 'parcel',
+      autoSearchDestination = false;
+
+  const HomeScreen.delivery({
+    super.key,
+    this.initialVehicleCategory = 'Motor',
+    this.initialService = 'parcel',
+    this.autoSearchDestination = false,
+  }) : deliveryPage = true;
+
+  final bool deliveryPage;
+  final String initialVehicleCategory;
+  final String initialService;
+  final bool autoSearchDestination;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const double _bottomNavClearance = 132;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
@@ -99,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showMap = false;
   bool _isPreparingDelivery = false;
   bool _isSubmitting = false;
+  bool _hasAutoOpenedDestinationSearch = false;
   Future<bool>? _locationReadyFuture;
   final Set<String> _ratingPromptedDeliveries = <String>{};
   late final VoidCallback _homeAction;
@@ -107,15 +126,62 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedVehicleCategory = _normalizedVehicleCategory(
+      widget.initialVehicleCategory,
+    );
+    _selectedService = widget.initialService.trim().isEmpty
+        ? 'parcel'
+        : widget.initialService.trim();
+    _showMap = widget.deliveryPage;
     _homeAction = _returnToHomeFromNav;
-    NavigationService().setHomeAction(_homeAction);
-    _primaryDeliveryAction = () =>
-        _startDeliveryFlow(service: _selectedService);
-    NavigationService().setPrimaryDeliveryAction(_primaryDeliveryAction);
+    _primaryDeliveryAction = () => _openDeliveryRoute(
+      vehicleCategory: 'Motor',
+      service: _selectedService,
+    );
+    if (!widget.deliveryPage) {
+      NavigationService().setHomeAction(_homeAction);
+      NavigationService().setPrimaryDeliveryAction(_primaryDeliveryAction);
+    }
     _listenToDrivers();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(_loadCurrentLocation());
+      _maybeAutoOpenDestinationSearch();
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.deliveryPage) return;
+
+    final nextVehicle = _normalizedVehicleCategory(
+      widget.initialVehicleCategory,
+    );
+    final nextService = widget.initialService.trim().isEmpty
+        ? 'parcel'
+        : widget.initialService.trim();
+
+    if (oldWidget.autoSearchDestination != widget.autoSearchDestination ||
+        oldWidget.initialVehicleCategory != widget.initialVehicleCategory ||
+        oldWidget.initialService != widget.initialService) {
+      _hasAutoOpenedDestinationSearch = false;
+    }
+
+    if (nextVehicle != _selectedVehicleCategory ||
+        nextService != _selectedService ||
+        !_showMap) {
+      setState(() {
+        _selectedVehicleCategory = nextVehicle;
+        _lastPulsedVehicleCategory = nextVehicle;
+        _vehicleSelectionPulse++;
+        _selectedService = nextService;
+        _showMap = true;
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _maybeAutoOpenDestinationSearch();
     });
   }
 
@@ -424,12 +490,58 @@ class _HomeScreenState extends State<HomeScreen> {
     return _calculateEstimatedPrice(distanceKm, _selectedPricing);
   }
 
+  String _normalizedVehicleCategory(String value) {
+    final normalized = value.trim().toLowerCase();
+    if (normalized.contains('motor')) return 'Motor';
+    if (normalized.contains('bike') || normalized.contains('bicycle')) {
+      return 'Bike';
+    }
+    return 'Bike';
+  }
+
   void _selectVehicleCategory(String value) {
+    final vehicleCategory = _normalizedVehicleCategory(value);
     setState(() {
-      _selectedVehicleCategory = value;
-      _lastPulsedVehicleCategory = value;
+      _selectedVehicleCategory = vehicleCategory;
+      _lastPulsedVehicleCategory = vehicleCategory;
       _vehicleSelectionPulse++;
     });
+  }
+
+  void _maybeAutoOpenDestinationSearch() {
+    if (!widget.deliveryPage ||
+        !widget.autoSearchDestination ||
+        _hasAutoOpenedDestinationSearch ||
+        _currentDeliveryId != null ||
+        _destination != null ||
+        _isPreparingDelivery) {
+      return;
+    }
+
+    _hasAutoOpenedDestinationSearch = true;
+    unawaited(_startDeliveryFlow(service: _selectedService));
+  }
+
+  void _openDeliveryRoute({
+    String? vehicleCategory,
+    String? service,
+    bool openSearchDestination = true,
+  }) {
+    final selectedVehicle = _normalizedVehicleCategory(
+      vehicleCategory ?? _selectedVehicleCategory,
+    );
+    final selectedService = (service ?? _selectedService).trim().isEmpty
+        ? 'parcel'
+        : (service ?? _selectedService).trim();
+
+    context.goNamed(
+      AppRoutes.delivery.name,
+      queryParameters: {
+        'vehicle': selectedVehicle,
+        'service': selectedService,
+        'search': openSearchDestination ? '1' : '0',
+      },
+    );
   }
 
   int _calculateEstimatedPrice(double distanceKm, _DeliveryPricing pricing) {
@@ -473,6 +585,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
 
     if (result == null) {
+      if (widget.deliveryPage &&
+          widget.autoSearchDestination &&
+          _destination == null &&
+          _currentDeliveryId == null) {
+        NavigationService().triggerHomeAction();
+        return;
+      }
       if (!_isPreparingDelivery && _currentDeliveryId == null) {
         setState(() => _showMap = false);
       }
@@ -1029,25 +1148,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _trackCurrentDelivery() async {
+  void _trackCurrentDelivery() {
     final deliveryId = _currentDeliveryId;
-    if (deliveryId == null) {
-      AppToast.show(
-        context: context,
-        message: 'No live delivery to track right now.',
-        type: AppToastType.info,
-      );
-      return;
-    }
-
-    await _fetchDelivery(deliveryId);
-    if (!mounted) return;
-
-    setState(() {
-      _showMap = true;
-      _isPreparingDelivery = true;
-    });
-    _fitActiveDelivery();
+    context.goNamed(
+      AppRoutes.tracking.name,
+      queryParameters: {
+        if (deliveryId != null) 'deliveryId': deliveryId,
+      },
+    );
   }
 
   void _fitActiveDelivery() {
@@ -1112,6 +1220,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _closeMapView() {
+    if (widget.deliveryPage) {
+      NavigationService().triggerHomeAction();
+      return;
+    }
+
     if (_currentDeliveryId != null &&
         _isActiveDeliveryStatus(_deliveryStatus)) {
       setState(() => _showMap = false);
@@ -1169,7 +1282,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ? Map<String, dynamic>.from(_currentDelivery!['driver'] as Map)
         : null;
 
-    return _showMap ? _buildMapExperience(driver) : _buildStartExperience();
+    return widget.deliveryPage || _showMap
+        ? _buildMapExperience(driver)
+        : _buildStartExperience();
   }
 
   Widget _buildStartExperience() {
@@ -1183,7 +1298,7 @@ class _HomeScreenState extends State<HomeScreen> {
             AppSpacing.lg,
             AppSpacing.lg,
             AppSpacing.lg,
-            AppSpacing.xl,
+            _bottomNavClearance,
           ),
           children: [
             Row(
@@ -1266,7 +1381,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildFoodDeliveryEntrySection(),
             const SizedBox(height: AppSpacing.lg),
             _buildPromoCard(),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.xxl),
             _buildUpcomingAdsSection(),
           ],
         ),
@@ -1703,6 +1818,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBottomSheet(Map<String, dynamic>? driver) {
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.78,
+      ),
       decoration: BoxDecoration(
         color: context.appSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
@@ -1716,8 +1834,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            _bottomNavClearance,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1730,7 +1853,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
-              if (!_isPreparingDelivery) ...[
+              if (!_isPreparingDelivery &&
+                  widget.deliveryPage &&
+                  widget.autoSearchDestination) ...[
+                const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                const AppText(
+                  'Opening destination search...',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.bold,
+                  textAlign: TextAlign.center,
+                ),
+              ] else if (!_isPreparingDelivery) ...[
                 _buildWhereToCard(),
               ] else if (_deliveryStatus == 'none') ...[
                 _buildPackageTypeSelector(),
@@ -1972,7 +2108,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildWhereToCard() {
     return InkWell(
       borderRadius: BorderRadius.circular(22),
-      onTap: () => _startDeliveryFlow(service: _selectedService),
+      onTap: widget.deliveryPage
+          ? () => _startDeliveryFlow(service: _selectedService)
+          : () => _openDeliveryRoute(service: _selectedService),
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -2082,21 +2220,12 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: Container(
           height: 188,
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg,
-            150,
-            AppSpacing.lg,
-          ),
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.warning.withValues(alpha: 0.14),
-                context.appSurface,
-              ],
+            image: const DecorationImage(
+              image: AssetImage(ImageConstants.foodDeliveryCardBackground),
+              fit: BoxFit.cover,
             ),
             border: Border.all(color: context.appBorder),
             boxShadow: [
@@ -2109,83 +2238,111 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Stack(
             children: [
-              PositionedDirectional(
-                top: 0,
-                start: 0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
+              Positioned.fill(
+                child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.72),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: AppColors.warning.withValues(alpha: 0.22),
+                    gradient: LinearGradient(
+                      begin: AlignmentDirectional.centerStart,
+                      end: AlignmentDirectional.centerEnd,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.58),
+                        Colors.black.withValues(alpha: 0.44),
+                        Colors.black.withValues(alpha: 0.22),
+                        Colors.black.withValues(alpha: 0.08),
+                      ],
                     ),
-                  ),
-                  child: const AppText(
-                    'Fast delivery',
-                    variant: AppTextVariant.labelSmall,
-                    color: AppColors.warning,
-                    fontWeight: FontWeight.w900,
                   ),
                 ),
               ),
-              PositionedDirectional(
-                start: 0,
-                bottom: 2,
-                end: 0,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  150,
+                  AppSpacing.lg,
+                ),
+                child: Stack(
                   children: [
-                    AppText(
-                      'Food delivery',
-                      variant: AppTextVariant.heading3,
-                      color: context.appTextPrimary,
-                      fontWeight: FontWeight.w900,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    PositionedDirectional(
+                      top: 0,
+                      start: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.24),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.22),
+                          ),
+                        ),
+                        child: const AppText(
+                          'Fast delivery',
+                          variant: AppTextVariant.labelSmall,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: AppText(
-                            'Restaurant orders',
-                            variant: AppTextVariant.bodySmall,
-                            color: context.appTextSecondary,
-                            fontWeight: FontWeight.w700,
+                    PositionedDirectional(
+                      start: 0,
+                      bottom: 2,
+                      end: 0,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const AppText(
+                            'Food delivery',
+                            variant: AppTextVariant.heading3,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: AppColors.warning,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.warning.withValues(
-                                  alpha: 0.25,
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: AppText(
+                                  'Restaurant orders',
+                                  variant: AppTextVariant.bodySmall,
+                                  color: Colors.white.withValues(alpha: 0.86),
+                                  fontWeight: FontWeight.w700,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                blurRadius: 10,
-                                offset: const Offset(0, 5),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: AppColors.warning,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.warning.withValues(
+                                        alpha: 0.25,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 5),
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -2221,7 +2378,13 @@ class _HomeScreenState extends State<HomeScreen> {
         label: '${pricing.title} courier',
         child: InkWell(
           borderRadius: BorderRadius.circular(24),
-          onTap: () => _selectVehicleCategory(category),
+          onTap: () {
+            if (widget.deliveryPage) {
+              _selectVehicleCategory(category);
+            } else {
+              _openDeliveryRoute(vehicleCategory: category);
+            }
+          },
           child: Stack(
             clipBehavior: Clip.none,
             children: [
@@ -2405,7 +2568,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPromoCard() {
     return _AnimatedDeliveryMapCard(
-      onTap: () => _startDeliveryFlow(service: _selectedService),
+      onTap: widget.deliveryPage
+          ? () => _startDeliveryFlow(service: _selectedService)
+          : () => _openDeliveryRoute(service: _selectedService),
     );
   }
 
@@ -2424,10 +2589,9 @@ class _HomeScreenState extends State<HomeScreen> {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFFFFF3EF), Color(0xFFEFF8FF)],
+            image: const DecorationImage(
+              image: AssetImage(ImageConstants.upcomingMotobikeDealsBackground),
+              fit: BoxFit.cover,
             ),
             border: Border.all(color: context.appBorder),
             boxShadow: [
@@ -2440,15 +2604,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Stack(
             children: [
-              PositionedDirectional(
-                end: -6,
-                bottom: -18,
-                child: Transform.rotate(
-                  angle: 0.03,
-                  child: Image.asset(
-                    ImageConstants.motorCourier,
-                    height: 144,
-                    fit: BoxFit.contain,
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: AlignmentDirectional.centerStart,
+                      end: AlignmentDirectional.centerEnd,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.68),
+                        Colors.black.withValues(alpha: 0.44),
+                        Colors.black.withValues(alpha: 0.12),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -2463,14 +2630,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     const AppText(
                       'Deals are coming',
                       variant: AppTextVariant.heading3,
-                      color: AppColors.textPrimary,
+                      color: Colors.white,
                       fontWeight: FontWeight.w900,
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    const AppText(
+                    AppText(
                       'MotoBike is launching soon with exciting deals and offers for our first users. Stay tuned!',
                       variant: AppTextVariant.bodySmall,
-                      color: AppColors.textSecondary,
+                      color: Colors.white.withValues(alpha: 0.86),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -2485,33 +2652,33 @@ class _HomeScreenState extends State<HomeScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
-          childAspectRatio: 1.45,
+          childAspectRatio: 1.18,
           crossAxisSpacing: AppSpacing.sm,
           mainAxisSpacing: AppSpacing.sm,
           children: const [
             _PromoGridAdCard(
-              icon: Icons.local_offer_rounded,
+              imagePath: ImageConstants.promoLaunchDeals,
               title: 'Launch deals',
               subtitle: 'Save on first deliveries',
-              color: AppColors.primary,
+              accentColor: AppColors.primary,
             ),
             _PromoGridAdCard(
-              icon: Icons.storefront_rounded,
+              imagePath: ImageConstants.promoPartnerPerks,
               title: 'Partner perks',
               subtitle: 'Offers from local shops',
-              color: AppColors.secondary,
+              accentColor: AppColors.secondary,
             ),
             _PromoGridAdCard(
-              icon: Icons.bolt_rounded,
+              imagePath: ImageConstants.promoExpressHour,
               title: 'Express hour',
               subtitle: 'Faster pickup windows',
-              color: AppColors.warning,
+              accentColor: AppColors.warning,
             ),
             _PromoGridAdCard(
-              icon: Icons.card_giftcard_rounded,
+              imagePath: ImageConstants.promoRewards,
               title: 'Rewards',
               subtitle: 'Points and coupons soon',
-              color: AppColors.success,
+              accentColor: AppColors.success,
             ),
           ],
         ),
@@ -2667,29 +2834,28 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
 
 class _PromoGridAdCard extends StatelessWidget {
   const _PromoGridAdCard({
-    required this.icon,
+    required this.imagePath,
     required this.title,
     required this.subtitle,
-    required this.color,
+    required this.accentColor,
   });
 
-  final IconData icon;
+  final String imagePath;
   final String title;
   final String subtitle;
-  final Color color;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       clipBehavior: Clip.antiAlias,
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: context.appSurface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: context.appBorder),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.10),
+            color: accentColor.withValues(alpha: 0.12),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -2697,46 +2863,62 @@ class _PromoGridAdCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          PositionedDirectional(
-            end: -18,
-            bottom: -24,
-            child: Container(
-              width: 78,
-              height: 78,
+          Positioned.fill(
+            child: Image.asset(imagePath, fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.10),
-                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.04),
+                    Colors.black.withValues(alpha: 0.30),
+                    Colors.black.withValues(alpha: 0.72),
+                  ],
+                ),
               ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(12),
+          PositionedDirectional(
+            start: AppSpacing.sm,
+            top: AppSpacing.sm,
+            child: Container(
+              width: 26,
+              height: 4,
+              decoration: BoxDecoration(
+                color: accentColor,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            start: AppSpacing.sm,
+            end: AppSpacing.sm,
+            bottom: AppSpacing.sm,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText(
+                  title,
+                  variant: AppTextVariant.bodyMedium,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              const Spacer(),
-              AppText(
-                title,
-                variant: AppTextVariant.bodyMedium,
-                fontWeight: FontWeight.w900,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 2),
-              AppText(
-                subtitle,
-                variant: AppTextVariant.bodySmall,
-                color: context.appTextSecondary,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                const SizedBox(height: 2),
+                AppText(
+                  subtitle,
+                  variant: AppTextVariant.bodySmall,
+                  color: Colors.white.withValues(alpha: 0.84),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
       ),

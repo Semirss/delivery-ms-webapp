@@ -123,6 +123,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/brand/
+    - assets/images/generated/
     - assets/images/bike_pic.png
     - assets/images/motor_pic.png
     - assets/icons/

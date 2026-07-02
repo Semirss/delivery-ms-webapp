@@ -51,26 +51,93 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkLocationPermission() async {
+    if (!await _ensureLocationAccess()) return;
+    await _getCurrentLocation(zoom: 16);
+  }
+
+  Future<bool> _ensureLocationAccess({bool showMessages = false}) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
+    if (!serviceEnabled) {
+      if (showMessages && mounted) {
+        AppToast.show(
+          context: context,
+          message: 'Turn on GPS to center the map on your location.',
+          type: AppToastType.warning,
+        );
+      }
+      return false;
+    }
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
+      if (permission == LocationPermission.denied) {
+        if (showMessages && mounted) {
+          AppToast.show(
+            context: context,
+            message: 'Location permission is needed for driver GPS.',
+            type: AppToastType.warning,
+          );
+        }
+        return false;
+      }
     }
 
-    if (permission == LocationPermission.deniedForever) return;
-    await _getCurrentLocation();
+    if (permission == LocationPermission.deniedForever) {
+      if (showMessages && mounted) {
+        AppToast.show(
+          context: context,
+          message: 'Enable location permission from device settings.',
+          type: AppToastType.error,
+        );
+      }
+      return false;
+    }
+
+    return true;
   }
 
-  Future<void> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation({
+    double zoom = 16,
+    bool updateRemote = false,
+  }) async {
     final position = await Geolocator.getCurrentPosition();
     if (!mounted) return;
     setState(() {
       _currentPosition = LatLng(position.latitude, position.longitude);
     });
-    _mapController.move(_currentPosition, 16);
+    if (updateRemote) {
+      final driverId = _driverRecord?['id']?.toString();
+      if (driverId != null) {
+        await _updateDriverLocation(
+          driverId,
+          status: _isOnline ? 'Online' : 'Offline',
+        );
+      }
+    }
+    _mapController.move(_currentPosition, zoom);
+  }
+
+  Future<void> _focusOnCurrentLocation() async {
+    if (!await _ensureLocationAccess(showMessages: true)) return;
+
+    try {
+      await _getCurrentLocation(zoom: 17.5, updateRemote: true);
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Map centered on your GPS location.',
+        type: AppToastType.success,
+      );
+    } catch (e) {
+      debugPrint('Error focusing current location: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Could not read your current GPS location.',
+        type: AppToastType.error,
+      );
+    }
   }
 
   Future<Map<String, dynamic>?> _loadDriverRecord() async {
@@ -766,7 +833,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 60,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.2),
+                        color: AppColors.primary.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -779,7 +846,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2),
                               ),
@@ -894,7 +961,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             decoration: BoxDecoration(
                               color: _isOnline
                                   ? Colors.white
-                                  : AppColors.textSecondary,
+                                  : context.appTextSecondary,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -1081,7 +1148,8 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.only(bottom: 300),
         child: FloatingActionButton(
           backgroundColor: context.appSurface,
-          onPressed: _getCurrentLocation,
+          tooltip: 'Center on my location',
+          onPressed: _focusOnCurrentLocation,
           child: const Icon(
             Icons.my_location_rounded,
             color: AppColors.primary,

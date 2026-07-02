@@ -4,6 +4,8 @@ enum AppRoutes {
   home(name: 'home', path: '/home'),
   activity(name: 'activity', path: '/activity'),
   food(name: 'food', path: '/food'),
+  delivery(name: 'delivery', path: '/delivery'),
+  tracking(name: 'tracking', path: 'tracking'),
 
   // Auth routes
   auth(name: 'auth', path: '/auth'),

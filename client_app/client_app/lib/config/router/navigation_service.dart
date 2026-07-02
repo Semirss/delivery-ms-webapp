@@ -52,11 +52,12 @@ class NavigationService {
   }
 
   void triggerPrimaryDeliveryAction() {
-    navigateToTab(
-      0,
-      initialLocation: true,
-      afterNavigation: _primaryDeliveryAction,
-    );
+    final action = _primaryDeliveryAction;
+    if (action != null) {
+      action();
+      return;
+    }
+    navigateToTab(4, initialLocation: true);
   }
 
   // Navigate to a specific tab
@@ -141,12 +142,15 @@ class NavigationService {
 
     if (routeName == AppRoutes.home.name) {
       tabIndex = 0;
-    } else if (routeName == AppRoutes.activity.name) {
+    } else if (routeName == AppRoutes.activity.name ||
+        routeName == AppRoutes.tracking.name) {
       tabIndex = 1;
     } else if (routeName == AppRoutes.food.name) {
       tabIndex = 2;
     } else if (routeName == AppRoutes.profile.name) {
       tabIndex = 3;
+    } else if (routeName == AppRoutes.delivery.name) {
+      tabIndex = 4;
     }
 
     if (tabIndex != null) {

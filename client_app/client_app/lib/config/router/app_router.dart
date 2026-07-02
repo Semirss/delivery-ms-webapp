@@ -13,6 +13,7 @@ import 'package:client_app/features/auth/presentation/screens/verify_reset_passw
 import 'package:client_app/features/food_marketplace/presentation/screens/food_marketplace_screen.dart';
 import 'package:client_app/features/home/presentation/screens/ride_history_screen.dart';
 import 'package:client_app/features/home/presentation/screens/home_screen.dart';
+import 'package:client_app/features/home/presentation/screens/tracking_screen.dart';
 import 'package:client_app/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:client_app/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:client_app/features/profile/presentation/screens/profile_screen.dart';
@@ -35,6 +36,8 @@ class AppRouter {
   static final GlobalKey<NavigatorState> activityTabNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> foodTabNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> deliveryTabNavigatorKey =
       GlobalKey<NavigatorState>();
   static final GlobalKey<NavigatorState> profileTabNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -157,6 +160,20 @@ class AppRouter {
                 path: AppRoutes.activity.path,
                 pageBuilder: (context, state) =>
                     getPage(child: const RideHistoryScreen(), state: state),
+                routes: [
+                  GoRoute(
+                    name: AppRoutes.tracking.name,
+                    path: AppRoutes.tracking.path,
+                    pageBuilder: (context, state) {
+                      final deliveryId =
+                          state.uri.queryParameters['deliveryId'];
+                      return getPage(
+                        child: TrackingScreen(deliveryId: deliveryId),
+                        state: state,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -190,6 +207,39 @@ class AppRouter {
                   ),
                   state: state,
                 ),
+              ),
+            ],
+          ),
+          // Delivery tab
+          StatefulShellBranch(
+            navigatorKey: deliveryTabNavigatorKey,
+            routes: [
+              GoRoute(
+                name: AppRoutes.delivery.name,
+                path: AppRoutes.delivery.path,
+                pageBuilder: (context, state) {
+                  final vehicle =
+                      state.uri.queryParameters['vehicle'] ?? 'Motor';
+                  final service =
+                      state.uri.queryParameters['service'] ?? 'parcel';
+                  final autoSearch =
+                      state.uri.queryParameters['search'] == '1';
+                  return getPage(
+                    child: BlocListener<AuthBloc, AuthState>(
+                      listener: (context, authState) {
+                        if (authState is AuthUnauthenticated) {
+                          context.goNamed(AppRoutes.login.name);
+                        }
+                      },
+                      child: HomeScreen.delivery(
+                        initialVehicleCategory: vehicle,
+                        initialService: service,
+                        autoSearchDestination: autoSearch,
+                      ),
+                    ),
+                    state: state,
+                  );
+                },
               ),
             ],
           ),
@@ -387,6 +437,7 @@ class AppRouter {
           AppRoutes.home.path,
           AppRoutes.activity.path,
           AppRoutes.food.path,
+          AppRoutes.delivery.path,
           AppRoutes.profile.path,
           AppRoutes.personalDetails.path,
           AppRoutes.notification.path,
@@ -479,7 +530,14 @@ class MainScreen extends StatelessWidget {
                 currentIndex: navigationShell.currentIndex,
                 onHomeTap: NavigationService().triggerHomeAction,
                 onActivityTap: () => NavigationService().navigateToTab(1),
-                onDeliverTap: NavigationService().triggerPrimaryDeliveryAction,
+                onDeliverTap: () => context.goNamed(
+                  AppRoutes.delivery.name,
+                  queryParameters: const {
+                    'vehicle': 'Motor',
+                    'service': 'parcel',
+                    'search': '1',
+                  },
+                ),
                 onFoodTap: () => NavigationService().navigateToTab(2),
                 onProfileTap: () => NavigationService().navigateToTab(3),
               ),

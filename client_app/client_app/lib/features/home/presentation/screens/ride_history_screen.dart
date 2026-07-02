@@ -1,7 +1,9 @@
+import 'package:client_app/config/router/app_routes.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:client_app/config/router/navigation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -15,6 +17,8 @@ class RideHistoryScreen extends StatefulWidget {
 }
 
 class _RideHistoryScreenState extends State<RideHistoryScreen> {
+  static const double _bottomNavClearance = 132;
+
   List<Map<String, dynamic>> _deliveries = [];
   bool _isLoading = true;
   RealtimeChannel? _deliveriesChannel;
@@ -186,12 +190,18 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
               color: AppColors.primary,
               onRefresh: _fetchDeliveries,
               child: ListView.separated(
-                padding: const EdgeInsets.all(AppSpacing.md),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  _bottomNavClearance,
+                ),
                 itemCount: _deliveries.length,
                 separatorBuilder: (_, __) =>
                     const SizedBox(height: AppSpacing.sm),
                 itemBuilder: (context, index) {
                   final delivery = _deliveries[index];
+                  final deliveryId = delivery['id']?.toString();
                   final status = delivery['status']?.toString() ?? 'Pending';
                   final fee = _feeLabel(delivery['delivery_fee']);
                   final createdAt = delivery['created_at'] != null
@@ -202,66 +212,97 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
                         )
                       : '';
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: context.appSurface,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      border: Border.all(color: context.appBorder),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    _statusIcon(status),
-                                    color: _statusColor(status),
-                                    size: 18,
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    onTap: deliveryId == null
+                        ? null
+                        : () => context.pushNamed(
+                            AppRoutes.tracking.name,
+                            queryParameters: {'deliveryId': deliveryId},
+                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: context.appSurface,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        border: Border.all(color: context.appBorder),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      _statusIcon(status),
+                                      color: _statusColor(status),
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AppText(
+                                      status.toUpperCase(),
+                                      variant: AppTextVariant.labelLarge,
+                                      color: _statusColor(status),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AppText(
+                                      fee,
+                                      variant: AppTextVariant.heading3,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      Icons.chevron_right_rounded,
+                                      color: context.appTextSecondary,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const Divider(height: AppSpacing.lg),
+                            _buildLocationRow(
+                              icon: Icons.my_location_rounded,
+                              color: AppColors.primary,
+                              label:
+                                  delivery['pickup_location']?.toString() ??
+                                  'Pickup location',
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            _buildLocationRow(
+                              icon: Icons.location_on_rounded,
+                              color: context.appTextPrimary,
+                              label:
+                                  delivery['dropoff_location']?.toString() ??
+                                  'Dropoff location',
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppText(
+                                    createdAt,
+                                    variant: AppTextVariant.bodySmall,
+                                    color: context.appTextSecondary,
                                   ),
-                                  const SizedBox(width: 6),
-                                  AppText(
-                                    status.toUpperCase(),
-                                    variant: AppTextVariant.labelLarge,
-                                    color: _statusColor(status),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ],
-                              ),
-                              AppText(
-                                fee,
-                                variant: AppTextVariant.heading3,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ],
-                          ),
-                          const Divider(height: AppSpacing.lg),
-                          _buildLocationRow(
-                            icon: Icons.my_location_rounded,
-                            color: AppColors.primary,
-                            label:
-                                delivery['pickup_location']?.toString() ??
-                                'Pickup location',
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          _buildLocationRow(
-                            icon: Icons.location_on_rounded,
-                            color: context.appTextPrimary,
-                            label:
-                                delivery['dropoff_location']?.toString() ??
-                                'Dropoff location',
-                          ),
-                          const SizedBox(height: AppSpacing.sm),
-                          AppText(
-                            createdAt,
-                            variant: AppTextVariant.bodySmall,
-                            color: context.appTextSecondary,
-                          ),
-                        ],
+                                ),
+                                AppText(
+                                  'View details',
+                                  variant: AppTextVariant.labelSmall,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
