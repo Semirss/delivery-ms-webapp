@@ -568,77 +568,75 @@ class _GlassBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final barColor = Color.alphaBlend(
-      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.12 : 0.06),
-      context.appSurface,
-    );
-    final borderColor = Color.alphaBlend(
-      colorScheme.primary.withValues(alpha: context.isAppDark ? 0.24 : 0.14),
-      context.appBorder,
-    );
+    final barColor = context.isAppDark ? context.appSurface : Colors.white;
+    final borderColor = context.isAppDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : const Color(0xFFE8ECF2);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        height: 78,
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomCenter,
-          children: [
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: barColor.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: borderColor),
-                  ),
-                  child: SizedBox(
-                    height: 58,
-                    child: Row(
-                      children: [
-                        _GlassNavItem(
-                          icon: Icons.home_rounded,
-                          label: 'Home',
-                          selected: currentIndex == 0,
-                          onTap: onHomeTap,
-                        ),
-                        _GlassNavItem(
-                          icon: Icons.receipt_long_rounded,
-                          label: 'Activity',
-                          selected: currentIndex == 1,
-                          onTap: onActivityTap,
-                        ),
-                        const Expanded(child: SizedBox.shrink()),
-                        _GlassNavItem(
-                          icon: Icons.restaurant_menu_rounded,
-                          label: 'Food',
-                          selected: currentIndex == 2,
-                          onTap: onFoodTap,
-                        ),
-                        _GlassNavItem(
-                          icon: Icons.person_rounded,
-                          label: 'Profile',
-                          selected: currentIndex == 3,
-                          onTap: onProfileTap,
-                        ),
-                      ],
+    return SizedBox(
+      height: 88,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 0,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: barColor,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: borderColor),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(
+                      alpha: context.isAppDark ? 0.24 : 0.08,
                     ),
+                    blurRadius: 24,
+                    offset: const Offset(0, 10),
                   ),
+                ],
+              ),
+              child: SizedBox(
+                height: 64,
+                child: Row(
+                  children: [
+                    _GlassNavItem(
+                      icon: Icons.home_rounded,
+                      label: 'Home',
+                      selected: currentIndex == 0,
+                      onTap: onHomeTap,
+                    ),
+                    _GlassNavItem(
+                      icon: Icons.receipt_long_rounded,
+                      label: 'Activities',
+                      selected: currentIndex == 1,
+                      onTap: onActivityTap,
+                    ),
+                    const Expanded(child: SizedBox.shrink()),
+                    _GlassNavItem(
+                      icon: Icons.restaurant_rounded,
+                      label: 'Food',
+                      selected: currentIndex == 2,
+                      onTap: onFoodTap,
+                    ),
+                    _GlassNavItem(
+                      icon: Icons.person_rounded,
+                      label: 'Profile',
+                      selected: currentIndex == 3,
+                      onTap: onProfileTap,
+                    ),
+                  ],
                 ),
               ),
             ),
-            Positioned(
-              top: 0,
-              child: _AnimatedMotorAction(onTap: onDeliverTap),
-            ),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 0,
+            child: _AnimatedMotorAction(onTap: onDeliverTap),
+          ),
+        ],
       ),
     );
   }
@@ -659,51 +657,38 @@ class _GlassNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final color = selected ? colorScheme.primary : context.appTextSecondary;
+    const activeColor = AppColors.primary;
+    final inactiveColor = context.isAppDark
+        ? Colors.white.withValues(alpha: 0.66)
+        : const Color(0xFF8793A3);
+    final color = selected ? activeColor : inactiveColor;
 
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          margin: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Stack(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: label,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 8),
             alignment: Alignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, color: color, size: 23),
-                  const SizedBox(height: 3),
-                  AppText(
-                    label,
-                    variant: AppTextVariant.labelSmall,
-                    color: color,
-                    fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              width: selected ? 46 : 42,
+              height: selected ? 46 : 42,
+              decoration: BoxDecoration(
+                color: selected ? activeColor : Colors.transparent,
+                borderRadius: BorderRadius.circular(selected ? 16 : 14),
               ),
-              if (selected)
-                Positioned(
-                  bottom: -1,
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary,
-                      borderRadius: BorderRadius.circular(AppRadius.full),
-                    ),
-                  ),
-                ),
-            ],
+              child: Icon(
+                icon,
+                color: selected ? Colors.white : color,
+                size: selected ? 30 : 28,
+              ),
+            ),
           ),
         ),
       ),
@@ -752,8 +737,6 @@ class _AnimatedMotorActionState extends State<_AnimatedMotorAction>
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return GestureDetector(
       onTap: _handleTap,
       child: AnimatedBuilder(
@@ -768,15 +751,15 @@ class _AnimatedMotorActionState extends State<_AnimatedMotorAction>
           width: 68,
           height: 68,
           decoration: BoxDecoration(
-            color: colorScheme.primary,
+            color: AppColors.primary,
             shape: BoxShape.circle,
             border: Border.all(
-              color: colorScheme.onPrimary.withValues(alpha: 0.18),
+              color: Colors.white.withValues(alpha: 0.18),
             ),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.motorcycle_rounded,
-            color: colorScheme.onPrimary,
+            color: Colors.white,
             size: 34,
           ),
         ),

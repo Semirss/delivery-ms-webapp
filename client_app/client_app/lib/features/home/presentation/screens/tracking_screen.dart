@@ -495,6 +495,8 @@ class _TrackingScreenState extends State<TrackingScreen> {
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.delivery.client',
+                maxNativeZoom: 19,
+                keepBuffer: 5,
               ),
               if (pickup != null && dropoff != null)
                 PolylineLayer(

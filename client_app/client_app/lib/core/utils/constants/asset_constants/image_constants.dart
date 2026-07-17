@@ -7,10 +7,16 @@ abstract class ImageConstants {
   static const String appLogo = '$_root/logo.png';
   static const String bikeCourier = '$_root/bike_pic.png';
   static const String motorCourier = '$_root/motor_pic_full.png';
+  static const String vehicleBicycleCardBackground =
+      '$_root/generated/vehicle_bicycle_card_bg.png';
+  static const String vehicleMotorbikeCardBackground =
+      '$_root/generated/vehicle_motorbike_card_bg.png';
   static const String foodDeliveryCharacter =
       '$_root/food_delivery_character.png';
   static const String foodDeliveryCardBackground =
       '$_root/generated/food_delivery_card_bg.png';
+  static const String foodDeliveryReferenceBanner =
+      '$_root/generated/food_delivery_reference_banner.png';
   static const String upcomingMotobikeDealsBackground =
       '$_root/generated/upcoming_motobike_deals_bg.png';
   static const String promoLaunchDeals =

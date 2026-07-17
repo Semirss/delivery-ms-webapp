@@ -9,7 +9,6 @@ import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
 import 'package:client_ui/app_ui.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -564,15 +563,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _startDeliveryFlow({String service = 'parcel'}) async {
-    final hasLocation = await _loadCurrentLocation();
-    if (!hasLocation || !mounted) return;
-
     setState(() {
       _selectedService = service;
       _showMap = true;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 80));
+    await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
     await _handleSearchDestination();
   }
@@ -1310,8 +1306,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                         child: Image.asset(
                           ImageConstants.appLogo,
-                          width: 54,
-                          height: 54,
+                          width: 46,
+                          height: 46,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -1321,7 +1317,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const AppText(
                             'MotoBike',
-                            variant: AppTextVariant.heading1,
+                            variant: AppTextVariant.heading2,
                             color: AppColors.primary,
                             fontWeight: FontWeight.w900,
                           ),
@@ -1332,8 +1328,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               const AppText(
                                 'Your delivery companion',
                                 color: AppColors.textSecondary,
-                                variant: AppTextVariant.bodyMedium,
-                                fontWeight: FontWeight.bold,
+                                variant: AppTextVariant.bodySmall,
+                                fontWeight: FontWeight.w600,
                               ),
                             ],
                           ),
@@ -1409,6 +1405,8 @@ class _HomeScreenState extends State<HomeScreen> {
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 userAgentPackageName: 'com.delivery.client',
+                maxNativeZoom: 19,
+                keepBuffer: 5,
               ),
               if (_routePoints.isNotEmpty)
                 PolylineLayer(
@@ -1856,16 +1854,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (!_isPreparingDelivery &&
                   widget.deliveryPage &&
                   widget.autoSearchDestination) ...[
-                const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                const AppText(
-                  'Opening destination search...',
-                  variant: AppTextVariant.heading3,
-                  fontWeight: FontWeight.bold,
-                  textAlign: TextAlign.center,
-                ),
+                _buildWhereToCard(),
               ] else if (!_isPreparingDelivery) ...[
                 _buildWhereToCard(),
               ] else if (_deliveryStatus == 'none') ...[
@@ -2151,9 +2140,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildVehicleSelector({required bool compact}) {
     if (!compact) {
       return SizedBox(
-        height: 176,
+        height: 154,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(child: _buildVehicleShowcaseChoice('Bike')),
             const SizedBox(width: AppSpacing.md),
@@ -2190,16 +2179,6 @@ class _HomeScreenState extends State<HomeScreen> {
             end: 0,
             child: _buildWhereToCard(),
           ),
-          PositionedDirectional(
-            top: -12,
-            end: -8,
-            child: IgnorePointer(
-              child: _buildCourierArtwork(
-                ImageConstants.foodDeliveryCharacter,
-                238,
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -2222,132 +2201,130 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 188,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(20),
             image: const DecorationImage(
-              image: AssetImage(ImageConstants.foodDeliveryCardBackground),
+              image: AssetImage(ImageConstants.foodDeliveryReferenceBanner),
               fit: BoxFit.cover,
             ),
-            border: Border.all(color: context.appBorder),
             boxShadow: [
               BoxShadow(
-                color: AppColors.warning.withValues(alpha: 0.12),
-                blurRadius: 20,
-                offset: const Offset(0, 12),
+                color: AppColors.primary.withValues(alpha: 0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: AlignmentDirectional.centerStart,
-                      end: AlignmentDirectional.centerEnd,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.58),
-                        Colors.black.withValues(alpha: 0.44),
-                        Colors.black.withValues(alpha: 0.22),
-                        Colors.black.withValues(alpha: 0.08),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final textWidth = constraints.maxWidth * 0.44;
+
+              return Stack(
+                children: [
+                  PositionedDirectional(
+                    top: 16,
+                    start: 16,
+                    width: textWidth,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(999),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.delivery_dining_rounded,
+                                color: AppColors.primary,
+                                size: 15,
+                              ),
+                              SizedBox(width: 6),
+                              AppText(
+                                'Fast & reliable',
+                                variant: AppTextVariant.labelSmall,
+                                color: Color(0xFF111827),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const AppText(
+                          'Food delivery',
+                          variant: AppTextVariant.heading3,
+                          color: Color(0xFF08233F),
+                          fontWeight: FontWeight.w900,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 5),
+                        const AppText(
+                          'Your favorite meals,\ndelivered to your door.',
+                          variant: AppTextVariant.bodySmall,
+                          color: Color(0xFF667085),
+                          fontWeight: FontWeight.w700,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  150,
-                  AppSpacing.lg,
-                ),
-                child: Stack(
-                  children: [
-                    PositionedDirectional(
-                      top: 0,
-                      start: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.24),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.22),
-                          ),
-                        ),
-                        child: const AppText(
-                          'Fast delivery',
-                          variant: AppTextVariant.labelSmall,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                        ),
+                  PositionedDirectional(
+                    start: 16,
+                    bottom: 16,
+                    child: Container(
+                      height: 40,
+                      padding: const EdgeInsetsDirectional.only(
+                        start: 16,
+                        end: 12,
                       ),
-                    ),
-                    PositionedDirectional(
-                      start: 0,
-                      bottom: 2,
-                      end: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.22),
+                            blurRadius: 12,
+                            offset: const Offset(0, 7),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const AppText(
-                            'Food delivery',
-                            variant: AppTextVariant.heading3,
+                          AppText(
+                            'Order Food',
+                            variant: AppTextVariant.button,
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 6),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                child: AppText(
-                                  'Restaurant orders',
-                                  variant: AppTextVariant.bodySmall,
-                                  color: Colors.white.withValues(alpha: 0.86),
-                                  fontWeight: FontWeight.w700,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: AppColors.warning,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.warning.withValues(
-                                        alpha: 0.25,
-                                      ),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 5),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                              ),
-                            ],
+                          SizedBox(width: 14),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -2357,18 +2334,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildVehicleShowcaseChoice(String category) {
     final pricing = _deliveryPricing[category]!;
     final selected = _selectedVehicleCategory == category;
-    final accent = category == 'Bike' ? AppColors.secondary : AppColors.primary;
-    final imagePath = category == 'Bike'
-        ? ImageConstants.bikeCourier
-        : ImageConstants.motorCourier;
-    final titleColor = selected ? Colors.white : context.appTextPrimary;
-    final subtitleColor = selected
-        ? Colors.white.withValues(alpha: 0.82)
-        : context.appTextSecondary;
-    final imageHeight = category == 'Bike' ? 206.0 : 226.0;
-    final imageTop = category == 'Bike' ? 24.0 : 24.0;
-    const imageAngle = 0.04;
-    final imageEnd = category == 'Bike' ? -14.0 : -16.0;
+    final accent = AppColors.primary;
+    final backgroundPath = category == 'Bike'
+        ? ImageConstants.vehicleBicycleCardBackground
+        : ImageConstants.vehicleMotorbikeCardBackground;
+    const titleColor = Color(0xFF08233F);
+    final borderColor = selected ? accent : const Color(0xFFE8ECF2);
 
     return _buildVehicleTapPulse(
       category,
@@ -2377,7 +2348,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selected: selected,
         label: '${pricing.title} courier',
         child: InkWell(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             if (widget.deliveryPage) {
               _selectVehicleCategory(category);
@@ -2385,108 +2356,95 @@ class _HomeScreenState extends State<HomeScreen> {
               _openDeliveryRoute(vehicleCategory: category);
             }
           },
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned.fill(
-                top: 28,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: selected
-                          ? [accent, Color.lerp(accent, Colors.black, 0.18)!]
-                          : [context.appSurfaceAlt, context.appSurface],
-                    ),
-                    border: Border.all(
-                      color: selected ? accent : context.appBorder,
-                      width: selected ? 2 : 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: selected
-                            ? accent.withValues(alpha: 0.30)
-                            : Colors.black.withValues(alpha: 0.08),
-                        blurRadius: selected ? 24 : 14,
-                        offset: const Offset(0, 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Stack(
+              clipBehavior: Clip.hardEdge,
+              children: [
+                Positioned.fill(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      image: DecorationImage(
+                        image: AssetImage(backgroundPath),
+                        fit: BoxFit.cover,
+                        alignment: Alignment.bottomCenter,
                       ),
+                      border: Border.all(
+                        color: borderColor,
+                        width: selected ? 1.4 : 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.035),
+                          blurRadius: 14,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                PositionedDirectional(
+                  top: 15,
+                  start: 14,
+                  end: 14,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AppText(
+                        pricing.title,
+                        variant: AppTextVariant.bodyLarge,
+                        color: titleColor,
+                        fontWeight: FontWeight.w900,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      _buildVehiclePriceLine(pricing),
                     ],
                   ),
                 ),
-              ),
-              PositionedDirectional(
-                top: imageTop,
-                end: imageEnd,
-                child: IgnorePointer(
-                  child: Transform.rotate(
-                    angle: imageAngle,
-                    child: _buildCourierArtwork(imagePath, imageHeight),
-                  ),
-                ),
-              ),
-              PositionedDirectional(
-                top: 28 + AppSpacing.lg,
-                start: AppSpacing.md,
-                width: 132,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AppText(
-                      pricing.title,
-                      variant: AppTextVariant.heading3,
-                      color: titleColor,
-                      fontWeight: FontWeight.w900,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    AppText(
-                      pricing.subtitle,
-                      variant: AppTextVariant.bodySmall,
-                      color: subtitleColor,
-                      fontWeight: FontWeight.w700,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-              if (selected)
-                Positioned(
-                  top: 38,
-                  right: AppSpacing.sm,
-                  child: Container(
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.check_rounded, color: accent, size: 16),
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildCourierArtwork(String imagePath, double height) {
-    if (kIsWeb) {
-      final fileName = imagePath.split('/').last;
-      return Image.network(
-        'assets/images/$fileName',
-        height: height,
-        fit: BoxFit.contain,
-      );
-    }
+  Widget _buildVehiclePriceLine(_DeliveryPricing pricing) {
+    final parts = pricing.subtitle.split('/');
+    final amount = parts.first;
+    final suffix = parts.length > 1 ? '/${parts.sublist(1).join('/')}' : '';
 
-    return Image.asset(imagePath, height: height, fit: BoxFit.contain);
+    return AppText.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: amount,
+            style: const TextStyle(
+              color: AppColors.primary,
+              fontSize: 17,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          TextSpan(
+            text: ' $suffix',
+            style: const TextStyle(
+              color: Color(0xFF98A2B3),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+      variant: AppTextVariant.bodySmall,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 
   Widget _buildVehicleChoice(String category, {required bool compact}) {
@@ -2668,18 +2626,6 @@ class _HomeScreenState extends State<HomeScreen> {
               subtitle: 'Offers from local shops',
               accentColor: AppColors.secondary,
             ),
-            _PromoGridAdCard(
-              imagePath: ImageConstants.promoExpressHour,
-              title: 'Express hour',
-              subtitle: 'Faster pickup windows',
-              accentColor: AppColors.warning,
-            ),
-            _PromoGridAdCard(
-              imagePath: ImageConstants.promoRewards,
-              title: 'Rewards',
-              subtitle: 'Points and coupons soon',
-              accentColor: AppColors.success,
-            ),
           ],
         ),
       ],
@@ -2786,12 +2732,12 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 10;
     final routeBase = Paint()
-      ..color = AppColors.neutralBlue.withValues(alpha: 0.18)
+      ..color = AppColors.secondary.withValues(alpha: 0.42)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 6;
     final activeRoute = Paint()
-      ..color = AppColors.secondary.withValues(alpha: 0.86)
+      ..color = AppColors.primary.withValues(alpha: 0.88)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 6;
@@ -2997,13 +2943,13 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: context.appSurface,
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: context.appBorder),
             boxShadow: [
               BoxShadow(
-                color: AppColors.neutralBlue.withValues(alpha: 0.22),
-                blurRadius: 26,
-                offset: const Offset(0, 14),
+                color: AppColors.primary.withValues(alpha: 0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
@@ -3021,6 +2967,8 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.delivery.client',
+                  maxNativeZoom: 19,
+                  keepBuffer: 5,
                 ),
               ],
             ),
@@ -3050,15 +2998,7 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                       Positioned.fill(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withValues(alpha: 0.46),
-                                Colors.black.withValues(alpha: 0.12),
-                                Colors.black.withValues(alpha: 0.50),
-                              ],
-                            ),
+                            color: Colors.white.withValues(alpha: 0.28),
                           ),
                         ),
                       ),
@@ -3080,26 +3020,78 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                       ),
                       PositionedDirectional(
                         start: AppSpacing.lg,
-                        top: AppSpacing.lg,
-                        end: AppSpacing.lg,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const AppText(
-                              'Fast city delivery',
-                              variant: AppTextVariant.heading2,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            AppText(
-                              'A live route preview from pickup to drop-off.',
-                              variant: AppTextVariant.bodySmall,
-                              color: Colors.white.withValues(alpha: 0.88),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        top: AppSpacing.md,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(999),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                color: AppColors.success,
+                                size: 9,
+                              ),
+                              SizedBox(width: 8),
+                              AppText(
+                                'Live route preview',
+                                variant: AppTextVariant.bodySmall,
+                                color: Color(0xFF111827),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      PositionedDirectional(
+                        start: AppSpacing.lg,
+                        bottom: AppSpacing.md,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(999),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.access_time_rounded,
+                                color: Color(0xFF0B2341),
+                                size: 17,
+                              ),
+                              SizedBox(width: 8),
+                              AppText(
+                                'Est. 15-20 min',
+                                variant: AppTextVariant.bodySmall,
+                                color: Color(0xFF0B2341),
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       PositionedDirectional(
@@ -3107,12 +3099,12 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                         bottom: AppSpacing.lg,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
+                            horizontal: AppSpacing.lg,
+                            vertical: 13,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(999),
+                            borderRadius: BorderRadius.circular(13),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.primary.withValues(
@@ -3127,16 +3119,16 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               AppText(
-                                'Tap to request',
-                                variant: AppTextVariant.bodySmall,
+                                'Request now',
+                                variant: AppTextVariant.bodyMedium,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w900,
                               ),
-                              SizedBox(width: AppSpacing.xs),
+                              SizedBox(width: AppSpacing.sm),
                               Icon(
                                 Icons.arrow_forward_rounded,
                                 color: Colors.white,
-                                size: 16,
+                                size: 22,
                               ),
                             ],
                           ),

@@ -16,7 +16,16 @@ class MapRoute {
 }
 
 class MapRepository {
-  final Dio _dio = Dio();
+  MapRepository()
+      : _dio = Dio(
+          BaseOptions(
+            connectTimeout: const Duration(seconds: 3),
+            receiveTimeout: const Duration(seconds: 4),
+            sendTimeout: const Duration(seconds: 3),
+          ),
+        );
+
+  final Dio _dio;
   static const Distance _distance = Distance();
   static const List<_AddisPlace> _priorityAddisPlaces = [
     _AddisPlace('Bole', 8.9947, 38.7891, [
@@ -149,6 +158,10 @@ class MapRepository {
       .map(_placeToMapPlace)
       .toList(growable: false);
 
+  static List<MapPlace> localAddisMatches(String query) {
+    return _localAddisMatches(query);
+  }
+
   /// Search address using OpenStreetMap Nominatim API
   Future<List<MapPlace>> searchAddress(String query) async {
     final localMatches = _localAddisMatches(query);
@@ -193,7 +206,7 @@ class MapRepository {
   Future<MapRoute> getRoute(LatLng start, LatLng end) async {
     try {
       final url =
-          'http://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson';
+          'https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson';
       final response = await _dio.get<Map<String, dynamic>>(url);
 
       if (response.statusCode == 200) {

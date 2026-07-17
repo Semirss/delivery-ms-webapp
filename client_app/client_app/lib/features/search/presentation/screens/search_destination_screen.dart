@@ -16,7 +16,6 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   final MapRepository _mapRepository = MapRepository();
   final TextEditingController _searchController = TextEditingController();
   List<MapPlace> _results = MapRepository.majorAddisPlaces;
-  bool _isLoading = false;
   String _activeQuery = '';
   Timer? _debounce;
 
@@ -36,22 +35,29 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     if (normalizedQuery.isEmpty) {
       if (!mounted) return;
       setState(() {
-        _isLoading = false;
         _results = MapRepository.majorAddisPlaces;
       });
       return;
     }
 
-    _debounce = Timer(const Duration(milliseconds: 420), () async {
-      if (!mounted) return;
-      setState(() => _isLoading = true);
+    final localResults = MapRepository.localAddisMatches(normalizedQuery);
+    setState(() {
+      _results = localResults.isEmpty
+          ? MapRepository.majorAddisPlaces
+          : localResults;
+    });
 
-      final results = await _mapRepository.searchAddress(normalizedQuery);
+    _debounce = Timer(const Duration(milliseconds: 250), () async {
+      final results = await _mapRepository
+          .searchAddress(normalizedQuery)
+          .timeout(
+            const Duration(seconds: 4),
+            onTimeout: () => localResults,
+          );
 
       if (!mounted || _activeQuery != normalizedQuery) return;
       setState(() {
-        _results = results;
-        _isLoading = false;
+        _results = results.isEmpty ? localResults : results;
       });
     });
   }
@@ -61,7 +67,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     final hasQuery = _searchController.text.trim().isNotEmpty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FA),
+      backgroundColor: context.appBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -77,13 +83,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                     },
             ),
             Expanded(
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    )
-                  : _results.isEmpty
+              child: _results.isEmpty
                   ? _NoDestinationResults(query: _searchController.text)
                   : ListView.separated(
                       keyboardDismissBehavior:
@@ -145,7 +145,7 @@ class _SearchHeader extends StatelessWidget {
         AppSpacing.lg,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.appSurface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -185,7 +185,7 @@ class _SearchHeader extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F5F8),
+              color: context.appSurfaceAlt,
               borderRadius: BorderRadius.circular(22),
               border: Border.all(color: context.appBorder),
             ),
@@ -296,7 +296,7 @@ class _DestinationTile extends StatelessWidget {
     final title = place.displayName.split(',').first.trim();
 
     return Material(
-      color: Colors.white,
+      color: context.appSurface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,

@@ -143,9 +143,13 @@ class _ClientAppState extends State<ClientApp> {
                     return VersionGate(
                       app: 'client',
                       config: getIt<AppConfig>(),
-                      child: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                        child: widget!,
+                      child: _AnimatedAppEntrance(
+                        child: MediaQuery(
+                          data: MediaQuery.of(
+                            context,
+                          ).copyWith(textScaleFactor: 1.0),
+                          child: widget!,
+                        ),
                       ),
                     );
                   },
@@ -155,6 +159,58 @@ class _ClientAppState extends State<ClientApp> {
           ),
         );
       },
+    );
+  }
+}
+
+class _AnimatedAppEntrance extends StatefulWidget {
+  const _AnimatedAppEntrance({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_AnimatedAppEntrance> createState() => _AnimatedAppEntranceState();
+}
+
+class _AnimatedAppEntranceState extends State<_AnimatedAppEntrance>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 720),
+    )..forward();
+    _opacity = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.018),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return ColoredBox(
+      color: isDark ? AppColors.darkBackground : AppColors.background,
+      child: FadeTransition(
+        opacity: _opacity,
+        child: SlideTransition(position: _slide, child: widget.child),
+      ),
     );
   }
 }
