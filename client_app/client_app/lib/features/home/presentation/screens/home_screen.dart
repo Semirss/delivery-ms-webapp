@@ -2958,128 +2958,340 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _SocialNestedPanels extends StatelessWidget {
-  const _SocialNestedPanels({required this.expanded});
-
-  final bool expanded;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedScale(
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-      scale: expanded ? 0.92 : 1,
-      alignment: Alignment.bottomLeft,
-      child: SizedBox(
-        width: 166,
-        height: 118,
-        child: Stack(
-          alignment: Alignment.bottomLeft,
-          children: [
-            _SocialPanelShell(
-              width: 166,
-              height: 118,
-              colors: const [
-                Color(0xFFA96AF8),
-                Color(0xFF57D8FF),
-                Color(0xFFFF6BC1),
-              ],
-              offset: Offset.zero,
-            ),
-            _SocialPanelShell(
-              width: 118,
-              height: 84,
-              colors: const [
-                Color(0xFFFF95D8),
-                Color(0xFFFFD6E8),
-                Color(0xFFFFF7C8),
-              ],
-              offset: const Offset(0, 34),
-            ),
-            _SocialPanelShell(
-              width: 72,
-              height: 54,
-              colors: const [Color(0xFFFFF2F8), Color(0xFFFFEAC6)],
-              offset: const Offset(0, 64),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SocialPanelShell extends StatelessWidget {
-  const _SocialPanelShell({
-    required this.width,
-    required this.height,
-    required this.colors,
-    required this.offset,
+class _SocialDrawerCard extends StatefulWidget {
+  const _SocialDrawerCard({
+    required this.expanded,
+    required this.onToggle,
+    required this.onTelegramTap,
+    required this.onInstagramTap,
+    required this.onXTap,
   });
 
-  final double width;
-  final double height;
-  final List<Color> colors;
-  final Offset offset;
+  final bool expanded;
+  final VoidCallback onToggle;
+  final VoidCallback onTelegramTap;
+  final VoidCallback onInstagramTap;
+  final VoidCallback onXTap;
+
+  @override
+  State<_SocialDrawerCard> createState() => _SocialDrawerCardState();
+}
+
+class _SocialDrawerCardState extends State<_SocialDrawerCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 480),
+      reverseDuration: const Duration(milliseconds: 420),
+      value: widget.expanded ? 1 : 0,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _SocialDrawerCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.expanded == widget.expanded) return;
+    if (widget.expanded) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-      left: offset.dx,
-      top: offset.dy,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: colors,
-          ),
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.78)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.10),
-              blurRadius: 18,
-              offset: const Offset(0, 9),
+    return Semantics(
+      button: true,
+      expanded: widget.expanded,
+      label: 'Socials',
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          final height = 178 + (72 * _controller.value);
+
+          return Container(
+            height: height,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFBE4BD8),
+                  Color(0xFFFF5FAA),
+                  Color(0xFFFFB16D),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.74)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFBE4BD8).withValues(alpha: 0.22),
+                  blurRadius: 32,
+                  offset: const Offset(0, 18),
+                ),
+              ],
             ),
-          ],
-        ),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const AlignmentDirectional(-0.92, 0.86),
+                        radius: 1.04,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.82),
+                          Colors.white.withValues(alpha: 0.10),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const AlignmentDirectional(0.35, -0.15),
+                        radius: 0.76,
+                        colors: [
+                          const Color(0xFF5FD8FF).withValues(alpha: 0.28),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                _SocialDrawerPanel(
+                  controller: _controller,
+                  intervalStart: 0,
+                  intervalEnd: 0.72,
+                  width: 178,
+                  height: 128,
+                  originStart: 34,
+                  originBottom: 30,
+                  hiddenYOffset: 34,
+                  colors: const [
+                    Color(0xFFA76EFF),
+                    Color(0xFF57D8FF),
+                    Color(0xFFFF61BC),
+                  ],
+                  icon: Icons.camera_alt_rounded,
+                  iconColor: const Color(0xFFE4405F),
+                  tooltip: 'Instagram',
+                  onTap: widget.onInstagramTap,
+                ),
+                _SocialDrawerPanel(
+                  controller: _controller,
+                  intervalStart: 0.12,
+                  intervalEnd: 0.84,
+                  width: 132,
+                  height: 96,
+                  originStart: 34,
+                  originBottom: 30,
+                  hiddenYOffset: 26,
+                  colors: const [
+                    Color(0xFFFF8CD2),
+                    Color(0xFFFFC5E7),
+                    Color(0xFFFFF0C8),
+                  ],
+                  icon: Icons.send_rounded,
+                  iconColor: const Color(0xFF24A1DE),
+                  tooltip: 'Telegram',
+                  onTap: widget.onTelegramTap,
+                ),
+                _SocialDrawerPanel(
+                  controller: _controller,
+                  intervalStart: 0.24,
+                  intervalEnd: 1,
+                  width: 88,
+                  height: 68,
+                  originStart: 34,
+                  originBottom: 30,
+                  hiddenYOffset: 18,
+                  colors: const [Color(0xFFFFF2F8), Color(0xFFFFE9C8)],
+                  icon: Icons.alternate_email_rounded,
+                  iconColor: const Color(0xFF12263D),
+                  tooltip: 'X',
+                  onTap: widget.onXTap,
+                ),
+                PositionedDirectional(
+                  top: 28,
+                  end: 28,
+                  child: AppText(
+                    'Socials',
+                    variant: AppTextVariant.heading2,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                PositionedDirectional(
+                  end: AppSpacing.lg,
+                  bottom: AppSpacing.lg,
+                  child: Material(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: widget.onToggle,
+                      child: SizedBox(
+                        width: 54,
+                        height: 54,
+                        child: Transform.rotate(
+                          angle: _controller.value * math.pi / 4,
+                          child: const Icon(
+                            Icons.add_rounded,
+                            color: Color(0xFF12263D),
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
 
-class _SocialIconButton extends StatelessWidget {
-  const _SocialIconButton({
+class _SocialDrawerPanel extends StatelessWidget {
+  const _SocialDrawerPanel({
+    required this.controller,
+    required this.intervalStart,
+    required this.intervalEnd,
+    required this.width,
+    required this.height,
+    required this.originStart,
+    required this.originBottom,
+    required this.hiddenYOffset,
+    required this.colors,
     required this.icon,
-    required this.color,
+    required this.iconColor,
     required this.tooltip,
     required this.onTap,
   });
 
+  final AnimationController controller;
+  final double intervalStart;
+  final double intervalEnd;
+  final double width;
+  final double height;
+  final double originStart;
+  final double originBottom;
+  final double hiddenYOffset;
+  final List<Color> colors;
   final IconData icon;
-  final Color color;
+  final Color iconColor;
   final String tooltip;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        elevation: 8,
-        shadowColor: color.withValues(alpha: 0.28),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadius.full),
-          child: SizedBox(
-            width: 46,
-            height: 46,
-            child: Icon(icon, color: color, size: 24),
+    final curved = CurvedAnimation(
+      parent: controller,
+      curve: Interval(intervalStart, intervalEnd, curve: Curves.easeOutBack),
+      reverseCurve: Interval(
+        intervalStart,
+        intervalEnd,
+        curve: Curves.easeInCubic,
+      ),
+    );
+    final progress = curved.value.clamp(0.0, 1.0);
+    final scale = 0.4 + (0.6 * progress);
+    final iconProgress = Curves.easeOutBack.transform(progress);
+
+    return PositionedDirectional(
+      start: originStart,
+      bottom: originBottom,
+      child: Transform.translate(
+        offset: Offset(0, hiddenYOffset * (1 - progress)),
+        child: Transform.scale(
+          scale: scale,
+          alignment: Alignment.bottomLeft,
+          child: Tooltip(
+            message: tooltip,
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(28),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(28),
+                onTap: progress > 0.92 ? onTap : null,
+                child: Container(
+                  width: width,
+                  height: height,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: colors,
+                    ),
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.82),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(28),
+                            gradient: RadialGradient(
+                              center: Alignment.topLeft,
+                              radius: 0.95,
+                              colors: [
+                                Colors.white.withValues(alpha: 0.45),
+                                Colors.white.withValues(alpha: 0.04),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Opacity(
+                          opacity: progress,
+                          child: Transform.scale(
+                            scale: iconProgress.clamp(0.0, 1.0),
+                            child: Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.88),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Icon(icon, color: iconColor, size: 24),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -3101,19 +3313,14 @@ class _SubtleVehicleCardMotion extends StatefulWidget {
 class _SubtleVehicleCardMotionState extends State<_SubtleVehicleCardMotion>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _glow;
 
   @override
   void initState() {
     super.initState();
-    final isBike = widget.category == 'Bike';
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: isBike ? 3600 : 4200),
-    )..repeat(reverse: true);
-    _glow = Tween<double>(begin: 0.08, end: 0.16).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
-    );
+      duration: const Duration(milliseconds: 2600),
+    )..repeat();
   }
 
   @override
@@ -3143,41 +3350,54 @@ class _SubtleVehicleCardMotionState extends State<_SubtleVehicleCardMotion>
           final accent = widget.category == 'Bike'
               ? AppColors.primary
               : AppColors.secondary;
-          final sweepOffset = (_controller.value * 220) - 110;
+          final phaseShift = widget.category == 'Bike' ? 0.0 : 0.48;
+          final phase = (_controller.value + phaseShift) % 1.0;
+          final activePhase = phase <= 0.42 ? phase / 0.42 : 1.0;
+          final pulse = phase <= 0.42 ? math.sin(activePhase * math.pi) : 0.0;
+          final scale = 1 + (pulse * 0.026);
+          final lift = -5 * pulse;
+          final glow = 0.07 + (pulse * 0.12);
+          final sweepOffset = phase <= 0.42 ? (activePhase * 250) - 125 : 125.0;
 
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: accent.withValues(alpha: _glow.value),
-                  blurRadius: 22,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 11),
+          return Transform.translate(
+            offset: Offset(0, lift),
+            child: Transform.scale(
+              scale: scale,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: glow),
+                      blurRadius: 20 + (pulse * 10),
+                      spreadRadius: pulse * 0.8,
+                      offset: Offset(0, 9 + (pulse * 4)),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                child!,
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(22),
-                      child: Opacity(
-                        opacity: _glow.value,
-                        child: Transform.translate(
-                          offset: Offset(sweepOffset, 0),
-                          child: Transform.rotate(
-                            angle: -0.45,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    Colors.white.withValues(alpha: 0),
-                                    Colors.white.withValues(alpha: 0.32),
-                                    Colors.white.withValues(alpha: 0),
-                                  ],
+                child: Stack(
+                  children: [
+                    child!,
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: Opacity(
+                            opacity: 0.05 + (pulse * 0.13),
+                            child: Transform.translate(
+                              offset: Offset(sweepOffset, 0),
+                              child: Transform.rotate(
+                                angle: -0.45,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withValues(alpha: 0),
+                                        Colors.white.withValues(alpha: 0.34),
+                                        Colors.white.withValues(alpha: 0),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -3185,9 +3405,9 @@ class _SubtleVehicleCardMotionState extends State<_SubtleVehicleCardMotion>
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           );
         },

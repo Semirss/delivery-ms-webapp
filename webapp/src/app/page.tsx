@@ -30,6 +30,14 @@ const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";
 
+type TelegramWindow = Window & {
+  Telegram?: {
+    WebApp?: {
+      openTelegramLink?: (url: string) => void;
+    };
+  };
+};
+
 function PriceCalculator() {
   const [km, setKm] = useState(3);
   const [vehicle, setVehicle] = useState<"Bike" | "Motor">("Motor");
@@ -190,8 +198,8 @@ function PhoneInterface() {
                       /km ETB
                     </span>
                   </p>
-                  <div className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/78 text-[#12263d] shadow-sm">
-                    <Icon className="h-7 w-7" />
+                  <div className="absolute bottom-[8px] right-2 flex h-8 w-8 items-center justify-center rounded-2xl bg-white/78 text-[#12263d] shadow-sm">
+                    <Icon className="h-4 w-4" />
                   </div>
                 </motion.div>
               );
@@ -233,7 +241,7 @@ function PhoneInterface() {
               <div className="absolute left-[10%] top-[5%] h-[130%] w-2 rotate-[-28deg] rounded-full bg-white" />
             </div>
             <div className="absolute inset-0 bg-gradient-to-br from-[#12263d]/80 via-[#12263d]/55 to-[#f26a54]/30" />
-            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 240 170">
+            {/* <svg className="absolute inset-0 h-full w-full" viewBox="0 0 240 170">
               <path
                 d="M30 122 C78 62 128 142 204 72"
                 fill="none"
@@ -249,22 +257,8 @@ function PhoneInterface() {
                 strokeWidth="7"
                 strokeLinecap="round"
               />
-            </svg>
-            <motion.div
-              animate={{
-                left: ["12%", "38%", "62%", "84%", "84%", "12%"],
-                top: ["70%", "42%", "67%", "38%", "38%", "70%"],
-              }}
-              transition={{
-                duration: 4.8,
-                repeat: Infinity,
-                ease: "easeInOut",
-                times: [0, 0.26, 0.52, 0.78, 0.9, 1],
-              }}
-              className="absolute z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-[#f26a54] text-white shadow-lg"
-            >
-              <Bike className="h-5 w-5" />
-            </motion.div>
+            </svg> */}
+     
             <div className="absolute left-5 top-5">
               <p className="text-2xl font-black leading-tight text-white">
                 Fast city <span className="text-[#ff8a76]">delivery</span>
@@ -275,7 +269,7 @@ function PhoneInterface() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-5 rounded-[1.5rem] border border-[#e9eef4] bg-white p-2 shadow-[0_12px_28px_rgba(18,38,61,0.08)]">
+          {/* <div className="mt-4 grid grid-cols-5 rounded-[1.5rem] border border-[#e9eef4] bg-white p-2 shadow-[0_12px_28px_rgba(18,38,61,0.08)]">
             {[Package, Clock, Bike, MapPin, MessageCircle].map((Icon, index) => (
               <div
                 key={index}
@@ -286,7 +280,7 @@ function PhoneInterface() {
                 <Icon className="h-5 w-5" />
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
     </motion.div>
@@ -725,7 +719,7 @@ export default function LandingPage() {
           <button
             onClick={() => {
               const url = `https://t.me/${CONTACT_TELEGRAM}`;
-              const tg = (window as any).Telegram?.WebApp;
+              const tg = (window as TelegramWindow).Telegram?.WebApp;
               if (tg?.openTelegramLink) {
                 tg.openTelegramLink(url);
               } else {
