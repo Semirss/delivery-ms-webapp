@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -15,6 +15,7 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
+    const supabase = await getSupabaseAdmin();
     const { data, error } = await supabase
         .from('drivers')
         .select('*')
@@ -28,6 +29,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     try {
         let name, phone, password, telegram_username, plate_number, telegram_id, status, vehicle_type;
         let file: File | null = null;

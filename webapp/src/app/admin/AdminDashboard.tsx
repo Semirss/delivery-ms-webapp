@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { resolveSupabaseClient, supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import NetworkStatus from "../components/NetworkStatus";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import AppVersionManager from "./AppVersionManager";
+import BackendManager from "./BackendManager";
 import FoodMarketplaceManager from "./FoodMarketplaceManager";
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
@@ -135,7 +136,7 @@ export default function AdminDashboard() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "versions" | "food">("deliveries");
+  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "versions" | "food" | "backend">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -367,17 +368,28 @@ export default function AdminDashboard() {
   useEffect(() => { connectRealtimeRef.current = connectRealtime; }, [connectRealtime]);
 
   useEffect(() => {
-    fetchDataRef.current();
-    connectRealtimeRef.current();
+    let cancelled = false;
+
+    const start = async () => {
+      await resolveSupabaseClient();
+      if (cancelled) return;
+      fetchDataRef.current();
+      connectRealtimeRef.current();
+    };
+
+    start();
 
     const handleOnline = () => {
       reconnectAttemptRef.current = 0;
-      connectRealtimeRef.current();
-      fetchDataRef.current();
+      resolveSupabaseClient().finally(() => {
+        connectRealtimeRef.current();
+        fetchDataRef.current();
+      });
     };
     window.addEventListener('online', handleOnline);
 
     return () => {
+      cancelled = true;
       window.removeEventListener('online', handleOnline);
       clearReconnectTimer();
       if (channelRef.current) {
@@ -588,6 +600,7 @@ export default function AdminDashboard() {
             { key: 'analytics', label: 'Analytics', icon: '📊' },
             { key: 'food', label: 'Food Market', icon: 'Food' },
             { key: 'versions', label: 'App Versions', icon: 'V' },
+            { key: 'backend', label: 'Backend', icon: '🔐' },
           ] as const).map(tab => (
             <button
               key={tab.key}
@@ -635,7 +648,7 @@ export default function AdminDashboard() {
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <h2 className="text-xl md:text-2xl font-extrabold text-neutral-800 capitalize truncate">
-              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab === 'food' ? 'Food Marketplace' : activeTab}
+              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab === 'food' ? 'Food Marketplace' : activeTab === 'backend' ? 'Backend Control' : activeTab}
             </h2>
           </div>
           <div className="flex items-center space-x-4 flex-shrink-0">
@@ -1138,6 +1151,10 @@ export default function AdminDashboard() {
 
               {activeTab === 'versions' && (
                 <AppVersionManager />
+              )}
+
+              {activeTab === 'backend' && (
+                <BackendManager />
               )}
 
             </div>

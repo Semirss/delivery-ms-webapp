@@ -41,6 +41,9 @@ const Map<String, _FoodDeliveryPricing> _foodDeliveryPricing = {
   ),
 };
 
+const double _fallbackFoodPickupLat = 9.0108;
+const double _fallbackFoodPickupLng = 38.7612;
+
 int _clampFoodRating(int value) {
   if (value < 1) return 1;
   if (value > 5) return 5;
@@ -594,32 +597,43 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       context: context,
       useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor: context.appSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      useSafeArea: false,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.55),
       builder: (sheetContext) {
         return _FoodOrderSheetControllerHost(
           initialPhone: initialPhone,
-          builder: (
-            addressController,
-            phoneController,
-            selectedVehicle,
-            onVehicleChanged,
-            selectedDestination,
-            onDestinationChanged,
-          ) {
-            return _buildOrderSheet(
-              sheetContext: sheetContext,
-              item: item,
-              addressController: addressController,
-              phoneController: phoneController,
-              selectedVehicle: selectedVehicle,
-              onVehicleChanged: onVehicleChanged,
-              selectedDestination: selectedDestination,
-              onDestinationChanged: onDestinationChanged,
-            );
-          },
+          builder:
+              (
+                addressController,
+                phoneController,
+                selectedVehicle,
+                onVehicleChanged,
+                selectedDestination,
+                onDestinationChanged,
+              ) {
+                return DraggableScrollableSheet(
+                  expand: false,
+                  initialChildSize: 0.92,
+                  minChildSize: 0.30,
+                  maxChildSize: 0.96,
+                  snap: true,
+                  snapSizes: const [0.52, 0.92],
+                  builder: (context, scrollController) {
+                    return _buildOrderSheet(
+                      sheetContext: sheetContext,
+                      scrollController: scrollController,
+                      item: item,
+                      addressController: addressController,
+                      phoneController: phoneController,
+                      selectedVehicle: selectedVehicle,
+                      onVehicleChanged: onVehicleChanged,
+                      selectedDestination: selectedDestination,
+                      onDestinationChanged: onDestinationChanged,
+                    );
+                  },
+                );
+              },
         );
       },
     );
@@ -627,6 +641,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
 
   Widget _buildOrderSheet({
     required BuildContext sheetContext,
+    required ScrollController scrollController,
     required _FoodItem item,
     required TextEditingController addressController,
     required TextEditingController phoneController,
@@ -638,251 +653,187 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     final description = item.description.trim().isEmpty
         ? 'No description added.'
         : item.description.trim();
-    final estimate = selectedVehicle == null
+    final estimate = selectedVehicle == null || selectedDestination == null
         ? null
         : _calculateFoodDeliveryFee(item, selectedDestination, selectedVehicle);
-    final estimateDistance = selectedVehicle == null
+    final estimateDistance =
+        selectedVehicle == null || selectedDestination == null
         ? null
         : _foodDeliveryDistanceKm(item, selectedDestination);
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: AppSpacing.lg,
-          right: AppSpacing.lg,
-          top: AppSpacing.md,
-          bottom:
-              MediaQuery.of(sheetContext).viewInsets.bottom + AppSpacing.xxxl,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 42,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: sheetContext.appBorder,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
-                ),
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+      child: Material(
+        color: sheetContext.appSurface,
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            SliverToBoxAdapter(
+              child: _FoodOrderHero(
+                item: item,
+                onClose: () => Navigator.of(sheetContext).pop(),
+                onRatingTap: () => _openFoodRatingSheet(item),
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: Stack(
-                  fit: StackFit.expand,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: AppSpacing.lg,
+                  bottom:
+                      MediaQuery.of(sheetContext).viewInsets.bottom +
+                      MediaQuery.viewPaddingOf(sheetContext).bottom +
+                      AppSpacing.xxxl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _NetworkFoodImage(url: item.imageUrl),
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.04),
-                              Colors.black.withValues(alpha: 0.46),
-                            ],
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: sheetContext.appSurfaceAlt,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: sheetContext.appBorder),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AppText(
+                            'Food details',
+                            variant: AppTextVariant.bodyMedium,
+                            fontWeight: FontWeight.w900,
                           ),
-                        ),
+                          const SizedBox(height: AppSpacing.md),
+                          _FoodDetailRow(
+                            icon: Icons.storefront_outlined,
+                            label: 'Restaurant',
+                            value: item.restaurantDisplayName,
+                          ),
+                          _FoodDetailRow(
+                            icon: Icons.person_outline_rounded,
+                            label: 'Seller',
+                            value: item.sellerName.isEmpty
+                                ? 'Not specified'
+                                : item.sellerName,
+                          ),
+                          _FoodDetailRow(
+                            icon: Icons.phone_outlined,
+                            label: 'Seller phone',
+                            value: item.sellerPhone.isEmpty
+                                ? 'Not specified'
+                                : item.sellerPhone,
+                          ),
+                          _FoodDetailRow(
+                            icon: Icons.location_on_outlined,
+                            label: 'Pickup',
+                            value: item.pickupLocation.isEmpty
+                                ? 'Not specified'
+                                : item.pickupLocation,
+                          ),
+                          if (item.pickupCoordinateLabel != null)
+                            _FoodDetailRow(
+                              icon: Icons.my_location_outlined,
+                              label: 'Map point',
+                              value: item.pickupCoordinateLabel!,
+                            ),
+                          const SizedBox(height: AppSpacing.sm),
+                          AppText(
+                            description,
+                            variant: AppTextVariant.bodySmall,
+                            color: sheetContext.appTextSecondary,
+                          ),
+                        ],
                       ),
                     ),
-                    PositionedDirectional(
-                      start: AppSpacing.md,
-                      bottom: AppSpacing.md,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 7,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(AppRadius.full),
-                        ),
-                        child: AppText(
-                          '${item.priceLabel} ETB',
-                          variant: AppTextVariant.bodyMedium,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                        ),
+                    const SizedBox(height: AppSpacing.lg),
+                    _FoodDeliveryAddressPicker(
+                      address: selectedDestination?.displayName,
+                      onTap: () => _pickFoodDeliveryAddress(
+                        addressController: addressController,
+                        onDestinationChanged: onDestinationChanged,
                       ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _FoodVehicleSelector(
+                      selectedVehicle: selectedVehicle,
+                      onChanged: onVehicleChanged,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _FoodDeliveryEstimateCard(
+                      vehicleCategory: selectedVehicle,
+                      estimate: estimate,
+                      distanceKm: estimateDistance,
+                      hasExactAddress: selectedDestination != null,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _SheetField(
+                      controller: phoneController,
+                      label: 'Phone number',
+                      icon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton.primary(
+                      label: 'REQUEST DELIVERY',
+                      icon: Icons.delivery_dining_rounded,
+                      fullWidth: true,
+                      onPressed: () async {
+                        final phone = phoneController.text.trim();
+                        if (selectedDestination == null) {
+                          AppToast.show(
+                            context: context,
+                            message: 'Choose a delivery address.',
+                            type: AppToastType.error,
+                          );
+                          return;
+                        }
+                        if (selectedVehicle == null) {
+                          AppToast.show(
+                            context: context,
+                            message: 'Choose Bike or Motor.',
+                            type: AppToastType.error,
+                          );
+                          return;
+                        }
+                        if (phone.isEmpty) {
+                          AppToast.show(
+                            context: context,
+                            message: 'Add phone number.',
+                            type: AppToastType.error,
+                          );
+                          return;
+                        }
+                        final deliveryFee =
+                            estimate ??
+                            _calculateFoodDeliveryFee(
+                              item,
+                              selectedDestination,
+                              selectedVehicle,
+                            );
+                        if (deliveryFee == null) {
+                          AppToast.show(
+                            context: context,
+                            message:
+                                'Choose a delivery address to calculate the food delivery estimate.',
+                            type: AppToastType.error,
+                          );
+                          return;
+                        }
+                        Navigator.of(sheetContext).pop();
+                        await _requestFoodDelivery(
+                          item,
+                          selectedDestination,
+                          selectedVehicle,
+                          deliveryFee,
+                          phone,
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _FoodRatingBadge(
-                  item: item,
-                  large: true,
-                  onTap: () => _openFoodRatingSheet(item),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: AppText(
-                    item.title,
-                    variant: AppTextVariant.heading2,
-                    fontWeight: FontWeight.w900,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                _FoodDetailChip(
-                  icon: Icons.category_outlined,
-                  label: item.categoryName,
-                ),
-                if (item.isFeatured)
-                  const _FoodDetailChip(
-                    icon: Icons.star_rounded,
-                    label: 'Featured',
-                    highlighted: true,
-                  ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: sheetContext.appSurfaceAlt,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: sheetContext.appBorder),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AppText(
-                    'Food details',
-                    variant: AppTextVariant.bodyMedium,
-                    fontWeight: FontWeight.w900,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  _FoodDetailRow(
-                    icon: Icons.storefront_outlined,
-                    label: 'Restaurant',
-                    value: item.restaurantDisplayName,
-                  ),
-                  _FoodDetailRow(
-                    icon: Icons.person_outline_rounded,
-                    label: 'Seller',
-                    value: item.sellerName.isEmpty
-                        ? 'Not specified'
-                        : item.sellerName,
-                  ),
-                  _FoodDetailRow(
-                    icon: Icons.phone_outlined,
-                    label: 'Seller phone',
-                    value: item.sellerPhone.isEmpty
-                        ? 'Not specified'
-                        : item.sellerPhone,
-                  ),
-                  _FoodDetailRow(
-                    icon: Icons.location_on_outlined,
-                    label: 'Pickup',
-                    value: item.pickupLocation.isEmpty
-                        ? 'Not specified'
-                        : item.pickupLocation,
-                  ),
-                  if (item.pickupCoordinateLabel != null)
-                    _FoodDetailRow(
-                      icon: Icons.my_location_outlined,
-                      label: 'Map point',
-                      value: item.pickupCoordinateLabel!,
-                    ),
-                  const SizedBox(height: AppSpacing.sm),
-                  AppText(
-                    description,
-                    variant: AppTextVariant.bodySmall,
-                    color: sheetContext.appTextSecondary,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            _FoodDeliveryAddressPicker(
-              address: selectedDestination?.displayName,
-              onTap: () => _pickFoodDeliveryAddress(
-                addressController: addressController,
-                onDestinationChanged: onDestinationChanged,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _FoodVehicleSelector(
-              selectedVehicle: selectedVehicle,
-              onChanged: onVehicleChanged,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _FoodDeliveryEstimateCard(
-              vehicleCategory: selectedVehicle,
-              estimate: estimate,
-              distanceKm: estimateDistance,
-              hasExactAddress: selectedDestination != null,
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _SheetField(
-              controller: phoneController,
-              label: 'Phone number',
-              icon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.primary(
-              label: 'REQUEST DELIVERY',
-              icon: Icons.delivery_dining_rounded,
-              fullWidth: true,
-              onPressed: () async {
-                final phone = phoneController.text.trim();
-                if (selectedDestination == null) {
-                  AppToast.show(
-                    context: context,
-                    message: 'Choose a delivery address.',
-                    type: AppToastType.error,
-                  );
-                  return;
-                }
-                if (selectedVehicle == null) {
-                  AppToast.show(
-                    context: context,
-                    message: 'Choose Bike or Motor.',
-                    type: AppToastType.error,
-                  );
-                  return;
-                }
-                if (phone.isEmpty) {
-                  AppToast.show(
-                    context: context,
-                    message: 'Add phone number.',
-                    type: AppToastType.error,
-                  );
-                  return;
-                }
-                Navigator.of(sheetContext).pop();
-                await _requestFoodDelivery(
-                  item,
-                  selectedDestination,
-                  selectedVehicle,
-                  estimate ?? _calculateFoodDeliveryFee(
-                    item,
-                    selectedDestination,
-                    selectedVehicle,
-                  ),
-                  phone,
-                );
-              },
             ),
           ],
         ),
@@ -906,22 +857,27 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     onDestinationChanged(destination);
   }
 
-  double _foodDeliveryDistanceKm(_FoodItem item, MapPlace? destination) {
-    if (destination == null ||
-        item.pickupLat == null ||
-        item.pickupLng == null) {
-      return 3;
+  LatLng _foodPickupPoint(_FoodItem item) {
+    if (item.pickupLat != null && item.pickupLng != null) {
+      return LatLng(item.pickupLat!, item.pickupLng!);
+    }
+    return const LatLng(_fallbackFoodPickupLat, _fallbackFoodPickupLng);
+  }
+
+  double? _foodDeliveryDistanceKm(_FoodItem item, MapPlace? destination) {
+    if (destination == null) {
+      return null;
     }
 
     final distanceKm = _mapRepository.straightLineDistanceKm(
-      LatLng(item.pickupLat!, item.pickupLng!),
+      _foodPickupPoint(item),
       destination.location,
     );
     final cityRoadEstimate = distanceKm * 1.25;
     return cityRoadEstimate < 1 ? 1 : cityRoadEstimate;
   }
 
-  int _calculateFoodDeliveryFee(
+  int? _calculateFoodDeliveryFee(
     _FoodItem item,
     MapPlace? destination,
     String vehicleCategory,
@@ -929,6 +885,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     final pricing =
         _foodDeliveryPricing[vehicleCategory] ?? _foodDeliveryPricing['Motor']!;
     final distanceKm = _foodDeliveryDistanceKm(item, destination);
+    if (distanceKm == null) return null;
     final raw = pricing.baseFare + (distanceKm * pricing.perKm);
     return (raw / 10).round() * 10;
   }
@@ -966,14 +923,15 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         item.restaurantDisplayName,
         '${item.priceLabel} ETB',
       ].join(' - ');
+      final pickupPoint = _foodPickupPoint(item);
 
       await _supabase.from('deliveries').insert({
         'customer_name': customerName.isEmpty ? state.user.email : customerName,
         'customer_phone': phone,
         'client_id': state.user.id,
         'pickup_location': pickupDetails,
-        'pickup_lat': item.pickupLat,
-        'pickup_lng': item.pickupLng,
+        'pickup_lat': pickupPoint.latitude,
+        'pickup_lng': pickupPoint.longitude,
         'dropoff_location': destination.displayName,
         'dropoff_lat': destination.location.latitude,
         'dropoff_lng': destination.location.longitude,
@@ -1680,6 +1638,219 @@ class _FoodRatingBadge extends StatelessWidget {
   }
 }
 
+class _FoodOrderHero extends StatelessWidget {
+  const _FoodOrderHero({
+    required this.item,
+    required this.onClose,
+    required this.onRatingTap,
+  });
+
+  final _FoodItem item;
+  final VoidCallback onClose;
+  final VoidCallback onRatingTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 318,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          _NetworkFoodImage(url: item.imageUrl),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.10),
+                    Colors.black.withValues(alpha: 0.28),
+                    Colors.black.withValues(alpha: 0.76),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const AlignmentDirectional(0.55, -0.65),
+                  radius: 1.05,
+                  colors: [
+                    AppColors.primaryLight.withValues(alpha: 0.22),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            top: 12,
+            start: 0,
+            end: 0,
+            child: Center(
+              child: Container(
+                width: 46,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.72),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            top: 28,
+            start: AppSpacing.lg,
+            child: Material(
+              color: Colors.white.withValues(alpha: 0.90),
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(AppRadius.full),
+                onTap: onClose,
+                child: const SizedBox(
+                  width: 46,
+                  height: 46,
+                  child: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Color(0xFF10243A),
+                    size: 32,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            start: AppSpacing.lg,
+            end: AppSpacing.lg,
+            bottom: AppSpacing.lg,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _FoodHeroPriceBadge(label: '${item.priceLabel} ETB'),
+                    _FoodRatingBadge(
+                      item: item,
+                      large: true,
+                      onTap: onRatingTap,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AppText(
+                  item.title,
+                  variant: AppTextVariant.heading1,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    _FoodHeroChip(
+                      icon: Icons.category_outlined,
+                      label: item.categoryName,
+                    ),
+                    if (item.isFeatured)
+                      const _FoodHeroChip(
+                        icon: Icons.star_rounded,
+                        label: 'Featured',
+                        highlighted: true,
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FoodHeroPriceBadge extends StatelessWidget {
+  const _FoodHeroPriceBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.38),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: AppText(
+        label,
+        variant: AppTextVariant.bodyMedium,
+        color: Colors.white,
+        fontWeight: FontWeight.w900,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _FoodHeroChip extends StatelessWidget {
+  const _FoodHeroChip({
+    required this.icon,
+    required this.label,
+    this.highlighted = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool highlighted;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = highlighted ? AppColors.primaryLight : Colors.white;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: highlighted ? 0.18 : 0.14),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: color.withValues(alpha: 0.45)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 6),
+          AppText(
+            label,
+            variant: AppTextVariant.labelSmall,
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _NetworkFoodImage extends StatelessWidget {
   const _NetworkFoodImage({required this.url});
 
@@ -1808,7 +1979,8 @@ class _FoodOrderSheetControllerHost extends StatefulWidget {
     ValueChanged<String> onVehicleChanged,
     MapPlace? selectedDestination,
     ValueChanged<MapPlace> onDestinationChanged,
-  ) builder;
+  )
+  builder;
 
   @override
   State<_FoodOrderSheetControllerHost> createState() =>
@@ -1942,7 +2114,10 @@ class _SheetField extends StatelessWidget {
 }
 
 class _FoodDeliveryAddressPicker extends StatelessWidget {
-  const _FoodDeliveryAddressPicker({required this.address, required this.onTap});
+  const _FoodDeliveryAddressPicker({
+    required this.address,
+    required this.onTap,
+  });
 
   final String? address;
   final VoidCallback onTap;
@@ -2059,10 +2234,18 @@ class _FoodVehicleOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pricing = _foodDeliveryPricing[vehicleCategory]!;
-    final accent = vehicleCategory == 'Bike'
-        ? AppColors.secondary
-        : AppColors.primary;
-    final foreground = selected ? Colors.white : context.appTextPrimary;
+    final isMotor = vehicleCategory == 'Motor';
+    const motorAccent = Color(0xFF2AA7D6);
+    const motorCover = Color(0xFFEAF8FF);
+    const motorSelectedCover = Color(0xFFDDF4FF);
+    const motorBorder = Color(0xFFAFE4FA);
+    final accent = isMotor ? motorAccent : AppColors.secondary;
+    final foreground = selected && !isMotor
+        ? Colors.white
+        : context.appTextPrimary;
+    final subtitleColor = selected && !isMotor
+        ? Colors.white.withValues(alpha: 0.82)
+        : context.appTextSecondary;
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -2071,9 +2254,24 @@ class _FoodVehicleOption extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: selected ? accent : context.appSurfaceAlt,
+          color: selected
+              ? (isMotor ? motorSelectedCover : accent)
+              : (isMotor ? motorCover : context.appSurfaceAlt),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: selected ? accent : context.appBorder),
+          border: Border.all(
+            color: selected
+                ? accent
+                : (isMotor ? motorBorder : context.appBorder),
+            width: isMotor ? 1.4 : 1,
+          ),
+          boxShadow: [
+            if (selected || isMotor)
+              BoxShadow(
+                color: accent.withValues(alpha: selected ? 0.18 : 0.10),
+                blurRadius: selected ? 18 : 12,
+                offset: const Offset(0, 8),
+              ),
+          ],
         ),
         child: Row(
           children: [
@@ -2095,9 +2293,7 @@ class _FoodVehicleOption extends StatelessWidget {
                   AppText(
                     '${pricing.perKm} ETB/km',
                     variant: AppTextVariant.labelSmall,
-                    color: selected
-                        ? Colors.white.withValues(alpha: 0.82)
-                        : context.appTextSecondary,
+                    color: subtitleColor,
                     fontWeight: FontWeight.w800,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -2130,12 +2326,19 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
     final pricing = vehicleCategory == null
         ? null
         : _foodDeliveryPricing[vehicleCategory];
-    final subtitle = vehicleCategory == null
-        ? 'Select Bike or Motor to see the delivery estimate.'
-        : hasExactAddress
-            ? '${distanceKm!.toStringAsFixed(1)} km estimate - '
-                  '${pricing!.baseFare} base + ${pricing.perKm} ETB/km'
-            : 'Choose address for a more exact estimate.';
+    final resolvedDistanceKm = distanceKm;
+    late final String subtitle;
+    if (vehicleCategory == null) {
+      subtitle = 'Select Bike or Motor to see the delivery estimate.';
+    } else if (!hasExactAddress) {
+      subtitle = 'Choose address to calculate the real Bike/Motor estimate.';
+    } else if (estimate == null || resolvedDistanceKm == null) {
+      subtitle = 'Choose address to calculate the food delivery estimate.';
+    } else {
+      subtitle =
+          '${resolvedDistanceKm.toStringAsFixed(1)} km estimate - '
+          '${pricing!.baseFare} base + ${pricing.perKm} ETB/km';
+    }
 
     return Container(
       width: double.infinity,
@@ -2175,53 +2378,6 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
             estimate == null ? '--' : '$estimate ETB',
             variant: AppTextVariant.heading3,
             color: AppColors.primary,
-            fontWeight: FontWeight.w900,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FoodDetailChip extends StatelessWidget {
-  const _FoodDetailChip({
-    required this.icon,
-    required this.label,
-    this.highlighted = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool highlighted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: highlighted
-            ? AppColors.primary.withValues(alpha: 0.12)
-            : context.appSurfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(
-          color: highlighted ? AppColors.primary : context.appBorder,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 16,
-            color: highlighted ? AppColors.primary : context.appTextSecondary,
-          ),
-          const SizedBox(width: 6),
-          AppText(
-            label,
-            variant: AppTextVariant.labelSmall,
-            color: highlighted ? AppColors.primary : context.appTextPrimary,
             fontWeight: FontWeight.w900,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

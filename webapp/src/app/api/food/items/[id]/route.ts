@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { errorMessage, isAdminRequest, isMissingColumnError, toBoolean, toNullableText, toNullableUuid, toNumber, toRecord, toText } from '../../_utils';
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+    const supabase = await getSupabaseAdmin();
     if (!isAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -58,6 +59,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 }
 
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+    const supabase = await getSupabaseAdmin();
     if (!isAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

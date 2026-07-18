@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parse } from 'cookie';
 import jwt from 'jsonwebtoken';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -91,6 +91,7 @@ function validatePayload(body: unknown): VersionPayload {
 }
 
 export async function GET(request: Request) {
+    const supabase = await getSupabaseAdmin();
     const { searchParams } = new URL(request.url);
     const app = searchParams.get('app');
     const platform = searchParams.get('platform');
@@ -115,6 +116,7 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+    const supabase = await getSupabaseAdmin();
     if (!isAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

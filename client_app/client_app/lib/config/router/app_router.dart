@@ -222,8 +222,7 @@ class AppRouter {
                       state.uri.queryParameters['vehicle'] ?? 'Motor';
                   final service =
                       state.uri.queryParameters['service'] ?? 'parcel';
-                  final autoSearch =
-                      state.uri.queryParameters['search'] == '1';
+                  final autoSearch = state.uri.queryParameters['search'] == '1';
                   return getPage(
                     child: BlocListener<AuthBloc, AuthState>(
                       listener: (context, authState) {
@@ -502,14 +501,22 @@ class AppRouter {
 }
 
 // Main screen with bottom navigation
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key, required this.navigationShell});
+
   final StatefulNavigationShell navigationShell;
 
-  const MainScreen({super.key, required this.navigationShell});
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  bool _homeDrawerVisible = false;
 
   @override
   Widget build(BuildContext context) {
     final bottomGap = MediaQuery.viewPaddingOf(context).bottom + 10;
+    final navigationShell = widget.navigationShell;
 
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -517,32 +524,56 @@ class MainScreen extends StatelessWidget {
           context.goNamed(AppRoutes.login.name);
         }
       },
-      child: Scaffold(
-        extendBody: true,
-        body: Stack(
-          children: [
-            Positioned.fill(child: navigationShell),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: bottomGap,
-              child: _GlassBottomNavBar(
-                currentIndex: navigationShell.currentIndex,
-                onHomeTap: NavigationService().triggerHomeAction,
-                onActivityTap: () => NavigationService().navigateToTab(1),
-                onDeliverTap: () => context.goNamed(
-                  AppRoutes.delivery.name,
-                  queryParameters: const {
-                    'vehicle': 'Motor',
-                    'service': 'parcel',
-                    'search': '1',
-                  },
+      child: NotificationListener<HomeDrawerVisibilityNotification>(
+        onNotification: (notification) {
+          if (_homeDrawerVisible != notification.visible) {
+            setState(() => _homeDrawerVisible = notification.visible);
+          }
+          return false;
+        },
+        child: Scaffold(
+          extendBody: true,
+          body: Stack(
+            children: [
+              Positioned.fill(child: navigationShell),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: bottomGap,
+                child: IgnorePointer(
+                  ignoring: _homeDrawerVisible,
+                  child: AnimatedSlide(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    offset: _homeDrawerVisible
+                        ? const Offset(0, 1.08)
+                        : Offset.zero,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      opacity: _homeDrawerVisible ? 0 : 1,
+                      child: _GlassBottomNavBar(
+                        currentIndex: navigationShell.currentIndex,
+                        onHomeTap: NavigationService().triggerHomeAction,
+                        onActivityTap: () =>
+                            NavigationService().navigateToTab(1),
+                        onDeliverTap: () => context.goNamed(
+                          AppRoutes.delivery.name,
+                          queryParameters: const {
+                            'vehicle': 'Motor',
+                            'service': 'parcel',
+                            'search': '1',
+                          },
+                        ),
+                        onFoodTap: () => NavigationService().navigateToTab(2),
+                        onProfileTap: () =>
+                            NavigationService().navigateToTab(3),
+                      ),
+                    ),
+                  ),
                 ),
-                onFoodTap: () => NavigationService().navigateToTab(2),
-                onProfileTap: () => NavigationService().navigateToTab(3),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -632,10 +663,7 @@ class _GlassBottomNavBar extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: 0,
-            child: _AnimatedMotorAction(onTap: onDeliverTap),
-          ),
+          Positioned(top: 0, child: _AnimatedMotorAction(onTap: onDeliverTap)),
         ],
       ),
     );
@@ -753,9 +781,7 @@ class _AnimatedMotorActionState extends State<_AnimatedMotorAction>
           decoration: BoxDecoration(
             color: AppColors.primary,
             shape: BoxShape.circle,
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.18),
-            ),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
           ),
           child: const Icon(
             Icons.motorcycle_rounded,

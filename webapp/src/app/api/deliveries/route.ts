@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export async function GET(request: Request) {
+    const supabase = await getSupabaseAdmin();
     const { searchParams } = new URL(request.url);
     const driver_id = searchParams.get('driver_id');
     const customer_phone = searchParams.get('customer_phone');
@@ -24,6 +25,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     try {
         const body = await request.json();
         const {

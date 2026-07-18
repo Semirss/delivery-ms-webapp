@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -15,6 +15,7 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     try {
         const body = await request.json();
         const feedback = typeof body.feedback === 'string' ? body.feedback.trim() : '';

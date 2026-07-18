@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -12,6 +12,7 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     try {
         const { name, password } = await request.json();
 

@@ -156,26 +156,11 @@ class _VersionGateState extends State<VersionGate> {
       future: _policyFuture,
       builder: (context, snapshot) {
         final policy = snapshot.data;
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _VersionLoadingScreen();
-        }
         if (policy == null || !policy.blocksApp) {
           return widget.child;
         }
         return _BlockedVersionScreen(policy: policy, onRetry: _retry);
       },
-    );
-  }
-}
-
-class _VersionLoadingScreen extends StatelessWidget {
-  const _VersionLoadingScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appBackground,
-      body: const Center(child: CircularProgressIndicator(color: AppColors.primary)),
     );
   }
 }
