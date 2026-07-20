@@ -18,16 +18,31 @@ class ProfileScreen extends StatelessWidget {
   static final Uri _websiteUri = Uri.parse(
     'https://www.motobikedeliveryservice.com/',
   );
+  static final Uri _privacyUri = Uri.parse(
+    'https://www.motobikedeliveryservice.com/privacy-policy.html',
+  );
 
   Future<void> _openWebsite(BuildContext context) async {
+    await _openUri(context, _websiteUri, 'Could not open website.');
+  }
+
+  Future<void> _openPrivacyPolicy(BuildContext context) async {
+    await _openUri(context, _privacyUri, 'Could not open privacy policy.');
+  }
+
+  Future<void> _openUri(
+    BuildContext context,
+    Uri uri,
+    String errorMessage,
+  ) async {
     final opened = await launchUrl(
-      _websiteUri,
+      uri,
       mode: LaunchMode.externalApplication,
     );
     if (!opened && context.mounted) {
       AppToast.show(
         context: context,
-        message: 'Could not open website.',
+        message: errorMessage,
         type: AppToastType.error,
       );
     }
@@ -252,7 +267,7 @@ class ProfileScreen extends StatelessWidget {
                             icon: Icons.privacy_tip_outlined,
                             title: 'Privacy Policy',
                             subtitle: 'Read our privacy terms',
-                            onTap: () => _openWebsite(context),
+                            onTap: () => _openPrivacyPolicy(context),
                           ),
                         ]),
                         const SizedBox(height: AppSpacing.lg),

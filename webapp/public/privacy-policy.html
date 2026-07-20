@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MotoBike Privacy Policy</title>
+    <meta
+      name="description"
+      content="Privacy Policy for MotoBike and MotoBike Driver mobile applications."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --paper: #ffffff;
+        --ink: #17202a;
+        --muted: #596575;
+        --line: #e2e7ef;
+        --brand: #f26a54;
+        --brand-dark: #12263d;
+        --soft: #fff3ef;
+        --soft-blue: #eef6ff;
+        --shadow: 0 22px 70px rgba(18, 38, 61, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(242, 106, 84, 0.13), transparent 34rem),
+          linear-gradient(180deg, #ffffff 0%, var(--bg) 42%, #eef2f7 100%);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        line-height: 1.65;
+      }
+
+      a {
+        color: var(--brand-dark);
+        font-weight: 800;
+        text-decoration-color: rgba(242, 106, 84, 0.55);
+        text-underline-offset: 3px;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 56px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 34px;
+        overflow: hidden;
+        border: 1px solid rgba(18, 38, 61, 0.08);
+        border-radius: 28px;
+        background:
+          linear-gradient(135deg, rgba(18, 38, 61, 0.94), rgba(18, 38, 61, 0.82)),
+          url("logo1.jpg") center / cover;
+        box-shadow: var(--shadow);
+        color: #ffffff;
+      }
+
+      .brand-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .brand-logo {
+        width: 68px;
+        height: 68px;
+        border-radius: 18px;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        background: #ffffff;
+      }
+
+      .brand-name {
+        margin: 0;
+        font-size: clamp(2.25rem, 5vw, 4.8rem);
+        line-height: 0.98;
+        letter-spacing: 0;
+        max-width: 760px;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 760px;
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 1.05rem;
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 7px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 0.88rem;
+        font-weight: 800;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 290px minmax(0, 1fr);
+        gap: 24px;
+        margin-top: 24px;
+        align-items: start;
+      }
+
+      .toc {
+        position: sticky;
+        top: 20px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 12px 34px rgba(18, 38, 61, 0.07);
+      }
+
+      .toc strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--brand-dark);
+      }
+
+      .toc a {
+        display: block;
+        padding: 7px 0;
+        color: var(--muted);
+        font-size: 0.93rem;
+        text-decoration: none;
+      }
+
+      .toc a:hover {
+        color: var(--brand);
+      }
+
+      main {
+        display: grid;
+        gap: 18px;
+      }
+
+      section,
+      .notice {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--paper);
+        box-shadow: 0 10px 30px rgba(18, 38, 61, 0.05);
+      }
+
+      section {
+        padding: 26px;
+      }
+
+      .notice {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, var(--soft), #ffffff);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        color: var(--brand-dark);
+        font-size: clamp(1.35rem, 2vw, 1.85rem);
+        line-height: 1.2;
+        letter-spacing: 0;
+      }
+
+      h3 {
+        margin: 22px 0 8px;
+        color: #243143;
+        font-size: 1.05rem;
+      }
+
+      p {
+        margin: 0 0 12px;
+        color: var(--muted);
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 21px;
+        color: var(--muted);
+      }
+
+      li {
+        margin: 7px 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .mini-card {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fbfcff;
+      }
+
+      .mini-card strong {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--brand-dark);
+      }
+
+      .contact {
+        display: grid;
+        gap: 8px;
+        padding: 18px;
+        border-radius: 16px;
+        background: var(--soft-blue);
+        color: var(--brand-dark);
+      }
+
+      .contact p {
+        margin: 0;
+      }
+
+      footer {
+        padding: 28px 0 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        text-align: center;
+      }
+
+      @media (max-width: 860px) {
+        .shell {
+          width: min(100% - 22px, 680px);
+          padding-top: 12px;
+        }
+
+        .hero {
+          padding: 24px;
+          border-radius: 22px;
+        }
+
+        .brand-logo {
+          width: 58px;
+          height: 58px;
+          border-radius: 16px;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .toc {
+          position: static;
+        }
+
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        section {
+          padding: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="hero">
+        <div class="brand-row">
+          <img class="brand-logo" src="favlogo1.png" alt="MotoBike logo" />
+          <div>
+            <h1 class="brand-name">Privacy Policy</h1>
+            <p>MotoBike and MotoBike Driver</p>
+          </div>
+        </div>
+        <p>
+          This policy explains how MotoBike Delivery Service collects, uses,
+          shares, protects, and deletes information for the MotoBike customer
+          app and MotoBike Driver app.
+        </p>
+        <div class="hero-meta">
+          <span class="pill">Effective date: July 20, 2026</span>
+          <span class="pill">Client app: com.motobikedeliveryservice.client</span>
+          <span class="pill">Driver app: com.motobikedeliveryservice.driver</span>
+        </div>
+      </header>
+
+      <div class="layout">
+        <nav class="toc" aria-label="Policy sections">
+          <strong>Sections</strong>
+          <a href="#who-we-are">Who We Are</a>
+          <a href="#scope">Apps Covered</a>
+          <a href="#data-we-collect">Data We Collect</a>
+          <a href="#how-we-use-data">How We Use Data</a>
+          <a href="#location">Location Data</a>
+          <a href="#sharing">Sharing</a>
+          <a href="#security">Security</a>
+          <a href="#retention">Retention</a>
+          <a href="#deletion">Account Deletion</a>
+          <a href="#children">Children</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <main>
+          <div class="notice">
+            <strong>Plain-language summary:</strong>
+            <p>
+              We use the information needed to create accounts, process delivery
+              requests, assign drivers, show delivery progress, protect the
+              platform, provide support, and improve reliability. We do not sell
+              personal information.
+            </p>
+          </div>
+
+          <section id="who-we-are">
+            <h2>1. Who We Are</h2>
+            <p>
+              MotoBike Delivery Service operates a delivery platform for
+              customers, drivers, restaurant or food sellers, and administrators.
+              This Privacy Policy applies to our mobile apps, web dashboard, and
+              related delivery services.
+            </p>
+            <div class="contact">
+              <p><strong>Developer:</strong> MotoBike Delivery Service</p>
+              <p><strong>Location:</strong> Addis Ababa, Ethiopia</p>
+              <p>
+                <strong>Email:</strong>
+                <a href="mailto:Natnaeltegestuu@gmail.com"
+                  >Natnaeltegestuu@gmail.com</a
+                >
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                <a href="tel:+251931323328">+251 931 323 328</a>,
+                <a href="tel:+251920202304">+251 920 202 304</a>
+              </p>
+            </div>
+          </section>
+
+          <section id="scope">
+            <h2>2. Apps Covered</h2>
+            <p>This policy covers:</p>
+            <ul>
+              <li>
+                <strong>MotoBike</strong>, the customer app used to request,
+                track, and manage deliveries.
+              </li>
+              <li>
+                <strong>MotoBike Driver</strong>, the driver app used by approved
+                drivers to receive delivery assignments and update delivery
+                status.
+              </li>
+              <li>
+                The MotoBike web services and admin tools used to operate the
+                delivery platform.
+              </li>
+            </ul>
+          </section>
+
+          <section id="data-we-collect">
+            <h2>3. Information We Collect</h2>
+            <div class="grid">
+              <div class="mini-card">
+                <strong>Account information</strong>
+                <p>
+                  Name, email address, phone number, password credentials, and
+                  account status.
+                </p>
+              </div>
+              <div class="mini-card">
+                <strong>Delivery information</strong>
+                <p>
+                  Pickup and drop-off locations, delivery notes, package or food
+                  order details, delivery fee, delivery status, and history.
+                </p>
+              </div>
+              <div class="mini-card">
+                <strong>Driver verification information</strong>
+                <p>
+                  Driver name, email, phone number, vehicle type, plate number,
+                  Telegram username, government or personal ID image, approval
+                  status, ratings, and earnings-related delivery records.
+                </p>
+              </div>
+              <div class="mini-card">
+                <strong>Location information</strong>
+                <p>
+                  Customer selected delivery locations and driver GPS location
+                  while the driver is online or handling an assigned delivery.
+                </p>
+              </div>
+              <div class="mini-card">
+                <strong>Device and app information</strong>
+                <p>
+                  App version, platform, device permission status, diagnostic
+                  information, logs, and data needed for security and app
+                  reliability.
+                </p>
+              </div>
+              <div class="mini-card">
+                <strong>Support and feedback</strong>
+                <p>
+                  Messages, ratings, support requests, and contact information
+                  you provide when asking for help.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section id="how-we-use-data">
+            <h2>4. How We Use Information</h2>
+            <p>We use information to:</p>
+            <ul>
+              <li>Create and manage customer and driver accounts.</li>
+              <li>Verify driver identity and eligibility to receive deliveries.</li>
+              <li>Calculate, create, dispatch, track, and complete deliveries.</li>
+              <li>Show customers the status of their active delivery.</li>
+              <li>Help drivers navigate to pickup and drop-off locations.</li>
+              <li>Send service messages, delivery updates, and support replies.</li>
+              <li>Prevent fraud, unauthorized access, abuse, and unsafe use.</li>
+              <li>Maintain app versions, force updates, and service availability.</li>
+              <li>Improve app reliability, support, and operational reporting.</li>
+            </ul>
+          </section>
+
+          <section id="location">
+            <h2>5. Location Data</h2>
+            <p>
+              The customer app uses locations selected by the customer to create
+              delivery requests, calculate delivery distance, and show pickup and
+              drop-off details.
+            </p>
+            <p>
+              The driver app may collect GPS location while a driver is online
+              or assigned to an active delivery. This helps administrators assign
+              nearby drivers and lets customers or support staff understand
+              delivery progress. Drivers can stop sharing operational location by
+              going offline when they are not working.
+            </p>
+          </section>
+
+          <section id="permissions">
+            <h2>6. App Permissions</h2>
+            <ul>
+              <li>
+                <strong>Location:</strong> used for delivery pickup/drop-off
+                selection, driver dispatch, tracking, and navigation support.
+              </li>
+              <li>
+                <strong>Camera or photos:</strong> used when a driver uploads an
+                ID or verification image.
+              </li>
+              <li>
+                <strong>Notifications:</strong> used for delivery assignments,
+                status changes, reminders, and support updates.
+              </li>
+              <li>
+                <strong>Internet access:</strong> used to connect the apps to
+                MotoBike services.
+              </li>
+            </ul>
+          </section>
+
+          <section id="sharing">
+            <h2>7. How We Share Information</h2>
+            <p>
+              We share information only as needed to operate the delivery
+              service, comply with law, protect users, or provide support.
+            </p>
+            <ul>
+              <li>
+                Customers may see assigned driver name, vehicle details, and
+                delivery status.
+              </li>
+              <li>
+                Drivers may see customer name, phone number, pickup location,
+                drop-off location, and delivery details needed to complete the
+                order.
+              </li>
+              <li>
+                Administrators may access account, delivery, driver, support,
+                location, verification, and operational records to run the
+                service.
+              </li>
+              <li>
+                Restaurant or food seller details may be used when a food
+                marketplace delivery is requested.
+              </li>
+              <li>
+                Service providers may process data for hosting, databases,
+                storage, SMS delivery, analytics, maps, security, and app
+                operations.
+              </li>
+              <li>
+                We may disclose information if required by law or to protect the
+                safety, rights, and security of users, drivers, or the platform.
+              </li>
+            </ul>
+            <p>
+              We do not sell personal information. We do not allow service
+              providers to use user data for their own advertising purposes.
+            </p>
+          </section>
+
+          <section id="third-parties">
+            <h2>8. Service Providers</h2>
+            <p>
+              MotoBike may use third-party services such as Supabase for
+              database, authentication-related storage, realtime updates, and
+              file storage; Vercel for web hosting; map and geocoding providers;
+              SMS gateway providers; and Google Play services for app
+              distribution and platform functions. These providers process data
+              only to support the app features we use them for.
+            </p>
+          </section>
+
+          <section id="security">
+            <h2>9. Security</h2>
+            <p>
+              We use administrative controls, access limits, hosted database
+              security, transport encryption where available, and operational
+              monitoring to help protect personal information. No system can be
+              guaranteed completely secure, so users and drivers should protect
+              their passwords and contact us immediately if they believe an
+              account is no longer secure.
+            </p>
+          </section>
+
+          <section id="retention">
+            <h2>10. Data Retention</h2>
+            <p>
+              We keep personal information for as long as needed to provide the
+              delivery service, manage accounts, resolve disputes, prevent fraud,
+              meet legal obligations, and maintain business records.
+            </p>
+            <ul>
+              <li>
+                Account records are usually kept while the account is active.
+              </li>
+              <li>
+                Delivery records may be kept after completion for customer
+                support, driver earnings, ratings, accounting, fraud prevention,
+                and operational history.
+              </li>
+              <li>
+                Driver verification files may be kept while the driver account is
+                active or while required for safety, dispute, or legal reasons.
+              </li>
+              <li>
+                Diagnostic and support records are kept only as long as
+                reasonably needed for support and reliability.
+              </li>
+            </ul>
+          </section>
+
+          <section id="deletion">
+            <h2>11. Account and Data Deletion</h2>
+            <p>
+              You may request account deletion and deletion of associated
+              personal data by contacting us through the app support options or
+              by using the external contact methods below.
+            </p>
+            <ul>
+              <li>
+                Email:
+                <a href="mailto:Natnaeltegestuu@gmail.com"
+                  >Natnaeltegestuu@gmail.com</a
+                >
+              </li>
+              <li>Phone: <a href="tel:+251931323328">+251 931 323 328</a></li>
+              <li>Alternative phone: <a href="tel:+251920202304">+251 920 202 304</a></li>
+            </ul>
+            <p>
+              To protect accounts, we may ask you to verify your email, phone
+              number, or other account details before deleting data. After a
+              valid deletion request, we will delete or anonymize personal data
+              within a reasonable time, except where we must keep limited
+              information for legal, safety, fraud prevention, accounting, or
+              dispute-resolution reasons.
+            </p>
+          </section>
+
+          <section id="choices">
+            <h2>12. Your Choices</h2>
+            <ul>
+              <li>You can update account details through app profile or support.</li>
+              <li>You can turn off optional notifications in your device settings.</li>
+              <li>
+                Drivers can stop operational location sharing by going offline
+                when they are not working.
+              </li>
+              <li>
+                You can request access, correction, or deletion by contacting us.
+              </li>
+            </ul>
+          </section>
+
+          <section id="children">
+            <h2>13. Children</h2>
+            <p>
+              MotoBike is not intended for children under 13 years old. We do
+              not knowingly collect personal information from children under 13.
+              If you believe a child has provided personal information, contact
+              us so we can review and delete it where appropriate.
+            </p>
+          </section>
+
+          <section id="international">
+            <h2>14. International Processing</h2>
+            <p>
+              Our service providers may process or store information in countries
+              outside Ethiopia. When this happens, we take reasonable steps to
+              protect information according to this policy and applicable law.
+            </p>
+          </section>
+
+          <section id="changes">
+            <h2>15. Changes to This Policy</h2>
+            <p>
+              We may update this policy when our apps, services, legal
+              requirements, or data practices change. The updated policy will be
+              posted on this page with a new effective date. Continued use of the
+              apps after the policy is updated means the updated policy applies.
+            </p>
+          </section>
+
+          <section id="contact">
+            <h2>16. Contact Us</h2>
+            <p>
+              For privacy questions, account deletion, data requests, or safety
+              concerns, contact MotoBike Delivery Service:
+            </p>
+            <div class="contact">
+              <p>
+                <strong>Email:</strong>
+                <a href="mailto:Natnaeltegestuu@gmail.com"
+                  >Natnaeltegestuu@gmail.com</a
+                >
+              </p>
+              <p>
+                <strong>Phone:</strong>
+                <a href="tel:+251931323328">+251 931 323 328</a>
+              </p>
+              <p>
+                <strong>Alternative phone:</strong>
+                <a href="tel:+251920202304">+251 920 202 304</a>
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer>
+        MotoBike Delivery Service. This privacy policy is intended for the
+        MotoBike customer app and MotoBike Driver app.
+      </footer>
+    </div>
+  </body>
+</html>

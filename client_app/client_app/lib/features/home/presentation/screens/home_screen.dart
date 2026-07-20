@@ -39,6 +39,77 @@ class _DeliveryPricing {
   final IconData icon;
 }
 
+class _HomeDeal {
+  const _HomeDeal({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.cardType,
+    required this.accentColor,
+    required this.textColor,
+    required this.overlayOpacity,
+    required this.sortOrder,
+    required this.isActive,
+    this.body = '',
+    this.imageUrl = '',
+    this.fallbackAsset,
+    this.badgeText = '',
+    this.ctaLabel = '',
+    this.ctaUrl = '',
+    this.startsAt,
+    this.endsAt,
+  });
+
+  factory _HomeDeal.fromMap(Map<String, dynamic> map) {
+    return _HomeDeal(
+      id: map['id']?.toString() ?? '',
+      title: map['title']?.toString().trim() ?? '',
+      subtitle: map['subtitle']?.toString().trim() ?? '',
+      body: map['body']?.toString().trim() ?? '',
+      imageUrl: map['image_url']?.toString().trim() ?? '',
+      cardType: map['card_type']?.toString() == 'hero' ? 'hero' : 'grid',
+      accentColor: _dealColor(map['accent_color'], AppColors.primary),
+      textColor: _dealColor(map['text_color'], Colors.white),
+      overlayOpacity: _dealOpacity(map['overlay_opacity']),
+      badgeText: map['badge_text']?.toString().trim() ?? '',
+      ctaLabel: map['cta_label']?.toString().trim() ?? '',
+      ctaUrl: map['cta_url']?.toString().trim() ?? '',
+      sortOrder: int.tryParse(map['sort_order']?.toString() ?? '') ?? 0,
+      isActive: map['is_active'] != false,
+      startsAt: _dealDate(map['starts_at']),
+      endsAt: _dealDate(map['ends_at']),
+    );
+  }
+
+  final String id;
+  final String title;
+  final String subtitle;
+  final String body;
+  final String imageUrl;
+  final String cardType;
+  final Color accentColor;
+  final Color textColor;
+  final double overlayOpacity;
+  final String? fallbackAsset;
+  final String badgeText;
+  final String ctaLabel;
+  final String ctaUrl;
+  final int sortOrder;
+  final bool isActive;
+  final DateTime? startsAt;
+  final DateTime? endsAt;
+
+  bool get isHero => cardType == 'hero';
+  bool get hasAction => ctaUrl.trim().isNotEmpty;
+
+  bool get isVisibleNow {
+    if (!isActive) return false;
+    final now = DateTime.now();
+    return (startsAt == null || !startsAt!.isAfter(now)) &&
+        (endsAt == null || !endsAt!.isBefore(now));
+  }
+}
+
 const Map<String, _DeliveryPricing> _deliveryPricing = {
   'Bike': _DeliveryPricing(
     title: 'Bicycle',
@@ -63,6 +134,76 @@ const List<String> _packageTypes = [
   'Electronics',
   'Other',
 ];
+
+const List<_HomeDeal> _fallbackDeals = [
+  _HomeDeal(
+    id: 'fallback-hero',
+    title: 'Deals are coming',
+    subtitle:
+        'MotoBike is launching soon with exciting deals and offers for our first users. Stay tuned!',
+    body: 'Upcoming offers for delivery customers.',
+    imageUrl: '',
+    fallbackAsset: ImageConstants.upcomingMotobikeDealsBackground,
+    cardType: 'hero',
+    accentColor: AppColors.primary,
+    textColor: Colors.white,
+    overlayOpacity: 0.56,
+    sortOrder: 10,
+    isActive: true,
+  ),
+  _HomeDeal(
+    id: 'fallback-launch',
+    title: 'Launch deals',
+    subtitle: 'Save on first deliveries',
+    body: 'Introductory delivery offers.',
+    imageUrl: '',
+    fallbackAsset: ImageConstants.promoLaunchDeals,
+    cardType: 'grid',
+    accentColor: AppColors.primary,
+    textColor: Colors.white,
+    overlayOpacity: 0.46,
+    sortOrder: 20,
+    isActive: true,
+  ),
+  _HomeDeal(
+    id: 'fallback-partners',
+    title: 'Partner perks',
+    subtitle: 'Offers from local shops',
+    body: 'Local partner discounts and perks.',
+    imageUrl: '',
+    fallbackAsset: ImageConstants.promoPartnerPerks,
+    cardType: 'grid',
+    accentColor: AppColors.secondary,
+    textColor: Colors.white,
+    overlayOpacity: 0.46,
+    sortOrder: 30,
+    isActive: true,
+  ),
+];
+
+Color _dealColor(Object? value, Color fallback) {
+  final raw = value?.toString().trim() ?? '';
+  final hex = raw.startsWith('#') ? raw.substring(1) : raw;
+  if (hex.length != 6) return fallback;
+  final parsed = int.tryParse(hex, radix: 16);
+  if (parsed == null) return fallback;
+  return Color(0xFF000000 | parsed);
+}
+
+double _dealOpacity(Object? value) {
+  final parsed = value is num
+      ? value.toDouble()
+      : double.tryParse(value?.toString() ?? '') ?? 0.55;
+  if (parsed < 0) return 0;
+  if (parsed > 0.95) return 0.95;
+  return parsed;
+}
+
+DateTime? _dealDate(Object? value) {
+  final raw = value?.toString().trim();
+  if (raw == null || raw.isEmpty) return null;
+  return DateTime.tryParse(raw)?.toLocal();
+}
 
 class HomeDrawerVisibilityNotification extends Notification {
   const HomeDrawerVisibilityNotification({required this.visible});
@@ -104,8 +245,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Marker> _driverMarkers = [];
   List<LatLng> _routePoints = [];
+  List<_HomeDeal> _deals = _fallbackDeals;
   RealtimeChannel? _driverChannel;
   RealtimeChannel? _deliveryChannel;
+  RealtimeChannel? _dealsChannel;
 
   MapPlace? _destination;
   Map<String, dynamic>? _currentDelivery;
@@ -148,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
       NavigationService().setPrimaryDeliveryAction(_primaryDeliveryAction);
     }
     _listenToDrivers();
+    _listenToDeals();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(_loadCurrentLocation());
@@ -364,6 +508,62 @@ class _HomeScreenState extends State<HomeScreen> {
           .subscribe();
     } catch (e) {
       debugPrint('Error setting up driver realtime: $e');
+    }
+  }
+
+  Future<void> _listenToDeals() async {
+    try {
+      await _loadDeals();
+      _dealsChannel = Supabase.instance.client
+          .channel('public:app_deals:home')
+          .onPostgresChanges(
+            event: PostgresChangeEvent.all,
+            schema: 'public',
+            table: 'app_deals',
+            callback: (_) => unawaited(_loadDeals()),
+          )
+          .subscribe();
+    } catch (e) {
+      debugPrint('Error setting up deals realtime: $e');
+    }
+  }
+
+  Future<void> _loadDeals() async {
+    try {
+      final data = await Supabase.instance.client
+          .from('app_deals')
+          .select(
+            'id,title,subtitle,body,image_url,card_type,accent_color,text_color,overlay_opacity,badge_text,cta_label,cta_url,sort_order,is_active,starts_at,ends_at,created_at',
+          )
+          .eq('is_active', true)
+          .order('sort_order', ascending: true)
+          .order('created_at', ascending: false);
+
+      final deals = List<Map<String, dynamic>>.from(data)
+          .map(_HomeDeal.fromMap)
+          .where((deal) => deal.title.isNotEmpty && deal.isVisibleNow)
+          .toList();
+
+      if (!mounted) return;
+      setState(() => _deals = deals.isEmpty ? _fallbackDeals : deals);
+    } catch (e) {
+      debugPrint('Deals fallback: $e');
+      if (!mounted) return;
+      setState(() => _deals = _fallbackDeals);
+    }
+  }
+
+  Future<void> _openDealAction(_HomeDeal deal) async {
+    final uri = Uri.tryParse(deal.ctaUrl.trim());
+    if (uri == null || !uri.hasScheme) return;
+
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened && mounted) {
+      AppToast.show(
+        context: context,
+        message: 'Could not open deal.',
+        type: AppToastType.error,
+      );
     }
   }
 
@@ -1271,6 +1471,7 @@ class _HomeScreenState extends State<HomeScreen> {
     NavigationService().clearPrimaryDeliveryAction(_primaryDeliveryAction);
     _driverChannel?.unsubscribe();
     _deliveryChannel?.unsubscribe();
+    _dealsChannel?.unsubscribe();
     _otherItemController.dispose();
     super.dispose();
   }
@@ -2753,6 +2954,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUpcomingAdsSection() {
+    final deals = _deals.isEmpty ? _fallbackDeals : _deals;
+    final heroDeal = deals.firstWhere(
+      (deal) => deal.isHero,
+      orElse: () => deals.first,
+    );
+    final gridDeals = deals
+        .where((deal) => deal.id != heroDeal.id)
+        .take(4)
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2762,92 +2973,21 @@ class _HomeScreenState extends State<HomeScreen> {
           fontWeight: FontWeight.bold,
         ),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          height: 150,
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            image: const DecorationImage(
-              image: AssetImage(ImageConstants.upcomingMotobikeDealsBackground),
-              fit: BoxFit.cover,
-            ),
-            border: Border.all(color: context.appBorder),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.12),
-                blurRadius: 22,
-                offset: const Offset(0, 12),
-              ),
-            ],
+        _HeroDealCard(deal: heroDeal, onTap: _openDealAction),
+        if (gridDeals.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            childAspectRatio: 1.18,
+            crossAxisSpacing: AppSpacing.sm,
+            mainAxisSpacing: AppSpacing.sm,
+            children: gridDeals
+                .map((deal) => _DealGridAdCard(deal: deal, onTap: _openDealAction))
+                .toList(),
           ),
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: AlignmentDirectional.centerStart,
-                      end: AlignmentDirectional.centerEnd,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.68),
-                        Colors.black.withValues(alpha: 0.44),
-                        Colors.black.withValues(alpha: 0.12),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              PositionedDirectional(
-                start: AppSpacing.lg,
-                top: AppSpacing.lg,
-                end: 148,
-                bottom: AppSpacing.md,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppText(
-                      'Deals are coming',
-                      variant: AppTextVariant.heading3,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    AppText(
-                      'MotoBike is launching soon with exciting deals and offers for our first users. Stay tuned!',
-                      variant: AppTextVariant.bodySmall,
-                      color: Colors.white.withValues(alpha: 0.86),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          childAspectRatio: 1.18,
-          crossAxisSpacing: AppSpacing.sm,
-          mainAxisSpacing: AppSpacing.sm,
-          children: const [
-            _PromoGridAdCard(
-              imagePath: ImageConstants.promoLaunchDeals,
-              title: 'Launch deals',
-              subtitle: 'Save on first deliveries',
-              accentColor: AppColors.primary,
-            ),
-            _PromoGridAdCard(
-              imagePath: ImageConstants.promoPartnerPerks,
-              title: 'Partner perks',
-              subtitle: 'Offers from local shops',
-              accentColor: AppColors.secondary,
-            ),
-          ],
-        ),
+        ],
       ],
     );
   }
@@ -3112,95 +3252,264 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
   }
 }
 
-class _PromoGridAdCard extends StatelessWidget {
-  const _PromoGridAdCard({
-    required this.imagePath,
-    required this.title,
-    required this.subtitle,
-    required this.accentColor,
-  });
+class _HeroDealCard extends StatelessWidget {
+  const _HeroDealCard({required this.deal, required this.onTap});
 
-  final String imagePath;
-  final String title;
-  final String subtitle;
-  final Color accentColor;
+  final _HomeDeal deal;
+  final ValueChanged<_HomeDeal> onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        color: context.appSurface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: context.appBorder),
-        boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(child: Image.asset(imagePath, fit: BoxFit.cover)),
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.04),
-                    Colors.black.withValues(alpha: 0.30),
-                    Colors.black.withValues(alpha: 0.72),
+    final overlay = deal.overlayOpacity;
+    return GestureDetector(
+      onTap: deal.hasAction ? () => onTap(deal) : null,
+      child: Container(
+        height: 150,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: context.appSurface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: context.appBorder),
+          boxShadow: [
+            BoxShadow(
+              color: deal.accentColor.withValues(alpha: 0.12),
+              blurRadius: 22,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: _DealImage(
+                deal: deal,
+                fallbackAsset: ImageConstants.upcomingMotobikeDealsBackground,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: AlignmentDirectional.centerStart,
+                    end: AlignmentDirectional.centerEnd,
+                    colors: [
+                      Colors.black.withValues(
+                        alpha: math.min(0.98, overlay + 0.14),
+                      ),
+                      Colors.black.withValues(alpha: overlay),
+                      Colors.black.withValues(
+                        alpha: math.max(0.10, overlay - 0.32),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (deal.badgeText.isNotEmpty)
+              PositionedDirectional(
+                top: AppSpacing.md,
+                end: AppSpacing.md,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: deal.accentColor,
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: AppText(
+                    deal.badgeText,
+                    variant: AppTextVariant.labelSmall,
+                    color: deal.textColor,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            PositionedDirectional(
+              start: AppSpacing.lg,
+              top: AppSpacing.lg,
+              end: 118,
+              bottom: AppSpacing.md,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppText(
+                    deal.title,
+                    variant: AppTextVariant.heading3,
+                    color: deal.textColor,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  AppText(
+                    deal.subtitle.isNotEmpty ? deal.subtitle : deal.body,
+                    variant: AppTextVariant.bodySmall,
+                    color: deal.textColor.withValues(alpha: 0.86),
+                    maxLines: deal.ctaLabel.isEmpty ? 2 : 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (deal.ctaLabel.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: deal.accentColor,
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      ),
+                      child: AppText(
+                        deal.ctaLabel,
+                        variant: AppTextVariant.labelSmall,
+                        color: deal.textColor,
+                        fontWeight: FontWeight.w900,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
-                ),
+                ],
               ),
             ),
-          ),
-          PositionedDirectional(
-            start: AppSpacing.sm,
-            top: AppSpacing.sm,
-            child: Container(
-              width: 26,
-              height: 4,
-              decoration: BoxDecoration(
-                color: accentColor,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-          ),
-          PositionedDirectional(
-            start: AppSpacing.sm,
-            end: AppSpacing.sm,
-            bottom: AppSpacing.sm,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppText(
-                  title,
-                  variant: AppTextVariant.bodyMedium,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                AppText(
-                  subtitle,
-                  variant: AppTextVariant.bodySmall,
-                  color: Colors.white.withValues(alpha: 0.84),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
+  }
+}
+
+class _DealGridAdCard extends StatelessWidget {
+  const _DealGridAdCard({required this.deal, required this.onTap});
+
+  final _HomeDeal deal;
+  final ValueChanged<_HomeDeal> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final overlay = deal.overlayOpacity;
+    return GestureDetector(
+      onTap: deal.hasAction ? () => onTap(deal) : null,
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: context.appSurface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: context.appBorder),
+          boxShadow: [
+            BoxShadow(
+              color: deal.accentColor.withValues(alpha: 0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: _DealImage(
+                deal: deal,
+                fallbackAsset:
+                    deal.fallbackAsset ?? ImageConstants.promoLaunchDeals,
+              ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(
+                        alpha: math.max(0.04, overlay - 0.40),
+                      ),
+                      Colors.black.withValues(
+                        alpha: math.max(0.24, overlay),
+                      ),
+                      Colors.black.withValues(
+                        alpha: math.min(0.90, overlay + 0.26),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              start: AppSpacing.sm,
+              top: AppSpacing.sm,
+              child: Container(
+                width: 26,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: deal.accentColor,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            PositionedDirectional(
+              start: AppSpacing.sm,
+              end: AppSpacing.sm,
+              bottom: AppSpacing.sm,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppText(
+                    deal.title,
+                    variant: AppTextVariant.bodyMedium,
+                    color: deal.textColor,
+                    fontWeight: FontWeight.w900,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  AppText(
+                    deal.subtitle.isNotEmpty ? deal.subtitle : deal.body,
+                    variant: AppTextVariant.bodySmall,
+                    color: deal.textColor.withValues(alpha: 0.84),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DealImage extends StatelessWidget {
+  const _DealImage({required this.deal, required this.fallbackAsset});
+
+  final _HomeDeal deal;
+  final String fallbackAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = deal.imageUrl.trim();
+    final asset = deal.fallbackAsset ?? fallbackAsset;
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Image.asset(asset, fit: BoxFit.cover),
+      );
+    }
+    if (imageUrl.startsWith('assets/')) {
+      return Image.asset(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => Image.asset(asset, fit: BoxFit.cover),
+      );
+    }
+    return Image.asset(asset, fit: BoxFit.cover);
   }
 }
 

@@ -8,6 +8,7 @@ import Image from "next/image";
 import dynamic from 'next/dynamic';
 import AppVersionManager from "./AppVersionManager";
 import BackendManager from "./BackendManager";
+import DealsManager from "./DealsManager";
 import FoodMarketplaceManager from "./FoodMarketplaceManager";
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
@@ -137,7 +138,7 @@ export default function AdminDashboard() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "versions" | "food" | "backend">("deliveries");
+  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "deals" | "versions" | "food" | "backend">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -600,6 +601,7 @@ export default function AdminDashboard() {
             { key: 'map', label: 'Live Map', icon: '🗺️' },
             { key: 'drivers', label: 'Drivers', icon: '👤', badge: activeDrivers.length },
             { key: 'analytics', label: 'Analytics', icon: '📊' },
+            { key: 'deals', label: 'Deals', icon: 'Deals' },
             { key: 'food', label: 'Food Market', icon: 'Food' },
             { key: 'versions', label: 'App Versions', icon: 'V' },
             { key: 'backend', label: 'Backend', icon: '🔐' },
@@ -650,7 +652,7 @@ export default function AdminDashboard() {
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <h2 className="text-xl md:text-2xl font-extrabold text-neutral-800 capitalize truncate">
-              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab === 'food' ? 'Food Marketplace' : activeTab === 'backend' ? 'Backend Control' : activeTab}
+              {activeTab === 'pending' ? 'Pending Approvals' : activeTab === 'map' ? 'Live Driver Map' : activeTab === 'versions' ? 'App Versions' : activeTab === 'food' ? 'Food Marketplace' : activeTab === 'deals' ? 'Deals' : activeTab === 'backend' ? 'Backend Control' : activeTab}
             </h2>
           </div>
           <div className="flex items-center space-x-4 flex-shrink-0">
@@ -1151,6 +1153,10 @@ export default function AdminDashboard() {
 
               {activeTab === 'food' && (
                 <FoodMarketplaceManager />
+              )}
+
+              {activeTab === 'deals' && (
+                <DealsManager />
               )}
 
               {activeTab === 'versions' && (
