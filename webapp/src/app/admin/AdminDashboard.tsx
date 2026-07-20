@@ -41,6 +41,7 @@ type Delivery = {
 type Driver = {
   id: string;
   name: string;
+  email?: string | null;
   phone: string;
   telegram_id: string;
   telegram_username: string;
@@ -431,7 +432,7 @@ export default function AdminDashboard() {
         } else {
           if (driver.phone) {
             try {
-              await fetch('/api/sms/send', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: driver.phone, message: "🎉 Congratulations! You have been approved by the Admin. You can now Log In using your name and password." }) });
+              await fetch('/api/sms/send', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: driver.phone, message: "🎉 Congratulations! You have been approved by the Admin. You can now Log In using your email and password." }) });
             } catch (e) { console.error("Failed to notify driver via SMS", e); }
           }
           fetchData();
@@ -483,18 +484,19 @@ export default function AdminDashboard() {
       message: 'Update the driver details below:',
       fields: [
         { name: 'name', label: 'Driver Name', value: driver.name },
+        { name: 'email', label: 'Driver Email', value: driver.email || '' },
         { name: 'phone', label: 'Driver Phone', value: driver.phone },
         { name: 'plate_number', label: 'Plate Number', value: driver.plate_number || '' }
       ],
       onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
       onConfirm: async (data: any) => {
         setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
-        if (data.name && data.phone) {
-          setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, phone: data.phone, plate_number: data.plate_number } : d));
+        if (data.name && data.email && data.phone) {
+          setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, email: data.email, phone: data.phone, plate_number: data.plate_number } : d));
           await fetch(`/api/drivers/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: data.name, phone: data.phone, plate_number: data.plate_number })
+            body: JSON.stringify({ name: data.name, email: data.email, phone: data.phone, plate_number: data.plate_number })
           });
           fetchData();
         }
@@ -966,6 +968,7 @@ export default function AdminDashboard() {
                           {drv.name.charAt(0)}
                         </div>
                         <h3 className="text-lg font-extrabold text-neutral-900 truncate">{drv.name}</h3>
+                        <p className="text-neutral-500 font-medium mt-0.5 truncate text-sm">{drv.email || 'No email'}</p>
                         <p className="text-neutral-500 font-medium mt-0.5 truncate text-sm">{drv.phone}</p>
                         <p className="text-neutral-400 text-xs mt-0.5 truncate">{drv.telegram_username || drv.telegram_id || 'No Telegram'}</p>
                         <div className="flex items-center space-x-2 mt-2">
@@ -1121,6 +1124,7 @@ export default function AdminDashboard() {
                         <div>
                           <h3 className="text-xl font-extrabold text-neutral-900">{drv.name}</h3>
                           <div className="flex space-x-4 mt-1 text-sm text-neutral-500 font-medium">
+                            <span>{drv.email || 'No email'}</span>
                             <span>📞 {drv.phone}</span>
                             <span>📱 {drv.telegram_id}</span>
                           </div>

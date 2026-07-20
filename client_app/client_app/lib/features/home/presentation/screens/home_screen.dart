@@ -118,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _lastPulsedVehicleCategory;
   String _selectedPackageType = 'Documents';
   int _vehicleSelectionPulse = 0;
-  bool _socialsExpanded = false;
   double? _distanceKm;
   bool _hasLoadedActiveDelivery = false;
   bool _isLoadingActiveDelivery = false;
@@ -130,12 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final Set<String> _ratingPromptedDeliveries = <String>{};
   late final VoidCallback _homeAction;
   late final VoidCallback _primaryDeliveryAction;
-
-  static final Uri _telegramUri = Uri.parse('https://t.me/motorbike_et');
-  static final Uri _instagramUri = Uri.parse(
-    'https://www.instagram.com/motorbike_et/',
-  );
-  static final Uri _xUri = Uri.parse('https://x.com/motorbike_et');
 
   @override
   void initState() {
@@ -1149,17 +1142,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _openExternalUri(Uri uri, String label) async {
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && mounted) {
-      AppToast.show(
-        context: context,
-        message: 'Could not open $label.',
-        type: AppToastType.error,
-      );
-    }
-  }
-
   void _closeDrawerThen(VoidCallback action) {
     Navigator.pop(context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1429,7 +1411,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.delivery.client',
+                userAgentPackageName: 'com.motobikedeliveryservice.client',
                 maxNativeZoom: 19,
                 keepBuffer: 5,
               ),
@@ -2662,11 +2644,17 @@ class _HomeScreenState extends State<HomeScreen> {
     const motorCover = Color(0xFFEAF8FF);
     const motorSelectedCover = Color(0xFFDDF4FF);
     const motorBorder = Color(0xFFAFE4FA);
+    const motorForeground = Color(0xFF12324A);
+    const motorSubtitle = Color(0xFF536C7C);
     final accent = isMotor ? AppColors.secondary : AppColors.primary;
-    final foreground = selected && !isMotor
+    final foreground = isMotor
+        ? motorForeground
+        : selected
         ? Colors.white
         : context.appTextPrimary;
-    final subtitleColor = selected && !isMotor
+    final subtitleColor = isMotor
+        ? motorSubtitle
+        : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
 
@@ -2860,21 +2848,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
-        _buildSocialRevealCard(),
       ],
-    );
-  }
-
-  Widget _buildSocialRevealCard() {
-    return _SocialDrawerCard(
-      expanded: _socialsExpanded,
-      onToggle: () {
-        setState(() => _socialsExpanded = !_socialsExpanded);
-      },
-      onTelegramTap: () => _openExternalUri(_telegramUri, 'Telegram'),
-      onInstagramTap: () => _openExternalUri(_instagramUri, 'Instagram'),
-      onXTap: () => _openExternalUri(_xUri, 'X'),
     );
   }
 
@@ -2952,347 +2926,6 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle,
           variant: AppTextVariant.bodySmall,
           color: context.appTextSecondary,
-        ),
-      ),
-    );
-  }
-}
-
-class _SocialDrawerCard extends StatefulWidget {
-  const _SocialDrawerCard({
-    required this.expanded,
-    required this.onToggle,
-    required this.onTelegramTap,
-    required this.onInstagramTap,
-    required this.onXTap,
-  });
-
-  final bool expanded;
-  final VoidCallback onToggle;
-  final VoidCallback onTelegramTap;
-  final VoidCallback onInstagramTap;
-  final VoidCallback onXTap;
-
-  @override
-  State<_SocialDrawerCard> createState() => _SocialDrawerCardState();
-}
-
-class _SocialDrawerCardState extends State<_SocialDrawerCard>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 480),
-      reverseDuration: const Duration(milliseconds: 420),
-      value: widget.expanded ? 1 : 0,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant _SocialDrawerCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.expanded == widget.expanded) return;
-    if (widget.expanded) {
-      _controller.forward();
-    } else {
-      _controller.reverse();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      expanded: widget.expanded,
-      label: 'Socials',
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, _) {
-          final height = 178 + (72 * _controller.value);
-
-          return Container(
-            height: height,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFBE4BD8),
-                  Color(0xFFFF5FAA),
-                  Color(0xFFFFB16D),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.74)),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFBE4BD8).withValues(alpha: 0.22),
-                  blurRadius: 32,
-                  offset: const Offset(0, 18),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const AlignmentDirectional(-0.92, 0.86),
-                        radius: 1.04,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.82),
-                          Colors.white.withValues(alpha: 0.10),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const AlignmentDirectional(0.35, -0.15),
-                        radius: 0.76,
-                        colors: [
-                          const Color(0xFF5FD8FF).withValues(alpha: 0.28),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                _SocialDrawerPanel(
-                  controller: _controller,
-                  intervalStart: 0,
-                  intervalEnd: 0.72,
-                  width: 178,
-                  height: 128,
-                  originStart: 34,
-                  originBottom: 30,
-                  hiddenYOffset: 34,
-                  colors: const [
-                    Color(0xFFA76EFF),
-                    Color(0xFF57D8FF),
-                    Color(0xFFFF61BC),
-                  ],
-                  icon: Icons.camera_alt_rounded,
-                  iconColor: const Color(0xFFE4405F),
-                  tooltip: 'Instagram',
-                  onTap: widget.onInstagramTap,
-                ),
-                _SocialDrawerPanel(
-                  controller: _controller,
-                  intervalStart: 0.12,
-                  intervalEnd: 0.84,
-                  width: 132,
-                  height: 96,
-                  originStart: 34,
-                  originBottom: 30,
-                  hiddenYOffset: 26,
-                  colors: const [
-                    Color(0xFFFF8CD2),
-                    Color(0xFFFFC5E7),
-                    Color(0xFFFFF0C8),
-                  ],
-                  icon: Icons.send_rounded,
-                  iconColor: const Color(0xFF24A1DE),
-                  tooltip: 'Telegram',
-                  onTap: widget.onTelegramTap,
-                ),
-                _SocialDrawerPanel(
-                  controller: _controller,
-                  intervalStart: 0.24,
-                  intervalEnd: 1,
-                  width: 88,
-                  height: 68,
-                  originStart: 34,
-                  originBottom: 30,
-                  hiddenYOffset: 18,
-                  colors: const [Color(0xFFFFF2F8), Color(0xFFFFE9C8)],
-                  icon: Icons.alternate_email_rounded,
-                  iconColor: const Color(0xFF12263D),
-                  tooltip: 'X',
-                  onTap: widget.onXTap,
-                ),
-                PositionedDirectional(
-                  top: 28,
-                  end: 28,
-                  child: AppText(
-                    'Socials',
-                    variant: AppTextVariant.heading2,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                PositionedDirectional(
-                  end: AppSpacing.lg,
-                  bottom: AppSpacing.lg,
-                  child: Material(
-                    color: Colors.white.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(16),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: widget.onToggle,
-                      child: SizedBox(
-                        width: 54,
-                        height: 54,
-                        child: Transform.rotate(
-                          angle: _controller.value * math.pi / 4,
-                          child: const Icon(
-                            Icons.add_rounded,
-                            color: Color(0xFF12263D),
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _SocialDrawerPanel extends StatelessWidget {
-  const _SocialDrawerPanel({
-    required this.controller,
-    required this.intervalStart,
-    required this.intervalEnd,
-    required this.width,
-    required this.height,
-    required this.originStart,
-    required this.originBottom,
-    required this.hiddenYOffset,
-    required this.colors,
-    required this.icon,
-    required this.iconColor,
-    required this.tooltip,
-    required this.onTap,
-  });
-
-  final AnimationController controller;
-  final double intervalStart;
-  final double intervalEnd;
-  final double width;
-  final double height;
-  final double originStart;
-  final double originBottom;
-  final double hiddenYOffset;
-  final List<Color> colors;
-  final IconData icon;
-  final Color iconColor;
-  final String tooltip;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final curved = CurvedAnimation(
-      parent: controller,
-      curve: Interval(intervalStart, intervalEnd, curve: Curves.easeOutBack),
-      reverseCurve: Interval(
-        intervalStart,
-        intervalEnd,
-        curve: Curves.easeInCubic,
-      ),
-    );
-    final progress = curved.value.clamp(0.0, 1.0);
-    final scale = 0.4 + (0.6 * progress);
-    final iconProgress = Curves.easeOutBack.transform(progress);
-
-    return PositionedDirectional(
-      start: originStart,
-      bottom: originBottom,
-      child: Transform.translate(
-        offset: Offset(0, hiddenYOffset * (1 - progress)),
-        child: Transform.scale(
-          scale: scale,
-          alignment: Alignment.bottomLeft,
-          child: Tooltip(
-            message: tooltip,
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(28),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(28),
-                onTap: progress > 0.92 ? onTap : null,
-                child: Container(
-                  width: width,
-                  height: height,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: colors,
-                    ),
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.82),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.12),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            gradient: RadialGradient(
-                              center: Alignment.topLeft,
-                              radius: 0.95,
-                              colors: [
-                                Colors.white.withValues(alpha: 0.45),
-                                Colors.white.withValues(alpha: 0.04),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Opacity(
-                          opacity: progress,
-                          child: Transform.scale(
-                            scale: iconProgress.clamp(0.0, 1.0),
-                            child: Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.88),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Icon(icon, color: iconColor, size: 24),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
         ),
       ),
     );
@@ -3672,7 +3305,7 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.delivery.client',
+                  userAgentPackageName: 'com.motobikedeliveryservice.client',
                   maxNativeZoom: 19,
                   keepBuffer: 5,
                 ),

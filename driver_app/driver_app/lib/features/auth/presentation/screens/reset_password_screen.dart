@@ -16,21 +16,30 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  static const _supportPhone = '+251 931 323 328';
+
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
   void _handleResetPassword() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
-        ResetPasswordEvent(email: _emailController.text.trim()),
+    if (_phoneController.text.trim().isEmpty) {
+      AppModal.error<void>(
+        context: context,
+        title: 'Error',
+        contentText: 'Please enter your phone number',
       );
+      return;
     }
+
+    context.read<AuthBloc>().add(
+      ResetPasswordEvent(phone: _phoneController.text.trim()),
+    );
   }
 
   @override
@@ -49,7 +58,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             AppToast.success(
               context: context,
               title: 'Success',
-              message: 'Password reset email sent',
+              message: 'If the phone number matches, your password was sent by SMS.',
             );
             context.pop();
           }
@@ -72,31 +81,35 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                   kVerticalGap8,
                   AppText(
-                    'Enter your email to receive a password reset code',
+                    'Enter your phone number. If it matches your driver account, your password will be sent by SMS.',
                     variant: AppTextVariant.bodyMedium,
                     color: AppColors.textSecondary,
                     textAlign: TextAlign.center,
                   ),
                   kVerticalGap48,
                   AppTextField.outlined(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    label: 'Email',
-                    hint: 'Enter your email',
-                    prefixIcon: Icons.email,
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    label: 'Phone number',
+                    hint: 'Enter your phone number',
+                    prefixIcon: Icons.phone_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Please enter a valid email';
+                        return 'Please enter your phone number';
                       }
                       return null;
                     },
                   ),
+                  kVerticalGap16,
+                  AppText(
+                    'Need help? Contact us: $_supportPhone',
+                    variant: AppTextVariant.bodyMedium,
+                    color: AppColors.textSecondary,
+                    textAlign: TextAlign.center,
+                  ),
                   kVerticalGap24,
                   AppButton.primary(
-                    label: 'Send Reset Code',
+                    label: 'Send Password',
                     onPressed: isLoading ? null : _handleResetPassword,
                     isLoading: isLoading,
                     fullWidth: true,

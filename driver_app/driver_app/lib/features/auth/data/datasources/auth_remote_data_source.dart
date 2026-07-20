@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:driver_app/core/config/app_config.dart';
@@ -28,22 +30,36 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
-    final apiLogin = await _tryLoginViaWebApi(params);
-    if (apiLogin != null) return apiLogin;
+    final email = params.email.trim().toLowerCase();
+    if (email.isEmpty) throw Exception('Enter your driver email.');
 
-    final name = params.email.trim();
-    if (name.isEmpty) throw Exception('Enter your driver name.');
+    try {
+      final apiLogin = await _tryLoginViaWebApi(
+        LoginParams(email: email, password: params.password),
+      );
+      if (apiLogin != null) return apiLogin;
+    } on dio.DioException catch (error) {
+      final statusCode = error.response?.statusCode ?? 0;
+      if (statusCode >= 500 || statusCode == 0) rethrow;
+    }
 
     final data = await _supabase
         .from('drivers')
         .select()
-        .eq('name', name)
-        .eq('password', params.password)
+        .eq('email', email)
         .maybeSingle();
 
-    if (data == null) throw Exception('Invalid name or password.');
+    if (data == null) {
+      throw Exception(
+        'No driver account found with this email. Ask admin to add this email to your driver profile.',
+      );
+    }
 
     final driver = Map<String, dynamic>.from(data);
+    if (driver['password']?.toString() != params.password) {
+      throw Exception('Invalid email or password.');
+    }
+
     final approvalStatus =
         driver['approval_status']?.toString().trim().isNotEmpty == true
         ? driver['approval_status'].toString()
@@ -59,7 +75,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     return AuthResponseModel(
-      user: _driverUser(driver),
+      user: _driverUser(driver, fallbackEmail: email),
       accessToken: _driverToken(driver),
       refreshToken: _driverToken(driver, refresh: true),
       requiresVerification: false,
@@ -77,7 +93,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     final response = await _dio.post<Map<String, dynamic>>(
       '$apiBaseUrl/api/drivers/login',
-      data: {'name': params.email.trim(), 'password': params.password},
+      data: {'email': params.email.trim().toLowerCase(), 'password': params.password},
     );
     final driver = Map<String, dynamic>.from(response.data ?? {});
     if (driver.isEmpty) throw Exception('Invalid driver login response.');
@@ -119,6 +135,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final data = dio.FormData.fromMap({
+      'email': params.email.trim().toLowerCase(),
       'name': fullName.isEmpty ? params.email.trim() : fullName,
       'phone': params.phone?.trim() ?? '',
       'password': params.password,
@@ -160,9 +177,10 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
             onResponse: (response, handler) {
               if ((response.statusCode ?? 500) >= 400) {
                 final data = response.data;
-                final message = data is Map && data['error'] != null
-                    ? data['error'].toString()
-                    : 'Driver API request failed.';
+                final message = _apiErrorMessage(
+                  data,
+                  'Driver API request failed.',
+                );
                 handler.reject(
                   dio.DioException(
                     requestOptions: response.requestOptions,
@@ -186,6 +204,33 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     return baseUrl;
   }
 
+  String _apiErrorMessage(Object? data, String fallback) {
+    if (data is Map && data['error'] != null) {
+      return data['error'].toString();
+    }
+    if (data is Map && data['message'] != null) {
+      return data['message'].toString();
+    }
+    if (data is String) {
+      final trimmed = data.trim();
+      if (trimmed.isEmpty) return fallback;
+      try {
+        final decoded = jsonDecode(trimmed);
+        if (decoded is Map && decoded['error'] != null) {
+          return decoded['error'].toString();
+        }
+      } catch (_) {
+        if (trimmed.toLowerCase().contains('<!doctype')) {
+          return 'Password recovery API was not found. Deploy the latest web app API changes.';
+        }
+        return trimmed.length > 240
+            ? 'Driver API request failed. Check the deployed web app logs.'
+            : trimmed;
+      }
+    }
+    return fallback;
+  }
+
   String _fullName(SignUpParams params) {
     final firstName = params.firstName?.trim() ?? '';
     final lastName = params.lastName?.trim() ?? '';
@@ -207,8 +252,19 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> resetPassword(ResetPasswordParams params) async {
-    throw Exception(
-      'Password reset is not configured for driver table accounts.',
+    final phone = params.phone.trim();
+    if (phone.isEmpty) throw Exception('Enter your phone number.');
+
+    final apiBaseUrl = _apiBaseUrl;
+    if (apiBaseUrl == null) {
+      throw Exception(
+        'Password recovery needs API_BASE_URL so the web app can send the SMS.',
+      );
+    }
+
+    await _dio.post<Map<String, dynamic>>(
+      '$apiBaseUrl/api/drivers/forgot-password',
+      data: {'phone': phone},
     );
   }
 
@@ -239,10 +295,11 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   UserModel _driverUser(Map<String, dynamic> driver, {String? fallbackEmail}) {
     final name = driver['name']?.toString() ?? '';
     final nameParts = name.trim().split(RegExp(r'\s+'));
+    final storedEmail = driver['email']?.toString().trim();
 
     return UserModel(
       id: driver['id']?.toString() ?? '',
-      email: fallbackEmail ?? '',
+      email: storedEmail?.isNotEmpty == true ? storedEmail! : fallbackEmail ?? '',
       isEmailVerified: false,
       firstName: nameParts.isEmpty ? name : nameParts.first,
       lastName: nameParts.length > 1 ? nameParts.skip(1).join(' ') : null,

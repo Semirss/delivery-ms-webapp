@@ -21,6 +21,7 @@ type Delivery = {
 type Driver = {
   id: string;
   name: string;
+  email?: string | null;
   status: string;
   approval_status: string;
   vehicle_type?: string;
@@ -344,10 +345,10 @@ export default function DriverPortal() {
         const res = await fetch("/api/drivers/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: data.name, password: data.password })
+          body: JSON.stringify({ email: data.email, password: data.password })
         });
         
-        if (!res.ok) throw new Error("Invalid name or password");
+        if (!res.ok) throw new Error("Invalid email or password");
         const session = await res.json();
         
         if (session.approval_status === "Pending") {
@@ -508,8 +509,8 @@ export default function DriverPortal() {
               {authMode === "login" ? (
                   <div className="space-y-4">
                      <div>
-                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
-                       <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Email</label>
+                       <input required type="email" name="email" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="driver@example.com" />
                      </div>
                      <div>
                        <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Password</label>
@@ -521,6 +522,10 @@ export default function DriverPortal() {
                      <div>
                        <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Full Name</label>
                        <input required type="text" name="name" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="e.g. John Doe" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Email</label>
+                       <input required type="email" name="email" className="block w-full border-neutral-300 border rounded-xl shadow-sm p-3.5 focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-neutral-50 font-medium transition-all" placeholder="driver@example.com" />
                      </div>
                      <div>
                        <label className="block text-sm font-bold text-neutral-700 mb-1.5 ml-1">Phone Number</label>

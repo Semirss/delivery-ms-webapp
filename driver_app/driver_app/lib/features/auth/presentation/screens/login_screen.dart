@@ -169,13 +169,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         AppTextField.outlined(
                           controller: _emailController,
-                          label: 'Full Name',
-                          hint: 'e.g. John Doe',
-                          prefixIcon: Icons.person_outline_rounded,
+                          label: 'Email',
+                          hint: 'driver@email.com',
+                          prefixIcon: Icons.email_outlined,
+                          keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
                           validator: (v) {
-                            if (v == null || v.isEmpty)
-                              return 'Full name is required';
+                            if (v == null || v.trim().isEmpty) {
+                              return 'Email is required';
+                            }
+                            if (!v.contains('@')) {
+                              return 'Enter a valid email';
+                            }
                             return null;
                           },
                         ),

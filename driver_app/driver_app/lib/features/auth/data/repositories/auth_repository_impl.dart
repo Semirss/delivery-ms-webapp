@@ -161,7 +161,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -179,7 +179,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -335,8 +335,9 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
       return 'A driver account already exists with these details.';
     }
     if (message.contains('Invalid name or password') ||
+        message.contains('Invalid email or password') ||
         message.contains('Invalid credentials')) {
-      return 'Invalid name or password.';
+      return 'Invalid email or password.';
     }
     if (message.contains('driver_ids')) {
       return 'Could not upload the ID photo. Check the driver_ids storage bucket.';

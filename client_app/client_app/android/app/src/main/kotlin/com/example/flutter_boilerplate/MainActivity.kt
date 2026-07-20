@@ -1,4 +1,4 @@
-package com.delivery.client
+package com.motobikedeliveryservice.client
 
 import io.flutter.embedding.android.FlutterActivity
 

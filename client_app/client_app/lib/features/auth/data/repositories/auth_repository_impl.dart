@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:client_app/core/base/base_repository.dart';
 import 'package:client_app/core/connection/network_info.dart';
 import 'package:client_app/core/errors/expentions.dart';
@@ -160,7 +161,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -178,7 +179,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -309,9 +310,19 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   }
 
   String _friendlyError(Object error) {
-    var message = error.toString();
-    message = message.replaceFirst('Exception: ', '');
+    var message = error.toString().replaceFirst('Exception: ', '');
+    if (error is DioException) {
+      final data = error.response?.data;
+      if (data is Map && data['error'] != null) {
+        message = data['error'].toString();
+      } else if (error.message?.trim().isNotEmpty == true) {
+        message = error.message!.trim();
+      }
+    }
     if (message.contains('duplicate key') || message.contains('already exists')) {
+      if (message.toLowerCase().contains('phone')) {
+        return 'A client account already exists for this phone number';
+      }
       return 'A client account already exists for this email';
     }
     if (message.contains('Invalid email or password')) {

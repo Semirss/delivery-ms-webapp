@@ -9,6 +9,10 @@ export const fetchCache = 'force-no-store';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_in_production_123';
 const APPS = new Set(['client', 'driver']);
 const PLATFORMS = new Set(['android', 'ios']);
+const ANDROID_PLAY_STORE_URLS: Record<string, string> = {
+    client: 'https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client',
+    driver: 'https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.driver',
+};
 
 type VersionPayload = {
     app: string;
@@ -57,6 +61,15 @@ function errorMessage(error: unknown, fallback: string) {
     return error instanceof Error ? error.message : fallback;
 }
 
+function defaultUpdateUrl(app: string, platform: string) {
+    return platform === 'android' ? ANDROID_PLAY_STORE_URLS[app] || '' : '';
+}
+
+function withDefaultUpdateUrl<T extends { app: string; platform: string; update_url: string }>(row: T): T {
+    if (row.update_url?.trim()) return row;
+    return { ...row, update_url: defaultUpdateUrl(row.app, row.platform) };
+}
+
 function validatePayload(body: unknown): VersionPayload {
     const input = toRecord(body);
     const app = toStringValue(input.app, 20);
@@ -83,7 +96,7 @@ function validatePayload(body: unknown): VersionPayload {
         latest_build: latestBuild,
         latest_version: toStringValue(input.latest_version, 40) || '1.0.0',
         force_update: Boolean(input.force_update),
-        update_url: toStringValue(input.update_url, 2048),
+        update_url: toStringValue(input.update_url, 2048) || defaultUpdateUrl(app, platform),
         release_notes: toStringValue(input.release_notes, 1000),
         maintenance_mode: Boolean(input.maintenance_mode),
         maintenance_message: toStringValue(input.maintenance_message, 500),
@@ -112,7 +125,7 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data || []);
+    return NextResponse.json((data || []).map(withDefaultUpdateUrl));
 }
 
 export async function PATCH(request: Request) {

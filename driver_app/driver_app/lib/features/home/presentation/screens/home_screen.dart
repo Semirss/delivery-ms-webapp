@@ -5,6 +5,7 @@ import 'package:driver_app/core/preferences/app_preferences.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/home/data/repositories/map_repository.dart';
 import 'package:driver_ui/app_ui.dart';
@@ -653,17 +654,14 @@ class _HomeScreenState extends State<HomeScreen> {
       );
       if (rating == null) return;
 
-      await _supabase.from('delivery_ratings').upsert(
-        {
-          'delivery_id': deliveryId,
-          'rater_type': 'driver',
-          'rater_id': driverId,
-          'ratee_type': 'client',
-          'ratee_id': rateeId,
-          'rating': rating,
-        },
-        onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id',
-      );
+      await _supabase.from('delivery_ratings').upsert({
+        'delivery_id': deliveryId,
+        'rater_type': 'driver',
+        'rater_id': driverId,
+        'ratee_type': 'client',
+        'ratee_id': rateeId,
+        'rating': rating,
+      }, onConflict: 'delivery_id,rater_type,rater_id,ratee_type,ratee_id');
 
       if (!mounted) return;
       AppToast.show(
@@ -813,7 +811,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.delivery.driver',
+                userAgentPackageName: 'com.motobikedeliveryservice.driver',
               ),
               if (_routePoints.isNotEmpty)
                 PolylineLayer(
@@ -1222,11 +1220,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.dark_mode_outlined,
                       title: 'Theme',
                       subtitle: 'Light, dark, or system',
-                    trailing: DropdownButton<ThemeMode>(
-                      value: preferences.themeMode,
-                      dropdownColor: context.appSurface,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                      style: TextStyle(color: context.appTextPrimary),
+                      trailing: DropdownButton<ThemeMode>(
+                        value: preferences.themeMode,
+                        dropdownColor: context.appSurface,
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        style: TextStyle(color: context.appTextPrimary),
                         underline: const SizedBox.shrink(),
                         items: const [
                           DropdownMenuItem(
@@ -1294,77 +1292,192 @@ class _HomeScreenState extends State<HomeScreen> {
         _driverRecord?['approval_status']?.toString() ?? 'Pending';
 
     return Drawer(
-      backgroundColor: context.appSurface,
+      backgroundColor: Colors.transparent,
       child: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      ImageConstants.appLogo,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AppText(
-                          name,
-                          variant: AppTextVariant.heading3,
-                          fontWeight: FontWeight.w900,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+        child: Container(
+          margin: const EdgeInsetsDirectional.only(
+            top: AppSpacing.sm,
+            bottom: AppSpacing.sm,
+            end: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            color: context.appSurface,
+            borderRadius: const BorderRadiusDirectional.horizontal(
+              start: Radius.circular(30),
+            ),
+            border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.14),
+                blurRadius: 28,
+                offset: const Offset(-10, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.95),
+                            AppColors.secondary.withValues(alpha: 0.78),
+                          ],
                         ),
-                        const SizedBox(height: 2),
-                        AppText(
-                          approvalStatus,
-                          variant: AppTextVariant.bodySmall,
-                          color: approvalStatus == 'Approved'
-                              ? AppColors.success
-                              : AppColors.warning,
-                          fontWeight: FontWeight.bold,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          ImageConstants.appLogo,
+                          fit: BoxFit.cover,
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText(
+                            name,
+                            variant: AppTextVariant.heading3,
+                            fontWeight: FontWeight.w900,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          AppText(
+                            approvalStatus,
+                            variant: AppTextVariant.bodySmall,
+                            color: approvalStatus == 'Approved'
+                                ? AppColors.success
+                                : AppColors.warning,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(color: context.appBorder),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  children: [
+                    _drawerTile(
+                      icon: Icons.home_rounded,
+                      title: 'Home',
+                      onTap: () =>
+                          _closeDrawerThen(context.navigator.navigateToHomeTab),
+                    ),
+                    _drawerTile(
+                      icon: Icons.notifications_rounded,
+                      title: 'Notifications',
+                      onTap: () => _closeDrawerThen(
+                        context.navigator.pushNotificationScreen,
+                      ),
+                    ),
+                    _drawerTile(
+                      icon: Icons.person_rounded,
+                      title: 'Profile',
+                      onTap: () =>
+                          _closeDrawerThen(context.navigator.pushProfileScreen),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm,
+                      ),
+                      child: Divider(color: context.appBorder),
+                    ),
+                    _drawerTile(
+                      icon: Icons.settings_rounded,
+                      title: 'Settings',
+                      onTap: () => _closeDrawerThen(_showSettingsSheet),
+                    ),
+                  ],
+                ),
+              ),
+              _buildDrawerSignOutButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerSignOutButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(22),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () {
+            Navigator.pop(context);
+            context.read<AuthBloc>().add(const LogoutEvent());
+          },
+          child: Ink(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.primaryLight.withValues(alpha: 0.92),
                 ],
               ),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.26),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
-            Divider(color: context.appBorder),
-            _drawerTile(
-              icon: Icons.home_rounded,
-              title: 'Home',
-              onTap: () =>
-                  _closeDrawerThen(context.navigator.navigateToHomeTab),
+            child: const Row(
+              children: [
+                Icon(Icons.logout_rounded, color: Colors.white),
+                SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AppText(
+                    'SIGN OUT',
+                    variant: AppTextVariant.button,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Icon(Icons.arrow_forward_rounded, color: Colors.white),
+              ],
             ),
-            _drawerTile(
-              icon: Icons.notifications_rounded,
-              title: 'Notifications',
-              onTap: () =>
-                  _closeDrawerThen(context.navigator.pushNotificationScreen),
-            ),
-            _drawerTile(
-              icon: Icons.person_rounded,
-              title: 'Profile',
-              onTap: () =>
-                  _closeDrawerThen(context.navigator.pushProfileScreen),
-            ),
-            Divider(color: context.appBorder),
-            _drawerTile(
-              icon: Icons.settings_rounded,
-              title: 'Settings',
-              onTap: () => _closeDrawerThen(_showSettingsSheet),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -1434,14 +1547,58 @@ class _HomeScreenState extends State<HomeScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: AppText(title, variant: AppTextVariant.bodyMedium),
-      trailing: Icon(
-        Icons.chevron_left_rounded,
-        color: context.appTextSecondary,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: 4,
       ),
-      onTap: onTap,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 23),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: AppText(
+                    title,
+                    variant: AppTextVariant.bodyMedium,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: context.appSurfaceAlt,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.chevron_left_rounded,
+                    color: context.appTextSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

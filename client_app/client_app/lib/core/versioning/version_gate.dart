@@ -43,7 +43,7 @@ class AppVersionPolicy {
       latestBuild: _intValue(json['latest_build'], fallback: 1),
       latestVersion: json['latest_version']?.toString() ?? '1.0.0',
       forceUpdate: json['force_update'] == true,
-      updateUrl: json['update_url']?.toString() ?? '',
+      updateUrl: _updateUrlValue(json['update_url'], packageInfo),
       releaseNotes: json['release_notes']?.toString() ?? '',
       maintenanceMode: json['maintenance_mode'] == true,
       maintenanceMessage: json['maintenance_message']?.toString() ?? '',
@@ -56,6 +56,17 @@ class AppVersionPolicy {
     if (value is int) return value;
     if (value is num) return value.toInt();
     return int.tryParse(value?.toString() ?? '') ?? fallback;
+  }
+
+  static String _updateUrlValue(Object? value, PackageInfo packageInfo) {
+    final configured = value?.toString().trim() ?? '';
+    if (configured.isNotEmpty) return configured;
+    if (!kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        packageInfo.packageName.isNotEmpty) {
+      return 'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
+    }
+    return '';
   }
 }
 
@@ -169,10 +180,7 @@ class _BlockedVersionScreen extends StatelessWidget {
   final AppVersionPolicy policy;
   final VoidCallback onRetry;
 
-  const _BlockedVersionScreen({
-    required this.policy,
-    required this.onRetry,
-  });
+  const _BlockedVersionScreen({required this.policy, required this.onRetry});
 
   Future<void> _openUpdate(BuildContext context) async {
     final uri = Uri.tryParse(policy.updateUrl);
@@ -194,14 +202,16 @@ class _BlockedVersionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isMaintenance = policy.maintenanceMode;
-    final title = isMaintenance ? 'Service temporarily unavailable' : 'Update required';
+    final title = isMaintenance
+        ? 'Service temporarily unavailable'
+        : 'Update required';
     final message = isMaintenance
         ? (policy.maintenanceMessage.isNotEmpty
-            ? policy.maintenanceMessage
-            : 'The service is under maintenance. Please try again shortly.')
+              ? policy.maintenanceMessage
+              : 'The service is under maintenance. Please try again shortly.')
         : (policy.releaseNotes.isNotEmpty
-            ? policy.releaseNotes
-            : 'A newer app version is required to continue.');
+              ? policy.releaseNotes
+              : 'A newer app version is required to continue.');
 
     return Scaffold(
       backgroundColor: context.appBackground,
@@ -213,7 +223,9 @@ class _BlockedVersionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Icon(
-                isMaintenance ? Icons.construction_rounded : Icons.system_update_rounded,
+                isMaintenance
+                    ? Icons.construction_rounded
+                    : Icons.system_update_rounded,
                 size: 72,
                 color: AppColors.primary,
               ),
@@ -241,11 +253,21 @@ class _BlockedVersionScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _VersionInfoRow(label: 'Installed', value: '${policy.installedVersion}+${policy.installedBuild}'),
+                    _VersionInfoRow(
+                      label: 'Installed',
+                      value:
+                          '${policy.installedVersion}+${policy.installedBuild}',
+                    ),
                     const Divider(height: AppSpacing.lg),
-                    _VersionInfoRow(label: 'Latest', value: '${policy.latestVersion}+${policy.latestBuild}'),
+                    _VersionInfoRow(
+                      label: 'Latest',
+                      value: '${policy.latestVersion}+${policy.latestBuild}',
+                    ),
                     const Divider(height: AppSpacing.lg),
-                    _VersionInfoRow(label: 'Minimum build', value: policy.minimumBuild.toString()),
+                    _VersionInfoRow(
+                      label: 'Minimum build',
+                      value: policy.minimumBuild.toString(),
+                    ),
                   ],
                 ),
               ),
@@ -274,18 +296,23 @@ class _VersionInfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _VersionInfoRow({
-    required this.label,
-    required this.value,
-  });
+  const _VersionInfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        AppText(label, variant: AppTextVariant.bodySmall, color: context.appTextSecondary),
-        AppText(value, variant: AppTextVariant.bodyMedium, fontWeight: FontWeight.bold),
+        AppText(
+          label,
+          variant: AppTextVariant.bodySmall,
+          color: context.appTextSecondary,
+        ),
+        AppText(
+          value,
+          variant: AppTextVariant.bodyMedium,
+          fontWeight: FontWeight.bold,
+        ),
       ],
     );
   }

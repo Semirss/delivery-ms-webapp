@@ -2239,11 +2239,17 @@ class _FoodVehicleOption extends StatelessWidget {
     const motorCover = Color(0xFFEAF8FF);
     const motorSelectedCover = Color(0xFFDDF4FF);
     const motorBorder = Color(0xFFAFE4FA);
+    const motorForeground = Color(0xFF12324A);
+    const motorSubtitle = Color(0xFF536C7C);
     final accent = isMotor ? motorAccent : AppColors.secondary;
-    final foreground = selected && !isMotor
+    final foreground = isMotor
+        ? motorForeground
+        : selected
         ? Colors.white
         : context.appTextPrimary;
-    final subtitleColor = selected && !isMotor
+    final subtitleColor = isMotor
+        ? motorSubtitle
+        : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
 

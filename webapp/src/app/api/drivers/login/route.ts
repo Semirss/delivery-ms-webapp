@@ -14,17 +14,32 @@ export async function OPTIONS() {
 export async function POST(request: Request) {
     const supabase = await getSupabaseAdmin();
     try {
-        const { name, password } = await request.json();
+        const { email, password } = await request.json();
+        const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
+        if (!normalizedEmail || !password) {
+            return NextResponse.json({ error: 'Email and password are required' }, { status: 400, headers: corsHeaders });
+        }
 
         const { data, error } = await supabase
             .from('drivers')
             .select('*')
-            .eq('name', name)
-            .eq('password', password)
-            .single();
+            .eq('email', normalizedEmail)
+            .maybeSingle();
 
-        if (error || !data) {
-            return NextResponse.json({ error: 'Invalid credentials' }, { status: 401, headers: corsHeaders });
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
+        }
+
+        if (!data) {
+            return NextResponse.json(
+                { error: 'No driver account found with this email. Ask admin to add this email to your driver profile.' },
+                { status: 401, headers: corsHeaders }
+            );
+        }
+
+        if (data.password !== password) {
+            return NextResponse.json({ error: 'Invalid email or password' }, { status: 401, headers: corsHeaders });
         }
 
         return NextResponse.json(data, { headers: corsHeaders });

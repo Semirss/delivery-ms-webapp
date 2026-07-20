@@ -354,7 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             icon: Icons.dark_mode_outlined,
             title: 'Theme',
-            subtitle: 'Light, dark, or system',
+            subtitle: 'Choose how the app looks',
             trailing: DropdownButton<ThemeMode>(
               value: preferences.themeMode,
               dropdownColor: context.appSurface,
@@ -364,7 +364,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               items: const [
                 DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
                 DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
-                DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
+                DropdownMenuItem(
+                  value: ThemeMode.system,
+                  child: Text('System'),
+                ),
               ],
               onChanged: (value) {
                 if (value != null) preferences.setThemeMode(value);
@@ -390,13 +393,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ]),
         const SizedBox(height: AppSpacing.xl),
-        AppButton.outlinedSecondary(
-          label: 'SIGN OUT',
-          fullWidth: true,
-          onPressed: () => context.read<AuthBloc>().add(const LogoutEvent()),
-        ),
+        _buildSignOutButton(context),
         const SizedBox(height: AppSpacing.xl),
       ],
+    );
+  }
+
+  Widget _buildSignOutButton(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: () {
+          context.read<AuthBloc>().add(const LogoutEvent());
+        },
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryLight.withValues(alpha: 0.94),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.26),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.logout_rounded, color: Colors.white),
+              SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppText(
+                  'SIGN OUT',
+                  variant: AppTextVariant.button,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Icon(Icons.arrow_forward_rounded, color: Colors.white),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -573,15 +625,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
         AppText(
           title,
           variant: AppTextVariant.heading3,
-          fontWeight: FontWeight.bold,
-          color: context.appTextPrimary,
+          fontWeight: FontWeight.w900,
         ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.md),
         Container(
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: context.appSurface,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            borderRadius: BorderRadius.circular(24),
             border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
           child: Column(
             children: tiles
@@ -594,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (entry.key < tiles.length - 1)
                         Divider(
                           height: 1,
-                          indent: 56,
+                          indent: 72,
                           color: context.appBorder,
                         ),
                     ],
@@ -616,12 +675,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return ListTile(
       onTap: onTap,
-      leading: _TileIcon(icon: icon),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      leading: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.primary.withValues(alpha: 0.18),
+              AppColors.primaryLight.withValues(alpha: 0.10),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 22),
+      ),
       title: AppText(
         title,
         variant: AppTextVariant.bodyMedium,
-        fontWeight: FontWeight.bold,
-        color: context.appTextPrimary,
+        fontWeight: FontWeight.w900,
       ),
       subtitle: AppText(
         subtitle,
@@ -630,9 +707,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Icon(
-        Icons.chevron_right_rounded,
-        color: context.appTextSecondary,
+      trailing: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: context.appSurfaceAlt,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          Icons.chevron_right_rounded,
+          color: context.appTextSecondary,
+        ),
       ),
     );
   }
@@ -645,12 +730,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Widget trailing,
   }) {
     return ListTile(
-      leading: _TileIcon(icon: icon),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      leading: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Icon(icon, color: AppColors.primary, size: 22),
+      ),
       title: AppText(
         title,
         variant: AppTextVariant.bodyMedium,
-        fontWeight: FontWeight.bold,
-        color: context.appTextPrimary,
+        fontWeight: FontWeight.w900,
       ),
       subtitle: AppText(
         subtitle,
@@ -695,24 +791,6 @@ class _HeaderBadge extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _TileIcon extends StatelessWidget {
-  const _TileIcon({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: AppColors.primary, size: 20),
     );
   }
 }

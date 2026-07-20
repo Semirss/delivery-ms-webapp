@@ -59,12 +59,13 @@ class ResendOtpEvent extends AuthEvent {
 }
 
 class ResetPasswordEvent extends AuthEvent {
-  final String email;
+  final String phone;
+  final String? newPassword;
 
-  const ResetPasswordEvent({required this.email});
+  const ResetPasswordEvent({required this.phone, this.newPassword});
 
   @override
-  List<Object> get props => [email];
+  List<Object?> get props => [phone, newPassword];
 }
 
 class VerifyResetPasswordEvent extends AuthEvent {
@@ -89,4 +90,3 @@ class LogoutEvent extends AuthEvent {
 class CheckAuthStatusEvent extends AuthEvent {
   const CheckAuthStatusEvent();
 }
-
