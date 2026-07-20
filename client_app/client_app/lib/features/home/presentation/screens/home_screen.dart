@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:client_app/config/router/navigation_helper.dart';
 import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
 import 'package:client_app/features/search/presentation/screens/search_destination_screen.dart';
@@ -61,6 +63,12 @@ const List<String> _packageTypes = [
   'Electronics',
   'Other',
 ];
+
+class HomeDrawerVisibilityNotification extends Notification {
+  const HomeDrawerVisibilityNotification({required this.visible});
+
+  final bool visible;
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key})
@@ -133,10 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
         : widget.initialService.trim();
     _showMap = widget.deliveryPage;
     _homeAction = _returnToHomeFromNav;
-    _primaryDeliveryAction = () => _openDeliveryRoute(
-      vehicleCategory: 'Motor',
-      service: _selectedService,
-    );
+    _primaryDeliveryAction = () =>
+        _openDeliveryRoute(vehicleCategory: 'Motor', service: _selectedService);
     if (!widget.deliveryPage) {
       NavigationService().setHomeAction(_homeAction);
       NavigationService().setPrimaryDeliveryAction(_primaryDeliveryAction);
@@ -1148,9 +1154,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final deliveryId = _currentDeliveryId;
     context.goNamed(
       AppRoutes.tracking.name,
-      queryParameters: {
-        if (deliveryId != null) 'deliveryId': deliveryId,
-      },
+      queryParameters: {if (deliveryId != null) 'deliveryId': deliveryId},
     );
   }
 
@@ -1288,6 +1292,9 @@ class _HomeScreenState extends State<HomeScreen> {
       key: _scaffoldKey,
       backgroundColor: context.appBackground,
       endDrawer: _buildHomeDrawer(),
+      onEndDrawerChanged: (isOpened) {
+        HomeDrawerVisibilityNotification(visible: isOpened).dispatch(context);
+      },
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
@@ -1404,7 +1411,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.delivery.client',
+                userAgentPackageName: 'com.motobikedeliveryservice.client',
                 maxNativeZoom: 19,
                 keepBuffer: 5,
               ),
@@ -1631,74 +1638,189 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeDrawer() {
     return Drawer(
-      backgroundColor: context.appSurface,
+      backgroundColor: Colors.transparent,
       child: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      ImageConstants.appLogo,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
+        child: Container(
+          margin: const EdgeInsetsDirectional.only(
+            top: AppSpacing.sm,
+            bottom: AppSpacing.sm,
+            end: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            color: context.appSurface,
+            borderRadius: const BorderRadiusDirectional.horizontal(
+              start: Radius.circular(30),
+            ),
+            border: Border.all(color: context.appBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.14),
+                blurRadius: 28,
+                offset: const Offset(-10, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 58,
+                      height: 58,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primary.withValues(alpha: 0.95),
+                            AppColors.secondary.withValues(alpha: 0.78),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset(
+                          ImageConstants.appLogo,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  const Expanded(
-                    child: AppText(
-                      'MotoBike',
-                      variant: AppTextVariant.heading3,
-                      fontWeight: FontWeight.w900,
+                    const SizedBox(width: AppSpacing.md),
+                    const Expanded(
+                      child: AppText(
+                        'MotoBike',
+                        variant: AppTextVariant.heading3,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+              Divider(color: context.appBorder),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  children: [
+                    _drawerTile(
+                      icon: Icons.home_rounded,
+                      title: 'Home',
+                      onTap: () =>
+                          _closeDrawerThen(context.navigator.navigateToHomeTab),
+                    ),
+                    _drawerTile(
+                      icon: Icons.receipt_long_rounded,
+                      title: 'My Orders',
+                      onTap: () => _closeDrawerThen(() {
+                        NavigationService().navigateToTab(1);
+                      }),
+                    ),
+                    _drawerTile(
+                      icon: Icons.route_rounded,
+                      title: 'Live Tracking',
+                      onTap: () => _closeDrawerThen(_trackCurrentDelivery),
+                    ),
+                    _drawerTile(
+                      icon: Icons.notifications_rounded,
+                      title: 'Notifications',
+                      onTap: () => _closeDrawerThen(() {
+                        context.pushNamed(AppRoutes.notification.name);
+                      }),
+                    ),
+                    _drawerTile(
+                      icon: Icons.person_rounded,
+                      title: 'Profile',
+                      onTap: () => _closeDrawerThen(
+                        context.navigator.navigateToProfileTab,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm,
+                      ),
+                      child: Divider(color: context.appBorder),
+                    ),
+                    _drawerTile(
+                      icon: Icons.settings_rounded,
+                      title: 'Settings',
+                      onTap: () => _closeDrawerThen(_showSettingsSheet),
+                    ),
+                  ],
+                ),
+              ),
+              _buildDrawerSignOutButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawerSignOutButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(22),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () {
+            Navigator.pop(context);
+            context.read<AuthBloc>().add(const LogoutEvent());
+          },
+          child: Ink(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  AppColors.primary,
+                  AppColors.primaryLight.withValues(alpha: 0.92),
                 ],
               ),
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.26),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
             ),
-            Divider(color: context.appBorder),
-            _drawerTile(
-              icon: Icons.home_rounded,
-              title: 'Home',
-              onTap: () =>
-                  _closeDrawerThen(context.navigator.navigateToHomeTab),
+            child: const Row(
+              children: [
+                Icon(Icons.logout_rounded, color: Colors.white),
+                SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AppText(
+                    'SIGN OUT',
+                    variant: AppTextVariant.button,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                Icon(Icons.arrow_forward_rounded, color: Colors.white),
+              ],
             ),
-            _drawerTile(
-              icon: Icons.receipt_long_rounded,
-              title: 'My Orders',
-              onTap: () => _closeDrawerThen(() {
-                NavigationService().navigateToTab(1);
-              }),
-            ),
-            _drawerTile(
-              icon: Icons.route_rounded,
-              title: 'Live Tracking',
-              onTap: () => _closeDrawerThen(_trackCurrentDelivery),
-            ),
-            _drawerTile(
-              icon: Icons.notifications_rounded,
-              title: 'Notifications',
-              onTap: () => _closeDrawerThen(() {
-                context.pushNamed(AppRoutes.notification.name);
-              }),
-            ),
-            _drawerTile(
-              icon: Icons.person_rounded,
-              title: 'Profile',
-              onTap: () =>
-                  _closeDrawerThen(context.navigator.navigateToProfileTab),
-            ),
-            Divider(color: context.appBorder),
-            _drawerTile(
-              icon: Icons.settings_rounded,
-              title: 'Settings',
-              onTap: () => _closeDrawerThen(_showSettingsSheet),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -1709,14 +1831,58 @@ class _HomeScreenState extends State<HomeScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
-      title: AppText(title, variant: AppTextVariant.bodyMedium),
-      trailing: Icon(
-        Icons.chevron_left_rounded,
-        color: context.appTextSecondary,
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: 4,
       ),
-      onTap: onTap,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.sm,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 23),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: AppText(
+                    title,
+                    variant: AppTextVariant.bodyMedium,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: context.appSurfaceAlt,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.chevron_left_rounded,
+                    color: context.appTextSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -2334,12 +2500,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildVehicleShowcaseChoice(String category) {
     final pricing = _deliveryPricing[category]!;
     final selected = _selectedVehicleCategory == category;
-    final accent = AppColors.primary;
+    final isMotor = category == 'Motor';
+    final accent = isMotor ? AppColors.secondary : AppColors.primary;
     final backgroundPath = category == 'Bike'
         ? ImageConstants.vehicleBicycleCardBackground
         : ImageConstants.vehicleMotorbikeCardBackground;
     const titleColor = Color(0xFF08233F);
-    final borderColor = selected ? accent : const Color(0xFFE8ECF2);
+    const motorCover = Color(0xFFEAF8FF);
+    const motorBorder = Color(0xFFAEE4FA);
+    final borderColor = selected
+        ? accent
+        : (isMotor ? motorBorder : const Color(0xFFFFB6AA));
 
     return _buildVehicleTapPulse(
       category,
@@ -2365,7 +2536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isMotor ? motorCover : Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       image: DecorationImage(
                         image: AssetImage(backgroundPath),
@@ -2374,15 +2545,31 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       border: Border.all(
                         color: borderColor,
-                        width: selected ? 1.4 : 1,
+                        width: selected || isMotor ? 1.5 : 1,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.035),
-                          blurRadius: 14,
-                          offset: const Offset(0, 8),
+                          color: accent.withValues(
+                            alpha: selected ? 0.18 : 0.09,
+                          ),
+                          blurRadius: selected ? 22 : 15,
+                          offset: const Offset(0, 10),
                         ),
                       ],
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: AlignmentDirectional.topStart,
+                        end: AlignmentDirectional.bottomEnd,
+                        colors: [
+                          Colors.white.withValues(alpha: isMotor ? 0.18 : 0.30),
+                          Colors.white.withValues(alpha: isMotor ? 0.04 : 0),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -2403,7 +2590,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      _buildVehiclePriceLine(pricing),
+                      _buildVehiclePriceLine(pricing, amountColor: accent),
                     ],
                   ),
                 ),
@@ -2415,7 +2602,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildVehiclePriceLine(_DeliveryPricing pricing) {
+  Widget _buildVehiclePriceLine(
+    _DeliveryPricing pricing, {
+    Color amountColor = AppColors.primary,
+  }) {
     final parts = pricing.subtitle.split('/');
     final amount = parts.first;
     final suffix = parts.length > 1 ? '/${parts.sublist(1).join('/')}' : '';
@@ -2425,8 +2615,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           TextSpan(
             text: amount,
-            style: const TextStyle(
-              color: AppColors.primary,
+            style: TextStyle(
+              color: amountColor,
               fontSize: 17,
               fontWeight: FontWeight.w900,
             ),
@@ -2450,9 +2640,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildVehicleChoice(String category, {required bool compact}) {
     final pricing = _deliveryPricing[category]!;
     final selected = _selectedVehicleCategory == category;
-    final accent = category == 'Bike' ? AppColors.secondary : AppColors.primary;
-    final foreground = selected ? Colors.white : context.appTextPrimary;
-    final subtitleColor = selected
+    final isMotor = category == 'Motor';
+    const motorCover = Color(0xFFEAF8FF);
+    const motorSelectedCover = Color(0xFFDDF4FF);
+    const motorBorder = Color(0xFFAFE4FA);
+    const motorForeground = Color(0xFF12324A);
+    const motorSubtitle = Color(0xFF536C7C);
+    final accent = isMotor ? AppColors.secondary : AppColors.primary;
+    final foreground = isMotor
+        ? motorForeground
+        : selected
+        ? Colors.white
+        : context.appTextPrimary;
+    final subtitleColor = isMotor
+        ? motorSubtitle
+        : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
 
@@ -2465,9 +2667,24 @@ class _HomeScreenState extends State<HomeScreen> {
           duration: const Duration(milliseconds: 180),
           padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
           decoration: BoxDecoration(
-            color: selected ? accent : context.appSurfaceAlt,
+            color: selected
+                ? (isMotor ? motorSelectedCover : accent)
+                : (isMotor ? motorCover : context.appSurfaceAlt),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: selected ? accent : context.appBorder),
+            border: Border.all(
+              color: selected
+                  ? accent
+                  : (isMotor ? motorBorder : context.appBorder),
+              width: isMotor ? 1.4 : 1,
+            ),
+            boxShadow: [
+              if (selected || isMotor)
+                BoxShadow(
+                  color: accent.withValues(alpha: selected ? 0.18 : 0.08),
+                  blurRadius: selected ? 16 : 10,
+                  offset: const Offset(0, 8),
+                ),
+            ],
           ),
           child: Row(
             children: [
@@ -2508,19 +2725,22 @@ class _HomeScreenState extends State<HomeScreen> {
         ? _vehicleSelectionPulse
         : 0;
 
-    return TweenAnimationBuilder<double>(
-      key: ValueKey('vehicle-pulse-$category-$pulseKey'),
-      tween: Tween<double>(begin: pulseKey == 0 ? 1 : 1.08, end: 1),
-      duration: const Duration(milliseconds: 380),
-      curve: Curves.easeOutBack,
-      child: child,
-      builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          alignment: Alignment.center,
-          child: child,
-        );
-      },
+    return _SubtleVehicleCardMotion(
+      category: category,
+      child: TweenAnimationBuilder<double>(
+        key: ValueKey('vehicle-pulse-$category-$pulseKey'),
+        tween: Tween<double>(begin: pulseKey == 0 ? 1 : 1.035, end: 1),
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+        child: child,
+        builder: (context, scale, child) {
+          return Transform.scale(
+            scale: scale,
+            alignment: Alignment.center,
+            child: child,
+          );
+        },
+      ),
     );
   }
 
@@ -2712,6 +2932,123 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class _SubtleVehicleCardMotion extends StatefulWidget {
+  const _SubtleVehicleCardMotion({required this.category, required this.child});
+
+  final String category;
+  final Widget child;
+
+  @override
+  State<_SubtleVehicleCardMotion> createState() =>
+      _SubtleVehicleCardMotionState();
+}
+
+class _SubtleVehicleCardMotionState extends State<_SubtleVehicleCardMotion>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2600),
+    )..repeat();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SubtleVehicleCardMotion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.category != widget.category) {
+      _controller
+        ..reset()
+        ..repeat(reverse: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TickerMode(
+      enabled: TickerMode.of(context),
+      child: AnimatedBuilder(
+        animation: _controller,
+        child: widget.child,
+        builder: (context, child) {
+          final accent = widget.category == 'Bike'
+              ? AppColors.primary
+              : AppColors.secondary;
+          final phaseShift = widget.category == 'Bike' ? 0.0 : 0.48;
+          final phase = (_controller.value + phaseShift) % 1.0;
+          final activePhase = phase <= 0.42 ? phase / 0.42 : 1.0;
+          final pulse = phase <= 0.42 ? math.sin(activePhase * math.pi) : 0.0;
+          final scale = 1 + (pulse * 0.026);
+          final lift = -5 * pulse;
+          final glow = 0.07 + (pulse * 0.12);
+          final sweepOffset = phase <= 0.42 ? (activePhase * 250) - 125 : 125.0;
+
+          return Transform.translate(
+            offset: Offset(0, lift),
+            child: Transform.scale(
+              scale: scale,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: glow),
+                      blurRadius: 20 + (pulse * 10),
+                      spreadRadius: pulse * 0.8,
+                      offset: Offset(0, 9 + (pulse * 4)),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    child!,
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: Opacity(
+                            opacity: 0.05 + (pulse * 0.13),
+                            child: Transform.translate(
+                              offset: Offset(sweepOffset, 0),
+                              child: Transform.rotate(
+                                angle: -0.45,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withValues(alpha: 0),
+                                        Colors.white.withValues(alpha: 0.34),
+                                        Colors.white.withValues(alpha: 0),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
 class _PreviewRouteOverlayPainter extends CustomPainter {
   const _PreviewRouteOverlayPainter({required this.progress});
 
@@ -2720,37 +3057,34 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = _deliveryPreviewOverlayPath(size);
-    final metric = path.computeMetrics().first;
-    final activePath = metric.extractPath(
-      0,
-      metric.length * _clampUnit(progress),
-    );
 
     final routeShadow = Paint()
-      ..color = Colors.white.withValues(alpha: 0.70)
+      ..color = Colors.white.withValues(alpha: 0.88)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 10;
-    final routeBase = Paint()
-      ..color = AppColors.secondary.withValues(alpha: 0.42)
+      ..strokeWidth = 12;
+    final routeGradient = Paint()
+      ..shader = const LinearGradient(
+        colors: [Color(0xFF2387FF), Color(0xFF805BFF), Color(0xFFFF5B4D)],
+      ).createShader(Offset.zero & size)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 6;
-    final activeRoute = Paint()
-      ..color = AppColors.primary.withValues(alpha: 0.88)
+      ..strokeWidth = 7;
+    final highlight = Paint()
+      ..color = Colors.white.withValues(alpha: 0.28)
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 6;
+      ..strokeWidth = 2.5;
 
     canvas
       ..drawPath(path, routeShadow)
-      ..drawPath(path, routeBase)
-      ..drawPath(activePath, activeRoute);
+      ..drawPath(path, routeGradient)
+      ..drawPath(path, highlight);
 
     _paintPin(
       canvas,
       _deliveryPreviewOverlayPoint(size, 0),
-      AppColors.secondary,
+      const Color(0xFF2387FF),
     );
     _paintPin(canvas, _deliveryPreviewOverlayPoint(size, 1), AppColors.primary);
   }
@@ -2767,9 +3101,9 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     canvas
-      ..drawCircle(center + const Offset(0, 3), 15, shadow)
-      ..drawCircle(center, 15, shell)
-      ..drawCircle(center, 7, fill);
+      ..drawCircle(center + const Offset(0, 3), 30, shadow)
+      ..drawCircle(center, 10, shell)
+      ..drawCircle(center, 5, fill);
   }
 
   @override
@@ -2809,9 +3143,7 @@ class _PromoGridAdCard extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Positioned.fill(
-            child: Image.asset(imagePath, fit: BoxFit.cover),
-          ),
+          Positioned.fill(child: Image.asset(imagePath, fit: BoxFit.cover)),
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -2882,13 +3214,21 @@ double _clampUnit(double value) {
 
 Path _deliveryPreviewOverlayPath(Size size) {
   return Path()
-    ..moveTo(size.width * 0.18, size.height * 0.72)
+    ..moveTo(size.width * 0.34, size.height * 0.78)
     ..cubicTo(
-      size.width * 0.34,
+      size.width * 0.46,
       size.height * 0.56,
-      size.width * 0.54,
-      size.height * 0.44,
-      size.width * 0.74,
+      size.width * 0.58,
+      size.height * 0.48,
+      size.width * 0.70,
+      size.height * 0.56,
+    )
+    ..cubicTo(
+      size.width * 0.76,
+      size.height * 0.60,
+      size.width * 0.81,
+      size.height * 0.62,
+      size.width * 0.87,
       size.height * 0.56,
     );
 }
@@ -2899,7 +3239,7 @@ Offset _deliveryPreviewOverlayPoint(Size size, double progress) {
     metric.length * _clampUnit(progress),
   );
 
-  return tangent?.position ?? Offset(size.width * 0.18, size.height * 0.72);
+  return tangent?.position ?? Offset(size.width * 0.34, size.height * 0.78);
 }
 
 class _AnimatedDeliveryMapCard extends StatefulWidget {
@@ -2939,17 +3279,16 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
-          height: 214,
+          height: 234,
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
-            color: context.appSurface,
+            color: const Color(0xFF182431),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: context.appBorder),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.10),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: Colors.black.withValues(alpha: 0.20),
+                blurRadius: 22,
+                offset: const Offset(0, 12),
               ),
             ],
           ),
@@ -2966,7 +3305,7 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
               children: [
                 TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.delivery.client',
+                  userAgentPackageName: 'com.motobikedeliveryservice.client',
                   maxNativeZoom: 19,
                   keepBuffer: 5,
                 ),
@@ -2998,7 +3337,24 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                       Positioned.fill(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.28),
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.72),
+                                Colors.black.withValues(alpha: 0.42),
+                                Colors.black.withValues(alpha: 0.28),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF0B2341,
+                            ).withValues(alpha: 0.12),
                           ),
                         ),
                       ),
@@ -3012,95 +3368,72 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
                         ),
                       ),
                       Positioned(
-                        left: bikeOffset.dx - 44,
-                        top: bikeOffset.dy - 34,
+                        left: bikeOffset.dx - 39,
+                        top: bikeOffset.dy - 31,
                         child: _buildPreviewBikeMarker(
                           movingForward: movingForward,
                         ),
                       ),
                       PositionedDirectional(
-                        start: AppSpacing.lg,
-                        top: AppSpacing.md,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.94),
-                            borderRadius: BorderRadius.circular(999),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.06),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                        start: AppSpacing.xl,
+                        top: 30,
+                        end: AppSpacing.xl,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText.rich(
+                              const TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Fast city ',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.05,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'delivery',
+                                    style: TextStyle(
+                                      color: AppColors.primary,
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w900,
+                                      height: 1.05,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.circle,
-                                color: AppColors.success,
-                                size: 9,
+                              variant: AppTextVariant.heading3,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            AppText(
+                              'A live route preview from pickup\nto drop-off.',
+                              variant: AppTextVariant.bodyMedium,
+                              color: Colors.white.withValues(alpha: 0.84),
+                              fontWeight: FontWeight.w700,
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              width: 42,
+                              height: 3,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(99),
                               ),
-                              SizedBox(width: 8),
-                              AppText(
-                                'Live route preview',
-                                variant: AppTextVariant.bodySmall,
-                                color: Color(0xFF111827),
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                       PositionedDirectional(
-                        start: AppSpacing.lg,
-                        bottom: AppSpacing.md,
+                        end: AppSpacing.xl,
+                        bottom: AppSpacing.xl,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.94),
-                            borderRadius: BorderRadius.circular(999),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.06),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.access_time_rounded,
-                                color: Color(0xFF0B2341),
-                                size: 17,
-                              ),
-                              SizedBox(width: 8),
-                              AppText(
-                                'Est. 15-20 min',
-                                variant: AppTextVariant.bodySmall,
-                                color: Color(0xFF0B2341),
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      PositionedDirectional(
-                        end: AppSpacing.lg,
-                        bottom: AppSpacing.lg,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg,
-                            vertical: 13,
+                            horizontal: 22,
+                            vertical: 15,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.primary,
@@ -3147,8 +3480,8 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
 
   Widget _buildPreviewBikeMarker({required bool movingForward}) {
     return SizedBox(
-      width: 88,
-      height: 68,
+      width: 78,
+      height: 60,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -3156,8 +3489,8 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
             scaleX: movingForward ? 1 : -1,
             child: Image.asset(
               ImageConstants.bikeCourier,
-              width: 86,
-              height: 64,
+              width: 76,
+              height: 56,
               fit: BoxFit.contain,
             ),
           ),

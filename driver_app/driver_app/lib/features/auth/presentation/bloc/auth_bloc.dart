@@ -132,7 +132,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await resetPasswordUseCase(
-      ResetPasswordParams(email: event.email),
+      ResetPasswordParams(
+        phone: event.phone,
+        newPassword: event.newPassword,
+      ),
     );
     result.fold(
       (failure) => emit(AuthError(message: failure.errMessage)),

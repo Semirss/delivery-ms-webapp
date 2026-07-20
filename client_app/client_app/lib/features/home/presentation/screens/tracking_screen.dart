@@ -202,10 +202,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
     final updatedDelivery = {
       ...tracked,
-      'driver': {
-        ...?currentDriver,
-        ...payload.newRecord,
-      },
+      'driver': {...?currentDriver, ...payload.newRecord},
     };
 
     setState(() {
@@ -494,7 +491,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.delivery.client',
+                userAgentPackageName: 'com.motobikedeliveryservice.client',
                 maxNativeZoom: 19,
                 keepBuffer: 5,
               ),
@@ -872,10 +869,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     }
   }
 
-  String _currentStatusSubtitle(
-    String status,
-    Map<String, dynamic> delivery,
-  ) {
+  String _currentStatusSubtitle(String status, Map<String, dynamic> delivery) {
     final driver = _driverFor(delivery);
     switch (status) {
       case 'Pending':

@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { errorMessage, isAdminRequest, isMissingColumnError, toBoolean, toNullableText, toNullableUuid, toNumber, toRecord, toText } from '../_utils';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
 export async function GET(request: Request) {
+    const supabase = await getSupabaseAdmin();
     const { searchParams } = new URL(request.url);
     const hasPagination = searchParams.has('page') || searchParams.has('pageSize') || searchParams.has('restaurant_id');
     const page = Math.max(1, Number(searchParams.get('page') || '1') || 1);
@@ -52,6 +53,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     if (!isAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

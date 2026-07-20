@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+    const supabase = await getSupabaseAdmin();
     try {
         const { id } = await context.params;
         const { status, cancelled_by, cancellation_reason } = await request.json();

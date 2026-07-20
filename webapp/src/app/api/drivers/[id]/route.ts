@@ -1,14 +1,60 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { normalizeEthiopianPhone } from '@/lib/phone';
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+    const supabase = await getSupabaseAdmin();
     try {
         const { id } = await context.params;
         const body = await request.json();
+        const updates = { ...body };
+
+        if (typeof updates.email === 'string') {
+            updates.email = updates.email.trim().toLowerCase();
+        }
+        if (typeof updates.phone === 'string') {
+            updates.phone = normalizeEthiopianPhone(updates.phone);
+        }
+        if (typeof updates.name === 'string') {
+            updates.name = updates.name.trim();
+        }
+
+        if (updates.email) {
+            const { data: existingEmail, error: existingEmailError } = await supabase
+                .from('drivers')
+                .select('id')
+                .eq('email', updates.email)
+                .neq('id', id)
+                .maybeSingle();
+
+            if (existingEmailError) throw existingEmailError;
+            if (existingEmail) {
+                return NextResponse.json(
+                    { error: 'A driver account already exists for this email' },
+                    { status: 409 }
+                );
+            }
+        }
+
+        if (updates.phone) {
+            const { data: existingPhone, error: existingPhoneError } = await supabase
+                .from('drivers')
+                .select('id, phone')
+                .neq('id', id)
+                .not('phone', 'is', null);
+
+            if (existingPhoneError) throw existingPhoneError;
+            if ((existingPhone ?? []).some((driver) => normalizeEthiopianPhone(driver.phone) === updates.phone)) {
+                return NextResponse.json(
+                    { error: 'A driver account already exists for this phone number' },
+                    { status: 409 }
+                );
+            }
+        }
 
         const { data, error } = await supabase
             .from('drivers')
-            .update(body)
+            .update(updates)
             .eq('id', id)
             .select()
             .single();
@@ -35,6 +81,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 }
 
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+    const supabase = await getSupabaseAdmin();
     try {
         const { id } = await context.params;
 

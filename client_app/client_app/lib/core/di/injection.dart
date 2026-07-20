@@ -39,7 +39,9 @@ Future<void> configureDependencies() async {
     )
     ..registerSingleton<IStorageService>(StorageService())
     ..registerSingleton<NetworkInfo>(NetworkInfoImpl(getIt<Connectivity>()))
-    ..registerSingleton<AuthRemoteDataSource>(ClientTableAuthDataSourceImpl())
+    ..registerSingleton<AuthRemoteDataSource>(
+      ClientTableAuthDataSourceImpl(config: getIt<AppConfig>()),
+    )
     ..registerSingleton<AuthLocalDataSource>(
       AuthLocalDataSourceImpl(cacheHelper: getIt<CacheHelper>()),
     )

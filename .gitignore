@@ -7,6 +7,12 @@ telegram-bot/.env
 **/.env.local
 **/.env
 
+# Android release signing secrets - NEVER commit these
+**/android/key.properties
+**/android/app/upload-keystore.jks
+**/*.jks
+**/*.keystore
+
 # Dependency directories
 **/node_modules/
 **/__pycache__/

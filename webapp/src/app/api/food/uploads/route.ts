@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin as supabase } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { errorMessage, isAdminRequest } from '../_utils';
 
 export const dynamic = 'force-dynamic';
@@ -9,6 +9,7 @@ const MAX_IMAGE_SIZE = 6 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 export async function POST(request: Request) {
+    const supabase = await getSupabaseAdmin();
     if (!isAdminRequest(request)) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }

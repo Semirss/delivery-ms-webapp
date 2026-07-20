@@ -20,6 +20,11 @@ type AppVersion = {
   updated_at?: string;
 };
 
+const androidPlayStoreUrls: Record<AppKey, string> = {
+  client: "https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client",
+  driver: "https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.driver",
+};
+
 const defaultRows: AppVersion[] = [
   {
     app: "client",
@@ -28,7 +33,7 @@ const defaultRows: AppVersion[] = [
     latest_build: 1,
     latest_version: "1.0.0",
     force_update: false,
-    update_url: "",
+    update_url: androidPlayStoreUrls.client,
     release_notes: "",
     maintenance_mode: false,
     maintenance_message: "",
@@ -40,7 +45,7 @@ const defaultRows: AppVersion[] = [
     latest_build: 1,
     latest_version: "1.0.0",
     force_update: false,
-    update_url: "",
+    update_url: androidPlayStoreUrls.driver,
     release_notes: "",
     maintenance_mode: false,
     maintenance_message: "",
@@ -81,6 +86,11 @@ function labelFor(row: AppVersion) {
   return `${appLabel} - ${platformLabel}`;
 }
 
+function withDefaultUpdateUrl(row: AppVersion) {
+  if (row.update_url.trim() || row.platform !== "android") return row;
+  return { ...row, update_url: androidPlayStoreUrls[row.app] };
+}
+
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
 }
@@ -107,10 +117,12 @@ export default function AppVersionManager() {
         const data = await res.json();
         const byKey = new Map<string, AppVersion>();
 
-        defaultRows.forEach((row) => byKey.set(rowKey(row), row));
+        defaultRows.forEach((row) => byKey.set(rowKey(row), withDefaultUpdateUrl(row)));
         if (Array.isArray(data)) {
           data.forEach((row: AppVersion) => {
-            if (row?.app && row?.platform) byKey.set(rowKey(row), { ...byKey.get(rowKey(row)), ...row });
+            if (row?.app && row?.platform) {
+              byKey.set(rowKey(row), withDefaultUpdateUrl({ ...byKey.get(rowKey(row)), ...row }));
+            }
           });
         }
 

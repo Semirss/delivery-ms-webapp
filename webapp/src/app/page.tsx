@@ -1,72 +1,112 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Package, MapPin, CheckCircle, ShieldCheck, Map, Clock, HelpCircle, ChevronRight, Bike, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Bike,
+  CheckCircle,
+  Clock,
+  Mail,
+  Map,
+  MapPin,
+  MessageCircle,
+  Package,
+  Phone,
+  Send,
+  ShieldCheck,
+  Zap,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-// ── Price Calculator Widget ───────────────────────────────────────────────
 const PRICING_CALC = {
-  Bike:  { base: 30, perKm: 40 },
+  Bike: { base: 30, perKm: 40 },
   Motor: { base: 40, perKm: 50 },
+};
+
+const CONTACT_PHONE = "+251931323328";
+const CONTACT_PHONE2 = "+251920202304";
+const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
+const CONTACT_TELEGRAM = "motorbike_et";
+
+type TelegramWindow = Window & {
+  Telegram?: {
+    WebApp?: {
+      openTelegramLink?: (url: string) => void;
+    };
+  };
 };
 
 function PriceCalculator() {
   const [km, setKm] = useState(3);
-  const [vehicle, setVehicle] = useState<'Bike' | 'Motor'>('Motor');
+  const [vehicle, setVehicle] = useState<"Bike" | "Motor">("Motor");
   const { base, perKm } = PRICING_CALC[vehicle];
   const price = Math.round((base + km * perKm) / 10) * 10;
 
   return (
-    <div className="mt-14 max-w-xl mx-auto bg-white rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.05)] border border-neutral-100 p-8">
-      <div className="text-center mb-6">
-        <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">Try it out</span>
-        <h3 className="text-xl font-bold text-neutral-900 mt-1">Estimate Your Delivery Cost</h3>
+    <div className="mx-auto mt-14 max-w-xl rounded-[2rem] border border-[#ffe2dc] bg-white/90 p-8 shadow-[0_24px_60px_rgba(242,106,84,0.12)] backdrop-blur-xl">
+      <div className="mb-6 text-center">
+        <span className="text-xs font-black uppercase tracking-[0.24em] text-[#2aa7d6]">
+          Try it out
+        </span>
+        <h3 className="mt-2 text-2xl font-black text-[#12263d]">
+          Estimate Your Delivery Cost
+        </h3>
       </div>
 
-      {/* Vehicle Toggle */}
-      <div className="flex bg-neutral-100 p-1.5 rounded-2xl mb-6">
-        {(['Bike', 'Motor'] as const).map(v => (
+      <div className="mb-6 flex rounded-2xl bg-[#fff3ef] p-1.5">
+        {(["Bike", "Motor"] as const).map((item) => (
           <button
-            key={v}
-            onClick={() => setVehicle(v)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-              vehicle === v ? 'bg-white shadow text-neutral-900' : 'text-neutral-500 hover:text-neutral-700'
+            key={item}
+            onClick={() => setVehicle(item)}
+            className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-black transition-all ${
+              vehicle === item
+                ? "bg-white text-[#12263d] shadow-[0_10px_22px_rgba(242,106,84,0.14)]"
+                : "text-[#6c7a89] hover:text-[#12263d]"
             }`}
           >
-            {v === 'Bike' ? '🚲 Bicycle' : '🏍️ Motorbike'}
+            {item === "Bike" ? "Bicycle" : "Motorbike"}
           </button>
         ))}
       </div>
 
-      {/* KM Slider */}
       <div className="mb-6">
-        <div className="flex justify-between mb-3">
-          <label className="text-sm font-bold text-neutral-700">Distance</label>
-          <span className="text-sm font-bold text-neutral-900">{km} km</span>
+        <div className="mb-3 flex justify-between">
+          <label className="text-sm font-black text-[#12263d]">Distance</label>
+          <span className="text-sm font-black text-[#f26a54]">{km} km</span>
         </div>
         <input
-          type="range" min={1} max={30} value={km}
-          onChange={e => setKm(Number(e.target.value))}
-          className="w-full h-2 bg-neutral-200 rounded-full appearance-none cursor-pointer accent-black"
+          type="range"
+          min={1}
+          max={30}
+          value={km}
+          onChange={(event) => setKm(Number(event.target.value))}
+          className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#ffd8cf] accent-[#f26a54]"
         />
-        <div className="flex justify-between text-xs text-neutral-400 mt-1.5">
-          <span>1 km</span><span>30 km</span>
+        <div className="mt-1.5 flex justify-between text-xs font-bold text-[#9aa6b5]">
+          <span>1 km</span>
+          <span>30 km</span>
         </div>
       </div>
 
-      {/* Result */}
-      <div className="bg-neutral-50 rounded-2xl p-5 flex items-center justify-between">
+      <div className="flex items-center justify-between rounded-2xl border border-[#ffe2dc] bg-[#fff8f5] p-5">
         <div>
-          <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Estimated Price</p>
-          <p className="text-3xl font-bold text-neutral-900">{price} <span className="text-base font-semibold text-neutral-500">Birr</span></p>
-          <p className="text-xs text-neutral-400 mt-1">{base} base + {km} × {perKm} Birr/km</p>
+          <p className="mb-1 text-xs font-black uppercase tracking-[0.18em] text-[#9aa6b5]">
+            Estimated Price
+          </p>
+          <p className="text-3xl font-black text-[#12263d]">
+            {price}{" "}
+            <span className="text-base font-bold text-[#6c7a89]">ETB</span>
+          </p>
+          <p className="mt-1 text-xs font-bold text-[#8b98a8]">
+            {base} base + {km} x {perKm} ETB/km
+          </p>
         </div>
         <Link href="/book">
-          <button className="bg-black text-white px-5 py-3 rounded-xl font-bold text-sm hover:bg-neutral-800 transition-colors flex items-center space-x-2">
+          <button className="flex items-center gap-2 rounded-xl bg-[#f26a54] px-5 py-3 text-sm font-black text-white shadow-[0_14px_24px_rgba(242,106,84,0.26)] transition hover:bg-[#e45d48] active:scale-95">
             <span>Book Now</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="h-4 w-4" />
           </button>
         </Link>
       </div>
@@ -74,516 +114,657 @@ function PriceCalculator() {
   );
 }
 
-// ── Contact details ──
-const CONTACT_PHONE = "+251931323328";
-const CONTACT_PHONE2 = "+251920202304";
-const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
-const CONTACT_TELEGRAM = "motorbike_et";
+function PhoneInterface() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 54, rotate: 3 }}
+      animate={{ opacity: 1, y: 0, rotate: -2 }}
+      transition={{ duration: 0.9, delay: 0.18, ease: "easeOut" }}
+      className="relative h-[670px] w-[335px] rounded-[3.1rem] border-[10px] border-[#12263d] bg-[#12263d] shadow-[0_42px_80px_rgba(18,38,61,0.22)]"
+    >
+      <div className="absolute left-1/2 top-0 z-30 h-7 w-36 -translate-x-1/2 rounded-b-2xl bg-[#12263d]" />
+      <div className="absolute inset-[4px] overflow-hidden rounded-[2.45rem] bg-[#fffaf7]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_5%,rgba(242,106,84,0.16),transparent_35%),radial-gradient(circle_at_88%_22%,rgba(42,167,214,0.16),transparent_30%),linear-gradient(180deg,#fffaf7,#ffffff)]" />
 
-// ── Main landing page ─────────────────────────────────────────────────────
+        <div className="relative z-10 flex h-full flex-col px-5 pb-5 pt-12">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative h-11 w-11 overflow-hidden rounded-2xl shadow-sm">
+                <Image
+                  src="/favlogo1.png"
+                  alt="MotoBike Logo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-lg font-black leading-none text-[#f26a54]">
+                  MotoBike
+                </p>
+                <p className="mt-1 text-xs font-bold text-[#9aa6b5]">
+                  Your delivery companion
+                </p>
+              </div>
+            </div>
+            <motion.div
+              animate={{ scale: [1, 1.08, 1], rotate: [0, -4, 0] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#e9eef4] bg-white text-[#12263d] shadow-sm"
+            >
+              <Package className="h-5 w-5" />
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              {
+                label: "Bicycle",
+                price: "40",
+                icon: Bike,
+                border: "#f26a54",
+                bg: "from-[#fff4f0] to-[#ffd8cf]",
+                delay: 0,
+              },
+              {
+                label: "Motorbike",
+                price: "50",
+                icon: Zap,
+                border: "#afe4fa",
+                bg: "from-[#effaff] to-[#e0f5ff]",
+                delay: 0.55,
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.label}
+                  animate={{ y: [0, -8, 0], scale: [1, 1.035, 1] }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: item.delay,
+                  }}
+                  className={`relative h-28 overflow-hidden rounded-[1.4rem] border bg-gradient-to-br ${item.bg} p-4 shadow-[0_16px_28px_rgba(18,38,61,0.08)]`}
+                  style={{ borderColor: item.border }}
+                >
+                  <div className="absolute -bottom-8 -right-4 h-24 w-24 rounded-full bg-white/50 blur-xl" />
+                  <p className="text-sm font-black text-[#12263d]">
+                    {item.label}
+                  </p>
+                  <p className="mt-2 text-lg font-black text-[#f26a54]">
+                    {item.price}
+                    <span className="ml-1 text-xs font-bold text-[#9aa6b5]">
+                      /km ETB
+                    </span>
+                  </p>
+                  <div className="absolute bottom-[8px] right-2 flex h-8 w-8 items-center justify-center rounded-2xl bg-white/78 text-[#12263d] shadow-sm">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            className="mt-4 overflow-hidden rounded-[1.7rem] bg-gradient-to-br from-[#ffd6ba] via-[#ffefe4] to-[#fff8f4] p-5 shadow-[0_18px_34px_rgba(242,106,84,0.14)]"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-2 text-xs font-black text-[#12263d]">
+              <Clock className="h-3.5 w-3.5 text-[#f26a54]" />
+              Fast & reliable
+            </div>
+            <h3 className="mt-5 text-2xl font-black text-[#12263d]">
+              Food delivery
+            </h3>
+            <p className="mt-2 max-w-[170px] text-sm font-bold leading-snug text-[#6c7a89]">
+              Your favorite meals, delivered to your door.
+            </p>
+          </motion.div>
+
+          <div className="mt-4 flex items-center gap-3 rounded-[1.55rem] border border-[#e9eef4] bg-white p-4 shadow-[0_12px_28px_rgba(18,38,61,0.06)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff3ef] text-[#f26a54]">
+              <MapPin className="h-5 w-5" />
+            </div>
+            <p className="flex-1 text-base font-black text-[#12263d]">
+              Where should we deliver?
+            </p>
+            <ArrowRight className="h-5 w-5 text-[#12263d]" />
+          </div>
+
+          <div className="relative mt-4 flex-1 overflow-hidden rounded-[1.7rem] bg-[#182431] shadow-[0_18px_38px_rgba(18,38,61,0.16)]">
+            <div className="absolute inset-0 opacity-35">
+              <div className="absolute left-[-20%] top-[18%] h-2 w-[150%] rotate-[-14deg] rounded-full bg-white" />
+              <div className="absolute left-[-10%] top-[45%] h-2 w-[140%] rotate-[12deg] rounded-full bg-white" />
+              <div className="absolute left-[42%] top-[-10%] h-[140%] w-2 rotate-[7deg] rounded-full bg-white" />
+              <div className="absolute left-[10%] top-[5%] h-[130%] w-2 rotate-[-28deg] rounded-full bg-white" />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-[#12263d]/80 via-[#12263d]/55 to-[#f26a54]/30" />
+            {/* <svg className="absolute inset-0 h-full w-full" viewBox="0 0 240 170">
+              <path
+                d="M30 122 C78 62 128 142 204 72"
+                fill="none"
+                stroke="white"
+                strokeOpacity="0.72"
+                strokeWidth="12"
+                strokeLinecap="round"
+              />
+              <path
+                d="M30 122 C78 62 128 142 204 72"
+                fill="none"
+                stroke="#f26a54"
+                strokeWidth="7"
+                strokeLinecap="round"
+              />
+            </svg> */}
+     
+            <div className="absolute left-5 top-5">
+              <p className="text-2xl font-black leading-tight text-white">
+                Fast city <span className="text-[#ff8a76]">delivery</span>
+              </p>
+              <p className="mt-2 text-sm font-bold text-white/78">
+                Live route preview
+              </p>
+            </div>
+          </div>
+
+          {/* <div className="mt-4 grid grid-cols-5 rounded-[1.5rem] border border-[#e9eef4] bg-white p-2 shadow-[0_12px_28px_rgba(18,38,61,0.08)]">
+            {[Package, Clock, Bike, MapPin, MessageCircle].map((Icon, index) => (
+              <div
+                key={index}
+                className={`flex h-10 items-center justify-center rounded-2xl ${
+                  index === 2 ? "bg-[#f26a54] text-white" : "text-[#8b98a8]"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+            ))}
+          </div> */}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const fadeIn: any = {
+  const fadeIn = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.75 } },
   };
 
-  const staggerContainer: any = {
+  const staggerContainer = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+    visible: { opacity: 1, transition: { staggerChildren: 0.14 } },
   };
 
   return (
-    <div className="min-h-screen bg-[#e8ebea] text-neutral-900 selection:bg-purple-200 overflow-x-hidden font-sans">
-      {/* Background Soft Gradients */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#f4f7f6] blur-[100px] rounded-full pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/50 blur-[100px] rounded-full pointer-events-none" />
+    <div className="min-h-screen overflow-x-hidden bg-[#fff8f5] font-sans text-[#12263d] selection:bg-[#ffd8cf]">
+      <div className="pointer-events-none fixed left-[-12%] top-[-18%] h-[46rem] w-[46rem] rounded-full bg-[#ffd8cf]/55 blur-[120px]" />
+      <div className="pointer-events-none fixed bottom-[-14%] right-[-12%] h-[40rem] w-[40rem] rounded-full bg-[#cdefff]/70 blur-[120px]" />
 
-      {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? "bg-[#e8ebea]/70 backdrop-blur-2xl py-4" : "bg-transparent py-8"}`}>
-        <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="relative w-9 h-9 rounded-xl overflow-hidden shadow-sm">
-              <Image src="/favlogo1.png" alt="MotoBike Logo" fill className="object-cover" />
+      <nav
+        className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+          scrolled
+            ? "bg-[#fff8f5]/82 py-4 shadow-[0_12px_30px_rgba(18,38,61,0.05)] backdrop-blur-2xl"
+            : "bg-transparent py-7"
+        }`}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 md:px-10">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 overflow-hidden rounded-2xl shadow-sm">
+              <Image
+                src="/favlogo1.png"
+                alt="MotoBike Logo"
+                fill
+                className="object-cover"
+              />
             </div>
-            <span className="text-xl font-bold tracking-tight text-neutral-900">MotoBike</span>
+            <span className="text-2xl font-black tracking-tight text-[#12263d]">
+              MotoBike
+            </span>
           </div>
-          <div className="hidden md:flex items-center space-x-10 text-sm font-medium text-neutral-600">
-            <a href="#about" className="hover:text-black transition-colors">About us</a>
-            <a href="#pricing" className="hover:text-black transition-colors">Pricing</a>
-            <a href="#features" className="hover:text-black transition-colors">Features</a>
+          <div className="hidden items-center gap-10 text-sm font-black text-[#6c7a89] md:flex">
+            <a href="#about" className="transition hover:text-[#f26a54]">
+              About us
+            </a>
+            <a href="#pricing" className="transition hover:text-[#f26a54]">
+              Pricing
+            </a>
+            <a href="#features" className="transition hover:text-[#f26a54]">
+              Features
+            </a>
           </div>
-          <div className="flex items-center space-x-6">
-            <Link href="/book">
-              <button className="bg-white text-black px-6 py-3 rounded-full font-semibold text-sm hover:scale-105 active:scale-95 transition-transform shadow-[0_8px_20px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_25px_rgba(0,0,0,0.06)]">
-                Order delivery
-              </button>
-            </Link>
-          </div>
+          <Link href="/book">
+            <button className="rounded-full bg-[#f26a54] px-6 py-3 text-sm font-black text-white shadow-[0_16px_28px_rgba(242,106,84,0.24)] transition hover:bg-[#e45d48] active:scale-95">
+              Order delivery
+            </button>
+          </Link>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <main className="relative pt-40 md:pt-48 pb-10 px-6 md:px-10">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-          <motion.div 
+      <main className="relative px-6 pb-12 pt-36 md:px-10 md:pt-44">
+        <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.02fr_0.98fr]">
+          <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
-            className="flex flex-col items-start text-left relative z-10 w-full mb-16 lg:mb-0"
+            className="relative z-10"
           >
-            <motion.div variants={fadeIn} className="inline-flex items-center space-x-2 bg-white/60 backdrop-blur-xl border border-white/80 px-4 py-2 rounded-full text-neutral-800 text-sm font-medium mb-6 shadow-sm">
-              <span className="text-lg">🇪🇹</span>
-              <span>በአዲስ አበባ ፈጣን የመልእክት አገልግሎት</span>
+            <motion.div
+              variants={fadeIn}
+              className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/80 bg-white/75 px-4 py-2 text-sm font-black text-[#12263d] shadow-sm backdrop-blur-xl"
+            >
+              <span className="rounded-full bg-[#fff3ef] px-2 py-1 text-xs text-[#f26a54]">
+                ET
+              </span>
+              Fast delivery across Addis Ababa
             </motion.div>
 
-            <motion.h1 variants={fadeIn} className="text-5xl sm:text-6xl md:text-[5rem] lg:text-[5.5rem] font-bold tracking-[-0.03em] leading-[1.05] text-neutral-900 mb-8">
-              Fast delivery,<br />
-              <span className="text-neutral-500">anywhere in Addis.</span>
+            <motion.h1
+              variants={fadeIn}
+              className="mb-8 max-w-3xl text-5xl font-black leading-[1.02] tracking-tight text-[#12263d] sm:text-6xl md:text-[5.4rem]"
+            >
+              Fast delivery,
+              <br />
+              <span className="text-[#f26a54]">anywhere in Addis.</span>
             </motion.h1>
-            
-            <motion.p variants={fadeIn} className="text-xl text-neutral-600 max-w-lg leading-snug mb-10">
-              Skip the long taxi queues and chaotic roads. We connect businesses and individuals with trusted local couriers for fast, secure deliveries from Piassa to Bole.
+
+            <motion.p
+              variants={fadeIn}
+              className="mb-10 max-w-xl text-xl font-semibold leading-relaxed text-[#5f7082]"
+            >
+              Skip the long taxi queues and chaotic roads. MotoBike connects
+              businesses and individuals with trusted local couriers for fast,
+              secure deliveries from Piassa to Bole.
             </motion.p>
-            
-            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+
+            <motion.div
+              variants={fadeIn}
+              className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row"
+            >
               <Link href="/book" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto bg-black text-white px-8 py-4 rounded-full font-medium text-lg flex items-center justify-center space-x-2 hover:bg-neutral-800 transition-all active:scale-95 shadow-[0_10px_20px_rgba(0,0,0,0.1)]">
-                  <span>አሁን እዘዝ (Order Now)</span>
-                  <ArrowRight className="w-5 h-5" />
+                <button className="flex w-full items-center justify-center gap-3 rounded-full bg-[#f26a54] px-8 py-4 text-lg font-black text-white shadow-[0_18px_34px_rgba(242,106,84,0.28)] transition hover:bg-[#e45d48] active:scale-95 sm:w-auto">
+                  <span>Order Now</span>
+                  <ArrowRight className="h-5 w-5" />
                 </button>
               </Link>
-              <a href="#about" className="w-full sm:w-auto text-center px-8 py-4 bg-white/80 backdrop-blur-md rounded-full font-medium text-lg text-neutral-900 hover:bg-white transition-all shadow-sm">
+              <a
+                href="#about"
+                className="rounded-full border border-[#ffe2dc] bg-white/82 px-8 py-4 text-center text-lg font-black text-[#12263d] shadow-sm backdrop-blur-md transition hover:border-[#f26a54]"
+              >
                 Learn more
               </a>
             </motion.div>
           </motion.div>
 
-          {/* Hero Visual: Phone Mockup */}
-          <div className="relative flex justify-center lg:justify-end lg:pr-10 mt-8 lg:mt-0">
-            <motion.div 
-              initial={{ opacity: 0, y: 50, rotate: 2 }}
-              animate={{ opacity: 1, y: 0, rotate: -2 }}
-              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-              className="relative w-full max-w-[320px] aspect-[1/2] rounded-[3rem] border-[10px] border-neutral-900 bg-[#f4f6f5] shadow-2xl overflow-hidden group hover:rotate-0 transition-transform duration-500"
-            >
-              {/* Phone Notch */}
-              <div className="absolute top-0 inset-x-0 h-7 bg-neutral-900 rounded-b-2xl w-36 mx-auto z-30" />
-              
-              {/* Map Background UI */}
-              <div className="absolute inset-0 bg-[#e8ecea] overflow-hidden rounded-[3rem]">
-                {/* Real map background of Addis Ababa */}
-                <iframe 
-                  src="https://www.openstreetmap.org/export/embed.html?bbox=38.74,9.00,38.78,9.04&layer=mapnik" 
-                  className="absolute -inset-10 w-[150%] h-[150%] pointer-events-none opacity-[0.6] grayscale"
-                  tabIndex={-1}
-                />
-                
-                {/* Gradient overlay to ensure UI elements are readable */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#eef1ef] via-transparent to-white/40 pointer-events-none" />
-                
-                {/* Accurate GPS Route SVG */}
-               
-
-                {/* Moving Marker interpolating over the Bezier Curve (M 25 30 C 25 60, 75 50, 75 80) */}
-                <motion.div 
-                  animate={{ 
-                    left: ["25%", "32.8%", "50%", "67.2%", "75%", "75%", "25%"],
-                    top:  ["30%", "41.2%", "55%", "68.8%", "80%", "80%", "30%"] 
-                  }}
-                  transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", times: [0, 0.2, 0.4, 0.6, 0.8, 0.95, 1] }}
-                  className="absolute w-8 h-8 bg-white border-[2.5px] border-neutral-900 rounded-full shadow-lg flex items-center justify-center z-20 -translate-x-1/2 -translate-y-1/2"
-                >
-                  <Package className="w-4 h-4 text-neutral-900" />
-                </motion.div>
-
-                {/* Pickup Pin */}
-                <div className="absolute w-3.5 h-3.5 bg-neutral-900 rounded-full ring-4 ring-black/10 z-10 -translate-x-1/2 -translate-y-1/2 drop-shadow-sm" style={{ top: '30%', left: '25%' }} />
-                
-                {/* Dropoff Pin */}
-                <div className="absolute w-5 h-5 bg-emerald-500 rounded-full ring-4 ring-emerald-500/20 flex items-center justify-center z-10 -translate-x-1/2 -translate-y-1/2 drop-shadow-sm" style={{ top: '80%', left: '75%' }}>
-                  <div className="w-2 h-2 bg-white rounded-full shadow-sm" />
-                </div>
-              </div>
-
-              {/* Floating UI Elements over map */}
-              <div className="absolute inset-0 z-20 flex flex-col justify-between p-4 pb-6 pt-12 pointer-events-none">
-                
-                {/* Top Notification */}
-                <div className="bg-white/95 backdrop-blur-md rounded-3xl p-3 shadow-lg shadow-black/5 mx-2 flex items-center space-x-3 transform group-hover:translate-y-2 transition-transform duration-500 pointer-events-auto">
-                  <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center border border-orange-100">
-                    <span className="text-2xl filter drop-shadow-sm">🏍️</span>
-                  </div>
-                  <div>
-                    <h4 className="font-extrabold text-[15px] text-neutral-900">Arriving in 12 min</h4>
-                    <p className="text-xs text-neutral-500 font-medium tracking-wide">Rider: Abel T.</p>
-                  </div>
-                </div>
-
-                {/* Bottom Sheet UI */}
-                <div className="bg-white rounded-[2rem] p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] mx-1 transform group-hover:-translate-y-2 transition-transform duration-500 pointer-events-auto">
-                  <div className="w-12 h-1.5 bg-neutral-200 rounded-full mx-auto mb-5" />
-                  <h4 className="font-extrabold text-xl mb-1 text-neutral-900">En route to Dropoff</h4>
-                  <p className="text-[13px] text-neutral-500 mb-6 font-medium">Bole Medhanialem, Addis Ababa</p>
-                  
-                  <div className="w-full bg-neutral-100 h-2.5 rounded-full overflow-hidden mb-3">
-                    <div className="bg-black w-[65%] h-full rounded-full relative">
-                      <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                    </div>
-                  </div>
-                  <div className="flex justify-between text-[11px] text-neutral-400 font-bold uppercase tracking-wider">
-                    <span>Pickup</span>
-                    <span className="text-black">Dropoff</span>
-                  </div>
-                </div>
-
-              </div>
-            </motion.div>
+          <div className="relative flex justify-center lg:justify-end">
+            <div className="absolute right-8 top-10 h-72 w-72 rounded-full bg-[#ffd8cf]/70 blur-[70px]" />
+            <div className="absolute bottom-8 left-8 h-72 w-72 rounded-full bg-[#cdefff]/80 blur-[80px]" />
+            <PhoneInterface />
           </div>
         </div>
       </main>
 
-      {/* About Section */}
-      <section id="about" className="py-24 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <motion.div 
+      <section id="about" className="relative z-10 py-24">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 md:px-10 lg:grid-cols-2">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeIn}
+            className="rounded-[2.4rem] border border-[#ffe2dc] bg-white/82 p-8 shadow-[0_26px_58px_rgba(242,106,84,0.10)] backdrop-blur-xl md:p-10"
+          >
+            <div className="relative mb-8 h-16 w-16 overflow-hidden rounded-3xl">
+              <Image
+                src="/favlogo1.png"
+                alt="MotoBike logo"
+                fill
+                className="object-cover"
+              />
+            </div>
+            <h2 className="mb-5 text-4xl font-black leading-tight text-[#12263d]">
+              Built for real movement in Addis.
+            </h2>
+            <p className="text-lg font-semibold leading-relaxed text-[#5f7082]">
+              MotoBike is a proudly Ethiopian startup built to solve daily
+              logistics with fast riders, transparent pricing, and live delivery
+              updates.
+            </p>
+          </motion.div>
+
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+            className="space-y-6"
           >
-            <motion.div variants={fadeIn} className="relative w-full max-w-md mx-auto order-2 lg:order-1 mt-8 lg:mt-0">
-              <div className="absolute inset-0 bg-blue-100 rounded-full blur-3xl opacity-50" />
-              <div className="w-full bg-white/60 backdrop-blur-xl border border-white/80 rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-10 shadow-2xl shadow-black/5 flex flex-col justify-center relative overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-orange-100 rounded-full blur-2xl pointer-events-none" />
-                <h3 className="text-2xl sm:text-3xl font-bold mb-6 relative z-10 text-neutral-800 leading-snug">"We grew up navigating these streets."</h3>
-                <p className="text-neutral-600 text-base sm:text-lg leading-relaxed relative z-10">
-                  MotoBike is a proudly Ethiopian startup built to solve the daily logistics nightmare of Addis Ababa. Whether you need an important document signed in Megenagna or a forgotten laptop brought to your office in Kazanchis, our riders know the shortcuts.
-                </p>
-                <div className="mt-8 flex items-center space-x-3 relative z-10">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-neutral-200 shadow-sm relative shrink-0">
-                    <Image src="/favlogo1.png" alt="Local Rider" fill className="object-cover" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-neutral-900 leading-tight">Natnael Tegestu</span>
-                    <span className="text-xs sm:text-sm text-neutral-500">Founder, MotoBike</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div variants={fadeIn} className="space-y-6 lg:space-y-8 order-1 lg:order-2">
-              <div>
-                <span className="text-emerald-600 font-bold tracking-wider uppercase text-xs sm:text-sm mb-2 block">About MotoBike</span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 mb-6 leading-tight">Connecting the city, one drop-off at a time.</h2>
-                <p className="text-base sm:text-lg text-neutral-600 leading-relaxed mb-6">
-                  Delivery in Ethiopia traditionally relied on unofficial middlemen or slow postal systems. MotoBike changes the narrative by offering an app-driven, professional courier network built specifically for our local terrain.
-                </p>
-                <p className="text-base sm:text-lg text-neutral-600 leading-relaxed">
-                  We empower young Ethiopian riders with steady income while providing unmatched speed and transparency for our clients. No hidden fees, no unreliable timing—just fast delivery you can trust.
-                </p>
-              </div>
-            </motion.div>
+            <motion.span
+              variants={fadeIn}
+              className="block text-sm font-black uppercase tracking-[0.24em] text-[#2aa7d6]"
+            >
+              About MotoBike
+            </motion.span>
+            <motion.h2
+              variants={fadeIn}
+              className="text-4xl font-black leading-tight text-[#12263d] md:text-5xl"
+            >
+              Connecting the city, one drop-off at a time.
+            </motion.h2>
+            <motion.p
+              variants={fadeIn}
+              className="text-lg font-semibold leading-relaxed text-[#5f7082]"
+            >
+              We connect customers with trusted bicycle and motorbike couriers
+              who know the city. No hidden fees, no unreliable timing, just
+              fast delivery you can trust.
+            </motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-[#f8f9fa] border-y border-neutral-200/50 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16 space-y-4">
-            <span className="text-orange-600 font-bold tracking-wider uppercase text-sm block">Transparent Pricing</span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">Simple, fair rates for Addis.</h2>
-            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">Pay by distance — no surges, no haggling. Starting at just <strong>30 Birr</strong> + distance rate.</p>
+      <section
+        id="pricing"
+        className="relative z-10 border-y border-[#ffe2dc] bg-white/62 py-24"
+      >
+        <div className="mx-auto max-w-7xl px-6 md:px-10">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <span className="text-sm font-black uppercase tracking-[0.24em] text-[#f26a54]">
+              Transparent Pricing
+            </span>
+            <h2 className="mt-3 text-4xl font-black text-[#12263d] md:text-5xl">
+              Simple, fair rates for Addis.
+            </h2>
+            <p className="mt-4 text-lg font-semibold text-[#5f7082]">
+              Pay by distance. No surges, no haggling. Starting at 30 ETB plus
+              distance rate.
+            </p>
           </div>
 
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto"
+            className="mx-auto grid max-w-4xl gap-8 md:grid-cols-2"
           >
-            {/* Bike Pricing */}
-            <motion.div variants={fadeIn} className="bg-white/80 backdrop-blur-xl border border-white p-10 rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 blur-[60px] pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
-                  <span className="text-3xl filter drop-shadow-sm">🚲</span>
-                </div>
-                <h3 className="text-2xl font-bold text-neutral-900 mb-2">Bicycle Courier</h3>
-                <p className="text-neutral-500 mb-6">Best for light items, documents, and navigating localized traffic jams.</p>
-                <div className="mb-2">
-                  <div className="flex items-end space-x-2">
-                    <span className="text-5xl font-bold text-neutral-900">30</span>
-                    <span className="text-lg text-neutral-500 font-medium pb-1.5">Birr</span>
-                    <span className="text-sm text-neutral-400 pb-2">base fare</span>
+            {[
+              {
+                title: "Bicycle Courier",
+                desc: "Best for light items, documents, and local traffic.",
+                base: "30",
+                perKm: "+40",
+                accent: "#f26a54",
+                panel: "bg-[#fff8f5]",
+                icon: Bike,
+              },
+              {
+                title: "Motorbike Courier",
+                desc: "Fastest option for cross-city delivery and heavier items.",
+                base: "40",
+                perKm: "+50",
+                accent: "#2aa7d6",
+                panel: "bg-[#effaff]",
+                icon: Zap,
+              },
+            ].map((plan) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={plan.title}
+                  variants={fadeIn}
+                  className={`relative overflow-hidden rounded-[2.2rem] border border-white p-9 shadow-[0_24px_54px_rgba(18,38,61,0.08)] ${plan.panel}`}
+                >
+                  <div
+                    className="absolute right-[-60px] top-[-60px] h-44 w-44 rounded-full blur-3xl"
+                    style={{ backgroundColor: `${plan.accent}30` }}
+                  />
+                  <div className="relative z-10">
+                    <div
+                      className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-lg"
+                      style={{ backgroundColor: plan.accent }}
+                    >
+                      <Icon className="h-7 w-7" />
+                    </div>
+                    <h3 className="text-2xl font-black text-[#12263d]">
+                      {plan.title}
+                    </h3>
+                    <p className="mt-2 font-semibold text-[#5f7082]">
+                      {plan.desc}
+                    </p>
+                    <div className="mt-8">
+                      <span className="text-5xl font-black text-[#12263d]">
+                        {plan.base}
+                      </span>
+                      <span className="ml-2 font-bold text-[#6c7a89]">
+                        ETB base fare
+                      </span>
+                    </div>
+                    <p
+                      className="mt-2 text-2xl font-black"
+                      style={{ color: plan.accent }}
+                    >
+                      {plan.perKm}{" "}
+                      <span className="text-sm font-bold text-[#6c7a89]">
+                        ETB / km
+                      </span>
+                    </p>
+                    <ul className="mt-8 space-y-4 text-sm font-bold text-[#5f7082]">
+                      <li className="flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5 text-[#2dba87]" />
+                        Transparent distance pricing
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5 text-[#2dba87]" />
+                        Live delivery updates
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5 text-[#2dba87]" />
+                        Vetted local couriers
+                      </li>
+                    </ul>
+                    <Link href="/book">
+                      <button
+                        className="mt-8 w-full rounded-2xl py-4 font-black text-white shadow-lg transition active:scale-95"
+                        style={{ backgroundColor: plan.accent }}
+                      >
+                        Book {plan.title.split(" ")[0]}
+                      </button>
+                    </Link>
                   </div>
-                  <div className="flex items-center space-x-1.5 mt-2 mb-8">
-                    <span className="text-2xl font-bold text-emerald-600">+40</span>
-                    <span className="text-sm text-neutral-500 font-medium">Birr / km</span>
-                    <span className="text-xs text-neutral-400 ml-1">(real road distance)</span>
-                  </div>
-                </div>
-                <ul className="space-y-4 flex-1 mb-8">
-                  <li className="flex items-center space-x-3 text-neutral-700">
-                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span>Up to 5kg weight limit</span>
-                  </li>
-                  <li className="flex items-center space-x-3 text-neutral-700">
-                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span>Zero emissions footprint</span>
-                  </li>
-                  <li className="flex items-center space-x-3 text-neutral-700">
-                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span>e.g. 5 km trip = <strong>230 Birr</strong></span>
-                  </li>
-                </ul>
-                <Link href="/book">
-                  <button className="w-full bg-[#f0f2f5] hover:bg-emerald-50 text-emerald-700 font-bold py-4 rounded-xl transition-colors">
-                    Book a Bicycle
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* Motorbike Pricing */}
-            <motion.div variants={fadeIn} className="bg-neutral-900 border border-neutral-800 p-10 rounded-[2.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.15)] relative overflow-hidden group">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-900/40 blur-[60px] pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-              <div className="absolute top-5 right-5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                <span className="text-xs font-bold text-white uppercase tracking-wider">Most Popular</span>
-              </div>
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-6">
-                  <span className="text-3xl filter drop-shadow-sm">🏍️</span>
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Motorbike Courier</h3>
-                <p className="text-neutral-400 mb-6">Fastest option across the entire city, capable of handling heavier packages.</p>
-                <div className="mb-2">
-                  <div className="flex items-end space-x-2">
-                    <span className="text-5xl font-bold text-white">40</span>
-                    <span className="text-lg text-neutral-400 font-medium pb-1.5">Birr</span>
-                    <span className="text-sm text-neutral-500 pb-2">base fare</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 mt-2 mb-8">
-                    <span className="text-2xl font-bold text-purple-400">+50</span>
-                    <span className="text-sm text-neutral-400 font-medium">Birr / km</span>
-                    <span className="text-xs text-neutral-500 ml-1">(real road distance)</span>
-                  </div>
-                </div>
-                <ul className="space-y-4 flex-1 mb-8">
-                  <li className="flex items-center space-x-3 text-neutral-300">
-                    <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span>Up to 20kg weight limit</span>
-                  </li>
-                  <li className="flex items-center space-x-3 text-neutral-300">
-                    <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span>Cross-city delivery (e.g. Kality to CMC)</span>
-                  </li>
-                  <li className="flex items-center space-x-3 text-neutral-300">
-                    <CheckCircle className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span>e.g. 5 km trip = <strong className="text-white">290 Birr</strong></span>
-                  </li>
-                </ul>
-                <Link href="/book">
-                  <button className="w-full bg-white text-black hover:bg-neutral-200 font-bold py-4 rounded-xl transition-colors shadow-[0_10px_20px_rgba(255,255,255,0.1)]">
-                    Book a Motorbike
-                  </button>
-                </Link>
-              </div>
-            </motion.div>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
-          {/* Price Calculator Widget */}
           <PriceCalculator />
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-10">
-          <div className="text-center mb-16 space-y-4">
-            <span className="text-indigo-600 font-bold tracking-wider uppercase text-sm block">Why MotoBike</span>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900">Built for the local hustle.</h2>
+      <section id="features" className="relative z-10 py-24">
+        <div className="mx-auto max-w-7xl px-6 md:px-10">
+          <div className="mb-16 text-center">
+            <span className="text-sm font-black uppercase tracking-[0.24em] text-[#2aa7d6]">
+              Why MotoBike
+            </span>
+            <h2 className="mt-3 text-4xl font-black text-[#12263d] md:text-5xl">
+              Built for the local hustle.
+            </h2>
           </div>
 
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={staggerContainer}
-            className="grid lg:grid-cols-3 gap-6 relative z-10"
+            className="grid gap-6 lg:grid-cols-3"
           >
             {[
               {
                 title: "Local Traffic Experts",
-                desc: "Our dispatch explicitly routes riders through familiar backstreets, completely avoiding gridlocked main roads during rush hours.",
-                icon: <Map className="w-6 h-6 text-orange-500" />,
-                bgClass: "bg-white",
+                desc: "Riders use familiar routes and shortcuts across Addis.",
+                icon: Map,
+                color: "#f26a54",
               },
               {
                 title: "Reliable Verification",
-                desc: "Each driver registers with their official Kebele ID, passing comprehensive background checks. Your valuable items are safe.",
-                icon: <ShieldCheck className="w-6 h-6 text-indigo-500" />,
-                bgClass: "bg-gradient-to-b from-[#f8f9fa] to-[#e4e7ea]",
+                desc: "Drivers are reviewed and verified before joining.",
+                icon: ShieldCheck,
+                color: "#2aa7d6",
               },
               {
-                title: "Live Ethio Telecom SMS",
-                desc: "Get SMS updates sent directly to your phone when the rider is dispatched, arriving at pickup, and delivery completion.",
-                icon: <Zap className="w-6 h-6 text-emerald-500" />,
-                bgClass: "bg-gradient-to-tr from-stone-100 to-white",
-              }
-            ].map((card, idx) => (
-              <motion.div 
-                key={idx}
-                variants={fadeIn}
-                className={`p-8 md:p-10 rounded-[2.5rem] flex flex-col justify-between h-[320px] shadow-[0_20px_40px_rgba(0,0,0,0.03)] border border-white/50 relative overflow-hidden group ${card.bgClass}`}
-              >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/50 blur-[50px] pointer-events-none" />
-
-                <div className="w-14 h-14 rounded-2xl bg-white shadow-sm border border-neutral-100 flex items-center justify-center mb-8 relative z-10 group-hover:scale-110 transition-transform">
-                  {card.icon}
-                </div>
-
-                <div className="z-10 mt-auto">
-                  <h3 className="text-2xl font-bold mb-3 tracking-tight text-neutral-900">{card.title}</h3>
-                  <p className="text-sm md:text-base text-neutral-600 leading-relaxed mb-2">{card.desc}</p>
-                </div>
-              </motion.div>
-            ))}
+                title: "Live SMS Updates",
+                desc: "Customers get delivery progress updates by phone.",
+                icon: Zap,
+                color: "#2dba87",
+              },
+            ].map((card) => {
+              const Icon = card.icon;
+              return (
+                <motion.div
+                  key={card.title}
+                  variants={fadeIn}
+                  className="rounded-[2rem] border border-[#ffe2dc] bg-white/84 p-8 shadow-[0_20px_44px_rgba(18,38,61,0.06)] backdrop-blur-xl"
+                >
+                  <div
+                    className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl text-white"
+                    style={{ backgroundColor: card.color }}
+                  >
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-2xl font-black text-[#12263d]">
+                    {card.title}
+                  </h3>
+                  <p className="mt-3 font-semibold leading-relaxed text-[#5f7082]">
+                    {card.desc}
+                  </p>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           <div className="mt-20 text-center">
-            <div className="inline-flex items-center space-x-4 bg-white/80 backdrop-blur-md p-2 pr-6 rounded-full shadow-sm border border-neutral-200">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-emerald-100 border border-white flex items-center justify-center text-2xl filter drop-shadow-sm">
-                📞
+            <div className="inline-flex items-center gap-4 rounded-full border border-[#ffe2dc] bg-white/86 p-2 pr-6 shadow-sm backdrop-blur-md">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fff3ef] text-[#f26a54]">
+                <Phone className="h-5 w-5" />
               </div>
               <div className="text-left leading-tight">
-                <p className="font-bold text-neutral-900">Need corporate delivery?</p>
-                <p className="text-sm text-neutral-500">Call us around the clock at <a href="tel:+251931323328" className="text-indigo-600 font-bold">+251 93 132 3328</a></p>
+                <p className="font-black text-[#12263d]">
+                  Need corporate delivery?
+                </p>
+                <p className="text-sm font-semibold text-[#5f7082]">
+                  Call{" "}
+                  <a href="tel:+251931323328" className="font-black text-[#f26a54]">
+                    +251 93 132 3328
+                  </a>
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-10 py-10 border-t border-neutral-200/50 bg-[#e8ebea] relative z-10">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-sm relative  opacity-70">
-              <Image src="/favlogo1.png" alt="MotoBike Logo" fill className="object-cover" />
+      <footer className="relative z-10 border-t border-[#ffe2dc] bg-[#fff8f5] py-10">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 md:flex-row md:px-10">
+          <div className="flex flex-col items-center gap-4 md:flex-row">
+            <div className="relative h-10 w-10 overflow-hidden rounded-xl opacity-80 shadow-sm">
+              <Image
+                src="/favlogo1.png"
+                alt="MotoBike Logo"
+                fill
+                className="object-cover"
+              />
             </div>
-            <span className="text-neutral-500 font-medium text-sm text-center md:text-left pt-1">
-              © {new Date().getFullYear()} MotoBike Logistics P.L.C. & <a className="text-gray-500" href="https://semir-sultan.vercel.app">Semir Production</a><br />
+            <span className="text-center text-sm font-bold text-[#6c7a89] md:text-left">
+              © {new Date().getFullYear()} MotoBike Logistics P.L.C. &{" "}
+              <a className="text-[#f26a54]" href="https://semir-sultan.vercel.app">
+                Semir Production
+              </a>
+              <br />
               Addis Ababa, Ethiopia
             </span>
           </div>
-          <div className="flex space-x-6 text-sm font-medium text-neutral-600">
-            <a href="#about" className="hover:text-black transition-colors">About Us</a>
-            <a href="#pricing" className="hover:text-black transition-colors">Pricing</a>
-            <a href="#" className="hover:text-black transition-colors">Terms of Service</a>
+          <div className="flex gap-6 text-sm font-black text-[#6c7a89]">
+            <a href="#about" className="hover:text-[#f26a54]">
+              About Us
+            </a>
+            <a href="#pricing" className="hover:text-[#f26a54]">
+              Pricing
+            </a>
+            <a href="#features" className="hover:text-[#f26a54]">
+              Features
+            </a>
           </div>
         </div>
       </footer>
 
-      {/* Upward-Popping Contact FAB */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
         <div
-          className={`flex flex-col gap-3 mb-4 transition-all duration-300 origin-bottom ${
+          className={`mb-4 flex origin-bottom flex-col gap-3 transition-all duration-300 ${
             contactOpen
-              ? "opacity-100 scale-100 translate-y-0"
-              : "opacity-0 scale-75 translate-y-10 pointer-events-none"
+              ? "translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none translate-y-10 scale-75 opacity-0"
           }`}
         >
-          {/* Telegram */}
           <button
             onClick={() => {
-              if (typeof window !== "undefined") {
-                const tg = (window as any).Telegram?.WebApp;
-                const url = `https://t.me/${CONTACT_TELEGRAM}`;
-                if (tg && tg.openTelegramLink) {
-                  tg.openTelegramLink(url);
-                } else {
-                  window.open(url, "_blank");
-                }
+              const url = `https://t.me/${CONTACT_TELEGRAM}`;
+              const tg = (window as TelegramWindow).Telegram?.WebApp;
+              if (tg?.openTelegramLink) {
+                tg.openTelegramLink(url);
+              } else {
+                window.open(url, "_blank");
               }
             }}
-            className="flex items-center justify-center w-12 h-12 bg-[#229ED9] hover:bg-[#1f8ec2] shadow-lg rounded-full text-white transition-transform hover:scale-110"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#229ed9] text-white shadow-lg transition hover:scale-110"
             aria-label="Telegram"
           >
-            <svg className="w-5 h-5 ml-[-2px]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.664 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
+            <Send className="h-5 w-5" />
           </button>
-
-          {/* Email */}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 bg-indigo-500 hover:bg-indigo-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2aa7d6] text-white shadow-lg transition hover:scale-110"
             aria-label="Email"
           >
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-            </svg>
+            <Mail className="h-5 w-5" />
           </a>
-
-          {/* Phone 2 */}
           <a
             href={`tel:${CONTACT_PHONE2}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 bg-emerald-500 hover:bg-emerald-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
-            aria-label="Call Alternative"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2dba87] text-white shadow-lg transition hover:scale-110"
+            aria-label="Call alternative"
           >
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.076-7.076l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-            </svg>
+            <Phone className="h-5 w-5" />
           </a>
-
-          {/* Phone 1 */}
           <a
             href={`tel:${CONTACT_PHONE}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center w-12 h-12 bg-blue-500 hover:bg-blue-400 shadow-lg rounded-full text-white transition-transform hover:scale-110"
-            aria-label="Call Main"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f26a54] text-white shadow-lg transition hover:scale-110"
+            aria-label="Call main"
           >
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.076-7.076l1.293-.97c.362-.271.527-.733.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
-            </svg>
+            <Phone className="h-5 w-5" />
           </a>
         </div>
 
-        {/* Main Toggle Button */}
         <button
           onClick={() => setContactOpen(!contactOpen)}
-          className={`flex items-center justify-center w-16 h-16 rounded-full text-white shadow-xl transition-all duration-300 ${
-            contactOpen ? "bg-neutral-800 rotate-45" : "bg-black hover:bg-neutral-800"
+          className={`flex h-16 w-16 items-center justify-center rounded-full text-white shadow-[0_18px_34px_rgba(242,106,84,0.28)] transition-all duration-300 ${
+            contactOpen ? "rotate-45 bg-[#12263d]" : "bg-[#f26a54] hover:bg-[#e45d48]"
           }`}
-          aria-label="Contact Us"
+          aria-label="Contact us"
         >
           {contactOpen ? (
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
+            <ArrowRight className="h-6 w-6" />
           ) : (
-            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-            </svg>
+            <MessageCircle className="h-7 w-7" />
           )}
         </button>
       </div>

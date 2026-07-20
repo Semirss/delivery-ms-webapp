@@ -62,11 +62,15 @@ class OtpVerificationParams {
 }
 
 class ResetPasswordParams {
-  final String email;
+  final String phone;
+  final String? newPassword;
 
-  ResetPasswordParams({required this.email});
+  ResetPasswordParams({required this.phone, this.newPassword});
 
-  Map<String, dynamic> toJson() => {'email': email};
+  Map<String, dynamic> toJson() => {
+    'phone': phone,
+    if (newPassword != null) 'new_password': newPassword,
+  };
 }
 
 class VerifyResetPasswordParams {

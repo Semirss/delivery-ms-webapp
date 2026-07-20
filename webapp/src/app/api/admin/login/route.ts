@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
@@ -7,6 +7,7 @@ import { serialize } from 'cookie';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_in_production_123';
 
 export async function POST(request: Request) {
+    const supabaseAdmin = await getSupabaseAdmin();
     try {
         const { username, password } = await request.json();
 

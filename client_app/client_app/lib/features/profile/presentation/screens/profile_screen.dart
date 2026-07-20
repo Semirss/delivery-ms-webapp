@@ -255,14 +255,8 @@ class ProfileScreen extends StatelessWidget {
                             onTap: () => _openWebsite(context),
                           ),
                         ]),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.outlinedSecondary(
-                          label: 'SIGN OUT',
-                          fullWidth: true,
-                          onPressed: () {
-                            context.read<AuthBloc>().add(const LogoutEvent());
-                          },
-                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        _buildSignOutButton(context),
                         SizedBox(
                           height:
                               MediaQuery.viewPaddingOf(context).bottom + 132,
@@ -441,6 +435,59 @@ class ProfileScreen extends StatelessWidget {
         color: context.appTextSecondary,
       ),
       trailing: trailing,
+    );
+  }
+
+  Widget _buildSignOutButton(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: () {
+          context.read<AuthBloc>().add(const LogoutEvent());
+        },
+        child: Ink(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryLight.withValues(alpha: 0.94),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.26),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.logout_rounded, color: Colors.white),
+              SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppText(
+                  'SIGN OUT',
+                  variant: AppTextVariant.button,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Icon(Icons.arrow_forward_rounded, color: Colors.white),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
