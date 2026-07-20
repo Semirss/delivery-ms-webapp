@@ -87,8 +87,13 @@ function filterByDate(deliveries: Delivery[], range: DateRange): Delivery[] {
       return dt.toDateString() === now.toDateString();
     }
     if (range === 'week') {
-      const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7);
-      return dt >= weekAgo;
+      const startOfWeek = new Date(now);
+      const daysSinceMonday = startOfWeek.getDay() === 0
+        ? 6
+        : startOfWeek.getDay() - 1;
+      startOfWeek.setDate(now.getDate() - daysSinceMonday);
+      startOfWeek.setHours(0, 0, 0, 0);
+      return dt >= startOfWeek && dt <= now;
     }
     if (range === 'month') {
       return dt.getMonth() === now.getMonth() && dt.getFullYear() === now.getFullYear();
@@ -140,7 +145,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "analytics" | "deals" | "versions" | "food" | "backend">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
-  const [dateRange, setDateRange] = useState<DateRange>('all');
+  const [dateRange, setDateRange] = useState<DateRange>('today');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [apiError, setApiError] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -529,7 +534,7 @@ export default function AdminDashboard() {
   // ── Date-filtered stats ───────────────────────────────────────────────────
   const filteredDeliveries = filterByDate(deliveries, dateRange);
   const isCancelledRecord = (d: Delivery) => d.status === 'Cancelled' || !!d.cancelled_by || !!d.cancellation_reason;
-  const displayedDeliveries = deliveries.filter(d =>
+  const displayedDeliveries = filteredDeliveries.filter(d =>
     filterStatus === "All"
       ? true
       : filterStatus === "Cancelled"

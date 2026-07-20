@@ -23,6 +23,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/router/app_routes.dart';
 import '../../../../core/preferences/app_preferences.dart';
 
+enum _PickupChoice { currentLocation, neighborhood, pinOnMap }
+
 class _DeliveryPricing {
   const _DeliveryPricing({
     required this.title,
@@ -250,6 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
   RealtimeChannel? _deliveryChannel;
   RealtimeChannel? _dealsChannel;
 
+  MapPlace? _pickupPlace;
   MapPlace? _destination;
   Map<String, dynamic>? _currentDelivery;
   LatLng? _currentLocation;
@@ -267,6 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showMap = false;
   bool _isPreparingDelivery = false;
   bool _isSubmitting = false;
+  bool _isResolvingPickup = false;
   bool _hasAutoOpenedDestinationSearch = false;
   Future<bool>? _locationReadyFuture;
   final Set<String> _ratingPromptedDeliveries = <String>{};
@@ -430,6 +434,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return false;
   }
 
+  Future<bool> _isLocationReadySilently() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return false;
+
+    final permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
+  }
+
   Future<void> _showLocationRequiredDialog({
     required String title,
     required String message,
@@ -438,60 +451,118 @@ class _HomeScreenState extends State<HomeScreen> {
   }) async {
     if (!mounted) return;
 
+    Timer? autoCloseTimer;
+    var autoCheckingLocation = false;
+
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          title: Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.gps_fixed_rounded,
-                  color: AppColors.primary,
-                ),
+        var waitingForSettings = false;
+
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            autoCloseTimer ??= Timer.periodic(
+              const Duration(milliseconds: 800),
+              (_) {
+                if (autoCheckingLocation) return;
+                autoCheckingLocation = true;
+                unawaited(() async {
+                  try {
+                    final ready = await _isLocationReadySilently();
+                    if (mounted && dialogContext.mounted && ready) {
+                      autoCloseTimer?.cancel();
+                      Navigator.of(dialogContext).pop();
+                    }
+                  } finally {
+                    autoCheckingLocation = false;
+                  }
+                }());
+              },
+            );
+
+            Future<void> openSettingsAndWait() async {
+              if (waitingForSettings) return;
+              setDialogState(() => waitingForSettings = true);
+              await onPrimaryPressed();
+
+              for (var i = 0; i < 45; i++) {
+                await Future<void>.delayed(const Duration(milliseconds: 800));
+                if (!mounted || !dialogContext.mounted) return;
+                if (await _isLocationReadySilently()) {
+                  if (dialogContext.mounted) {
+                    Navigator.of(dialogContext).pop();
+                  }
+                  return;
+                }
+              }
+
+              if (dialogContext.mounted) {
+                setDialogState(() => waitingForSettings = false);
+              }
+            }
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: AppText(
-                  title,
-                  variant: AppTextVariant.heading3,
-                  fontWeight: FontWeight.w900,
+              title: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.gps_fixed_rounded,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: AppText(
+                      title,
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+              content: AppText(
+                waitingForSettings
+                    ? 'Waiting for GPS to turn on. MotoBike will continue '
+                          'automatically.'
+                    : message,
+                variant: AppTextVariant.bodyMedium,
+                color: dialogContext.appTextSecondary,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const AppText(
+                    'Check again',
+                    variant: AppTextVariant.button,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          content: AppText(
-            message,
-            variant: AppTextVariant.bodyMedium,
-            color: dialogContext.appTextSecondary,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const AppText(
-                'Check again',
-                variant: AppTextVariant.button,
-              ),
-            ),
-            FilledButton.icon(
-              onPressed: () => unawaited(onPrimaryPressed()),
-              icon: const Icon(Icons.settings_rounded, size: 18),
-              label: Text(primaryLabel),
-            ),
-          ],
+                FilledButton.icon(
+                  onPressed: waitingForSettings
+                      ? null
+                      : () => unawaited(openSettingsAndWait()),
+                  icon: const Icon(Icons.settings_rounded, size: 18),
+                  label: Text(
+                    waitingForSettings ? 'Waiting for GPS...' : primaryLabel,
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );
+
+    autoCloseTimer?.cancel();
   }
 
   Future<void> _listenToDrivers() async {
@@ -760,6 +831,234 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${distanceKm.toStringAsFixed(1)} km';
   }
 
+  String _pickupTitle() {
+    final displayName = _pickupPlace?.displayName;
+    if (displayName == null || displayName.trim().isEmpty) {
+      return 'Choose pickup';
+    }
+    return displayName.split(',').first.trim();
+  }
+
+  String _pickupSubtitle() {
+    final displayName = _pickupPlace?.displayName;
+    if (displayName == null || displayName.trim().isEmpty) {
+      return 'Use GPS, choose a neighborhood, or pin the map.';
+    }
+    return displayName;
+  }
+
+  bool get _hasPickup => _deliveryPickup != null && _pickupPlace != null;
+
+  Future<bool> _ensurePickupSelected({bool prompt = true}) async {
+    if (_hasPickup) return true;
+    if (!prompt) return false;
+
+    final choice = await _showPickupChoiceSheet();
+    if (!mounted || choice == null) return _hasPickup;
+
+    switch (choice) {
+      case _PickupChoice.currentLocation:
+        await _useCurrentLocationForPickup();
+      case _PickupChoice.neighborhood:
+        await _choosePickupNeighborhood();
+      case _PickupChoice.pinOnMap:
+        await _pinPickupOnMap();
+    }
+
+    return _hasPickup;
+  }
+
+  Future<_PickupChoice?> _showPickupChoiceSheet() {
+    return showModalBottomSheet<_PickupChoice>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return SafeArea(
+          top: false,
+          child: Container(
+            margin: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: sheetContext.appSurface,
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 28,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText(
+                  'Choose pickup location',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                AppText(
+                  'Price is calculated from this pickup to your drop-off.',
+                  variant: AppTextVariant.bodySmall,
+                  color: sheetContext.appTextSecondary,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                _PickupChoiceTile(
+                  icon: Icons.my_location_rounded,
+                  title: 'Use current GPS',
+                  subtitle: 'Best for door-to-door pickup.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _PickupChoice.currentLocation,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _PickupChoiceTile(
+                  icon: Icons.travel_explore_rounded,
+                  title: 'Choose neighborhood',
+                  subtitle: 'Pick an Addis Ababa area manually.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _PickupChoice.neighborhood,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _PickupChoiceTile(
+                  icon: Icons.add_location_alt_rounded,
+                  title: 'Pin on map',
+                  subtitle: 'Move the map and drop the pickup pin.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _PickupChoice.pinOnMap,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _useCurrentLocationForPickup() async {
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation || !mounted) return;
+
+    final location = _currentLocation;
+    if (location == null) return;
+    await _setPickupFromPoint(
+      location,
+      fallbackName: 'Current GPS pickup',
+    );
+  }
+
+  Future<void> _choosePickupNeighborhood() async {
+    final result = await Navigator.push<MapPlace>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SearchDestinationScreen(
+          title: 'Where is pickup?',
+          subtitle:
+              'Choose the pickup neighborhood or search the closest known area.',
+          emptyTitle: 'No pickup area found',
+          emptyMessagePrefix: 'Try another spelling for',
+          defaultSectionTitle: 'Major pickup areas',
+          defaultSectionSubtitle:
+              'Tap the closest area to use it as the pickup point.',
+        ),
+      ),
+    );
+
+    if (!mounted || result == null) return;
+    await _setPickupPlace(result);
+  }
+
+  Future<void> _pinPickupOnMap() async {
+    final initialCenter =
+        _deliveryPickup ?? _currentLocation ?? _destination?.location;
+    final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
+      MaterialPageRoute(
+        builder: (context) => _PinLocationScreen(
+          initialCenter: initialCenter ?? _fallbackCenter,
+        ),
+      ),
+    );
+
+    if (!mounted || point == null) return;
+    await _setPickupFromPoint(point, fallbackName: 'Pinned pickup');
+  }
+
+  Future<void> _setPickupPlace(MapPlace place) async {
+    if (!mounted) return;
+    setState(() {
+      _pickupPlace = place;
+      _deliveryPickup = place.location;
+    });
+    await _refreshRouteEstimate();
+  }
+
+  Future<void> _setPickupFromPoint(
+    LatLng point, {
+    required String fallbackName,
+  }) async {
+    if (!mounted) return;
+    setState(() => _isResolvingPickup = true);
+
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+    );
+    if (!mounted) return;
+
+    setState(() {
+      _pickupPlace = place;
+      _deliveryPickup = point;
+      _isResolvingPickup = false;
+    });
+    await _refreshRouteEstimate();
+  }
+
+  Future<void> _refreshRouteEstimate() async {
+    final pickup = _deliveryPickup;
+    final destination = _destination;
+    if (pickup == null || destination == null) {
+      if (!mounted) return;
+      setState(() {
+        _routePoints = [];
+        _distanceKm = null;
+      });
+      return;
+    }
+
+    final route = await _mapRepository.getRoute(pickup, destination.location);
+    if (!mounted) return;
+
+    setState(() {
+      _routePoints = route.points.isNotEmpty
+          ? route.points
+          : [pickup, destination.location];
+      _distanceKm = route.distanceKm > 0
+          ? route.distanceKm
+          : _mapRepository.straightLineDistanceKm(
+              pickup,
+              destination.location,
+            );
+    });
+    _fitRoute(pickup, destination.location);
+  }
+
+  void _fitRoute(LatLng pickup, LatLng dropoff) {
+    _mapController.fitCamera(
+      CameraFit.bounds(
+        bounds: LatLngBounds.fromPoints([pickup, dropoff]),
+        padding: const EdgeInsets.all(50),
+      ),
+    );
+  }
+
   String? _resolvedPackageType() {
     if (_selectedPackageType != 'Other') return _selectedPackageType;
 
@@ -804,41 +1103,31 @@ class _HomeScreenState extends State<HomeScreen> {
       _destination = result;
       _isPreparingDelivery = true;
       _deliveryStatus = 'none';
+      _routePoints = [];
+      _distanceKm = null;
     });
 
-    final hasLocation = await _loadCurrentLocation();
-    if (!hasLocation) return;
-    if (!mounted) return;
-    final pickup = _currentLocation;
-    if (pickup == null) {
-      return;
+    if (_hasPickup) {
+      await _refreshRouteEstimate();
+    } else {
+      await _ensurePickupSelected();
     }
-
-    final route = await _mapRepository.getRoute(pickup, result.location);
-    if (!mounted) return;
-
-    setState(() {
-      _deliveryPickup = pickup;
-      _routePoints = route.points.isNotEmpty
-          ? route.points
-          : [pickup, result.location];
-      _distanceKm = route.distanceKm > 0
-          ? route.distanceKm
-          : _mapRepository.straightLineDistanceKm(pickup, result.location);
-    });
-
-    final bounds = LatLngBounds.fromPoints([pickup, result.location]);
-    _mapController.fitCamera(
-      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
-    );
   }
 
   Future<void> _requestDelivery() async {
     if (_destination == null || _isSubmitting) return;
-    final hasLocation = await _loadCurrentLocation();
-    if (!hasLocation) return;
+    final hasPickup = await _ensurePickupSelected();
+    if (!hasPickup) {
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Choose pickup location first.',
+        type: AppToastType.warning,
+      );
+      return;
+    }
     if (!mounted) return;
-    final pickup = _currentLocation;
+    final pickup = _deliveryPickup;
     if (pickup == null) {
       return;
     }
@@ -877,8 +1166,14 @@ class _HomeScreenState extends State<HomeScreen> {
       final distanceKm =
           _distanceKm ??
           _mapRepository.straightLineDistanceKm(pickup, _destination!.location);
+      if (_distanceKm == null) {
+        await _refreshRouteEstimate();
+      }
+      final pickupLabel = _pickupPlace?.displayName.trim().isNotEmpty == true
+          ? _pickupPlace!.displayName.trim()
+          : 'Pinned pickup, Addis Ababa, Ethiopia';
       final deliveryFee = _calculateEstimatedPrice(
-        distanceKm,
+        _distanceKm ?? distanceKm,
         _selectedPricing,
       );
 
@@ -890,7 +1185,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? user.phone!.trim()
                 : user.email,
             'client_id': user.id,
-            'pickup_location': 'Current location',
+            'pickup_location': pickupLabel,
             'dropoff_location': _destination!.displayName,
             'package_type': packageType,
             'service_type': _selectedService,
@@ -1256,6 +1551,12 @@ class _HomeScreenState extends State<HomeScreen> {
         _selectedVehicleCategory = vehicleCategory!;
       }
       _applyPackageType(packageType);
+      if (pickup != null) {
+        _pickupPlace = MapPlace(
+          displayName: delivery['pickup_location']?.toString() ?? 'Pickup',
+          location: pickup,
+        );
+      }
       if (dropoff != null) {
         _destination = MapPlace(
           displayName: delivery['dropoff_location']?.toString() ?? 'Dropoff',
@@ -1442,6 +1743,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _showMap = false;
       _isPreparingDelivery = false;
+      _pickupPlace = null;
       _destination = null;
       _routePoints = [];
       _distanceKm = null;
@@ -1449,6 +1751,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _deliveryStatus = 'none';
       _currentDeliveryId = null;
       _currentDelivery = null;
+      _isResolvingPickup = false;
     });
     _deliveryChannel?.unsubscribe();
     _mapController.move(_mapCenter, 14);
@@ -2229,6 +2532,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: AppSpacing.md),
                 _buildVehicleSelector(compact: true),
                 const SizedBox(height: AppSpacing.md),
+                _buildPickupSelector(),
+                const SizedBox(height: AppSpacing.md),
                 _buildDeliverySummary(),
                 const SizedBox(height: AppSpacing.lg),
                 AppButton.primary(
@@ -2989,6 +3294,118 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildPickupSelector() {
+    final hasPickup = _hasPickup;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(
+          color: hasPickup
+              ? AppColors.success.withValues(alpha: 0.35)
+              : context.appBorder,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.trip_origin_rounded,
+                  color: AppColors.success,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppText(
+                      'Pickup',
+                      variant: AppTextVariant.labelLarge,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      _pickupSubtitle(),
+                      variant: AppTextVariant.bodySmall,
+                      color: context.appTextSecondary,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (_isResolvingPickup)
+                const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.4,
+                    color: AppColors.primary,
+                  ),
+                )
+              else
+                Icon(
+                  hasPickup
+                      ? Icons.check_circle_rounded
+                      : Icons.error_outline_rounded,
+                  color: hasPickup ? AppColors.success : AppColors.warning,
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          AppText(
+            _pickupTitle(),
+            variant: AppTextVariant.bodyMedium,
+            fontWeight: FontWeight.w900,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: [
+              _PickupActionChip(
+                icon: Icons.my_location_rounded,
+                label: 'GPS',
+                onTap: _isResolvingPickup
+                    ? null
+                    : () => unawaited(_useCurrentLocationForPickup()),
+              ),
+              _PickupActionChip(
+                icon: Icons.travel_explore_rounded,
+                label: 'Neighborhood',
+                onTap: _isResolvingPickup
+                    ? null
+                    : () => unawaited(_choosePickupNeighborhood()),
+              ),
+              _PickupActionChip(
+                icon: Icons.add_location_alt_rounded,
+                label: 'Pin map',
+                onTap: _isResolvingPickup
+                    ? null
+                    : () => unawaited(_pinPickupOnMap()),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -3801,6 +4218,235 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
               width: 76,
               height: 56,
               fit: BoxFit.contain,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PickupChoiceTile extends StatelessWidget {
+  const _PickupChoiceTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.appSurfaceAlt,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      title,
+                      variant: AppTextVariant.bodyMedium,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      subtitle,
+                      variant: AppTextVariant.bodySmall,
+                      color: context.appTextSecondary,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: context.appTextSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PickupActionChip extends StatelessWidget {
+  const _PickupActionChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+
+    return ActionChip(
+      avatar: Icon(
+        icon,
+        size: 18,
+        color: enabled ? AppColors.primary : context.appTextSecondary,
+      ),
+      label: Text(label),
+      labelStyle: TextStyle(
+        color: enabled ? context.appTextPrimary : context.appTextSecondary,
+        fontWeight: FontWeight.w800,
+      ),
+      backgroundColor: context.appSurfaceAlt,
+      side: BorderSide(color: context.appBorder),
+      onPressed: onTap,
+    );
+  }
+}
+
+class _PinLocationScreen extends StatefulWidget {
+  const _PinLocationScreen({required this.initialCenter});
+
+  final LatLng initialCenter;
+
+  @override
+  State<_PinLocationScreen> createState() => _PinLocationScreenState();
+}
+
+class _PinLocationScreenState extends State<_PinLocationScreen> {
+  final MapController _controller = MapController();
+  late LatLng _center;
+
+  @override
+  void initState() {
+    super.initState();
+    _center = widget.initialCenter;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _controller,
+            options: MapOptions(
+              initialCenter: widget.initialCenter,
+              initialZoom: 15,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
+              onPositionChanged: (camera, _) {
+                _center = camera.center;
+              },
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.motobikedeliveryservice.client',
+                maxNativeZoom: 19,
+                keepBuffer: 5,
+              ),
+            ],
+          ),
+          Center(
+            child: IgnorePointer(
+              child: Transform.translate(
+                offset: const Offset(0, -18),
+                child: const Icon(
+                  Icons.location_on_rounded,
+                  color: AppColors.primary,
+                  size: 52,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  color: context.appSurface,
+                  shape: const CircleBorder(),
+                  elevation: 8,
+                  child: IconButton(
+                    tooltip: 'Back',
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      color: context.appTextPrimary,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            bottom: AppSpacing.lg,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: context.appSurface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.16),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppText(
+                      'Pin pickup',
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    AppText(
+                      'Move the map until the pin is exactly on the '
+                      'pickup point.',
+                      variant: AppTextVariant.bodySmall,
+                      color: context.appTextSecondary,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppButton.primary(
+                      label: 'USE PINNED PICKUP',
+                      fullWidth: true,
+                      icon: Icons.add_location_alt_rounded,
+                      onPressed: () => Navigator.pop(context, _center),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

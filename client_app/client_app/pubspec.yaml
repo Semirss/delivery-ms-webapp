@@ -121,11 +121,11 @@ flutter:
   uses-material-design: true
   
   assets:
-    - assets/images/
+    - assets/images/logo.png
     - assets/images/brand/
     - assets/images/generated/
     - assets/images/bike_pic.png
-    - assets/images/motor_pic.png
+    - assets/images/motor_pic_full.png
     - assets/icons/
     - assets/fonts/
     - .env
@@ -143,9 +143,11 @@ flutter_launcher_icons:
 
 flutter_native_splash:
   color: "#FFFFFF"
+  image: "assets/images/brand/splash_logo.png"
   fullscreen: false
   android_12:
     color: "#FFFFFF"
+    image: "assets/images/brand/splash_logo.png"
   android: true
   ios: true
   web: false

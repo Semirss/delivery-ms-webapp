@@ -121,7 +121,7 @@ flutter:
   uses-material-design: true
   
   assets:
-    - assets/images/
+    - assets/images/logo.png
     - assets/images/brand/
     - assets/icons/
     - assets/fonts/
@@ -139,9 +139,11 @@ flutter_launcher_icons:
 
 flutter_native_splash:
   color: "#FFFFFF"
+  image: "assets/images/brand/splash_logo.png"
   fullscreen: false
   android_12:
     color: "#FFFFFF"
+    image: "assets/images/brand/splash_logo.png"
   android: true
   ios: true
   web: false
