@@ -257,15 +257,31 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     final apiBaseUrl = _apiBaseUrl;
     if (apiBaseUrl == null) {
-      throw Exception(
-        'Password recovery needs API_BASE_URL so the web app can send the SMS.',
-      );
+      await _resetPasswordDirectly(params);
+      return;
     }
 
-    await _dio.post<Map<String, dynamic>>(
-      '$apiBaseUrl/api/drivers/forgot-password',
-      data: {'phone': phone},
-    );
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        '$apiBaseUrl/api/drivers/forgot-password',
+        data: {
+          'phone': phone,
+          if (params.newPassword?.isNotEmpty == true)
+            'newPassword': params.newPassword,
+        },
+      );
+      final next = response.data?['next']?.toString();
+      if (params.newPassword?.isNotEmpty == true && next != 'login') {
+        await _resetPasswordDirectly(params);
+      }
+    } on dio.DioException catch (error) {
+      final message = error.message ?? '';
+      if (message.contains('No driver account found')) {
+        await _resetPasswordDirectly(params);
+        return;
+      }
+      rethrow;
+    }
   }
 
   @override
@@ -310,5 +326,65 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   String _driverToken(Map<String, dynamic> driver, {bool refresh = false}) {
     final prefix = refresh ? 'driver_table_refresh' : 'driver_table_access';
     return '${prefix}_${driver['id']}_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  Future<void> _resetPasswordDirectly(ResetPasswordParams params) async {
+    final normalizedPhone = _normalizeEthiopianPhone(params.phone);
+    if (normalizedPhone.isEmpty) throw Exception('Enter your phone number.');
+
+    final data = await _supabase
+        .from('drivers')
+        .select('id, phone')
+        .not('phone', 'is', null);
+
+    final drivers = (data as List)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList();
+    Map<String, dynamic>? matched;
+
+    for (final driver in drivers) {
+      if (_normalizeEthiopianPhone(driver['phone']) == normalizedPhone) {
+        matched = driver;
+        break;
+      }
+    }
+
+    if (matched == null) {
+      throw Exception('No driver account found for this phone number.');
+    }
+
+    final newPassword = params.newPassword ?? '';
+    if (newPassword.isEmpty) return;
+    if (newPassword.length < 6) {
+      throw Exception('Password must be at least 6 characters.');
+    }
+
+    await _supabase
+        .from('drivers')
+        .update({'password': newPassword})
+        .eq('id', matched['id'].toString());
+  }
+
+  String _normalizeEthiopianPhone(Object? value) {
+    final digits = value?.toString().replaceAll(RegExp(r'\D'), '') ?? '';
+    if (digits.isEmpty) return '';
+
+    if (digits.length == 12 &&
+        digits.startsWith('251') &&
+        (digits[3] == '7' || digits[3] == '9')) {
+      return '0${digits.substring(3)}';
+    }
+
+    if (digits.length == 9 && (digits[0] == '7' || digits[0] == '9')) {
+      return '0$digits';
+    }
+
+    if (digits.length == 10 &&
+        digits.startsWith('0') &&
+        (digits[1] == '7' || digits[1] == '9')) {
+      return digits;
+    }
+
+    return digits;
   }
 }

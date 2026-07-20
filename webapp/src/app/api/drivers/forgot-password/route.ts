@@ -12,26 +12,13 @@ export async function OPTIONS() {
     return new NextResponse(null, { status: 204, headers: corsHeaders });
 }
 
-async function sendSms(request: Request, phone: string, message: string) {
-    const response = await fetch(new URL('/api/sms/send', request.url), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, message }),
-    });
-
-    if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        const detail = body && typeof body.error === 'string' ? body.error : 'SMS gateway failed';
-        throw new Error(detail);
-    }
-}
-
 export async function POST(request: Request) {
     const supabase = await getSupabaseAdmin();
 
     try {
-        const { phone } = await request.json();
+        const { phone, newPassword } = await request.json();
         const normalizedPhone = normalizeEthiopianPhone(phone);
+        const password = typeof newPassword === 'string' ? newPassword : '';
 
         if (!normalizedPhone) {
             return NextResponse.json({ error: 'Phone number is required' }, { status: 400, headers: corsHeaders });
@@ -39,7 +26,7 @@ export async function POST(request: Request) {
 
         const { data, error } = await supabase
             .from('drivers')
-            .select('name, phone, password')
+            .select('id, name, phone, password')
             .not('phone', 'is', null);
 
         if (error) {
@@ -57,13 +44,24 @@ export async function POST(request: Request) {
             );
         }
 
-        await sendSms(
-            request,
-            driver.phone,
-            `Your MotoBike Driver password is: ${driver.password}. Contact support if this was not requested.`
-        );
+        if (!password) {
+            return NextResponse.json({ success: true, next: 'new_password' }, { headers: corsHeaders });
+        }
 
-        return NextResponse.json({ success: true }, { headers: corsHeaders });
+        if (password.length < 6) {
+            return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400, headers: corsHeaders });
+        }
+
+        const { error: updateError } = await supabase
+            .from('drivers')
+            .update({ password })
+            .eq('id', driver.id);
+
+        if (updateError) {
+            return NextResponse.json({ error: updateError.message }, { status: 500, headers: corsHeaders });
+        }
+
+        return NextResponse.json({ success: true, next: 'login' }, { headers: corsHeaders });
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Unknown error';
         return NextResponse.json({ error: message }, { status: 500, headers: corsHeaders });
