@@ -11,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -20,6 +21,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  static final Uri _privacyUri = Uri.parse(
+    'https://www.motobikedeliveryservice.com/privacy-policy.html',
+  );
+
   final DriverProfileRepository _repository = DriverProfileRepository();
 
   DriverProfileSnapshot? _snapshot;
@@ -110,6 +115,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _deliveriesChannel?.unsubscribe();
     _notificationsChannel?.unsubscribe();
     super.dispose();
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final opened = await launchUrl(
+      _privacyUri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && mounted) {
+      AppToast.show(
+        context: context,
+        message: 'Could not open privacy policy.',
+        type: AppToastType.error,
+      );
+    }
   }
 
   @override
@@ -389,7 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
             subtitle: 'How driver data and location are handled',
-            onTap: () => context.pushNamed(AppRoutes.privacy.name),
+            onTap: _openPrivacyPolicy,
           ),
         ]),
         const SizedBox(height: AppSpacing.xl),

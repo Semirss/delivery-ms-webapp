@@ -152,6 +152,172 @@ class MapRepository {
       'weira sefer',
     ]),
     _AddisPlace('Ayat', 9.0266, 38.8580, ['ayat', 'ayat real estate']),
+    _AddisPlace('Bole Medhanialem', 8.9974, 38.7866, [
+      'bole medhanealem',
+      'bole medhanialem',
+      'medhanialem',
+      'edna mall',
+    ]),
+    _AddisPlace('Bole Michael', 8.9829, 38.7888, [
+      'bole michael',
+      'bole mikhael',
+      'bole mikael',
+    ]),
+    _AddisPlace('Bole Bulbula', 8.9256, 38.7856, [
+      'bole bulbula',
+      'bulbula',
+      'bole bulibula',
+    ]),
+    _AddisPlace('Bole Arabsa', 8.9184, 38.8347, [
+      'bole arabsa',
+      'arabsa',
+      'arabssa',
+    ]),
+    _AddisPlace('Gerji', 9.0104, 38.8068, [
+      'gerji',
+      'gerji mebrat hail',
+      'gerji imperial',
+    ]),
+    _AddisPlace('Jacros', 9.0158, 38.8285, [
+      'jacros',
+      'jakros',
+      'yekatit 12 square',
+    ]),
+    _AddisPlace('Figa', 9.0368, 38.8311, [
+      'figa',
+      'figa mebrat',
+      'yeka figa',
+    ]),
+    _AddisPlace('Kotebe', 9.0336, 38.8175, [
+      'kotebe',
+      'kotebe college',
+      'kotebe area',
+    ]),
+    _AddisPlace('Shola', 9.0262, 38.7956, [
+      'shola',
+      'shola market',
+      'shola gebeya',
+    ]),
+    _AddisPlace('Urael', 9.0101, 38.7749, [
+      'urael',
+      'ural',
+      'urael church',
+    ]),
+    _AddisPlace('Wollo Sefer', 8.9989, 38.7732, [
+      'wello sefer',
+      'wollo sefer',
+      'bole wello sefer',
+    ]),
+    _AddisPlace('Olympia', 9.0058, 38.7637, [
+      'olympia',
+      'olympia square',
+      'olympia area',
+    ]),
+    _AddisPlace('Lancha', 8.9964, 38.7466, [
+      'lancha',
+      'lancha area',
+      'lancia',
+    ]),
+    _AddisPlace('Kera', 8.9864, 38.7477, [
+      'kera',
+      'kera area',
+      'kera roundabout',
+    ]),
+    _AddisPlace('Sar Bet', 8.9913, 38.7328, [
+      'sar bet',
+      'sarbet',
+      'sar bet area',
+    ]),
+    _AddisPlace('Mekanisa', 8.9771, 38.7288, [
+      'mekanisa',
+      'mekanissa',
+      'mekanisa abo',
+    ]),
+    _AddisPlace('Lafto', 8.9585, 38.7404, [
+      'lafto',
+      'nifas silk lafto',
+      'nifas silk',
+    ]),
+    _AddisPlace('Ayer Tena', 9.0046, 38.6925, [
+      'ayer tena',
+      'ayertena',
+      'ayer tena square',
+    ]),
+    _AddisPlace('Alem Bank', 9.0151, 38.6898, [
+      'alem bank',
+      'alembank',
+      'alem bank area',
+    ]),
+    _AddisPlace('Kolfe', 9.0302, 38.7072, [
+      'kolfe',
+      'kolfe keranio',
+      'kolfe area',
+    ]),
+    _AddisPlace('Asko', 9.0711, 38.7054, [
+      'asko',
+      'asko addis sefer',
+      'asko area',
+    ]),
+    _AddisPlace('Wingate', 9.0540, 38.7210, [
+      'wingate',
+      'winget',
+      'wingate school',
+    ]),
+    _AddisPlace('Addisu Gebeya', 9.0467, 38.7330, [
+      'addisu gebeya',
+      'addis gebeya',
+      'new market',
+    ]),
+    _AddisPlace('Shiro Meda', 9.0626, 38.7617, [
+      'shiro meda',
+      'shiromeda',
+      'shiro meda market',
+    ]),
+    _AddisPlace('Entoto', 9.0836, 38.7648, [
+      'entoto',
+      'entoto maryam',
+      'entoto park',
+    ]),
+    _AddisPlace('Arat Kilo', 9.0340, 38.7611, [
+      '4 kilo',
+      'arat kilo',
+      'arat kilo square',
+    ]),
+    _AddisPlace('Sidist Kilo', 9.0445, 38.7612, [
+      '6 kilo',
+      'sidist kilo',
+      'six kilo',
+    ]),
+    _AddisPlace('Amist Kilo', 9.0393, 38.7588, [
+      '5 kilo',
+      'amist kilo',
+      'five kilo',
+    ]),
+    _AddisPlace('Kebena', 9.0352, 38.7778, [
+      'kebena',
+      'kebena area',
+      'yeka kebena',
+    ]),
+    _AddisPlace('Ferensay Legasion', 9.0437, 38.7834, [
+      'ferensay',
+      'ferensay legasion',
+      'french embassy',
+    ]),
+    _AddisPlace('Haya Arat 24', 9.0082, 38.7919, [
+      '24',
+      'haya arat',
+      '24 mazoria',
+    ]),
+    _AddisPlace('Meri', 9.0153, 38.8641, [
+      'meri',
+      'meri luke',
+      'meri area',
+    ]),
+    _AddisPlace('Yerer', 9.0234, 38.8878, [
+      'yerer',
+      'yerer ber',
+      'yerer area',
+    ]),
   ];
 
   static List<MapPlace> get majorAddisPlaces => _priorityAddisPlaces
@@ -200,6 +366,45 @@ class MapRepository {
       print('Error searching address: $e');
       return localMatches;
     }
+  }
+
+  Future<MapPlace> describeLocation(
+    LatLng location, {
+    String fallbackName = 'Pinned location',
+  }) async {
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        'https://nominatim.openstreetmap.org/reverse',
+        queryParameters: {
+          'lat': location.latitude,
+          'lon': location.longitude,
+          'format': 'json',
+          'addressdetails': 1,
+          'zoom': 18,
+        },
+        options: Options(
+          headers: {
+            'User-Agent': 'MotoBikeClient/1.0',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final displayName = _reverseDisplayName(
+          response.data ?? const <String, dynamic>{},
+          location,
+          fallbackName,
+        );
+        return MapPlace(displayName: displayName, location: location);
+      }
+    } catch (e) {
+      print('Error describing location: $e');
+    }
+
+    return MapPlace(
+      displayName: _nearestLocalDisplayName(location, fallbackName),
+      location: location,
+    );
   }
 
   /// Get route polyline and road distance using OSRM API.
@@ -304,15 +509,99 @@ class MapRepository {
     final seen = <String>{};
     final deduped = <MapPlace>[];
     for (final place in places) {
-      final key =
-          '${place.location.latitude.toStringAsFixed(5)},${place.location.longitude.toStringAsFixed(5)}';
+      final lat = place.location.latitude.toStringAsFixed(5);
+      final lng = place.location.longitude.toStringAsFixed(5);
+      final key = '$lat,$lng';
       if (seen.add(key)) deduped.add(place);
     }
     return deduped;
   }
 
   static String _normalize(String value) {
-    return value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), ' ').trim();
+    return value.toLowerCase().replaceAll(RegExp('[^a-z0-9]+'), ' ').trim();
+  }
+
+  static String _reverseDisplayName(
+    Map<String, dynamic> data,
+    LatLng location,
+    String fallbackName,
+  ) {
+    final addressSource = data['address'];
+    final address = addressSource is Map
+        ? Map<String, dynamic>.from(addressSource)
+        : const <String, dynamic>{};
+
+    final primary = _firstTextValue(address, const [
+      'neighbourhood',
+      'suburb',
+      'quarter',
+      'residential',
+      'city_district',
+      'road',
+      'amenity',
+    ]);
+    final city = _firstTextValue(address, const [
+      'city',
+      'town',
+      'state',
+      'county',
+    ]);
+    final country = _firstTextValue(address, const ['country']) ?? 'Ethiopia';
+
+    if (primary != null && primary != city) {
+      return [
+        primary,
+        if (city != null && city != primary) city,
+        country,
+      ].join(', ');
+    }
+
+    final displayName = data['display_name']?.toString().trim();
+    if (displayName != null && displayName.isNotEmpty) {
+      final parts = displayName
+          .split(',')
+          .map((part) => part.trim())
+          .where((part) => part.isNotEmpty)
+          .toList();
+      if (parts.isNotEmpty) {
+        return parts.take(4).join(', ');
+      }
+    }
+
+    return _nearestLocalDisplayName(location, fallbackName);
+  }
+
+  static String? _firstTextValue(
+    Map<String, dynamic> data,
+    List<String> keys,
+  ) {
+    for (final key in keys) {
+      final value = data[key]?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
+  static String _nearestLocalDisplayName(LatLng location, String fallbackName) {
+    _AddisPlace? nearest;
+    var nearestMeters = double.infinity;
+
+    for (final place in _priorityAddisPlaces) {
+      final meters = _distance(
+        location,
+        LatLng(place.lat, place.lng),
+      );
+      if (meters < nearestMeters) {
+        nearest = place;
+        nearestMeters = meters;
+      }
+    }
+
+    if (nearest != null && nearestMeters <= 3000) {
+      return 'Near ${nearest.name}, Addis Ababa, Ethiopia';
+    }
+
+    return '$fallbackName, Addis Ababa, Ethiopia';
   }
 }
 

@@ -5,7 +5,24 @@ import 'package:client_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
 class SearchDestinationScreen extends StatefulWidget {
-  const SearchDestinationScreen({super.key});
+  const SearchDestinationScreen({
+    super.key,
+    this.title = 'Where should we deliver?',
+    this.subtitle =
+        'Choose a major Addis Ababa neighborhood or search an exact address.',
+    this.emptyTitle = 'No address found',
+    this.emptyMessagePrefix = 'Try another spelling for',
+    this.defaultSectionTitle = 'Major neighborhoods',
+    this.defaultSectionSubtitle =
+        'Tap a popular area to fill the delivery destination.',
+  });
+
+  final String title;
+  final String subtitle;
+  final String emptyTitle;
+  final String emptyMessagePrefix;
+  final String defaultSectionTitle;
+  final String defaultSectionSubtitle;
 
   @override
   State<SearchDestinationScreen> createState() =>
@@ -72,6 +89,8 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
         child: Column(
           children: [
             _SearchHeader(
+              title: widget.title,
+              subtitle: widget.subtitle,
               controller: _searchController,
               onChanged: _onSearchChanged,
               onBack: () => Navigator.pop(context),
@@ -84,7 +103,11 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
             ),
             Expanded(
               child: _results.isEmpty
-                  ? _NoDestinationResults(query: _searchController.text)
+                  ? _NoDestinationResults(
+                      query: _searchController.text,
+                      title: widget.emptyTitle,
+                      messagePrefix: widget.emptyMessagePrefix,
+                    )
                   : ListView.separated(
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
@@ -103,6 +126,8 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                           return _DestinationSectionIntro(
                             hasQuery: hasQuery,
                             count: _results.length,
+                            defaultTitle: widget.defaultSectionTitle,
+                            defaultSubtitle: widget.defaultSectionSubtitle,
                           );
                         }
 
@@ -124,12 +149,16 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
 
 class _SearchHeader extends StatelessWidget {
   const _SearchHeader({
+    required this.title,
+    required this.subtitle,
     required this.controller,
     required this.onChanged,
     required this.onBack,
     required this.onClear,
   });
 
+  final String title;
+  final String subtitle;
   final TextEditingController controller;
   final ValueChanged<String> onChanged;
   final VoidCallback onBack;
@@ -167,9 +196,9 @@ class _SearchHeader extends StatelessWidget {
                 onPressed: onBack,
               ),
               const SizedBox(width: AppSpacing.xs),
-              const Expanded(
+              Expanded(
                 child: AppText(
-                  'Where should we deliver?',
+                  title,
                   variant: AppTextVariant.heading3,
                   fontWeight: FontWeight.w900,
                 ),
@@ -178,7 +207,7 @@ class _SearchHeader extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           AppText(
-            'Choose a major Addis Ababa neighborhood or search an exact address.',
+            subtitle,
             variant: AppTextVariant.bodySmall,
             color: context.appTextSecondary,
           ),
@@ -224,10 +253,17 @@ class _SearchHeader extends StatelessWidget {
 }
 
 class _DestinationSectionIntro extends StatelessWidget {
-  const _DestinationSectionIntro({required this.hasQuery, required this.count});
+  const _DestinationSectionIntro({
+    required this.hasQuery,
+    required this.count,
+    required this.defaultTitle,
+    required this.defaultSubtitle,
+  });
 
   final bool hasQuery;
   final int count;
+  final String defaultTitle;
+  final String defaultSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -252,7 +288,7 @@ class _DestinationSectionIntro extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
-                hasQuery ? 'Search results' : 'Major neighborhoods',
+                hasQuery ? 'Search results' : defaultTitle,
                 variant: AppTextVariant.labelLarge,
                 fontWeight: FontWeight.w900,
               ),
@@ -260,7 +296,7 @@ class _DestinationSectionIntro extends StatelessWidget {
               AppText(
                 hasQuery
                     ? '$count matching places around Addis Ababa'
-                    : 'Tap a popular area to fill the delivery destination.',
+                    : defaultSubtitle,
                 variant: AppTextVariant.bodySmall,
                 color: context.appTextSecondary,
               ),
@@ -355,9 +391,15 @@ class _DestinationTile extends StatelessWidget {
 }
 
 class _NoDestinationResults extends StatelessWidget {
-  const _NoDestinationResults({required this.query});
+  const _NoDestinationResults({
+    required this.query,
+    required this.title,
+    required this.messagePrefix,
+  });
 
   final String query;
+  final String title;
+  final String messagePrefix;
 
   @override
   Widget build(BuildContext context) {
@@ -373,14 +415,15 @@ class _NoDestinationResults extends StatelessWidget {
               size: 48,
             ),
             const SizedBox(height: AppSpacing.md),
-            const AppText(
-              'No address found',
+            AppText(
+              title,
               variant: AppTextVariant.heading3,
               fontWeight: FontWeight.w900,
             ),
             const SizedBox(height: AppSpacing.xs),
             AppText(
-              'Try another spelling for "$query" or choose one of the major neighborhoods.',
+              '$messagePrefix "$query" or choose one of the major '
+              'neighborhoods.',
               variant: AppTextVariant.bodyMedium,
               color: context.appTextSecondary,
               textAlign: TextAlign.center,

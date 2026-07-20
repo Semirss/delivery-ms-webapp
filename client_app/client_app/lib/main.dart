@@ -21,13 +21,18 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'core/logging/app_logger.dart';
 
-void main() async {
-  await _initializeApp();
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: AppColors.background,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
+  runApp(const _ClientBootstrapApp());
 }
 
-Future<void> _initializeApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
+Future<AppPreferences> _initializeApp() async {
   // Load environment variables
   try {
     await dotenv.load(fileName: '.env');
@@ -63,21 +68,329 @@ Future<void> _initializeApp() async {
   final appPreferences = AppPreferences();
   await appPreferences.load();
 
-  // Set system UI overlay style
-  SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: AppColors.background,
-      statusBarIconBrightness: Brightness.dark,
-    ),
-  );
+  return appPreferences;
+}
 
-  runApp(ClientApp(preferences: appPreferences));
+class _ClientBootstrapApp extends StatefulWidget {
+  const _ClientBootstrapApp();
+
+  @override
+  State<_ClientBootstrapApp> createState() => _ClientBootstrapAppState();
+}
+
+class _ClientBootstrapAppState extends State<_ClientBootstrapApp> {
+  late Future<AppPreferences> _startupFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _startupFuture = _startApp();
+  }
+
+  Future<AppPreferences> _startApp() async {
+    final results = await Future.wait<Object?>([
+      _initializeApp(),
+      Future<void>.delayed(const Duration(milliseconds: 900)),
+    ]);
+    return results.first! as AppPreferences;
+  }
+
+  void _retry() {
+    setState(() {
+      _startupFuture = _startApp();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<AppPreferences>(
+      future: _startupFuture,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return ClientApp(preferences: snapshot.data!, showLaunch: false);
+        }
+        if (snapshot.hasError) {
+          return _BootstrapErrorApp(
+            appName: 'MotoBike',
+            error: snapshot.error,
+            onRetry: _retry,
+          );
+        }
+        return const _BootstrapSplashApp(
+          appName: 'MotoBike',
+          tagline: 'Your delivery companion',
+        );
+      },
+    );
+  }
+}
+
+class _BootstrapSplashApp extends StatelessWidget {
+  const _BootstrapSplashApp({required this.appName, required this.tagline});
+
+  final String appName;
+  final String tagline;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: _BootstrapSplashScreen(appName: appName, tagline: tagline),
+    );
+  }
+}
+
+class _BootstrapSplashScreen extends StatefulWidget {
+  const _BootstrapSplashScreen({
+    required this.appName,
+    required this.tagline,
+  });
+
+  final String appName;
+  final String tagline;
+
+  @override
+  State<_BootstrapSplashScreen> createState() => _BootstrapSplashScreenState();
+}
+
+class _BootstrapSplashScreenState extends State<_BootstrapSplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _logoScale;
+  late final Animation<double> _logoTurn;
+  late final Animation<double> _textOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _logoScale = Tween<double>(begin: 0.94, end: 1.06).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
+    _logoTurn = Tween<double>(begin: -0.025, end: 0.025).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
+    _textOpacity = Tween<double>(begin: 0.72, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return DecoratedBox(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFFFF7F3),
+                  Colors.white,
+                  Color(0xFFFFE7DF),
+                ],
+              ),
+            ),
+            child: Center(
+              child: DefaultTextStyle.merge(
+                style: const TextStyle(
+                  decoration: TextDecoration.none,
+                  decorationColor: Colors.transparent,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Transform.rotate(
+                      angle: _logoTurn.value,
+                      child: Transform.scale(
+                        scale: _logoScale.value,
+                        child: Container(
+                          width: 118,
+                          height: 118,
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.82),
+                            borderRadius: BorderRadius.circular(34),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.90),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.26 + (_controller.value * 0.14),
+                                ),
+                                blurRadius: 30,
+                                offset: const Offset(0, 16),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(28),
+                            child: Image.asset(
+                              ImageConstants.appLogo,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.motorcycle_rounded,
+                                color: AppColors.primary,
+                                size: 58,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    FadeTransition(
+                      opacity: _textOpacity,
+                      child: Column(
+                        children: [
+                          Text(
+                            widget.appName,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontSize: 44,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0,
+                              decoration: TextDecoration.none,
+                              decorationColor: Colors.transparent,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            widget.tagline,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              decoration: TextDecoration.none,
+                              decorationColor: Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: 150,
+                      child: LinearProgressIndicator(
+                        minHeight: 3,
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                        color: AppColors.primary,
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.12,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _BootstrapErrorApp extends StatelessWidget {
+  const _BootstrapErrorApp({
+    required this.appName,
+    required this.error,
+    required this.onRetry,
+  });
+
+  final String appName;
+  final Object? error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: Scaffold(
+        backgroundColor: AppColors.background,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: AppColors.primary,
+                  size: 64,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  '$appName could not start',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  error?.toString() ?? 'Startup failed.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xl),
+                FilledButton(
+                  onPressed: onRetry,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                  ),
+                  child: const Text(
+                    'TRY AGAIN',
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ClientApp extends StatefulWidget {
-  const ClientApp({required this.preferences, super.key});
+  const ClientApp({
+    required this.preferences,
+    this.showLaunch = true,
+    super.key,
+  });
 
   final AppPreferences preferences;
+  final bool showLaunch;
 
   @override
   State<ClientApp> createState() => _ClientAppState();
@@ -147,21 +460,24 @@ class _ClientAppState extends State<ClientApp> {
                   locale: Locale(widget.preferences.languageCode),
                   routerConfig: _appRouter.router,
                   builder: (context, widget) {
+                    final appContent = _GlobalPullToRefresh(
+                      child: MediaQuery(
+                        data: MediaQuery.of(
+                          context,
+                        ).copyWith(textScaleFactor: 1.0),
+                        child: widget!,
+                      ),
+                    );
                     return VersionGate(
                       app: 'client',
                       config: getIt<AppConfig>(),
-                      child: _PremiumLaunchTransition(
-                        appName: 'MotoBike',
-                        tagline: 'Your delivery companion',
-                        child: _GlobalPullToRefresh(
-                          child: MediaQuery(
-                            data: MediaQuery.of(
-                              context,
-                            ).copyWith(textScaleFactor: 1.0),
-                            child: widget!,
-                          ),
-                        ),
-                      ),
+                      child: this.widget.showLaunch
+                          ? _PremiumLaunchTransition(
+                              appName: 'MotoBike',
+                              tagline: 'Your delivery companion',
+                              child: appContent,
+                            )
+                          : appContent,
                     );
                   },
                 );
