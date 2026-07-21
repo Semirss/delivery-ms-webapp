@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:client_app/config/router/navigation_helper.dart';
 import 'package:client_app/config/router/navigation_service.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
+import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
@@ -24,6 +25,8 @@ import '../../../../config/router/app_routes.dart';
 import '../../../../core/preferences/app_preferences.dart';
 
 enum _PickupChoice { currentLocation, neighborhood, pinOnMap }
+
+enum _DeliveryDestinationChoice { currentLocation, neighborhood, pinOnMap }
 
 class _DeliveryPricing {
   const _DeliveryPricing({
@@ -269,6 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingActiveDelivery = false;
   bool _showMap = false;
   bool _isPreparingDelivery = false;
+  bool _isRequestingAnotherDelivery = false;
   bool _isSubmitting = false;
   bool _isResolvingPickup = false;
   bool _hasAutoOpenedDestinationSearch = false;
@@ -788,13 +792,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!widget.deliveryPage ||
         !widget.autoSearchDestination ||
         _hasAutoOpenedDestinationSearch ||
-        _currentDeliveryId != null ||
         _destination != null ||
         _isPreparingDelivery) {
       return;
     }
 
     _hasAutoOpenedDestinationSearch = true;
+    _isRequestingAnotherDelivery = _hasActiveDelivery;
     unawaited(_startDeliveryFlow(service: _selectedService));
   }
 
@@ -920,20 +924,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Icons.travel_explore_rounded,
                   title: 'Choose neighborhood',
                   subtitle: 'Pick an Addis Ababa area manually.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.neighborhood,
-                  ),
+                  onTap: () =>
+                      Navigator.pop(sheetContext, _PickupChoice.neighborhood),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 _PickupChoiceTile(
                   icon: Icons.add_location_alt_rounded,
                   title: 'Pin on map',
                   subtitle: 'Move the map and drop the pickup pin.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.pinOnMap,
-                  ),
+                  onTap: () =>
+                      Navigator.pop(sheetContext, _PickupChoice.pinOnMap),
                 ),
               ],
             ),
@@ -949,10 +949,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    await _setPickupFromPoint(
-      location,
-      fallbackName: 'Current GPS pickup',
-    );
+    await _setPickupFromPoint(location, fallbackName: 'Current GPS pickup');
   }
 
   Future<void> _choosePickupNeighborhood() async {
@@ -981,9 +978,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _deliveryPickup ?? _currentLocation ?? _destination?.location;
     final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
       MaterialPageRoute(
-        builder: (context) => _PinLocationScreen(
-          initialCenter: initialCenter ?? _fallbackCenter,
-        ),
+        builder: (context) =>
+            _PinLocationScreen(initialCenter: initialCenter ?? _fallbackCenter),
       ),
     );
 
@@ -1042,10 +1038,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : [pickup, destination.location];
       _distanceKm = route.distanceKm > 0
           ? route.distanceKm
-          : _mapRepository.straightLineDistanceKm(
-              pickup,
-              destination.location,
-            );
+          : _mapRepository.straightLineDistanceKm(pickup, destination.location);
     });
     _fitRoute(pickup, destination.location);
   }
@@ -1071,14 +1064,110 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedService = service;
       _showMap = true;
+      _isRequestingAnotherDelivery =
+          _isRequestingAnotherDelivery || _hasActiveDelivery;
     });
 
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
-    await _handleSearchDestination();
+    await _chooseDeliveryDestination();
   }
 
-  Future<void> _handleSearchDestination() async {
+  Future<void> _chooseDeliveryDestination() async {
+    final choice = await _showDestinationChoiceSheet();
+    if (!mounted) return;
+
+    if (choice == null) {
+      _handleDestinationSelectionCancelled();
+      return;
+    }
+
+    switch (choice) {
+      case _DeliveryDestinationChoice.currentLocation:
+        await _useCurrentLocationForDestination();
+      case _DeliveryDestinationChoice.neighborhood:
+        await _chooseDestinationNeighborhood();
+      case _DeliveryDestinationChoice.pinOnMap:
+        await _pinDestinationOnMap();
+    }
+  }
+
+  Future<_DeliveryDestinationChoice?> _showDestinationChoiceSheet() {
+    return showModalBottomSheet<_DeliveryDestinationChoice>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return SafeArea(
+          top: false,
+          child: Container(
+            margin: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: sheetContext.appSurface,
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 28,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText(
+                  'Where should we deliver?',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                AppText(
+                  'Choose how to set the drop-off point.',
+                  variant: AppTextVariant.bodySmall,
+                  color: sheetContext.appTextSecondary,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                _PickupChoiceTile(
+                  icon: Icons.my_location_rounded,
+                  title: 'Use current GPS',
+                  subtitle: 'Deliver to your current location.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _DeliveryDestinationChoice.currentLocation,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _PickupChoiceTile(
+                  icon: Icons.travel_explore_rounded,
+                  title: 'Choose neighborhood',
+                  subtitle: 'Pick an Addis Ababa area manually.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _DeliveryDestinationChoice.neighborhood,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _PickupChoiceTile(
+                  icon: Icons.add_location_alt_rounded,
+                  title: 'Pin on map',
+                  subtitle: 'Move the map and place the drop-off pin.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _DeliveryDestinationChoice.pinOnMap,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _chooseDestinationNeighborhood() async {
     final result = await Navigator.push<MapPlace>(
       context,
       MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
@@ -1086,23 +1175,69 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!mounted) return;
 
     if (result == null) {
-      if (widget.deliveryPage &&
-          widget.autoSearchDestination &&
-          _destination == null &&
-          _currentDeliveryId == null) {
-        NavigationService().triggerHomeAction();
-        return;
-      }
-      if (!_isPreparingDelivery && _currentDeliveryId == null) {
-        setState(() => _showMap = false);
-      }
+      _handleDestinationSelectionCancelled();
       return;
     }
 
+    await _setDeliveryDestination(result);
+  }
+
+  Future<void> _useCurrentLocationForDestination() async {
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation || !mounted) return;
+
+    final location = _currentLocation;
+    if (location == null) return;
+    final place = await _mapRepository.describeLocation(
+      location,
+      fallbackName: 'Current GPS delivery destination',
+    );
+    if (!mounted) return;
+    await _setDeliveryDestination(place);
+  }
+
+  Future<void> _pinDestinationOnMap() async {
+    final initialCenter =
+        _destination?.location ?? _currentLocation ?? _deliveryPickup;
+    final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
+      MaterialPageRoute(
+        builder: (context) =>
+            _PinLocationScreen(initialCenter: initialCenter ?? _fallbackCenter),
+      ),
+    );
+    if (!mounted || point == null) return;
+
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: 'Pinned delivery destination',
+    );
+    if (!mounted) return;
+    await _setDeliveryDestination(place);
+  }
+
+  void _handleDestinationSelectionCancelled() {
+    if (widget.deliveryPage &&
+        widget.autoSearchDestination &&
+        _destination == null &&
+        !_hasActiveDelivery) {
+      NavigationService().triggerHomeAction();
+      return;
+    }
+    if (!_isPreparingDelivery && !_hasActiveDelivery) {
+      setState(() => _showMap = false);
+    }
+  }
+
+  Future<void> _setDeliveryDestination(MapPlace result) async {
+    final isAnotherDelivery =
+        _isRequestingAnotherDelivery || _hasActiveDelivery;
     setState(() {
       _destination = result;
       _isPreparingDelivery = true;
-      _deliveryStatus = 'none';
+      _isRequestingAnotherDelivery = isAnotherDelivery;
+      if (!isAnotherDelivery) {
+        _deliveryStatus = 'none';
+      }
       _routePoints = [];
       _distanceKm = null;
     });
@@ -1116,6 +1251,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _requestDelivery() async {
     if (_destination == null || _isSubmitting) return;
+    final previousDelivery = _currentDelivery == null
+        ? null
+        : Map<String, dynamic>.from(_currentDelivery!);
+    final previousDeliveryId = _currentDeliveryId;
+    final previousDeliveryStatus = _deliveryStatus;
     final hasPickup = await _ensurePickupSelected();
     if (!hasPickup) {
       if (!mounted) return;
@@ -1182,7 +1322,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .insert({
             'customer_name': customerName.isEmpty ? user.email : customerName,
             'customer_phone': user.phone?.trim().isNotEmpty == true
-                ? user.phone!.trim()
+                ? normalizeEthiopianPhone(user.phone!)
                 : user.email,
             'client_id': user.id,
             'pickup_location': pickupLabel,
@@ -1209,6 +1349,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _currentDelivery = Map<String, dynamic>.from(response);
         _deliveryStatus = response['status']?.toString() ?? 'Pending';
+        _isRequestingAnotherDelivery = false;
       });
       AppToast.show(
         context: context,
@@ -1219,7 +1360,11 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Error requesting delivery: $e');
       if (!mounted) return;
       setState(() {
-        _deliveryStatus = 'none';
+        _currentDelivery = previousDelivery;
+        _currentDeliveryId = previousDeliveryId;
+        _deliveryStatus = previousDeliveryId == null
+            ? 'none'
+            : previousDeliveryStatus;
       });
       AppToast.show(
         context: context,
@@ -1487,7 +1632,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       var delivery = _firstActiveDelivery(byClient);
       final customerLookup = user.phone?.trim().isNotEmpty == true
-          ? user.phone!.trim()
+          ? normalizeEthiopianPhone(user.phone!)
           : user.email;
 
       if (delivery == null && customerLookup.trim().isNotEmpty) {
@@ -1525,6 +1670,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
   }
 
+  bool get _hasActiveDelivery =>
+      _currentDeliveryId != null && _isActiveDeliveryStatus(_deliveryStatus);
+
   Future<void> _adoptDelivery(
     Map<String, dynamic> delivery, {
     required bool showMap,
@@ -1547,6 +1695,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _deliveryPickup = pickup;
       _showMap = showMap;
       _isPreparingDelivery = true;
+      _isRequestingAnotherDelivery = false;
       if (vehicleCategory == 'Bike' || vehicleCategory == 'Motor') {
         _selectedVehicleCategory = vehicleCategory!;
       }
@@ -1600,6 +1749,63 @@ class _HomeScreenState extends State<HomeScreen> {
     return LatLng(latitude, longitude);
   }
 
+  bool get _canCancelCurrentDelivery =>
+      _currentDeliveryId != null &&
+      (_deliveryStatus == 'Pending' || _deliveryStatus == 'Assigned');
+
+  Future<void> _confirmCancelCurrentDelivery() async {
+    if (!_canCancelCurrentDelivery) return;
+
+    final confirmed = await AppModal.confirm(
+      context: context,
+      title: 'Cancel delivery?',
+      contentText: 'This delivery will be cancelled before pickup.',
+      confirmLabel: 'Cancel delivery',
+      cancelLabel: 'Keep delivery',
+      icon: Icons.cancel_outlined,
+      heightPercentage: 0.46,
+    );
+    if (confirmed != true || !mounted) return;
+
+    await _cancelDeliveryRequest();
+    if (!mounted) return;
+    AppToast.show(
+      context: context,
+      message: 'Delivery cancelled.',
+      type: AppToastType.success,
+    );
+  }
+
+  Future<void> _startAnotherDeliveryRequest() async {
+    setState(() {
+      _isRequestingAnotherDelivery = true;
+      _isPreparingDelivery = false;
+      _showMap = true;
+      _destination = null;
+      _routePoints = [];
+      _distanceKm = null;
+      _selectedPackageType = 'Documents';
+      _otherItemController.clear();
+    });
+    await _startDeliveryFlow(service: _selectedService);
+  }
+
+  void _discardDraftDelivery() {
+    setState(() {
+      _isRequestingAnotherDelivery = false;
+      _isPreparingDelivery = false;
+      _destination = null;
+      _routePoints = [];
+      _distanceKm = null;
+      if (!_hasActiveDelivery) {
+        _showMap = false;
+        _pickupPlace = null;
+        _deliveryPickup = null;
+        _deliveryStatus = 'none';
+      }
+    });
+  }
+
   Future<void> _cancelDeliveryRequest() async {
     final deliveryId = _currentDeliveryId;
     if (deliveryId != null &&
@@ -1614,7 +1820,8 @@ class _HomeScreenState extends State<HomeScreen> {
               'cancelled_by': 'customer',
               'cancellation_reason': 'Cancelled from client app',
             })
-            .eq('id', deliveryId);
+            .eq('id', deliveryId)
+            .inFilter('status', const ['Pending', 'Assigned']);
       } catch (e) {
         debugPrint('Error cancelling delivery: $e');
       }
@@ -1721,13 +1928,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _closeMapView() {
+    if (_isRequestingAnotherDelivery) {
+      _discardDraftDelivery();
+      return;
+    }
+
     if (widget.deliveryPage) {
       NavigationService().triggerHomeAction();
       return;
     }
 
-    if (_currentDeliveryId != null &&
-        _isActiveDeliveryStatus(_deliveryStatus)) {
+    if (_hasActiveDelivery) {
       setState(() => _showMap = false);
       return;
     }
@@ -1743,6 +1954,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _showMap = false;
       _isPreparingDelivery = false;
+      _isRequestingAnotherDelivery = false;
       _pickupPlace = null;
       _destination = null;
       _routePoints = [];
@@ -2002,21 +2214,40 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   _roundMapButton(
                     Icons.search_rounded,
-                    _handleSearchDestination,
+                    () => unawaited(_chooseDeliveryDestination()),
                   ),
                 ],
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildBottomSheet(driver),
+          Positioned.fill(
+            child: DraggableScrollableSheet(
+              key: ValueKey(
+                'delivery-sheet-$_isPreparingDelivery-'
+                '$_isRequestingAnotherDelivery-$_deliveryStatus',
+              ),
+              initialChildSize: _initialMapSheetSize,
+              minChildSize: 0.24,
+              maxChildSize: 0.88,
+              snap: true,
+              snapSizes: const [0.32, 0.62, 0.88],
+              builder: (context, scrollController) {
+                return _buildBottomSheet(driver, scrollController);
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  double get _initialMapSheetSize {
+    if (!_isPreparingDelivery) return 0.32;
+    if (_deliveryStatus == 'none' || _isRequestingAnotherDelivery) {
+      return 0.62;
+    }
+    if (_deliveryStatus == 'Pending') return 0.32;
+    return 0.62;
   }
 
   void _showSettingsSheet() {
@@ -2452,7 +2683,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: AppSpacing.sm),
           AppText(
             driver == null
-                ? 'Waiting for driver assignment.'
+                ? 'Waiting for dispatch. You can request another delivery below.'
                 : driverHasGps
                 ? 'Driver GPS is live.'
                 : 'Driver assigned. Waiting for GPS update.',
@@ -2479,16 +2710,32 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.sm),
+          AppButton.outlinedSecondary(
+            label: 'REQUEST ANOTHER',
+            icon: Icons.add_road_rounded,
+            fullWidth: true,
+            onPressed: () => unawaited(_startAnotherDeliveryRequest()),
+          ),
+          if (_canCancelCurrentDelivery) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AppButton.outlinedDanger(
+              label: 'CANCEL DELIVERY',
+              icon: Icons.cancel_outlined,
+              fullWidth: true,
+              onPressed: () => unawaited(_confirmCancelCurrentDelivery()),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildBottomSheet(Map<String, dynamic>? driver) {
+  Widget _buildBottomSheet(
+    Map<String, dynamic>? driver,
+    ScrollController scrollController,
+  ) {
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.78,
-      ),
       decoration: BoxDecoration(
         color: context.appSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
@@ -2503,6 +2750,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
+          controller: scrollController,
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.lg,
             AppSpacing.lg,
@@ -2527,7 +2775,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildWhereToCard(),
               ] else if (!_isPreparingDelivery) ...[
                 _buildWhereToCard(),
-              ] else if (_deliveryStatus == 'none') ...[
+              ] else if (_deliveryStatus == 'none' ||
+                  _isRequestingAnotherDelivery) ...[
                 _buildPackageTypeSelector(),
                 const SizedBox(height: AppSpacing.md),
                 _buildVehicleSelector(compact: true),
@@ -2537,7 +2786,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildDeliverySummary(),
                 const SizedBox(height: AppSpacing.lg),
                 AppButton.primary(
-                  label: 'REQUEST DELIVERY',
+                  label: _isRequestingAnotherDelivery
+                      ? 'REQUEST ANOTHER DELIVERY'
+                      : 'REQUEST DELIVERY',
                   fullWidth: true,
                   isLoading: _isSubmitting,
                   onPressed: _requestDelivery,
@@ -2548,10 +2799,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 const AppText(
-                  'Waiting for admin dispatch...',
+                  'Waiting for dispatch',
                   variant: AppTextVariant.heading3,
                   fontWeight: FontWeight.bold,
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppText(
+                  'We are looking for a courier. You can send another request while this one is waiting.',
+                  variant: AppTextVariant.bodySmall,
+                  color: context.appTextSecondary,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                AppButton.primary(
+                  label: 'REQUEST ANOTHER',
+                  icon: Icons.add_road_rounded,
+                  fullWidth: true,
+                  onPressed: () => unawaited(_startAnotherDeliveryRequest()),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 AppButton.outlinedSecondary(
@@ -3289,7 +3554,9 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisSpacing: AppSpacing.sm,
             mainAxisSpacing: AppSpacing.sm,
             children: gridDeals
-                .map((deal) => _DealGridAdCard(deal: deal, onTap: _openDealAction))
+                .map(
+                  (deal) => _DealGridAdCard(deal: deal, onTap: _openDealAction),
+                )
                 .toList(),
           ),
         ],
@@ -3419,7 +3686,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             IconButton(
               icon: Icon(Icons.close_rounded, color: context.appTextPrimary),
-              onPressed: _cancelDeliveryRequest,
+              onPressed: _isRequestingAnotherDelivery
+                  ? _discardDraftDelivery
+                  : _cancelDeliveryRequest,
             ),
             Expanded(
               child: AppText(
@@ -3845,9 +4114,7 @@ class _DealGridAdCard extends StatelessWidget {
                       Colors.black.withValues(
                         alpha: math.max(0.04, overlay - 0.40),
                       ),
-                      Colors.black.withValues(
-                        alpha: math.max(0.24, overlay),
-                      ),
+                      Colors.black.withValues(alpha: math.max(0.24, overlay)),
                       Colors.black.withValues(
                         alpha: math.min(0.90, overlay + 0.26),
                       ),
@@ -3930,7 +4197,222 @@ class _DealImage extends StatelessWidget {
   }
 }
 
-const LatLng _deliveryPreviewCenter = LatLng(8.9806, 38.7578);
+class _OfflineDeliveryPreviewMap extends StatelessWidget {
+  const _OfflineDeliveryPreviewMap();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      ImageConstants.fastCityDeliveryMapBackground,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const _OfflineDeliveryPreviewMapFallback(),
+    );
+  }
+}
+
+class _OfflineDeliveryPreviewMapFallback extends StatelessWidget {
+  const _OfflineDeliveryPreviewMapFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return const ColoredBox(
+      color: Color(0xFF172635),
+      child: CustomPaint(
+        painter: _OfflineDeliveryPreviewMapPainter(),
+        child: SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+class _OfflineDeliveryPreviewMapPainter extends CustomPainter {
+  const _OfflineDeliveryPreviewMapPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF203143), Color(0xFF121D29)],
+        ).createShader(rect),
+    );
+
+    final blockPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.045)
+      ..style = PaintingStyle.fill;
+    final parkPaint = Paint()
+      ..color = const Color(0xFF3CBF89).withValues(alpha: 0.12)
+      ..style = PaintingStyle.fill;
+    final minorRoadPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2.6;
+    final roadEdgePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.18)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 10;
+    final roadPaint = Paint()
+      ..color = const Color(0xFF8090A0).withValues(alpha: 0.58)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 6;
+    final arterialEdgePaint = Paint()
+      ..color = const Color(0xFFFFC46A).withValues(alpha: 0.22)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 15;
+    final arterialPaint = Paint()
+      ..color = const Color(0xFFECA84C).withValues(alpha: 0.64)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
+
+    _drawPolygon(canvas, size, parkPaint, const [
+      Offset(0.05, 0.05),
+      Offset(0.29, 0.02),
+      Offset(0.35, 0.21),
+      Offset(0.14, 0.26),
+    ]);
+    _drawPolygon(canvas, size, parkPaint, const [
+      Offset(0.71, 0.62),
+      Offset(0.98, 0.58),
+      Offset(0.98, 0.92),
+      Offset(0.76, 0.88),
+    ]);
+
+    for (final block in const [
+      Rect.fromLTWH(0.07, 0.35, 0.18, 0.18),
+      Rect.fromLTWH(0.30, 0.29, 0.14, 0.16),
+      Rect.fromLTWH(0.51, 0.16, 0.18, 0.18),
+      Rect.fromLTWH(0.75, 0.14, 0.16, 0.23),
+      Rect.fromLTWH(0.10, 0.65, 0.22, 0.20),
+      Rect.fromLTWH(0.42, 0.67, 0.17, 0.18),
+      Rect.fromLTWH(0.61, 0.38, 0.14, 0.14),
+    ]) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            block.left * size.width,
+            block.top * size.height,
+            block.width * size.width,
+            block.height * size.height,
+          ),
+          const Radius.circular(12),
+        ),
+        blockPaint,
+      );
+    }
+
+    for (final y in const [0.18, 0.33, 0.48, 0.63, 0.78]) {
+      _drawLine(
+        canvas,
+        size,
+        Offset(-0.05, y),
+        Offset(1.05, y + 0.08),
+        minorRoadPaint,
+      );
+    }
+    for (final x in const [0.16, 0.34, 0.56, 0.81]) {
+      _drawLine(
+        canvas,
+        size,
+        Offset(x, -0.05),
+        Offset(x - 0.08, 1.05),
+        minorRoadPaint,
+      );
+    }
+
+    final arterial = Path()
+      ..moveTo(-size.width * 0.05, size.height * 0.58)
+      ..cubicTo(
+        size.width * 0.22,
+        size.height * 0.48,
+        size.width * 0.45,
+        size.height * 0.45,
+        size.width * 0.63,
+        size.height * 0.53,
+      )
+      ..cubicTo(
+        size.width * 0.76,
+        size.height * 0.59,
+        size.width * 0.91,
+        size.height * 0.57,
+        size.width * 1.05,
+        size.height * 0.44,
+      );
+    canvas
+      ..drawPath(arterial, arterialEdgePaint)
+      ..drawPath(arterial, arterialPaint);
+
+    final ringRoad = Path()
+      ..moveTo(size.width * 0.07, size.height * 0.86)
+      ..cubicTo(
+        size.width * 0.20,
+        size.height * 0.64,
+        size.width * 0.34,
+        size.height * 0.54,
+        size.width * 0.50,
+        size.height * 0.49,
+      )
+      ..cubicTo(
+        size.width * 0.67,
+        size.height * 0.44,
+        size.width * 0.83,
+        size.height * 0.30,
+        size.width * 0.95,
+        size.height * 0.08,
+      );
+    canvas
+      ..drawPath(ringRoad, roadEdgePaint)
+      ..drawPath(ringRoad, roadPaint);
+
+    _drawLine(
+      canvas,
+      size,
+      const Offset(0.02, 0.12),
+      const Offset(0.92, 0.92),
+      roadPaint..strokeWidth = 4.5,
+    );
+  }
+
+  void _drawLine(
+    Canvas canvas,
+    Size size,
+    Offset start,
+    Offset end,
+    Paint paint,
+  ) {
+    canvas.drawLine(
+      Offset(start.dx * size.width, start.dy * size.height),
+      Offset(end.dx * size.width, end.dy * size.height),
+      paint,
+    );
+  }
+
+  void _drawPolygon(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    List<Offset> points,
+  ) {
+    final path = Path()
+      ..moveTo(points.first.dx * size.width, points.first.dy * size.height);
+    for (final point in points.skip(1)) {
+      path.lineTo(point.dx * size.width, point.dy * size.height);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 double _clampUnit(double value) {
   if (value < 0) return 0;
@@ -4020,23 +4502,7 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
           ),
           child: AnimatedBuilder(
             animation: _controller,
-            child: FlutterMap(
-              options: const MapOptions(
-                initialCenter: _deliveryPreviewCenter,
-                initialZoom: 13.6,
-                interactionOptions: InteractionOptions(
-                  flags: InteractiveFlag.none,
-                ),
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.motobikedeliveryservice.client',
-                  maxNativeZoom: 19,
-                  keepBuffer: 5,
-                ),
-              ],
-            ),
+            child: const _OfflineDeliveryPreviewMap(),
             builder: (context, staticMap) {
               final sweepProgress = _controller.value <= 0.5
                   ? _controller.value * 2

@@ -3,7 +3,6 @@ import '../../../app_ui.dart';
 import '../../config/constants/app_colors.dart';
 import '../../config/constants/app_spacing.dart';
 import '../../config/constants/app_radius.dart';
-import '../../config/theme/app_typography.dart';
 
 /// Enum defining the size variants of AppModal (deprecated - use heightPercentage instead)
 @Deprecated('Use heightPercentage parameter instead')
@@ -219,6 +218,7 @@ class AppModal extends StatelessWidget {
   }) {
     return showModalBottomSheet<T>(
       context: context,
+      useRootNavigator: true,
       isDismissible: barrierDismissible,
       enableDrag: enableDrag,
       isScrollControlled: true,
@@ -271,6 +271,7 @@ class AppModal extends StatelessWidget {
   }) {
     return showModalBottomSheet<T>(
       context: context,
+      useRootNavigator: true,
       isDismissible: barrierDismissible,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -317,7 +318,7 @@ class AppModal extends StatelessWidget {
           primaryAction ??
           AppModalAction(
             label: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           ),
     );
   }
@@ -343,12 +344,12 @@ class AppModal extends StatelessWidget {
       heightPercentage: heightPercentage,
       primaryAction: AppModalAction(
         label: confirmLabel,
-        onPressed: () => Navigator.of(context).pop(true),
+        onPressed: () => Navigator.of(context, rootNavigator: true).pop(true),
         variant: AppButtonVariant.primary,
       ),
       secondaryAction: AppModalAction(
         label: cancelLabel,
-        onPressed: () => Navigator.of(context).pop(false),
+        onPressed: () => Navigator.of(context, rootNavigator: true).pop(false),
         variant: AppButtonVariant.secondary,
       ),
     );
@@ -376,7 +377,7 @@ class AppModal extends StatelessWidget {
           primaryAction ??
           AppModalAction(
             label: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           ),
     );
   }
@@ -403,7 +404,7 @@ class AppModal extends StatelessWidget {
           primaryAction ??
           AppModalAction(
             label: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           ),
     );
   }
@@ -430,7 +431,7 @@ class AppModal extends StatelessWidget {
           primaryAction ??
           AppModalAction(
             label: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           ),
     );
   }
@@ -457,7 +458,7 @@ class AppModal extends StatelessWidget {
           primaryAction ??
           AppModalAction(
             label: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           ),
     );
   }

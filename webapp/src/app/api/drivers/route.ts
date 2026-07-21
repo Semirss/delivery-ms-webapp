@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         const { data: existingEmail, error: existingEmailError } = await supabase
             .from('drivers')
             .select('id')
-            .eq('email', normalizedEmail)
+            .ilike('email', normalizedEmail)
             .maybeSingle();
 
         if (existingEmailError) {

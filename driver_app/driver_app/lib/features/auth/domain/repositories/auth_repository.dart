@@ -5,11 +5,14 @@ import '../entities/user_entity.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, AuthResult>> login(LoginParams params);
+  Future<Either<Failure, AuthResult>> loginWithGoogle();
   Future<Either<Failure, AuthResult>> signUp(SignUpParams params);
   Future<Either<Failure, AuthResult>> verifyOtp(OtpVerificationParams params);
   Future<Either<Failure, void>> resendOtp(String verificationKey);
   Future<Either<Failure, void>> resetPassword(ResetPasswordParams params);
-  Future<Either<Failure, void>> verifyResetPassword(VerifyResetPasswordParams params);
+  Future<Either<Failure, void>> verifyResetPassword(
+    VerifyResetPasswordParams params,
+  );
   Future<Either<Failure, AuthResult>> refreshToken(RefreshTokenParams params);
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, UserEntity>> getCurrentUser();
@@ -31,4 +34,3 @@ class AuthResult {
     this.verificationKey,
   });
 }
-

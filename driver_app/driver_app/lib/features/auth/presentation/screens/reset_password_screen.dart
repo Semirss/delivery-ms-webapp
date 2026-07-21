@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:driver_ui/app_ui.dart';
 
 import '../../../../core/utils/constants/ui_constants.dart';
+import '../../../../core/utils/functions/base_functions/ethiopian_phone.dart';
 import '../../../../core/widgets/index.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -48,16 +49,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     context.read<AuthBloc>().add(
       ResetPasswordEvent(
-        phone: _phoneController.text.trim(),
+        phone: normalizeEthiopianPhone(_phoneController.text),
         newPassword: _phoneVerified ? _passwordController.text : null,
       ),
     );
   }
 
   String? _validationError() {
-    if (_phoneController.text.trim().isEmpty) {
-      return 'Please enter your phone number';
-    }
+    final phoneError = validateEthiopianPhone(_phoneController.text);
+    if (phoneError != null) return phoneError;
     if (!_phoneVerified) return null;
     if (_passwordController.text.isEmpty) {
       return 'Please enter your new password';
@@ -136,14 +136,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       enabled: !isLoading && !_phoneVerified,
                       keyboardType: TextInputType.phone,
                       label: 'Phone number',
-                      hint: '09... or +2519...',
+                      hint: '912 345 678',
                       prefixIcon: Icons.phone_outlined,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter your phone number';
-                        }
-                        return null;
-                      },
+                      prefixText: '$ethiopianDialCode ',
+                      validator: validateEthiopianPhone,
                     ),
                     if (_phoneVerified) ...[
                       kVerticalGap16,
@@ -183,8 +179,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             : Icons.visibility_off,
                         onSuffixPressed: () {
                           setState(() {
-                            _obscureConfirmPassword =
-                                !_obscureConfirmPassword;
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
                           });
                         },
                         validator: (value) {

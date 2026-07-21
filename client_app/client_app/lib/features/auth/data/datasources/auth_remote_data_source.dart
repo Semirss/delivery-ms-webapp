@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart' as dio;
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:client_app/core/config/app_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,6 +12,7 @@ import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(LoginParams params);
+  Future<AuthResponseModel> loginWithGoogle();
   Future<AuthResponseModel> signUp(SignUpParams params);
   Future<AuthResponseModel> verifyOtp(OtpVerificationParams params);
   Future<void> resendOtp(String verificationKey);
@@ -27,15 +30,17 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
+  static const String _googleRedirectUrl = 'motobike-client://login-callback/';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
+    final email = params.email.trim().toLowerCase();
+    if (email.isEmpty) throw Exception('Please enter your email.');
+    if (params.password.isEmpty) throw Exception('Please enter your password.');
+
     final data = await _supabase.rpc<List<dynamic>>(
       'login_client',
-      params: {
-        'p_email': params.email.trim().toLowerCase(),
-        'p_password': params.password,
-      },
+      params: {'p_email': email, 'p_password': params.password},
     );
 
     final user = UserModel.fromJson(_singleRow(data));
@@ -49,15 +54,66 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<AuthResponseModel> loginWithGoogle() async {
+    final sessionUser = _supabase.auth.currentUser;
+    if (sessionUser != null) {
+      return _clientFromGoogleUser(sessionUser);
+    }
+
+    final completer = Completer<User>();
+    late final StreamSubscription<AuthState> subscription;
+    subscription = _supabase.auth.onAuthStateChange.listen((data) {
+      final user = data.session?.user;
+      if (user != null && !completer.isCompleted) {
+        completer.complete(user);
+      }
+    });
+
+    try {
+      final launched = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : _googleRedirectUrl,
+      );
+      if (!launched) {
+        throw Exception('Could not open Google sign-in. Please try again.');
+      }
+
+      final user = await completer.future.timeout(
+        const Duration(minutes: 2),
+        onTimeout: () => throw TimeoutException(
+          'Google sign-in was not completed. Please try again.',
+        ),
+      );
+      return _clientFromGoogleUser(user);
+    } finally {
+      await subscription.cancel();
+    }
+  }
+
+  @override
   Future<AuthResponseModel> signUp(SignUpParams params) async {
+    final email = params.email.trim().toLowerCase();
+    final password = params.password;
+    final firstName = params.firstName?.trim() ?? '';
+    final lastName = params.lastName?.trim() ?? '';
+    final phone = params.phone?.trim() ?? '';
+    if (firstName.isEmpty) throw Exception('Please enter your first name.');
+    if (lastName.isEmpty) throw Exception('Please enter your last name.');
+    if (email.isEmpty) throw Exception('Please enter your email.');
+    if (password.isEmpty) throw Exception('Please enter your password.');
+    if (password.length < 6) {
+      throw Exception('Password must be at least 6 characters.');
+    }
+    if (phone.isEmpty) throw Exception('Please enter your phone number.');
+
     final data = await _supabase.rpc<List<dynamic>>(
       'register_client',
       params: {
-        'p_email': params.email.trim().toLowerCase(),
-        'p_password': params.password,
-        'p_first_name': params.firstName?.trim(),
-        'p_last_name': params.lastName?.trim(),
-        'p_phone': params.phone?.trim(),
+        'p_email': email,
+        'p_password': password,
+        'p_first_name': firstName,
+        'p_last_name': lastName,
+        'p_phone': phone,
       },
     );
 
@@ -69,6 +125,56 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
       refreshToken: _clientToken(user, refresh: true),
       requiresVerification: false,
     );
+  }
+
+  Future<AuthResponseModel> _clientFromGoogleUser(User googleUser) async {
+    final email = googleUser.email?.trim().toLowerCase() ?? '';
+    if (email.isEmpty) {
+      throw Exception('Google did not return an email address.');
+    }
+
+    final data = await _clientRowForEmail(email);
+
+    if (data == null) {
+      await _supabase.auth.signOut();
+      throw Exception(
+        'No client account exists for this Google email. Please sign up first.',
+      );
+    }
+
+    final user = UserModel.fromJson(Map<String, dynamic>.from(data));
+    return AuthResponseModel(
+      user: user,
+      accessToken: _clientToken(user),
+      refreshToken: _clientToken(user, refresh: true),
+      requiresVerification: false,
+    );
+  }
+
+  Future<Map<String, dynamic>?> _clientRowForEmail(String email) async {
+    try {
+      final data = await _supabase.rpc<dynamic>(
+        'get_client_by_email_for_oauth',
+        params: {'p_email': email},
+      );
+      final row = _singleNullableRow(data);
+      if (row != null) return row;
+    } catch (e) {
+      final lower = e.toString().toLowerCase();
+      if (!lower.contains('could not find the function') &&
+          !lower.contains('404') &&
+          !lower.contains('not found')) {
+        rethrow;
+      }
+    }
+
+    final rows = await _supabase
+        .from('clients')
+        .select()
+        .ilike('email', email)
+        .limit(1);
+    final list = List<Map<String, dynamic>>.from(rows);
+    return list.isEmpty ? null : list.first;
   }
 
   @override
@@ -105,17 +211,21 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> verifyResetPassword(VerifyResetPasswordParams params) async {
-    throw Exception('Password reset verification is not configured for client table accounts');
+    throw Exception(
+      'Password reset verification is not configured for client table accounts',
+    );
   }
 
   @override
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params) async {
-    throw Exception('Client table accounts do not use Supabase Auth refresh tokens');
+    throw Exception(
+      'Client table accounts do not use Supabase Auth refresh tokens',
+    );
   }
 
   @override
   Future<void> logout() async {
-    return;
+    await _supabase.auth.signOut();
   }
 
   @override
@@ -131,6 +241,17 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
       return Map<String, dynamic>.from(data);
     }
     throw Exception('Invalid client auth response');
+  }
+
+  Map<String, dynamic>? _singleNullableRow(dynamic data) {
+    if (data is List) {
+      if (data.isEmpty) return null;
+      return Map<String, dynamic>.from(data.first as Map);
+    }
+    if (data is Map && data.isNotEmpty) {
+      return Map<String, dynamic>.from(data);
+    }
+    return null;
   }
 
   String _clientToken(UserModel user, {bool refresh = false}) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { findAddisNeighborhood, suggestAddisNeighborhoods } from "@/lib/addis-locations";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 type FoodCategory = {
@@ -146,6 +147,17 @@ function copyCategory(category: FoodCategory = emptyCategory): FoodCategory {
 
 function copyRestaurant(restaurant: FoodRestaurant = emptyRestaurant): FoodRestaurant {
   return { ...restaurant };
+}
+
+function resolveRestaurantLocationDraft(draft: FoodRestaurant): FoodRestaurant {
+  const typedLocation = draft.pickup_location?.trim() || "";
+  const match = findAddisNeighborhood(typedLocation || draft.name);
+  return {
+    ...draft,
+    pickup_location: typedLocation || match?.name || "",
+    pickup_lat: draft.pickup_lat ?? match?.lat ?? null,
+    pickup_lng: draft.pickup_lng ?? match?.lng ?? null,
+  };
 }
 
 function copyItem(item: FoodItem = emptyItem): FoodItem {
@@ -342,21 +354,30 @@ export default function FoodMarketplaceManager() {
   }
 
   async function saveRestaurant() {
+    const resolvedDraft = resolveRestaurantLocationDraft(restaurantDraft);
     const payload = {
-      ...restaurantDraft,
-      name: restaurantDraft.name.trim(),
-      slug: restaurantDraft.slug?.trim() || undefined,
-      subtitle: restaurantDraft.subtitle?.trim() || "",
-      phone: restaurantDraft.phone?.trim() || "",
-      image_url: restaurantDraft.image_url?.trim() || "",
-      pickup_location: restaurantDraft.pickup_location?.trim() || "",
-      pickup_lat: restaurantDraft.pickup_lat ?? null,
-      pickup_lng: restaurantDraft.pickup_lng ?? null,
-      sort_order: Math.trunc(Number(restaurantDraft.sort_order) || 0),
+      ...resolvedDraft,
+      name: resolvedDraft.name.trim(),
+      slug: resolvedDraft.slug?.trim() || undefined,
+      subtitle: resolvedDraft.subtitle?.trim() || "",
+      phone: resolvedDraft.phone?.trim() || "",
+      image_url: resolvedDraft.image_url?.trim() || "",
+      pickup_location: resolvedDraft.pickup_location?.trim() || "",
+      pickup_lat: resolvedDraft.pickup_lat ?? null,
+      pickup_lng: resolvedDraft.pickup_lng ?? null,
+      sort_order: Math.trunc(Number(resolvedDraft.sort_order) || 0),
     };
 
     if (!payload.name) {
       setFormError("Restaurant name is required.");
+      return;
+    }
+    if (!payload.pickup_location) {
+      setFormError("Restaurant pickup neighborhood is required.");
+      return;
+    }
+    if (payload.pickup_lat === null || payload.pickup_lng === null) {
+      setFormError("Choose a known Addis Ababa neighborhood so coordinates can be filled.");
       return;
     }
 
@@ -780,17 +801,73 @@ function RestaurantForm({
   onSave: () => void;
   onCancel: () => void;
 }) {
+  const suggestions = useMemo(
+    () => suggestAddisNeighborhoods(draft.pickup_location || draft.name, 8),
+    [draft.pickup_location, draft.name]
+  );
+  const matchedNeighborhood = findAddisNeighborhood(draft.pickup_location || "");
+  const coordinateLabel =
+    typeof draft.pickup_lat === "number" && typeof draft.pickup_lng === "number"
+      ? `Coordinates filled: ${draft.pickup_lat.toFixed(5)}, ${draft.pickup_lng.toFixed(5)}`
+      : "";
+
+  function setPickupNeighborhood(pickup_location: string) {
+    const match = findAddisNeighborhood(pickup_location);
+    setDraft({
+      ...draft,
+      pickup_location,
+      pickup_lat: match?.lat ?? null,
+      pickup_lng: match?.lng ?? null,
+    });
+  }
+
+  function choosePickupNeighborhood(place: { name: string; lat: number; lng: number }) {
+    setDraft({
+      ...draft,
+      pickup_location: place.name,
+      pickup_lat: place.lat,
+      pickup_lng: place.lng,
+    });
+  }
+
   return (
     <FormGrid error={error}>
       <TextInput label="Name" value={draft.name} onChange={(name) => setDraft({ ...draft, name })} />
       <TextInput label="Slug" value={draft.slug || ""} onChange={(slug) => setDraft({ ...draft, slug })} />
       <TextInput label="Subtitle" value={draft.subtitle || ""} onChange={(subtitle) => setDraft({ ...draft, subtitle })} />
       <TextInput label="Phone" value={draft.phone || ""} onChange={(phone) => setDraft({ ...draft, phone })} />
-      <ImageUploadInput label="Restaurant image" value={draft.image_url || ""} onChange={(image_url) => setDraft({ ...draft, image_url })} />
-      <TextInput label="Pickup location" value={draft.pickup_location || ""} onChange={(pickup_location) => setDraft({ ...draft, pickup_location })} />
-      <div className="grid grid-cols-2 gap-3">
-        <NumberInput label="Pickup lat" value={draft.pickup_lat} allowEmpty onChange={(pickup_lat) => setDraft({ ...draft, pickup_lat })} />
-        <NumberInput label="Pickup lng" value={draft.pickup_lng} allowEmpty onChange={(pickup_lng) => setDraft({ ...draft, pickup_lng })} />
+      <ImageUploadInput label="Restaurant banner" value={draft.image_url || ""} onChange={(image_url) => setDraft({ ...draft, image_url })} />
+      <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-4">
+        <TextInput label="Neighborhood / pickup area" value={draft.pickup_location || ""} onChange={setPickupNeighborhood} />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {suggestions.map((place) => {
+            const selected = matchedNeighborhood?.name === place.name;
+            return (
+              <button
+                key={place.name}
+                type="button"
+                onClick={() => choosePickupNeighborhood(place)}
+                className={`rounded-lg border px-3 py-2 text-sm font-bold transition ${
+                  selected
+                    ? "border-rose-500 bg-rose-50 text-rose-700"
+                    : "border-neutral-200 bg-white text-neutral-700 hover:border-rose-300 hover:text-rose-600"
+                }`}
+              >
+                {place.name}
+              </button>
+            );
+          })}
+        </div>
+        <p className={`mt-3 text-sm font-semibold ${coordinateLabel ? "text-emerald-700" : "text-amber-700"}`}>
+          {coordinateLabel || "Choose a known Addis Ababa neighborhood to fill coordinates."}
+        </p>
+        <details className="mt-3 rounded-lg border border-neutral-200 bg-white p-3">
+          <summary className="cursor-pointer text-sm font-extrabold text-neutral-700">Advanced coordinates</summary>
+          <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <NumberInput label="Pickup lat" value={draft.pickup_lat} allowEmpty onChange={(pickup_lat) => setDraft({ ...draft, pickup_lat })} />
+            <NumberInput label="Pickup lng" value={draft.pickup_lng} allowEmpty onChange={(pickup_lng) => setDraft({ ...draft, pickup_lng })} />
+          </div>
+        </details>
       </div>
       <NumberInput label="App placement" value={draft.sort_order} onChange={(sort_order) => setDraft({ ...draft, sort_order: sort_order ?? 0 })} />
       <Toggle label="Feature on app" checked={draft.is_featured} onChange={(is_featured) => setDraft({ ...draft, is_featured })} />

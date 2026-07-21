@@ -70,6 +70,41 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, AuthResult>> loginWithGoogle() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await remoteDataSource.loginWithGoogle();
+
+        if (response.user == null || response.accessToken == null) {
+          return Left(ServerFailure('Invalid Google login response'));
+        }
+        await localDataSource.cacheAccessToken(response.accessToken!);
+        if (response.refreshToken != null) {
+          await localDataSource.cacheRefreshToken(response.refreshToken!);
+        }
+        await localDataSource.cacheUser(response.user!);
+        await localDataSource.cacheLoginTimestamp(
+          DateTime.now().millisecondsSinceEpoch,
+        );
+
+        return Right(
+          AuthResult(
+            user: response.user!,
+            accessToken: response.accessToken!,
+            refreshToken: response.refreshToken ?? '',
+            requiresVerification: false,
+          ),
+        );
+      } catch (e, stackTrace) {
+        logger.error('Google login error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
+      }
+    } else {
+      return Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
   Future<Either<Failure, AuthResult>> signUp(SignUpParams params) async {
     if (await networkInfo.isConnected) {
       try {
@@ -199,7 +234,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -219,7 +254,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -258,7 +293,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -319,7 +354,8 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         message = error.message!.trim();
       }
     }
-    if (message.contains('duplicate key') || message.contains('already exists')) {
+    if (message.contains('duplicate key') ||
+        message.contains('already exists')) {
       if (message.toLowerCase().contains('phone')) {
         return 'A client account already exists for this phone number';
       }
@@ -327,6 +363,42 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     }
     if (message.contains('Invalid email or password')) {
       return 'Invalid email or password';
+    }
+    final lower = message.toLowerCase();
+    if (lower.contains('email is required')) {
+      return 'Please enter your email.';
+    }
+    if (lower.contains('password is required')) {
+      return 'Please enter your password.';
+    }
+    if (lower.contains('password must be at least') ||
+        lower.contains('below 6') ||
+        lower.contains('shorter than 6')) {
+      return 'Password must be at least 6 characters.';
+    }
+    if (lower.contains('phone') && lower.contains('required')) {
+      return 'Please enter your phone number.';
+    }
+    if (lower.contains('oauth') ||
+        lower.contains('redirect') ||
+        lower.contains('callback') ||
+        lower.contains('page not found')) {
+      return 'Google sign-in is not configured yet. Add the app redirect URL in Supabase and try again.';
+    }
+    if (lower.contains('no client account') ||
+        lower.contains('email not found') ||
+        lower.contains('account found')) {
+      return 'No client account was found for this email. Please sign up first.';
+    }
+    if (lower.contains('permission denied') ||
+        lower.contains('row-level security') ||
+        lower.contains('get_client_by_email_for_oauth')) {
+      return 'Client Google lookup is not installed. Run supabase/schema_v11_client_google_oauth.sql in Supabase.';
+    }
+    if (lower.contains('postgrestexception') ||
+        lower.contains('p0001') ||
+        lower.contains('bad request')) {
+      return 'Please check the form and try again.';
     }
     if (message.contains('login_client') ||
         message.contains('register_client') ||

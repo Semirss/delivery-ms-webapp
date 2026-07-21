@@ -17,6 +17,10 @@ class LoginEvent extends AuthEvent {
   List<Object> get props => [email, password];
 }
 
+class LoginWithGoogleEvent extends AuthEvent {
+  const LoginWithGoogleEvent();
+}
+
 class SignUpEvent extends AuthEvent {
   final String email;
   final String password;
@@ -40,10 +44,7 @@ class VerifyOtpEvent extends AuthEvent {
   final String verificationKey;
   final String otp;
 
-  const VerifyOtpEvent({
-    required this.verificationKey,
-    required this.otp,
-  });
+  const VerifyOtpEvent({required this.verificationKey, required this.otp});
 
   @override
   List<Object> get props => [verificationKey, otp];

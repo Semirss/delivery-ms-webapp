@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:client_app/core/utils/constants/ui_constants.dart';
+import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/core/utils/functions/base_functions/validators.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
@@ -45,7 +46,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           password: _passwordController.text,
           firstName: _firstNameController.text.trim(),
           lastName: _lastNameController.text.trim(),
-          phone: _phoneController.text.trim(),
+          phone: normalizeEthiopianPhone(_phoneController.text),
         ),
       );
     }
@@ -140,17 +141,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppTextField.outlined(
                     controller: _phoneController,
                     label: 'Phone',
-                    hint: '+251912345678',
+                    hint: '912 345 678',
                     prefixIcon: Icons.phone_outlined,
+                    prefixText: '$ethiopianDialCode ',
                     keyboardType: TextInputType.phone,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      if (!isValidPhoneNumber(value.trim())) {
-                        return 'Please enter a valid phone number';
-                      }
-                      return null;
+                      return validateEthiopianPhone(value);
                     },
                   ),
                   kVerticalGap16,

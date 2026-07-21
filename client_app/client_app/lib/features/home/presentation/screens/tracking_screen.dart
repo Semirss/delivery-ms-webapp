@@ -224,6 +224,77 @@ class _TrackingScreenState extends State<TrackingScreen> {
     return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
   }
 
+  bool _canCancelDelivery(Map<String, dynamic> delivery) {
+    final status = delivery['status']?.toString();
+    return status == 'Pending' || status == 'Assigned';
+  }
+
+  Future<void> _cancelTrackedDelivery(Map<String, dynamic> delivery) async {
+    final deliveryId = delivery['id']?.toString();
+    if (deliveryId == null ||
+        deliveryId.isEmpty ||
+        !_canCancelDelivery(delivery)) {
+      return;
+    }
+
+    final confirmed = await AppModal.confirm(
+      context: context,
+      title: 'Cancel delivery?',
+      contentText: 'This order will be cancelled before pickup.',
+      confirmLabel: 'Cancel delivery',
+      cancelLabel: 'Keep order',
+      icon: Icons.cancel_outlined,
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final data = await Supabase.instance.client
+          .from('deliveries')
+          .update({
+            'status': 'Cancelled',
+            'driver_id': null,
+            'assigned_at': null,
+            'cancelled_by': 'customer',
+            'cancellation_reason': 'Cancelled from client app',
+          })
+          .eq('id', deliveryId)
+          .inFilter('status', const ['Pending', 'Assigned'])
+          .select(_deliverySelect);
+
+      final rows = List<Map<String, dynamic>>.from(data);
+      if (!mounted) return;
+      if (rows.isEmpty) {
+        await _refreshTrackedDelivery(deliveryId);
+        if (!mounted) return;
+        AppToast.show(
+          context: context,
+          message: 'This delivery can no longer be cancelled.',
+          type: AppToastType.error,
+        );
+        return;
+      }
+
+      setState(() {
+        _trackedDelivery = rows.first;
+        _lastDelivery = rows.first;
+      });
+      _subscribeToAssignedDriver(null);
+      AppToast.show(
+        context: context,
+        message: 'Delivery cancelled.',
+        type: AppToastType.success,
+      );
+    } catch (e) {
+      debugPrint('Cancel tracked delivery error: $e');
+      if (!mounted) return;
+      AppToast.show(
+        context: context,
+        message: 'Could not cancel this delivery.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final trackedDelivery = _trackedDelivery;
@@ -428,6 +499,15 @@ class _TrackingScreenState extends State<TrackingScreen> {
             label: 'Drop-off',
             value: delivery['dropoff_location']?.toString() ?? 'Not set',
           ),
+          if (_canCancelDelivery(delivery)) ...[
+            const SizedBox(height: AppSpacing.md),
+            AppButton.outlinedDanger(
+              label: 'CANCEL DELIVERY',
+              icon: Icons.cancel_outlined,
+              fullWidth: true,
+              onPressed: () => unawaited(_cancelTrackedDelivery(delivery)),
+            ),
+          ],
         ],
       ),
     );

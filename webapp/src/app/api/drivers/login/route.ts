@@ -21,16 +21,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400, headers: corsHeaders });
         }
 
-        const { data, error } = await supabase
+        const { data: rows, error } = await supabase
             .from('drivers')
             .select('*')
-            .eq('email', normalizedEmail)
-            .maybeSingle();
+            .ilike('email', normalizedEmail)
+            .limit(1);
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
         }
 
+        const data = rows?.[0] || null;
         if (!data) {
             return NextResponse.json(
                 { error: 'No driver account found with this email. Ask admin to add this email to your driver profile.' },

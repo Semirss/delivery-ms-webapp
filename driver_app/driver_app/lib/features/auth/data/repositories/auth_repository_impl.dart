@@ -70,6 +70,41 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, AuthResult>> loginWithGoogle() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final response = await remoteDataSource.loginWithGoogle();
+
+        if (response.user == null || response.accessToken == null) {
+          return Left(ServerFailure('Invalid Google login response'));
+        }
+        await localDataSource.cacheAccessToken(response.accessToken!);
+        if (response.refreshToken != null) {
+          await localDataSource.cacheRefreshToken(response.refreshToken!);
+        }
+        await localDataSource.cacheUser(response.user!);
+        await localDataSource.cacheLoginTimestamp(
+          DateTime.now().millisecondsSinceEpoch,
+        );
+
+        return Right(
+          AuthResult(
+            user: response.user!,
+            accessToken: response.accessToken!,
+            refreshToken: response.refreshToken ?? '',
+            requiresVerification: false,
+          ),
+        );
+      } catch (e, stackTrace) {
+        logger.error('Google login error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
+      }
+    } else {
+      return Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
   Future<Either<Failure, AuthResult>> signUp(SignUpParams params) async {
     if (await networkInfo.isConnected) {
       try {
@@ -199,7 +234,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -219,7 +254,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -258,7 +293,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         return Left(ServerFailure(e.errorModel.errorMessage));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
-        return Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(_friendlyError(e)));
       }
     } else {
       return Left(NetworkFailure('No internet connection'));
@@ -338,6 +373,36 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         message.contains('Invalid email or password') ||
         message.contains('Invalid credentials')) {
       return 'Invalid email or password.';
+    }
+    final lower = message.toLowerCase();
+    if (lower.contains('email is required')) {
+      return 'Please enter your email.';
+    }
+    if (lower.contains('password is required')) {
+      return 'Please enter your password.';
+    }
+    if (lower.contains('password must be at least') ||
+        lower.contains('below 6') ||
+        lower.contains('shorter than 6')) {
+      return 'Password must be at least 6 characters.';
+    }
+    if (lower.contains('phone') && lower.contains('required')) {
+      return 'Please enter your phone number.';
+    }
+    if (lower.contains('oauth') ||
+        lower.contains('redirect') ||
+        lower.contains('callback') ||
+        lower.contains('page not found')) {
+      return 'Google sign-in is not configured yet. Add the driver app redirect URL in Supabase and try again.';
+    }
+    if (lower.contains('no driver account') ||
+        lower.contains('email not found')) {
+      return 'No driver account was found for this email. Ask admin to add this email to your driver profile.';
+    }
+    if (lower.contains('postgrestexception') ||
+        lower.contains('p0001') ||
+        lower.contains('bad request')) {
+      return 'Please check the form and try again.';
     }
     if (message.contains('driver_ids')) {
       return 'Could not upload the ID photo. Check the driver_ids storage bucket.';

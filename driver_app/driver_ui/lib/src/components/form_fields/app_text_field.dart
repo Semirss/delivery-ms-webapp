@@ -54,6 +54,9 @@ class AppTextField extends StatefulWidget {
   /// Optional prefix icon displayed at the start of the field
   final dynamic prefixIcon;
 
+  /// Optional prefix text displayed before the input value
+  final String? prefixText;
+
   /// Optional suffix icon displayed at the end of the field
   final dynamic suffixIcon;
 
@@ -123,6 +126,7 @@ class AppTextField extends StatefulWidget {
     this.focusNode,
     this.variant = AppTextFieldVariant.outlined,
     this.prefixIcon,
+    this.prefixText,
     this.suffixIcon,
     this.onSuffixPressed,
     this.onPrefixPressed,
@@ -153,6 +157,7 @@ class AppTextField extends StatefulWidget {
     String? errorText,
     TextEditingController? controller,
     dynamic prefixIcon,
+    String? prefixText,
     dynamic suffixIcon,
     VoidCallback? onSuffixPressed,
     VoidCallback? onPrefixPressed,
@@ -181,6 +186,7 @@ class AppTextField extends StatefulWidget {
       focusNode: focusNode,
       variant: AppTextFieldVariant.outlined,
       prefixIcon: prefixIcon,
+      prefixText: prefixText,
       suffixIcon: suffixIcon,
       onSuffixPressed: onSuffixPressed,
       onPrefixPressed: onPrefixPressed,
@@ -209,6 +215,7 @@ class AppTextField extends StatefulWidget {
     String? errorText,
     TextEditingController? controller,
     dynamic prefixIcon,
+    String? prefixText,
     dynamic suffixIcon,
     VoidCallback? onSuffixPressed,
     VoidCallback? onPrefixPressed,
@@ -237,6 +244,7 @@ class AppTextField extends StatefulWidget {
       focusNode: focusNode,
       variant: AppTextFieldVariant.filled,
       prefixIcon: prefixIcon,
+      prefixText: prefixText,
       suffixIcon: suffixIcon,
       onSuffixPressed: onSuffixPressed,
       onPrefixPressed: onPrefixPressed,
@@ -265,6 +273,7 @@ class AppTextField extends StatefulWidget {
     String? errorText,
     TextEditingController? controller,
     dynamic prefixIcon,
+    String? prefixText,
     dynamic suffixIcon,
     VoidCallback? onSuffixPressed,
     VoidCallback? onPrefixPressed,
@@ -293,6 +302,7 @@ class AppTextField extends StatefulWidget {
       focusNode: focusNode,
       variant: AppTextFieldVariant.underlined,
       prefixIcon: prefixIcon,
+      prefixText: prefixText,
       suffixIcon: suffixIcon,
       onSuffixPressed: onSuffixPressed,
       onPrefixPressed: onPrefixPressed,
@@ -321,6 +331,7 @@ class AppTextField extends StatefulWidget {
     String? errorText,
     TextEditingController? controller,
     dynamic prefixIcon,
+    String? prefixText,
     dynamic suffixIcon,
     VoidCallback? onSuffixPressed,
     VoidCallback? onPrefixPressed,
@@ -351,6 +362,7 @@ class AppTextField extends StatefulWidget {
       focusNode: focusNode,
       variant: AppTextFieldVariant.custom,
       prefixIcon: prefixIcon,
+      prefixText: prefixText,
       suffixIcon: suffixIcon,
       onSuffixPressed: onSuffixPressed,
       onPrefixPressed: onPrefixPressed,
@@ -677,9 +689,10 @@ class _AppTextFieldState extends State<AppTextField> {
           ],
           Material(
             color: Colors.transparent,
-            child: TextField(
+            child: TextFormField(
               controller: widget.controller,
               focusNode: _focusNode,
+              validator: widget.validator,
               enabled: widget.enabled,
               readOnly: widget.readOnly,
               obscureText: widget.obscureText,
@@ -691,7 +704,7 @@ class _AppTextFieldState extends State<AppTextField> {
               textInputAction: widget.textInputAction,
               onChanged: widget.onChanged,
               onEditingComplete: widget.onEditingComplete,
-              onSubmitted: widget.onSubmitted,
+              onFieldSubmitted: widget.onSubmitted,
               style: AppTypography.bodyMedium.copyWith(
                 color: widget.enabled
                     ? _getTextColor()
@@ -721,6 +734,11 @@ class _AppTextFieldState extends State<AppTextField> {
                 counterStyle: const TextStyle(height: 0, fontSize: 0),
                 // Remove underline completely
                 alignLabelWithHint: false,
+                prefixText: widget.prefixText,
+                prefixStyle: AppTypography.bodyMedium.copyWith(
+                  color: _getTextColor(),
+                  fontWeight: FontWeight.w700,
+                ),
                 prefixIcon: widget.prefixIcon != null
                     ? Semantics(
                         button: true,

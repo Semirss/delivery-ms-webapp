@@ -6,6 +6,7 @@ enum AppRoutes {
   // Auth routes
   auth(name: 'auth', path: '/auth'),
   login(name: 'login', path: '/login'),
+  loginCallback(name: 'login-callback', path: '/login-callback'),
   signUp(name: 'sign-up', path: '/sign-up'),
   otp(name: 'otp-verification', path: '/otp-verification'),
   resetPassword(name: 'reset-password', path: '/reset-password'),

@@ -4,6 +4,7 @@ import 'package:driver_app/core/storage/storage_adapter.dart';
 import 'package:driver_app/core/storage/storage_key_constants.dart';
 import 'package:driver_app/core/utils/functions/base_functions/data_functions.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:driver_app/features/auth/presentation/screens/otp_screen.dart';
@@ -26,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 class AppRouter {
   final IStorageService storageService;
@@ -107,6 +109,31 @@ class AppRouter {
       outlog('Error checking onboarding status: $e');
       return false;
     }
+  }
+
+  bool _isLoginCallback(GoRouterState state) {
+    final uri = state.uri;
+    final path = uri.path.toLowerCase().replaceAll(RegExp(r'/+$'), '');
+    final host = uri.host.toLowerCase();
+    final uriText = uri.toString().toLowerCase();
+    return host == 'login-callback' ||
+        path == AppRoutes.loginCallback.path ||
+        uriText.startsWith('motobike-driver://login-callback');
+  }
+
+  bool _isAuthenticated(BuildContext context) {
+    try {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) return true;
+    } catch (e) {
+      outlog('Router - Could not read auth bloc state: $e');
+    }
+    return isAuthenticatedSync;
+  }
+
+  String? _loginCallbackRedirectPath(BuildContext context) {
+    if (_isAuthenticated(context)) return AppRoutes.home.path;
+    return null;
   }
 
   late final GoRouter router = GoRouter(
@@ -219,6 +246,13 @@ class AppRouter {
       ),
 
       // Auth routes
+      GoRoute(
+        name: AppRoutes.loginCallback.name,
+        path: AppRoutes.loginCallback.path,
+        redirect: (context, state) => _loginCallbackRedirectPath(context),
+        pageBuilder: (context, state) =>
+            getPage(child: const _LoginCallbackScreen(), state: state),
+      ),
       GoRoute(
         name: AppRoutes.login.name,
         path: AppRoutes.login.path,
@@ -372,6 +406,7 @@ class AppRouter {
       final location = state.matchedLocation;
       final authPages = [
         AppRoutes.login.path,
+        AppRoutes.loginCallback.path,
         AppRoutes.signUp.path,
         AppRoutes.otp.path,
         AppRoutes.resetPassword.path,
@@ -384,6 +419,15 @@ class AppRouter {
 
       try {
         _isRedirecting = true;
+        final isAuthenticated = _isAuthenticated(context);
+
+        if (_isLoginCallback(state)) {
+          outlog('Google login callback received');
+          if (location != AppRoutes.loginCallback.path) {
+            return AppRoutes.loginCallback.path;
+          }
+          return _loginCallbackRedirectPath(context);
+        }
 
         // Check onboarding status first
         final isOnboardingCompleted = isOnboardingCompletedSync;
@@ -397,7 +441,7 @@ class AppRouter {
 
         // If onboarding completed and on onboarding page, go home when authenticated
         if (isOnboardingCompleted && isOnboardingPage) {
-          if (isAuthenticatedSync) {
+          if (isAuthenticated) {
             outlog(
               'Onboarding completed and authenticated - redirecting to home',
             );
@@ -423,13 +467,13 @@ class AppRouter {
         ];
 
         // If user is authenticated and on auth pages, redirect to home
-        if (isAuthenticatedSync && isInAuthPage && !isOnboardingPage) {
+        if (isAuthenticated && isInAuthPage && !isOnboardingPage) {
           outlog('Authenticated user on auth page - redirecting to home');
           return AppRoutes.home.path;
         }
 
         // If user is not authenticated and on protected routes, redirect to login
-        if (!isAuthenticatedSync &&
+        if (!isAuthenticated &&
             protectedRoutes.any((route) => location.startsWith(route))) {
           outlog('Redirecting unauthenticated user to login from: $location');
           return AppRoutes.login.path;
@@ -478,6 +522,75 @@ class AppRouter {
   }
 }
 
+class _LoginCallbackScreen extends StatefulWidget {
+  const _LoginCallbackScreen();
+
+  @override
+  State<_LoginCallbackScreen> createState() => _LoginCallbackScreenState();
+}
+
+class _LoginCallbackScreenState extends State<_LoginCallbackScreen> {
+  bool _started = false;
+  int _sessionChecks = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _finishGoogleSignIn());
+  }
+
+  void _finishGoogleSignIn() {
+    if (!mounted) return;
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      context.goNamed(AppRoutes.home.name);
+      return;
+    }
+
+    final hasSupabaseSession =
+        Supabase.instance.client.auth.currentUser != null;
+    if (!hasSupabaseSession) {
+      _sessionChecks += 1;
+      if (_sessionChecks < 10) {
+        Future.delayed(const Duration(milliseconds: 250), () {
+          if (mounted) _finishGoogleSignIn();
+        });
+        return;
+      }
+      context.goNamed(AppRoutes.login.name);
+      return;
+    }
+
+    if (_started || authState is AuthLoading) return;
+    _started = true;
+    context.read<AuthBloc>().add(const LoginWithGoogleEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthAuthenticated) {
+          context.goNamed(AppRoutes.home.name);
+        } else if (state is AuthError) {
+          await AppModal.error<void>(
+            context: context,
+            title: 'Google Sign-In Failed',
+            contentText: state.message,
+          );
+          if (context.mounted) context.goNamed(AppRoutes.login.name);
+        }
+      },
+      child: const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      ),
+    );
+  }
+}
+
 // Main screen with driver bottom navigation.
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key, required this.navigationShell});
@@ -500,10 +613,7 @@ class MainScreen extends StatelessWidget {
         backgroundColor: context.appBackground,
         body: Stack(
           children: [
-            Positioned.fill(
-              bottom: reservedBottom,
-              child: navigationShell,
-            ),
+            Positioned.fill(bottom: reservedBottom, child: navigationShell),
             Positioned(
               left: 0,
               right: 0,
