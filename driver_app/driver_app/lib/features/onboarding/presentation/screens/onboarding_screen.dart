@@ -1,11 +1,14 @@
+import 'dart:math' as math;
+
+import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../config/router/app_routes.dart';
 import '../../../../core/storage/storage_adapter.dart';
 import '../../../../core/storage/storage_key_constants.dart';
 import '../../../../core/utils/enums/onboarding_state.dart';
-import 'package:driver_ui/app_ui.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -15,50 +18,45 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
+  static const _background = Color(0xFFEAF6FA);
+  static const _coral = Color(0xFFFF6B55);
+  static const _titleColor = Color(0xFF4C5155);
+  static const _bodyColor = Color(0xFF8BA0AA);
+
   final PageController _pageController = PageController();
   final IStorageService _storageService = GetIt.instance<IStorageService>();
   int _currentPage = 0;
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
+  late final AnimationController _motionController;
 
   final List<_OnboardingData> _pages = const [
     _OnboardingData(
-      icon: Icons.payments_rounded,
       title: 'Earn More Daily',
-      subtitle: 'Set your own hours. The more you deliver, the more you earn. No cap on daily income.',
-      gradient: [Color(0xFF1A1A1A), Color(0xFF2D0000)],
+      subtitle: 'Set your own hours. More completed trips means more income.',
     ),
     _OnboardingData(
-      icon: Icons.map_rounded,
-      title: 'Smart Navigation',
-      subtitle: 'Get optimized routes to pickups. Spend less time searching and more time earning.',
-      gradient: [Color(0xFFE60000), Color(0xFFB30000)],
+      title: 'Ride With Clarity',
+      subtitle: 'See pickup, drop-off, and delivery status in one clean flow.',
     ),
     _OnboardingData(
-      icon: Icons.verified_rounded,
-      title: 'Safe & Trusted',
-      subtitle: 'Verified clients only. Real-time support to keep you safe on every delivery.',
-      gradient: [Color(0xFF1A1A1A), Color(0xFF3D0000)],
+      title: 'Approved To Work',
+      subtitle: 'After admin approval, go online and start receiving trips.',
     ),
   ];
 
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
+    _motionController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-    _pulseAnimation = Tween(begin: 0.9, end: 1.1).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
+      duration: const Duration(milliseconds: 2200),
+    )..repeat();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _pulseController.dispose();
+    _motionController.dispose();
     super.dispose();
   }
 
@@ -67,12 +65,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   void _nextPage() {
     if (_currentPage < _pages.length - 1) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
       );
-    } else {
-      _completeOnboarding();
+      return;
     }
+
+    _completeOnboarding();
   }
 
   Future<void> _completeOnboarding() async {
@@ -85,141 +84,315 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final page = _pages[_currentPage];
     return Scaffold(
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: page.gradient,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: TextButton(
-                    onPressed: _completeOnboarding,
-                    child: const Text('Skip', style: TextStyle(color: Colors.white70, fontSize: 16)),
-                  ),
-                ),
-              ),
-
-              Expanded(
-                flex: 3,
-                child: Center(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: _onPageChanged,
-                    itemCount: _pages.length,
-                    itemBuilder: (context, index) {
-                      return AnimatedBuilder(
-                        animation: _pulseAnimation,
-                        builder: (context, child) {
-                          return Transform.scale(
-                            scale: index == _currentPage ? _pulseAnimation.value : 1.0,
-                            child: child,
-                          );
-                        },
-                        child: Container(
-                          width: 180,
-                          height: 180,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(_pages[index].icon, size: 90, color: Colors.white),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: Text(
-                          page.title,
-                          key: ValueKey(page.title),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: -0.5,
-                          ),
+      backgroundColor: _background,
+      body: Stack(
+        children: [
+          const _DecorativeBackground(color: _coral),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              child: Column(
+                children: [
+                  const SizedBox(height: AppSpacing.md),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: _completeOnboarding,
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          color: _titleColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.md),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: Text(
-                          page.subtitle,
-                          key: ValueKey(page.subtitle),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white70, fontSize: 16, height: 1.6),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(_pages.length, (index) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    height: 6,
-                    width: index == _currentPage ? 28 : 8,
-                    decoration: BoxDecoration(
-                      color: index == _currentPage ? Colors.white : Colors.white38,
-                      borderRadius: BorderRadius.circular(3),
                     ),
-                  );
-                }),
-              ),
-
-              const SizedBox(height: AppSpacing.xl),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: _onPageChanged,
+                      itemCount: _pages.length,
+                      itemBuilder: (context, index) {
+                        return _OnboardingPage(
+                          data: _pages[index],
+                          motion: _motionController,
+                        );
+                      },
+                    ),
+                  ),
+                  _PageIndicator(
+                    count: _pages.length,
+                    currentIndex: _currentPage,
+                    color: _coral,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  _NextButton(
+                    isLast: _currentPage == _pages.length - 1,
                     onPressed: _nextPage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFFE60000),
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      _currentPage == _pages.length - 1 ? 'START EARNING' : 'NEXT',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1),
-                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DecorativeBackground extends StatelessWidget {
+  const _DecorativeBackground({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned(
+          top: 72,
+          right: -118,
+          child: _Circle(size: 260, color: color),
+        ),
+        Positioned(top: 136, left: 54, child: _Circle(size: 14, color: color)),
+        Positioned(top: 420, right: 56, child: _Circle(size: 10, color: color)),
+        Positioned(
+          bottom: 96,
+          left: -32,
+          child: _Circle(size: 74, color: color),
+        ),
+      ],
+    );
+  }
+}
+
+class _Circle extends StatelessWidget {
+  const _Circle({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
+class _OnboardingPage extends StatelessWidget {
+  const _OnboardingPage({required this.data, required this.motion});
+
+  final _OnboardingData data;
+  final Animation<double> motion;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxHeight < 560;
+        final heroSize = math.min(
+          constraints.maxWidth,
+          constraints.maxHeight * (compact ? 0.50 : 0.56),
+        );
+        final heroHeight = constraints.maxHeight * (compact ? 0.48 : 0.52);
+
+        return Column(
+          children: [
+            SizedBox(
+              height: heroHeight,
+              child: Center(
+                child: _MotorbikeHero(motion: motion, size: heroSize),
+              ),
+            ),
+            SizedBox(height: compact ? AppSpacing.sm : AppSpacing.lg),
+            Text(
+              data.title,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: _OnboardingScreenState._titleColor,
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0,
+                height: 1.12,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 260),
+              child: Text(
+                data.subtitle,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _OnboardingScreenState._bodyColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  height: 1.45,
+                ),
+              ),
+            ),
+            const Spacer(),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _MotorbikeHero extends StatelessWidget {
+  const _MotorbikeHero({required this.motion, required this.size});
+
+  static const _motorAsset = 'assets/images/generated/onboarding_motorbike.png';
+
+  final Animation<double> motion;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: motion,
+      builder: (context, _) {
+        final cycle = motion.value * math.pi * 2;
+        final bob = math.sin(cycle) * 2;
+        final tilt = math.sin(cycle * 0.9) * 0.06;
+
+        return SizedBox(
+          width: size,
+          height: size,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(
+                top: size * 0.06,
+                child: CustomPaint(
+                  size: Size.square(size * 0.78),
+                  painter: _ArcPainter(progress: motion.value),
+                ),
+              ),
+              Positioned(
+                top: size * 0.12 + bob,
+                child: Transform.rotate(
+                  angle: tilt,
+                  child: Image.asset(
+                    _motorAsset,
+                    width: size * 0.68,
+                    height: size * 0.72,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    gaplessPlayback: true,
                   ),
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxl),
             ],
           ),
+        );
+      },
+    );
+  }
+}
+
+class _ArcPainter extends CustomPainter {
+  const _ArcPainter({required this.progress});
+
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final basePaint = Paint()
+      ..color = const Color(0xFFDCE8EC)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
+    final activePaint = Paint()
+      ..color = _OnboardingScreenState._coral
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
+
+    canvas
+      ..drawArc(rect, -math.pi * 0.10, math.pi * 1.25, false, basePaint)
+      ..drawArc(
+        rect,
+        -math.pi * 1.05 + progress * math.pi * 2,
+        math.pi * 0.48,
+        false,
+        activePaint,
+      );
+  }
+
+  @override
+  bool shouldRepaint(covariant _ArcPainter oldDelegate) {
+    return oldDelegate.progress != progress;
+  }
+}
+
+class _PageIndicator extends StatelessWidget {
+  const _PageIndicator({
+    required this.count,
+    required this.currentIndex,
+    required this.color,
+  });
+
+  final int count;
+  final int currentIndex;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (index) {
+        final selected = index == currentIndex;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 260),
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: selected ? 22 : 5,
+          height: 5,
+          decoration: BoxDecoration(
+            color: selected ? color : const Color(0xFFD4E0E5),
+            borderRadius: BorderRadius.circular(AppRadius.full),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class _NextButton extends StatelessWidget {
+  const _NextButton({required this.isLast, required this.onPressed});
+
+  final bool isLast;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 58,
+      height: 58,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _OnboardingScreenState._coral,
+          foregroundColor: Colors.white,
+          elevation: 10,
+          shadowColor: _OnboardingScreenState._coral.withValues(alpha: 0.38),
+          padding: EdgeInsets.zero,
+          shape: const CircleBorder(),
+        ),
+        child: Icon(
+          isLast ? Icons.check_rounded : Icons.arrow_forward_rounded,
+          size: 28,
         ),
       ),
     );
@@ -227,9 +400,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 }
 
 class _OnboardingData {
-  final IconData icon;
+  const _OnboardingData({required this.title, required this.subtitle});
+
   final String title;
   final String subtitle;
-  final List<Color> gradient;
-  const _OnboardingData({required this.icon, required this.title, required this.subtitle, required this.gradient});
 }

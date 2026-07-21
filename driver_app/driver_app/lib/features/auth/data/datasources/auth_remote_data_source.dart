@@ -31,6 +31,8 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
   static const String _googleRedirectUrl = 'motobike-driver://login-callback/';
+  static const String _supportPhone = '+251 931 323 328';
+  static const String _supportEmail = 'support@motobike.app';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
@@ -67,18 +69,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Invalid email or password.');
     }
 
-    final approvalStatus =
-        driver['approval_status']?.toString().trim().isNotEmpty == true
-        ? driver['approval_status'].toString()
-        : 'Pending';
-
-    if (approvalStatus == 'Pending') {
-      throw Exception(
-        'Waiting for approval. You cannot login until the admin approves your account.',
-      );
-    }
-    if (approvalStatus != 'Approved') {
-      throw Exception('Your driver account is not approved.');
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
+      throw Exception(_approvalRequiredMessage(approvalStatus));
     }
 
     return AuthResponseModel(
@@ -153,20 +146,10 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final driver = Map<String, dynamic>.from(data);
-    final approvalStatus =
-        driver['approval_status']?.toString().trim().isNotEmpty == true
-        ? driver['approval_status'].toString()
-        : 'Pending';
-
-    if (approvalStatus == 'Pending') {
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
       await _supabase.auth.signOut();
-      throw Exception(
-        'Waiting for approval. You cannot login until the admin approves your account.',
-      );
-    }
-    if (approvalStatus != 'Approved') {
-      await _supabase.auth.signOut();
-      throw Exception('Your driver account is not approved.');
+      throw Exception(_approvalRequiredMessage(approvalStatus));
     }
 
     return AuthResponseModel(
@@ -191,18 +174,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final driver = Map<String, dynamic>.from(response.data ?? {});
     if (driver.isEmpty) throw Exception('Invalid driver login response.');
 
-    final approvalStatus =
-        driver['approval_status']?.toString().trim().isNotEmpty == true
-        ? driver['approval_status'].toString()
-        : 'Pending';
-
-    if (approvalStatus == 'Pending') {
-      throw Exception(
-        'Waiting for approval. You cannot login until the admin approves your account.',
-      );
-    }
-    if (approvalStatus != 'Approved') {
-      throw Exception('Your driver account is not approved.');
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
+      throw Exception(_approvalRequiredMessage(approvalStatus));
     }
 
     return AuthResponseModel(
@@ -337,6 +311,22 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       }
     }
     return fallback;
+  }
+
+  String _driverApprovalStatus(Map<String, dynamic> driver) {
+    final status = driver['approval_status']?.toString().trim();
+    return status?.isNotEmpty == true ? status! : 'Pending';
+  }
+
+  bool _isApprovedStatus(String status) =>
+      status.trim().toLowerCase() == 'approved';
+
+  String _approvalRequiredMessage(String approvalStatus) {
+    final normalizedStatus = approvalStatus.trim();
+    final statusText = normalizedStatus.toLowerCase() == 'pending'
+        ? 'Your driver application is still waiting for admin approval.'
+        : 'Your driver account is $normalizedStatus. Admin approval is required before login.';
+    return 'Approval required first. $statusText If this takes too long, contact admin at $_supportPhone or $_supportEmail.';
   }
 
   String _fullName(SignUpParams params) {

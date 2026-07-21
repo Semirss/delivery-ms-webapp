@@ -14,6 +14,9 @@ import '../../../../core/base/base_usecase.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
+const _approvalRequiredMessage =
+    'Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.';
+
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
@@ -57,12 +60,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       authResult,
     ) {
       if (authResult.requiresVerification) {
-        emit(
-          const AuthError(
-            message:
-                'Waiting for approval. You cannot login until the admin approves your account.',
-          ),
-        );
+        emit(const AuthError(message: _approvalRequiredMessage));
       } else {
         emit(AuthAuthenticated(user: authResult.user));
       }
@@ -105,7 +103,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           const AuthApprovalPending(
             message:
-                'Application submitted. Please wait for admin approval before signing in.',
+                'Application submitted. Admin approval is required before signing in. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.',
           ),
         );
       } else {

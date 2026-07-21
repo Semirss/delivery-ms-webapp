@@ -877,67 +877,33 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.32),
       builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: Container(
-            margin: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: sheetContext.appSurface,
-              borderRadius: BorderRadius.circular(26),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: 28,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+        return _LocationChoiceSheet<_PickupChoice>(
+          accentColor: AppColors.success,
+          heroIcon: Icons.trip_origin_rounded,
+          title: 'Pickup',
+          subtitle: 'Set collection point',
+          options: const [
+            _LocationChoiceOption(
+              value: _PickupChoice.currentLocation,
+              icon: Icons.my_location_rounded,
+              title: 'GPS',
+              caption: 'Here',
             ),
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppText(
-                  'Choose pickup location',
-                  variant: AppTextVariant.heading3,
-                  fontWeight: FontWeight.w900,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                AppText(
-                  'Price is calculated from this pickup to your drop-off.',
-                  variant: AppTextVariant.bodySmall,
-                  color: sheetContext.appTextSecondary,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                _PickupChoiceTile(
-                  icon: Icons.my_location_rounded,
-                  title: 'Use current GPS',
-                  subtitle: 'Best for door-to-door pickup.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.currentLocation,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.travel_explore_rounded,
-                  title: 'Choose neighborhood',
-                  subtitle: 'Pick an Addis Ababa area manually.',
-                  onTap: () =>
-                      Navigator.pop(sheetContext, _PickupChoice.neighborhood),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.add_location_alt_rounded,
-                  title: 'Pin on map',
-                  subtitle: 'Move the map and drop the pickup pin.',
-                  onTap: () =>
-                      Navigator.pop(sheetContext, _PickupChoice.pinOnMap),
-                ),
-              ],
+            _LocationChoiceOption(
+              value: _PickupChoice.neighborhood,
+              icon: Icons.travel_explore_rounded,
+              title: 'Area',
+              caption: 'Search',
             ),
-          ),
+            _LocationChoiceOption(
+              value: _PickupChoice.pinOnMap,
+              icon: Icons.add_location_alt_rounded,
+              title: 'Pin',
+              caption: 'Map',
+            ),
+          ],
         );
       },
     );
@@ -978,8 +944,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _deliveryPickup ?? _currentLocation ?? _destination?.location;
     final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
       MaterialPageRoute(
-        builder: (context) =>
-            _PinLocationScreen(initialCenter: initialCenter ?? _fallbackCenter),
+        builder: (context) => _PinLocationScreen(
+          initialCenter: initialCenter ?? _fallbackCenter,
+          title: 'Pin pickup',
+          subtitle: 'Move the map until the pin is on the collection point.',
+          buttonLabel: 'USE PINNED PICKUP',
+          pinColor: AppColors.success,
+        ),
       ),
     );
 
@@ -1006,6 +977,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final place = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
+      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
     );
     if (!mounted) return;
 
@@ -1097,71 +1069,33 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.32),
       builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: Container(
-            margin: const EdgeInsets.all(AppSpacing.md),
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: BoxDecoration(
-              color: sheetContext.appSurface,
-              borderRadius: BorderRadius.circular(26),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: 28,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+        return _LocationChoiceSheet<_DeliveryDestinationChoice>(
+          accentColor: AppColors.primary,
+          heroIcon: Icons.flag_rounded,
+          title: 'Drop-off',
+          subtitle: 'Set delivery point',
+          options: const [
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.currentLocation,
+              icon: Icons.my_location_rounded,
+              title: 'GPS',
+              caption: 'Here',
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppText(
-                  'Where should we deliver?',
-                  variant: AppTextVariant.heading3,
-                  fontWeight: FontWeight.w900,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                AppText(
-                  'Choose how to set the drop-off point.',
-                  variant: AppTextVariant.bodySmall,
-                  color: sheetContext.appTextSecondary,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                _PickupChoiceTile(
-                  icon: Icons.my_location_rounded,
-                  title: 'Use current GPS',
-                  subtitle: 'Deliver to your current location.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _DeliveryDestinationChoice.currentLocation,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.travel_explore_rounded,
-                  title: 'Choose neighborhood',
-                  subtitle: 'Pick an Addis Ababa area manually.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _DeliveryDestinationChoice.neighborhood,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.add_location_alt_rounded,
-                  title: 'Pin on map',
-                  subtitle: 'Move the map and place the drop-off pin.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _DeliveryDestinationChoice.pinOnMap,
-                  ),
-                ),
-              ],
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.neighborhood,
+              icon: Icons.travel_explore_rounded,
+              title: 'Area',
+              caption: 'Search',
             ),
-          ),
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.pinOnMap,
+              icon: Icons.add_location_alt_rounded,
+              title: 'Pin',
+              caption: 'Map',
+            ),
+          ],
         );
       },
     );
@@ -1201,8 +1135,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _destination?.location ?? _currentLocation ?? _deliveryPickup;
     final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
       MaterialPageRoute(
-        builder: (context) =>
-            _PinLocationScreen(initialCenter: initialCenter ?? _fallbackCenter),
+        builder: (context) => _PinLocationScreen(
+          initialCenter: initialCenter ?? _fallbackCenter,
+          title: 'Pin drop-off',
+          subtitle: 'Move the map until the pin is on the delivery point.',
+          buttonLabel: 'USE PINNED DROP-OFF',
+          pinColor: AppColors.primary,
+        ),
       ),
     );
     if (!mounted || point == null) return;
@@ -1210,6 +1149,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final place = await _mapRepository.describeLocation(
       point,
       fallbackName: 'Pinned delivery destination',
+      exactPinLabel: true,
     );
     if (!mounted) return;
     await _setDeliveryDestination(place);
@@ -4692,62 +4632,187 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
   }
 }
 
-class _PickupChoiceTile extends StatelessWidget {
-  const _PickupChoiceTile({
+class _LocationChoiceOption<T> {
+  const _LocationChoiceOption({
+    required this.value,
     required this.icon,
     required this.title,
-    required this.subtitle,
-    required this.onTap,
+    required this.caption,
   });
 
+  final T value;
   final IconData icon;
   final String title;
+  final String caption;
+}
+
+class _LocationChoiceSheet<T> extends StatelessWidget {
+  const _LocationChoiceSheet({
+    required this.accentColor,
+    required this.heroIcon,
+    required this.title,
+    required this.subtitle,
+    required this.options,
+  });
+
+  final Color accentColor;
+  final IconData heroIcon;
+  final String title;
   final String subtitle;
-  final VoidCallback onTap;
+  final List<_LocationChoiceOption<T>> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        decoration: BoxDecoration(
+          color: context.appSurface,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 44,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: context.appBorder,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(heroIcon, color: accentColor, size: 28),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        title,
+                        variant: AppTextVariant.heading3,
+                        fontWeight: FontWeight.w900,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      AppText(
+                        subtitle,
+                        variant: AppTextVariant.bodySmall,
+                        color: context.appTextSecondary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                for (int index = 0; index < options.length; index++) ...[
+                  if (index > 0) const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _LocationChoiceTile<T>(
+                      option: options[index],
+                      accentColor: accentColor,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationChoiceTile<T> extends StatelessWidget {
+  const _LocationChoiceTile({required this.option, required this.accentColor});
+
+  final _LocationChoiceOption<T> option;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.appSurfaceAlt,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      color: Color.alphaBlend(
+        accentColor.withValues(alpha: context.isAppDark ? 0.18 : 0.08),
+        context.appSurfaceAlt,
+      ),
+      borderRadius: BorderRadius.circular(18),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
+        onTap: () => Navigator.of(context).pop(option.value),
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          height: 120,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: accentColor.withValues(alpha: 0.22)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(icon, color: AppColors.primary),
+                child: Icon(option.icon, color: Colors.white, size: 21),
               ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      title,
-                      variant: AppTextVariant.bodyMedium,
-                      fontWeight: FontWeight.w900,
-                    ),
-                    const SizedBox(height: 2),
-                    AppText(
-                      subtitle,
-                      variant: AppTextVariant.bodySmall,
-                      color: context.appTextSecondary,
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 6),
+              AppText(
+                option.title,
+                variant: AppTextVariant.bodyMedium,
+                fontWeight: FontWeight.w900,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-              Icon(
-                Icons.chevron_right_rounded,
+              const SizedBox(height: 2),
+              AppText(
+                option.caption,
+                variant: AppTextVariant.labelSmall,
                 color: context.appTextSecondary,
+                fontWeight: FontWeight.w700,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -4791,9 +4856,19 @@ class _PickupActionChip extends StatelessWidget {
 }
 
 class _PinLocationScreen extends StatefulWidget {
-  const _PinLocationScreen({required this.initialCenter});
+  const _PinLocationScreen({
+    required this.initialCenter,
+    required this.title,
+    required this.subtitle,
+    required this.buttonLabel,
+    required this.pinColor,
+  });
 
   final LatLng initialCenter;
+  final String title;
+  final String subtitle;
+  final String buttonLabel;
+  final Color pinColor;
 
   @override
   State<_PinLocationScreen> createState() => _PinLocationScreenState();
@@ -4838,10 +4913,10 @@ class _PinLocationScreenState extends State<_PinLocationScreen> {
           Center(
             child: IgnorePointer(
               child: Transform.translate(
-                offset: const Offset(0, -18),
-                child: const Icon(
+                offset: const Offset(0, -26),
+                child: Icon(
                   Icons.location_on_rounded,
-                  color: AppColors.primary,
+                  color: widget.pinColor,
                   size: 52,
                 ),
               ),
@@ -4891,21 +4966,20 @@ class _PinLocationScreenState extends State<_PinLocationScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppText(
-                      'Pin pickup',
+                    AppText(
+                      widget.title,
                       variant: AppTextVariant.heading3,
                       fontWeight: FontWeight.w900,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     AppText(
-                      'Move the map until the pin is exactly on the '
-                      'pickup point.',
+                      widget.subtitle,
                       variant: AppTextVariant.bodySmall,
                       color: context.appTextSecondary,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppButton.primary(
-                      label: 'USE PINNED PICKUP',
+                      label: widget.buttonLabel,
                       fullWidth: true,
                       icon: Icons.add_location_alt_rounded,
                       onPressed: () => Navigator.pop(context, _center),

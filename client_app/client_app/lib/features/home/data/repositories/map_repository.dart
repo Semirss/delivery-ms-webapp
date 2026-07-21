@@ -371,6 +371,7 @@ class MapRepository {
   Future<MapPlace> describeLocation(
     LatLng location, {
     String fallbackName = 'Pinned location',
+    bool exactPinLabel = false,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -395,14 +396,25 @@ class MapRepository {
           location,
           fallbackName,
         );
-        return MapPlace(displayName: displayName, location: location);
+        return MapPlace(
+          displayName: exactPinLabel
+              ? _exactPinnedDisplayName(location, fallbackName, displayName)
+              : displayName,
+          location: location,
+        );
       }
     } catch (e) {
       print('Error describing location: $e');
     }
 
+    final fallbackDisplayName = _nearestLocalDisplayName(
+      location,
+      fallbackName,
+    );
     return MapPlace(
-      displayName: _nearestLocalDisplayName(location, fallbackName),
+      displayName: exactPinLabel
+          ? _exactPinnedDisplayName(location, fallbackName, fallbackDisplayName)
+          : fallbackDisplayName,
       location: location,
     );
   }
@@ -602,6 +614,39 @@ class MapRepository {
     }
 
     return '$fallbackName, Addis Ababa, Ethiopia';
+  }
+
+  static String _exactPinnedDisplayName(
+    LatLng location,
+    String fallbackName,
+    String nearbyName,
+  ) {
+    final label = fallbackName.trim().isEmpty
+        ? 'Pinned location'
+        : fallbackName.trim();
+    final lat = location.latitude.toStringAsFixed(5);
+    final lng = location.longitude.toStringAsFixed(5);
+    final coordinates = '$lat, $lng';
+    final nearby = _shortNearbyLabel(nearbyName, label);
+
+    if (nearby == null) return '$label ($coordinates)';
+    return '$label ($coordinates) - near $nearby';
+  }
+
+  static String? _shortNearbyLabel(String value, String fallbackName) {
+    final normalizedFallback = fallbackName.toLowerCase();
+    final parts = value
+        .split(',')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .where((part) => part.toLowerCase() != 'ethiopia')
+        .where((part) => part.toLowerCase() != 'addis ababa')
+        .where((part) => part.toLowerCase() != normalizedFallback)
+        .take(2)
+        .toList();
+
+    if (parts.isEmpty) return null;
+    return parts.join(', ');
   }
 }
 

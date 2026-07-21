@@ -389,6 +389,11 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     if (lower.contains('phone') && lower.contains('required')) {
       return 'Please enter your phone number.';
     }
+    if (lower.contains('approval required') ||
+        lower.contains('waiting for approval') ||
+        lower.contains('not approved')) {
+      return 'Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.';
+    }
     if (lower.contains('oauth') ||
         lower.contains('redirect') ||
         lower.contains('callback') ||

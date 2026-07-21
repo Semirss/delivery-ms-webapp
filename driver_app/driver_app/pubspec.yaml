@@ -123,6 +123,7 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/brand/
+    - assets/images/generated/
     - assets/icons/
     - assets/fonts/
     - .env

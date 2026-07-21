@@ -1062,6 +1062,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     final destination = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
+      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
     );
     if (!mounted) return;
     addressController.text = destination.displayName;
@@ -2987,7 +2988,7 @@ class _FoodPinLocationScreenState extends State<_FoodPinLocationScreen> {
           Center(
             child: IgnorePointer(
               child: Transform.translate(
-                offset: const Offset(0, -18),
+                offset: const Offset(0, -26),
                 child: const Icon(
                   Icons.location_on_rounded,
                   color: AppColors.primary,

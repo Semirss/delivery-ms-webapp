@@ -208,13 +208,8 @@ class _BlockedVersionScreen extends StatelessWidget {
     final title = isMaintenance
         ? 'Service temporarily unavailable'
         : 'Update required';
-    final message = isMaintenance
-        ? (policy.maintenanceMessage.isNotEmpty
-              ? policy.maintenanceMessage
-              : 'The service is under maintenance. Please try again shortly.')
-        : (policy.releaseNotes.isNotEmpty
-              ? policy.releaseNotes
-              : 'A newer app version is required to continue.');
+    final currentVersion =
+        '${policy.installedVersion}+${policy.installedBuild}';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -241,38 +236,10 @@ class _BlockedVersionScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               AppText(
-                message,
+                'Current version $currentVersion',
                 variant: AppTextVariant.bodyMedium,
                 color: AppColors.textSecondary,
                 textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSpacing.xl),
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  children: [
-                    _VersionInfoRow(
-                      label: 'Installed',
-                      value:
-                          '${policy.installedVersion}+${policy.installedBuild}',
-                    ),
-                    const Divider(height: AppSpacing.lg),
-                    _VersionInfoRow(
-                      label: 'Latest',
-                      value: '${policy.latestVersion}+${policy.latestBuild}',
-                    ),
-                    const Divider(height: AppSpacing.lg),
-                    _VersionInfoRow(
-                      label: 'Minimum build',
-                      value: policy.minimumBuild.toString(),
-                    ),
-                  ],
-                ),
               ),
               const SizedBox(height: AppSpacing.xl),
               if (!isMaintenance)
@@ -281,42 +248,16 @@ class _BlockedVersionScreen extends StatelessWidget {
                   fullWidth: true,
                   onPressed: () => _openUpdate(context),
                 ),
-              const SizedBox(height: AppSpacing.md),
-              AppButton.outlinedSecondary(
-                label: 'TRY AGAIN',
-                fullWidth: true,
-                onPressed: onRetry,
-              ),
+              if (isMaintenance)
+                AppButton.primary(
+                  label: 'TRY AGAIN',
+                  fullWidth: true,
+                  onPressed: onRetry,
+                ),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _VersionInfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _VersionInfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        AppText(
-          label,
-          variant: AppTextVariant.bodySmall,
-          color: AppColors.textSecondary,
-        ),
-        AppText(
-          value,
-          variant: AppTextVariant.bodyMedium,
-          fontWeight: FontWeight.bold,
-        ),
-      ],
     );
   }
 }
