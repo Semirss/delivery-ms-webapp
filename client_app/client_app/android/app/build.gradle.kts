@@ -60,6 +60,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "app_name", "MotoBike Debug")
+        }
+
         release {
             signingConfig = if (hasReleaseKeystore) {
                 signingConfigs.getByName("release")

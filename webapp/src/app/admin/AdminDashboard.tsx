@@ -10,6 +10,18 @@ import AppVersionManager from "./AppVersionManager";
 import BackendManager from "./BackendManager";
 import DealsManager from "./DealsManager";
 import FoodMarketplaceManager from "./FoodMarketplaceManager";
+import {
+  BadgePercent,
+  BarChart3,
+  Hourglass,
+  LogOut,
+  MapPinned,
+  Package,
+  ServerCog,
+  Smartphone,
+  Store,
+  Users,
+} from "lucide-react";
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 const AllDriversMap = dynamic(() => import('../components/AllDriversMap'), { ssr: false });
@@ -602,14 +614,14 @@ export default function AdminDashboard() {
 
         <nav className="flex-1 px-4 space-y-1.5 mt-2">
           {([
-            { key: 'deliveries', label: 'Deliveries', icon: '📦' },
-            { key: 'map', label: 'Live Map', icon: '🗺️' },
-            { key: 'drivers', label: 'Drivers', icon: '👤', badge: activeDrivers.length },
-            { key: 'analytics', label: 'Analytics', icon: '📊' },
-            { key: 'deals', label: 'Deals', icon: 'Deals' },
-            { key: 'food', label: 'Food Market', icon: 'Food' },
-            { key: 'versions', label: 'App Versions', icon: 'V' },
-            { key: 'backend', label: 'Backend', icon: '🔐' },
+            { key: 'deliveries', label: 'Deliveries', icon: <Package className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'map', label: 'Live Map', icon: <MapPinned className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'drivers', label: 'Drivers', icon: <Users className="h-5 w-5 shrink-0" strokeWidth={2.25} />, badge: activeDrivers.length },
+            { key: 'analytics', label: 'Analytics', icon: <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'deals', label: 'Deals', icon: <BadgePercent className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'food', label: 'Food Market', icon: <Store className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'versions', label: 'App Versions', icon: <Smartphone className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'backend', label: 'Backend', icon: <ServerCog className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
           ] as const).map(tab => (
             <button
               key={tab.key}
@@ -631,7 +643,7 @@ export default function AdminDashboard() {
             className={`w-full flex justify-between items-center px-4 py-3 rounded-xl transition-all ${activeTab === 'pending' ? 'bg-amber-500 font-bold shadow-md text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}`}
           >
             <div className="flex items-center space-x-3">
-              <span>⏳</span>
+              <Hourglass className="h-5 w-5 shrink-0" strokeWidth={2.25} />
               <span>Approvals</span>
             </div>
             {pendingDrivers.length > 0 && (
@@ -642,7 +654,7 @@ export default function AdminDashboard() {
 
         <div className="p-4 border-t border-neutral-800">
           <button onClick={handleLogout} className="w-full flex items-center space-x-3 px-4 py-3 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-xl transition-all">
-            <span>🚪</span>
+            <LogOut className="h-5 w-5 shrink-0" strokeWidth={2.25} />
             <span>Sign Out</span>
           </button>
         </div>
