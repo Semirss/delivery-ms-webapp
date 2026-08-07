@@ -4,6 +4,8 @@ import 'package:client_app/features/home/data/repositories/map_repository.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
+enum SearchDestinationAction { pinOnMap }
+
 class SearchDestinationScreen extends StatefulWidget {
   const SearchDestinationScreen({
     super.key,
@@ -82,6 +84,8 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   @override
   Widget build(BuildContext context) {
     final hasQuery = _searchController.text.trim().isNotEmpty;
+    final bottomContentPadding =
+        MediaQuery.viewPaddingOf(context).bottom + 156;
 
     return Scaffold(
       backgroundColor: context.appBackground,
@@ -107,15 +111,20 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                       query: _searchController.text,
                       title: widget.emptyTitle,
                       messagePrefix: widget.emptyMessagePrefix,
+                      bottomPadding: bottomContentPadding,
+                      onPinOnMap: () => Navigator.pop(
+                        context,
+                        SearchDestinationAction.pinOnMap,
+                      ),
                     )
                   : ListView.separated(
                       keyboardDismissBehavior:
                           ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: const EdgeInsets.fromLTRB(
+                      padding: EdgeInsets.fromLTRB(
                         AppSpacing.lg,
                         AppSpacing.lg,
                         AppSpacing.lg,
-                        AppSpacing.xl,
+                        bottomContentPadding,
                       ),
                       itemCount: _results.length + 1,
                       separatorBuilder: (_, index) => SizedBox(
@@ -395,42 +404,111 @@ class _NoDestinationResults extends StatelessWidget {
     required this.query,
     required this.title,
     required this.messagePrefix,
+    required this.bottomPadding,
+    required this.onPinOnMap,
   });
 
   final String query;
   final String title;
   final String messagePrefix;
+  final double bottomPadding;
+  final VoidCallback onPinOnMap;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.search_off_rounded,
-              color: context.appTextSecondary,
-              size: 48,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final minHeight = constraints.maxHeight - bottomPadding;
+        return SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.xl,
+            AppSpacing.xl,
+            bottomPadding,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: minHeight > 0 ? minHeight : 0,
             ),
-            const SizedBox(height: AppSpacing.md),
-            AppText(
-              title,
-              variant: AppTextVariant.heading3,
-              fontWeight: FontWeight.w900,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(26),
+                    ),
+                    child: Icon(
+                      Icons.add_location_alt_rounded,
+                      color: AppColors.primary,
+                      size: 38,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  AppText(
+                    title,
+                    variant: AppTextVariant.heading3,
+                    fontWeight: FontWeight.w900,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  AppText(
+                    '$messagePrefix "$query" or choose one of the major '
+                    'neighborhoods.',
+                    variant: AppTextVariant.bodyMedium,
+                    color: context.appTextSecondary,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: Color.alphaBlend(
+                        AppColors.primary.withValues(alpha: 0.08),
+                        context.appSurface,
+                      ),
+                      borderRadius: BorderRadius.circular(22),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.22),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        const AppText(
+                          'Cannot find the exact place?',
+                          variant: AppTextVariant.labelLarge,
+                          fontWeight: FontWeight.w900,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 4),
+                        AppText(
+                          'በካርታ ላይ በትክክል ይመልከቱ',
+                          variant: AppTextVariant.bodySmall,
+                          color: context.appTextSecondary,
+                          fontWeight: FontWeight.w800,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        AppButton.primary(
+                          label: 'PIN ON MAP',
+                          icon: Icons.add_location_alt_rounded,
+                          fullWidth: true,
+                          onPressed: onPinOnMap,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            AppText(
-              '$messagePrefix "$query" or choose one of the major '
-              'neighborhoods.',
-              variant: AppTextVariant.bodyMedium,
-              color: context.appTextSecondary,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

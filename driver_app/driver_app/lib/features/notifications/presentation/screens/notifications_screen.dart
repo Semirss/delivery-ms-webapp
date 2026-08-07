@@ -1,3 +1,4 @@
+import 'package:driver_app/config/router/navigation_helper.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
@@ -171,71 +172,142 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (sheetContext) {
         final createdAt = _formatDate(notification['created_at']);
         return SafeArea(
           top: false,
           child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.72,
+            ),
             decoration: BoxDecoration(
               color: sheetContext.appSurface,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(26),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 28,
+                  offset: const Offset(0, -10),
+                ),
+              ],
             ),
             padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 42,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: sheetContext.appBorder,
-                      borderRadius: BorderRadius.circular(2),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 42,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: sheetContext.appBorder,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: _typeColor(
-                        notification['type'],
-                      ).withValues(alpha: 0.12),
-                      child: Icon(
-                        _iconForType(notification['type']),
-                        color: _typeColor(notification['type']),
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: _typeColor(
+                            notification['type'],
+                          ).withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: Icon(
+                          _iconForType(notification['type']),
+                          color: _typeColor(notification['type']),
+                          size: 28,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: AppText(
-                        notification['title']?.toString() ?? 'Notification',
-                        variant: AppTextVariant.heading3,
-                        color: sheetContext.appTextPrimary,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppText(
+                              notification['title']?.toString() ??
+                                  'Notification',
+                              variant: AppTextVariant.heading3,
+                              color: sheetContext.appTextPrimary,
+                              fontWeight: FontWeight.w900,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            AppText(
+                              _typeLabel(notification['type']),
+                              variant: AppTextVariant.labelSmall,
+                              color: _typeColor(notification['type']),
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: sheetContext.appSurfaceAlt,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(color: sheetContext.appBorder),
                     ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AppText(
-                  notification['body']?.toString() ?? '',
-                  variant: AppTextVariant.bodyMedium,
-                  color: sheetContext.appTextSecondary,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                _detailLine(sheetContext, 'Type', _typeLabel(notification['type'])),
-                _detailLine(sheetContext, 'Created', createdAt),
-                if (notification['delivery_id'] != null)
+                    child: AppText(
+                      notification['body']?.toString() ?? '',
+                      variant: AppTextVariant.bodyMedium,
+                      color: sheetContext.appTextPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   _detailLine(
                     sheetContext,
-                    'Delivery ID',
-                    notification['delivery_id'].toString(),
+                    'Type',
+                    _typeLabel(notification['type']),
                   ),
-              ],
+                  _detailLine(sheetContext, 'Created', createdAt),
+                  if (notification['delivery_id'] != null)
+                    _detailLine(
+                      sheetContext,
+                      'Delivery ID',
+                      _shortId(notification['delivery_id']),
+                    ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppButton.tertiary(
+                          label: 'CLOSE',
+                          onPressed: () => Navigator.of(sheetContext).pop(),
+                        ),
+                      ),
+                      if (notification['delivery_id'] != null) ...[
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: AppButton.primary(
+                            label: 'OPEN MAP',
+                            icon: Icons.map_rounded,
+                            onPressed: () {
+                              Navigator.of(sheetContext).pop();
+                              context.navigator.navigateToHomeTab();
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -285,11 +357,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         titleText: 'Alerts',
         centerTitle: false,
         actions: [
-          IconButton(
-            tooltip: 'Refresh',
-            icon: Icon(Icons.refresh_rounded, color: context.appTextPrimary),
-            onPressed: _fetchNotifications,
-          ),
           IconButton(
             tooltip: 'Mark all read',
             icon: _isMarkingAll
@@ -540,6 +607,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final date = asDate(value);
     if (date == null) return '';
     return DateFormat('dd MMM, hh:mm a').format(date);
+  }
+
+  String _shortId(Object? value) {
+    final text = value?.toString() ?? '';
+    if (text.length <= 12) return text;
+    return '${text.substring(0, 8)}...${text.substring(text.length - 4)}';
   }
 }
 

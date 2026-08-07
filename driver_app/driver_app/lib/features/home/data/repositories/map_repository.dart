@@ -2,10 +2,21 @@ import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapRepository {
-  final Dio _dio = Dio();
+  MapRepository()
+    : _dio = Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 3),
+          receiveTimeout: const Duration(seconds: 5),
+          sendTimeout: const Duration(seconds: 3),
+        ),
+      );
+
+  final Dio _dio;
 
   /// Get route polyline using OSRM API
   Future<List<LatLng>> getRoute(LatLng start, LatLng end) async {
+    if (!_isValidPoint(start) || !_isValidPoint(end)) return [];
+
     try {
       final url = 'https://router.project-osrm.org/route/v1/driving/'
           '${start.longitude},${start.latitude};'
@@ -32,19 +43,33 @@ class MapRepository {
               final longitude = coordinate[0];
               final latitude = coordinate[1];
               if (longitude is num && latitude is num) {
-                routePoints.add(
-                  LatLng(latitude.toDouble(), longitude.toDouble()),
-                );
+                final point = LatLng(latitude.toDouble(), longitude.toDouble());
+                if (_isValidPoint(point)) routePoints.add(point);
               }
             }
           }
-          return routePoints;
+          if (routePoints.length >= 2) return routePoints;
+          return _fallbackRoute(start, end);
         }
       }
-      return [];
+      return _fallbackRoute(start, end);
     } catch (e) {
       print('Error getting route: $e');
-      return [];
+      return _fallbackRoute(start, end);
     }
+  }
+
+  List<LatLng> _fallbackRoute(LatLng start, LatLng end) {
+    if (!_isValidPoint(start) || !_isValidPoint(end)) return [];
+    return <LatLng>[start, end];
+  }
+
+  bool _isValidPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
   }
 }

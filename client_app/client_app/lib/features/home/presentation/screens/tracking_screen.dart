@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/map/addis_ababa_base_map.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_ui/app_ui.dart';
@@ -303,6 +304,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
         trackedDelivery != null &&
         _isActiveStatus(trackedDelivery['status']?.toString());
     final displayDelivery = trackedDelivery ?? lastDelivery;
+    final mapHeight = (MediaQuery.sizeOf(context).height * 0.58)
+        .clamp(390.0, 560.0)
+        .toDouble();
 
     return Scaffold(
       backgroundColor: context.appBackground,
@@ -363,10 +367,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   if (displayDelivery == null)
                     const SizedBox(height: 420)
                   else ...[
+                    _buildMapCard(displayDelivery, height: mapHeight),
+                    const SizedBox(height: AppSpacing.sm),
                     _buildStatusCard(displayDelivery, hasCurrent: hasCurrent),
-                    const SizedBox(height: AppSpacing.md),
-                    _buildMapCard(displayDelivery),
-                    const SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.sm),
                     _buildTimelineCard(displayDelivery),
                     const SizedBox(height: AppSpacing.md),
                     _buildDetailsCard(displayDelivery),
@@ -429,18 +433,19 @@ class _TrackingScreenState extends State<TrackingScreen> {
     final subtitle = hasCurrent
         ? _currentStatusSubtitle(status, delivery)
         : _statusSubtitle(status);
+    final dropoff = delivery['dropoff_location']?.toString() ?? 'Not set';
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: context.appSurface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.appBorder),
         boxShadow: [
           BoxShadow(
             color: statusColor.withValues(alpha: 0.12),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -450,13 +455,13 @@ class _TrackingScreenState extends State<TrackingScreen> {
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(_statusIcon(status), color: statusColor),
+                child: Icon(_statusIcon(status), color: statusColor, size: 22),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -465,39 +470,57 @@ class _TrackingScreenState extends State<TrackingScreen> {
                   children: [
                     AppText(
                       title,
-                      variant: AppTextVariant.heading3,
+                      variant: AppTextVariant.bodyLarge,
                       fontWeight: FontWeight.w900,
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     AppText(
                       subtitle,
                       variant: AppTextVariant.bodySmall,
                       color: context.appTextSecondary,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              AppText(
-                status,
-                variant: AppTextVariant.labelLarge,
-                color: statusColor,
-                fontWeight: FontWeight.w900,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: AppText(
+                  status,
+                  variant: AppTextVariant.labelSmall,
+                  color: statusColor,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          _buildInlineDetail(
-            icon: Icons.schedule_rounded,
-            label: 'Last tracked',
-            value: _dateTimeLabel(_lastTrackingTime(delivery)),
-          ),
           const SizedBox(height: AppSpacing.sm),
-          _buildInlineDetail(
-            icon: Icons.location_on_rounded,
-            label: 'Drop-off',
-            value: delivery['dropoff_location']?.toString() ?? 'Not set',
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatusMeta(
+                  icon: Icons.schedule_rounded,
+                  label: 'Updated',
+                  value: _dateTimeLabel(_lastTrackingTime(delivery)),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _buildStatusMeta(
+                  icon: Icons.location_on_rounded,
+                  label: 'Drop-off',
+                  value: dropoff,
+                ),
+              ),
+            ],
           ),
           if (_canCancelDelivery(delivery)) ...[
             const SizedBox(height: AppSpacing.md),
@@ -513,7 +536,11 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
-  Widget _buildMapCard(Map<String, dynamic> delivery) {
+  Widget _buildMapCard(
+    Map<String, dynamic> delivery, {
+    required double height,
+  }) {
+    final status = delivery['status']?.toString() ?? 'Pending';
     final pickup = _latLngFromFields(
       delivery['pickup_lat'],
       delivery['pickup_lng'],
@@ -527,8 +554,15 @@ class _TrackingScreenState extends State<TrackingScreen> {
       driver?['current_lat'],
       driver?['current_lng'],
     );
-    final center =
-        driverPoint ?? pickup ?? dropoff ?? const LatLng(8.9806, 38.7578);
+    final routePoints = _trackingRoutePoints(
+      status: status,
+      pickup: pickup,
+      dropoff: dropoff,
+      driverPoint: driverPoint,
+    );
+    final center = routePoints.length >= 2
+        ? _centerOf(routePoints)
+        : driverPoint ?? pickup ?? dropoff ?? const LatLng(8.9806, 38.7578);
     final markers = <Marker>[
       if (pickup != null)
         _buildMapMarker(
@@ -551,7 +585,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     ];
 
     return Container(
-      height: 240,
+      height: height,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: context.appSurface,
@@ -563,23 +597,25 @@ class _TrackingScreenState extends State<TrackingScreen> {
           FlutterMap(
             options: MapOptions(
               initialCenter: center,
-              initialZoom: pickup != null && dropoff != null ? 12.6 : 14,
+              initialZoom: routePoints.length >= 2 ? 12.2 : 14,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ...addisAbabaBaseMapLayers(
                 userAgentPackageName: 'com.motobikedeliveryservice.client',
-                maxNativeZoom: 19,
-                keepBuffer: 5,
               ),
-              if (pickup != null && dropoff != null)
+              if (routePoints.length >= 2)
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: [pickup, dropoff],
+                      points: routePoints,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      strokeWidth: 9,
+                    ),
+                    Polyline(
+                      points: routePoints,
                       color: AppColors.success,
                       strokeWidth: 5,
                     ),
@@ -602,6 +638,34 @@ class _TrackingScreenState extends State<TrackingScreen> {
                 ),
               ),
             ),
+          PositionedDirectional(
+            start: AppSpacing.md,
+            top: AppSpacing.md,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: context.appSurface.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: context.appBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: AppText(
+                status,
+                variant: AppTextVariant.labelSmall,
+                color: _statusColor(status),
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
           PositionedDirectional(
             start: AppSpacing.md,
             bottom: AppSpacing.md,
@@ -627,6 +691,38 @@ class _TrackingScreenState extends State<TrackingScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  List<LatLng> _trackingRoutePoints({
+    required String status,
+    required LatLng? pickup,
+    required LatLng? dropoff,
+    required LatLng? driverPoint,
+  }) {
+    if (status == 'Picked Up' && driverPoint != null && dropoff != null) {
+      return [driverPoint, dropoff];
+    }
+    if (status == 'Assigned' && driverPoint != null && pickup != null) {
+      return [driverPoint, pickup];
+    }
+    if (pickup != null && dropoff != null) return [pickup, dropoff];
+    if (driverPoint != null && dropoff != null) return [driverPoint, dropoff];
+    if (driverPoint != null && pickup != null) return [driverPoint, pickup];
+    return const [];
+  }
+
+  LatLng _centerOf(List<LatLng> points) {
+    final total = points.fold(
+      const LatLng(0, 0),
+      (sum, point) => LatLng(
+        sum.latitude + point.latitude,
+        sum.longitude + point.longitude,
+      ),
+    );
+    return LatLng(
+      total.latitude / points.length,
+      total.longitude / points.length,
     );
   }
 
@@ -659,99 +755,85 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   Widget _buildTimelineCard(Map<String, dynamic> delivery) {
     final status = delivery['status']?.toString() ?? 'Pending';
-    final steps = const ['Pending', 'Assigned', 'Picked Up', 'Delivered'];
+    const steps = ['Pending', 'Assigned', 'Picked Up', 'Delivered'];
     final currentIndex = steps.indexOf(status);
     final isCancelled = status == 'Cancelled';
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: context.appSurface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.appBorder),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const AppText(
-            'Delivery progress',
-            variant: AppTextVariant.heading3,
-            fontWeight: FontWeight.w900,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (isCancelled)
-            _buildTimelineStep(
-              title: 'Cancelled',
-              subtitle: 'This delivery was cancelled.',
-              complete: true,
-              active: true,
-              color: AppColors.error,
+      child: isCancelled
+          ? const Row(
+              children: [
+                Icon(Icons.cancel_rounded, color: AppColors.error, size: 24),
+                SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AppText(
+                    'Cancelled',
+                    variant: AppTextVariant.bodyMedium,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
             )
-          else
-            ...steps.asMap().entries.map((entry) {
-              final index = entry.key;
-              final title = entry.value;
-              return _buildTimelineStep(
-                title: title,
-                subtitle: _statusSubtitle(title),
-                complete: currentIndex >= index,
-                active: currentIndex == index,
-                color: _statusColor(title),
-              );
-            }),
-        ],
-      ),
+          : Row(
+              children: steps.asMap().entries.map((entry) {
+                final index = entry.key;
+                final title = entry.value;
+                return Expanded(
+                  child: _buildTimelineStep(
+                    title: title,
+                    complete: currentIndex >= index,
+                    active: currentIndex == index,
+                    color: _statusColor(title),
+                  ),
+                );
+              }).toList(),
+            ),
     );
   }
 
   Widget _buildTimelineStep({
     required String title,
-    required String subtitle,
     required bool complete,
     required bool active,
     required Color color,
   }) {
     final stepColor = complete ? color : context.appBorder;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 24,
-            height: 24,
-            decoration: BoxDecoration(
-              color: complete ? stepColor : Colors.transparent,
-              shape: BoxShape.circle,
-              border: Border.all(color: stepColor, width: 2),
-            ),
-            child: complete
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 15)
-                : null,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: complete ? stepColor : Colors.transparent,
+            shape: BoxShape.circle,
+            border: Border.all(color: stepColor, width: 2),
           ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  title,
-                  variant: AppTextVariant.bodyMedium,
-                  fontWeight: active ? FontWeight.w900 : FontWeight.w700,
-                  color: active ? color : context.appTextPrimary,
-                ),
-                const SizedBox(height: 2),
-                AppText(
-                  subtitle,
-                  variant: AppTextVariant.bodySmall,
-                  color: context.appTextSecondary,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+          child: complete
+              ? const Icon(Icons.check_rounded, color: Colors.white, size: 15)
+              : null,
+        ),
+        const SizedBox(height: 6),
+        AppText(
+          title,
+          variant: AppTextVariant.labelSmall,
+          fontWeight: active ? FontWeight.w900 : FontWeight.w700,
+          color: active ? color : context.appTextSecondary,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
@@ -818,31 +900,48 @@ class _TrackingScreenState extends State<TrackingScreen> {
     );
   }
 
-  Widget _buildInlineDetail({
+  Widget _buildStatusMeta({
     required IconData icon,
     required String label,
     required String value,
   }) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 18),
-        const SizedBox(width: AppSpacing.sm),
-        AppText(
-          '$label: ',
-          variant: AppTextVariant.bodySmall,
-          color: context.appTextSecondary,
-          fontWeight: FontWeight.w700,
-        ),
-        Expanded(
-          child: AppText(
-            value,
-            variant: AppTextVariant.bodySmall,
-            color: context.appTextPrimary,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: context.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: context.appTextSecondary, size: 16),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText(
+                  label,
+                  variant: AppTextVariant.labelSmall,
+                  color: context.appTextSecondary,
+                  fontWeight: FontWeight.w700,
+                ),
+                AppText(
+                  value,
+                  variant: AppTextVariant.labelSmall,
+                  color: context.appTextPrimary,
+                  fontWeight: FontWeight.w800,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

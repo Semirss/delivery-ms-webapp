@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:client_app/config/router/app_routes.dart';
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/map/addis_ababa_base_map.dart';
 import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
@@ -16,6 +18,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 class _FoodDeliveryPricing {
@@ -51,6 +54,21 @@ const double _fallbackFoodPickupLat = 9.0108;
 const double _fallbackFoodPickupLng = 38.7612;
 const LatLng _fallbackFoodDeliveryCenter = LatLng(8.9806, 38.7578);
 
+bool _isValidFoodMapPoint(LatLng point) {
+  return point.latitude.isFinite &&
+      point.longitude.isFinite &&
+      point.latitude >= -90 &&
+      point.latitude <= 90 &&
+      point.longitude >= -180 &&
+      point.longitude <= 180;
+}
+
+LatLng _safeFoodMapPoint(LatLng? point) {
+  return point != null && _isValidFoodMapPoint(point)
+      ? point
+      : _fallbackFoodDeliveryCenter;
+}
+
 enum _FoodDeliveryAddressChoice { gps, neighborhood, pinOnMap }
 
 int _clampFoodRating(int value) {
@@ -66,8 +84,14 @@ class FoodMarketplaceScreen extends StatefulWidget {
   State<FoodMarketplaceScreen> createState() => _FoodMarketplaceScreenState();
 }
 
-class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
+class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
+    with WidgetsBindingObserver {
   static const double _bottomNavClearance = 132;
+  static const String _foodCategoriesCacheKey =
+      'food_marketplace.categories.v1';
+  static const String _foodItemsCacheKey = 'food_marketplace.items.v1';
+  static const String _foodRestaurantsCacheKey =
+      'food_marketplace.restaurants.v1';
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final MapRepository _mapRepository = MapRepository();
@@ -94,13 +118,18 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
   Uint8List? _selectedImageBytes;
   String? _selectedImageName;
   String? _uploadedImageUrl;
-  bool _isLoading = true;
+  bool _isLoading = false;
+  bool _isSyncingMarketplace = false;
   bool _isSubmitting = false;
+  RealtimeChannel? _marketplaceChannel;
+  Timer? _marketplaceRefreshDebounce;
 
   @override
   void initState() {
     super.initState();
-    _loadFoodMarketplace();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_loadFoodMarketplace());
+    _subscribeFoodMarketplaceUpdates();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<AuthBloc>().state;
       if (state is AuthAuthenticated && mounted) {
@@ -111,6 +140,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchFocusNode.dispose();
     _searchController.dispose();
     _titleController.dispose();
@@ -119,49 +149,118 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     _phoneController.dispose();
     _pickupController.dispose();
     _descriptionController.dispose();
+    _marketplaceRefreshDebounce?.cancel();
+    _marketplaceChannel?.unsubscribe();
     super.dispose();
   }
 
-  Future<void> _loadFoodMarketplace() async {
-    setState(() => _isLoading = true);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    unawaited(
+      _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
+    );
+  }
+
+  void _subscribeFoodMarketplaceUpdates() {
+    _marketplaceChannel?.unsubscribe();
+    _marketplaceChannel = _supabase
+        .channel('public:food_marketplace:client')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_categories',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_marketplace_items',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_restaurants',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_item_ratings',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .subscribe();
+  }
+
+  void _scheduleMarketplaceRefresh() {
+    _marketplaceRefreshDebounce?.cancel();
+    _marketplaceRefreshDebounce = Timer(const Duration(milliseconds: 450), () {
+      if (!mounted) return;
+      unawaited(
+        _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
+      );
+    });
+  }
+
+  Future<void> _loadFoodMarketplace({
+    bool forceRefresh = false,
+    bool restoreCache = true,
+  }) async {
+    final restoredFromCache = restoreCache
+        ? await _restoreFoodMarketplaceCache()
+        : _items.isNotEmpty;
+    if (!mounted) return;
+    setState(() {
+      _isSyncingMarketplace = true;
+      _isLoading = forceRefresh && !restoredFromCache && _items.isEmpty;
+    });
+
     try {
       final authState = context.read<AuthBloc>().state;
       final currentUserId = authState is AuthAuthenticated
           ? authState.user.id
           : null;
-      final categoriesData = await _supabase
-          .from('food_categories')
-          .select()
-          .eq('is_active', true)
-          .order('sort_order', ascending: true)
-          .order('name', ascending: true);
-      final itemsData = await _supabase
-          .from('food_marketplace_items')
-          .select(
-            '*, category:food_categories(name), restaurant:food_restaurants(name)',
-          )
-          .eq('is_active', true)
-          .order('is_featured', ascending: false)
-          .order('sort_order', ascending: true)
-          .order('created_at', ascending: false);
-      final restaurantsData = await _supabase
-          .from('food_restaurants')
-          .select()
-          .eq('is_active', true)
-          .order('is_featured', ascending: false)
-          .order('sort_order', ascending: true)
-          .order('name', ascending: true);
+      final responses = await Future.wait<dynamic>([
+        _supabase
+            .from('food_categories')
+            .select()
+            .eq('is_active', true)
+            .order('sort_order', ascending: true)
+            .order('name', ascending: true),
+        _supabase
+            .from('food_marketplace_items')
+            .select(
+              '*, category:food_categories(name), restaurant:food_restaurants(name)',
+            )
+            .eq('is_active', true)
+            .order('is_featured', ascending: false)
+            .order('sort_order', ascending: true)
+            .order('created_at', ascending: false),
+        _supabase
+            .from('food_restaurants')
+            .select()
+            .eq('is_active', true)
+            .order('is_featured', ascending: false)
+            .order('sort_order', ascending: true)
+            .order('name', ascending: true),
+      ]);
 
-      final categories = List<Map<String, dynamic>>.from(
-        categoriesData,
-      ).map(_FoodCategory.fromMap).toList();
-      final items = List<Map<String, dynamic>>.from(
-        itemsData,
-      ).map(_FoodItem.fromMap).toList();
+      final categoriesRows = _rowsFromResponse(responses[0]);
+      final itemsRows = _rowsFromResponse(responses[1]);
+      final restaurantsRows = _rowsFromResponse(responses[2]);
+
+      final categories = categoriesRows.map(_FoodCategory.fromMap).toList();
+      final items = itemsRows.map(_FoodItem.fromMap).toList();
       final ratedItems = await _attachFoodRatings(items, currentUserId);
-      final restaurants = List<Map<String, dynamic>>.from(
-        restaurantsData,
-      ).map(_RestaurantFeature.fromMap).toList();
+      final restaurants = restaurantsRows
+          .map(_RestaurantFeature.fromMap)
+          .toList();
+      await _saveFoodMarketplaceCache(
+        categories: categoriesRows,
+        items: ratedItems.map((item) => item.toCacheMap()).toList(),
+        restaurants: restaurantsRows,
+      );
 
       if (!mounted) return;
       setState(() {
@@ -170,18 +269,85 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         _restaurants = restaurants.isEmpty ? _featuredRestaurants : restaurants;
         _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
         _isLoading = false;
+        _isSyncingMarketplace = false;
       });
     } catch (e) {
       debugPrint('Food marketplace fallback: $e');
       if (!mounted) return;
       setState(() {
-        _categories = _sampleCategories;
-        _items = _sampleItems;
-        _restaurants = _featuredRestaurants;
+        if (!restoredFromCache) {
+          _categories = _sampleCategories;
+          _items = _sampleItems;
+          _restaurants = _featuredRestaurants;
+        }
         _sellCategoryId ??= _sampleCategories.first.id;
         _isLoading = false;
+        _isSyncingMarketplace = false;
       });
     }
+  }
+
+  Future<bool> _restoreFoodMarketplaceCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final categoryRows = _cachedRows(prefs.getString(_foodCategoriesCacheKey));
+      final itemRows = _cachedRows(prefs.getString(_foodItemsCacheKey));
+      final restaurantRows = _cachedRows(
+        prefs.getString(_foodRestaurantsCacheKey),
+      );
+      if (categoryRows.isEmpty && itemRows.isEmpty && restaurantRows.isEmpty) {
+        return false;
+      }
+
+      if (!mounted) return false;
+      setState(() {
+        if (categoryRows.isNotEmpty) {
+          _categories = categoryRows.map(_FoodCategory.fromMap).toList();
+        }
+        if (itemRows.isNotEmpty) {
+          _items = itemRows.map(_FoodItem.fromMap).toList();
+        }
+        if (restaurantRows.isNotEmpty) {
+          _restaurants = restaurantRows.map(_RestaurantFeature.fromMap).toList();
+        }
+        _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
+      });
+      return true;
+    } catch (e) {
+      debugPrint('Food marketplace cache restore failed: $e');
+      return false;
+    }
+  }
+
+  Future<void> _saveFoodMarketplaceCache({
+    required List<Map<String, dynamic>> categories,
+    required List<Map<String, dynamic>> items,
+    required List<Map<String, dynamic>> restaurants,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await Future.wait([
+      prefs.setString(_foodCategoriesCacheKey, jsonEncode(categories)),
+      prefs.setString(_foodItemsCacheKey, jsonEncode(items)),
+      prefs.setString(_foodRestaurantsCacheKey, jsonEncode(restaurants)),
+    ]);
+  }
+
+  List<Map<String, dynamic>> _cachedRows(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return const [];
+    final decoded = jsonDecode(raw);
+    return _rowsFromResponse(decoded);
+  }
+
+  List<Map<String, dynamic>> _rowsFromResponse(Object? response) {
+    if (response is! Iterable<Object?>) return const [];
+    return response
+        .whereType<Map<Object?, Object?>>()
+        .map(
+          (row) => row.map(
+            (key, value) => MapEntry(key.toString(), value),
+          ),
+        )
+        .toList();
   }
 
   List<_FoodItem> get _visibleItems {
@@ -567,7 +733,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         _selectedImageName = null;
         _uploadedImageUrl = null;
       });
-      await _loadFoodMarketplace();
+      await _loadFoodMarketplace(forceRefresh: true, restoreCache: false);
 
       if (!mounted) return;
       setState(() => _tab = 'for_you');
@@ -1000,7 +1166,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     required ValueChanged<MapPlace> onDestinationChanged,
   }) async {
     final destination = await Navigator.of(context, rootNavigator: true)
-        .push<MapPlace>(
+        .push<Object?>(
           MaterialPageRoute(
             builder: (context) => const SearchDestinationScreen(
               title: 'Where should we deliver?',
@@ -1013,6 +1179,15 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
           ),
         );
     if (destination == null || !mounted) return;
+    if (destination == SearchDestinationAction.pinOnMap) {
+      await _pinFoodDeliveryAddress(
+        initialPoint: null,
+        addressController: addressController,
+        onDestinationChanged: onDestinationChanged,
+      );
+      return;
+    }
+    if (destination is! MapPlace) return;
 
     addressController.text = destination.displayName;
     onDestinationChanged(destination);
@@ -1040,7 +1215,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
       MaterialPageRoute(
         builder: (context) => _FoodPinLocationScreen(
-          initialCenter: initialPoint ?? _fallbackFoodDeliveryCenter,
+          initialCenter: _safeFoodMapPoint(initialPoint),
         ),
       ),
     );
@@ -1059,6 +1234,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     required TextEditingController addressController,
     required ValueChanged<MapPlace> onDestinationChanged,
   }) async {
+    if (!_isValidFoodMapPoint(point)) return;
     final destination = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
@@ -1102,7 +1278,8 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 12),
       );
-      return LatLng(position.latitude, position.longitude);
+      final point = LatLng(position.latitude, position.longitude);
+      return _isValidFoodMapPoint(point) ? point : null;
     } catch (e) {
       debugPrint('Food GPS lookup error: $e');
       if (!mounted) return null;
@@ -1249,10 +1426,21 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       backgroundColor: context.appBackground,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _loadFoodMarketplace,
+          onRefresh: () =>
+              _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(child: _buildHeader()),
+              if (_isSyncingMarketplace)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    child: LinearProgressIndicator(
+                      minHeight: 2,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
               if (_isLoading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -2956,7 +3144,7 @@ class _FoodPinLocationScreenState extends State<_FoodPinLocationScreen> {
   @override
   void initState() {
     super.initState();
-    _center = widget.initialCenter;
+    _center = _safeFoodMapPoint(widget.initialCenter);
   }
 
   @override
@@ -2967,21 +3155,20 @@ class _FoodPinLocationScreenState extends State<_FoodPinLocationScreen> {
           FlutterMap(
             mapController: _controller,
             options: MapOptions(
-              initialCenter: widget.initialCenter,
+              initialCenter: _center,
               initialZoom: 15,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
               onPositionChanged: (camera, _) {
-                _center = camera.center;
+                if (_isValidFoodMapPoint(camera.center)) {
+                  _center = camera.center;
+                }
               },
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ...addisAbabaBaseMapLayers(
                 userAgentPackageName: 'com.motobikedeliveryservice.client',
-                maxNativeZoom: 19,
-                keepBuffer: 5,
               ),
             ],
           ),
@@ -3512,6 +3699,7 @@ class _FoodItem {
       isFeatured: map['is_featured'] == true,
       ratingAverage: _asNullableDouble(map['rating_average']) ?? 0,
       ratingCount: int.tryParse(map['rating_count']?.toString() ?? '') ?? 0,
+      userRating: int.tryParse(map['user_rating']?.toString() ?? ''),
     );
   }
 
@@ -3589,6 +3777,29 @@ class _FoodItem {
       ratingCount: nextCount,
       userRating: safeRating,
     );
+  }
+
+  Map<String, dynamic> toCacheMap() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'image_url': imageUrl,
+      'seller_name': sellerName,
+      'seller_phone': sellerPhone,
+      'pickup_location': pickupLocation,
+      'pickup_lat': pickupLat,
+      'pickup_lng': pickupLng,
+      'category_id': categoryId,
+      'category_name': categoryName,
+      'restaurant_id': restaurantId,
+      'restaurant_name': restaurantName,
+      'is_featured': isFeatured,
+      'rating_average': ratingAverage,
+      'rating_count': ratingCount,
+      'user_rating': userRating,
+    };
   }
 
   static double? _asNullableDouble(Object? value) {

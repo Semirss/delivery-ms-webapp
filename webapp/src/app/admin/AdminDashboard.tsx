@@ -79,6 +79,8 @@ type DeliveryNotification = {
 };
 
 // ── Timeout config ───────────────────────────────────────────────────────────
+type ModalPromptData = Record<string, string>;
+
 const ASSIGN_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
 
 function getSecondsLeft(assignedAt?: string | null): number {
@@ -144,6 +146,11 @@ function pickupParts(delivery: Delivery): { place: string; phone?: string; addre
   return { place: place || delivery.pickup_location, phone };
 }
 
+function shouldShowCancellationNotice(delivery: Delivery): boolean {
+  if (!delivery.cancelled_by && !delivery.cancellation_reason) return false;
+  return delivery.status === 'Pending' || delivery.status === 'Cancelled';
+}
+
 function coordinateLabel(lat?: number, lng?: number): string {
   if (lat == null || lng == null) return 'Not set';
   return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
@@ -164,13 +171,13 @@ export default function AdminDashboard() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<DeliveryNotification[]>([]);
   const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('connecting');
-  const [tickKey, setTickKey] = useState(0); // force countdown re-render
+  const [, setTickKey] = useState(0); // force countdown re-render
   const [assigningDelivery, setAssigningDelivery] = useState<Delivery | null>(null); // for map-assisted assignment
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean; type: 'confirm' | 'alert' | 'prompt' | 'map'; title: string; message: string;
     fields?: { name: string; label: string; value: string }[];
     mapData?: { driverLat?: number; driverLng?: number; pickupLat?: number; pickupLng?: number; dropoffLat?: number; dropoffLng?: number; };
-    onConfirm?: (data?: any) => void;
+    onConfirm?: (data?: ModalPromptData) => void;
     onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
   const router = useRouter();
@@ -181,7 +188,13 @@ export default function AdminDashboard() {
 
   const playNotificationSound = useCallback(() => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextConstructor =
+        window.AudioContext ||
+        (window as Window & typeof globalThis & {
+          webkitAudioContext?: typeof AudioContext;
+        }).webkitAudioContext;
+      if (!AudioContextConstructor) return;
+      const ctx = new AudioContextConstructor();
       notificationSoundRef.current = ctx;
       // Three ascending tones
       const playTone = (freq: number, startTime: number, duration: number) => {
@@ -261,7 +274,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Keep a ref so realtime callbacks always call the latest fetchData
   const fetchDataRef = useRef(fetchData);
@@ -434,9 +447,9 @@ export default function AdminDashboard() {
     setModalConfig({
       isOpen: true, type: 'confirm', title: 'Approve Driver',
       message: 'Approve this driver? They will be notified automatically via SMS.',
-      onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
+      onCancel: () => setModalConfig((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
-        setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
+        setModalConfig((prev) => ({ ...prev, isOpen: false }));
         setDrivers(prev => prev.map(d => d.id === driver.id ? { ...d, approval_status: 'Approved' } : d));
         const res = await fetch(`/api/drivers/${driver.id}`, {
           method: 'PATCH',
@@ -445,7 +458,7 @@ export default function AdminDashboard() {
         });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          setModalConfig({ isOpen: true, type: 'alert', title: 'Error', message: errData?.error || 'Failed to approve driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Error', message: errData?.error || 'Failed to approve driver', onConfirm: () => setModalConfig((prev) => ({ ...prev, isOpen: false })) });
           fetchData();
         } else {
           if (driver.phone) {
@@ -463,14 +476,14 @@ export default function AdminDashboard() {
     setModalConfig({
       isOpen: true, type: 'confirm', title: 'Reject Driver',
       message: 'Are you sure you want to REJECT and DELETE this driver application?',
-      onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
+      onCancel: () => setModalConfig((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
-        setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
+        setModalConfig((prev) => ({ ...prev, isOpen: false }));
         setDrivers(prev => prev.filter(d => d.id !== id));
         const res = await fetch(`/api/drivers/${id}`, { method: 'DELETE' });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev) => ({ ...prev, isOpen: false })) });
           fetchData();
         }
       }
@@ -481,13 +494,13 @@ export default function AdminDashboard() {
     setModalConfig({
       isOpen: true, type: 'confirm', title: 'Delete Driver',
       message: 'Are you sure you want to completely DELETE this active driver?',
-      onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
+      onCancel: () => setModalConfig((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
-        setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
+        setModalConfig((prev) => ({ ...prev, isOpen: false }));
         const res = await fetch(`/api/drivers/${id}`, { method: 'DELETE' });
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })) });
+          setModalConfig({ isOpen: true, type: 'alert', title: 'Failed to delete', message: errData?.error || 'Failed to delete driver', onConfirm: () => setModalConfig((prev) => ({ ...prev, isOpen: false })) });
         }
         fetchData();
       }
@@ -495,7 +508,7 @@ export default function AdminDashboard() {
   };
 
   const editDriver = (id: string) => {
-    const driver = drivers.find((d: any) => d.id === id);
+    const driver = drivers.find((d) => d.id === id);
     if (!driver) return;
     setModalConfig({
       isOpen: true, type: 'prompt', title: 'Edit Driver',
@@ -506,9 +519,10 @@ export default function AdminDashboard() {
         { name: 'phone', label: 'Driver Phone', value: driver.phone },
         { name: 'plate_number', label: 'Plate Number', value: driver.plate_number || '' }
       ],
-      onCancel: () => setModalConfig((prev: any) => ({ ...prev, isOpen: false })),
-      onConfirm: async (data: any) => {
-        setModalConfig((prev: any) => ({ ...prev, isOpen: false }));
+      onCancel: () => setModalConfig((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: async (data) => {
+        setModalConfig((prev) => ({ ...prev, isOpen: false }));
+        if (!data) return;
         if (data.name && data.email && data.phone) {
           setDrivers((prev: Driver[]) => prev.map((d: Driver) => d.id === id ? { ...d, name: data.name, email: data.email, phone: data.phone, plate_number: data.plate_number } : d));
           await fetch(`/api/drivers/${id}`, {
@@ -545,7 +559,9 @@ export default function AdminDashboard() {
 
   // ── Date-filtered stats ───────────────────────────────────────────────────
   const filteredDeliveries = filterByDate(deliveries, dateRange);
-  const isCancelledRecord = (d: Delivery) => d.status === 'Cancelled' || !!d.cancelled_by || !!d.cancellation_reason;
+  const isCancelledRecord = (d: Delivery) =>
+    d.status === 'Cancelled' ||
+    (d.status === 'Pending' && (!!d.cancelled_by || !!d.cancellation_reason));
   const displayedDeliveries = filteredDeliveries.filter(d =>
     filterStatus === "All"
       ? true
@@ -778,6 +794,7 @@ export default function AdminDashboard() {
                     {displayedDeliveries.map(d => {
                       const secsLeft = d.status === 'Assigned' ? getSecondsLeft(d.assigned_at) : 0;
                       const isTimingOut = d.status === 'Assigned' && secsLeft > 0 && secsLeft < 60;
+                      const showCancellationNotice = shouldShowCancellationNotice(d);
                       const foodDelivery = isFoodDelivery(d);
                       const pickup = pickupParts(d);
                       return (
@@ -815,7 +832,7 @@ export default function AdminDashboard() {
                           )}
 
                           {/* Cancellation info */}
-                          {(d.cancelled_by || d.cancellation_reason) && (
+                          {showCancellationNotice && (
                             <div className="mb-3 px-3 py-1.5 bg-red-50 rounded-lg text-xs text-red-600 font-medium">
                               ⚠️ {d.cancelled_by === 'driver_reject' ? 'Driver rejected' : d.cancelled_by === 'timeout' ? 'Timed out (no accept)' : 'Cancelled'}{d.cancellation_reason ? ` — ${d.cancellation_reason}` : ''}
                             </div>
@@ -1036,7 +1053,7 @@ export default function AdminDashboard() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-5 rounded-2xl shadow-md text-white">
                       <div className="text-2xl mb-2">📅</div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-emerald-100">Today's Revenue</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-emerald-100">Today&apos;s Revenue</p>
                       <p className="text-2xl font-extrabold mt-1">{todayRevenue.toLocaleString()} <span className="text-sm font-bold opacity-80">Birr</span></p>
                       <p className="text-xs text-emerald-100 mt-1">{deliveries.filter(d => d.status === 'Delivered' && new Date(d.created_at).toDateString() === now.toDateString()).length} deliveries</p>
                     </div>
@@ -1115,7 +1132,7 @@ export default function AdminDashboard() {
                         { label: 'Assigned', count: deliveries.filter(d => d.status === 'Assigned').length, color: 'bg-blue-400' },
                         { label: 'Picked Up', count: deliveries.filter(d => d.status === 'Picked Up').length, color: 'bg-indigo-400' },
                         { label: 'Delivered', count: deliveries.filter(d => d.status === 'Delivered').length, color: 'bg-emerald-400' },
-                        { label: 'Cancelled', count: deliveries.filter(d => d.status === 'Cancelled').length, color: 'bg-red-400' },
+                        { label: 'Cancelled', count: deliveries.filter(isCancelledRecord).length, color: 'bg-red-400' },
                       ].map(item => (
                         <div key={item.label} className="flex items-center space-x-3">
                           <span className="text-xs font-bold text-neutral-600 w-20 flex-shrink-0">{item.label}</span>
@@ -1161,7 +1178,7 @@ export default function AdminDashboard() {
                   {pendingDrivers.length === 0 && (
                     <div className="bg-white p-16 text-center rounded-3xl border border-dashed border-neutral-300">
                       <div className="text-4xl mb-4">✨</div>
-                      <p className="text-lg text-neutral-500 font-bold">You're all caught up!</p>
+                      <p className="text-lg text-neutral-500 font-bold">You&apos;re all caught up!</p>
                       <p className="text-sm text-neutral-400 mt-1">No pending driver approvals.</p>
                     </div>
                   )}
@@ -1221,7 +1238,16 @@ export default function AdminDashboard() {
       {/* Custom Modal */}
       {modalConfig.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={modalConfig.onCancel || modalConfig.onConfirm}></div>
+          <div
+            className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm"
+            onClick={() => {
+              if (modalConfig.onCancel) {
+                modalConfig.onCancel();
+              } else {
+                modalConfig.onConfirm?.();
+              }
+            }}
+          ></div>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative z-10">
             <div className="p-6">
               <h3 className="text-xl font-extrabold text-neutral-900 mb-2">{modalConfig.title}</h3>
@@ -1231,7 +1257,12 @@ export default function AdminDashboard() {
                 <form id="modal-form" className="space-y-4 mb-6" onSubmit={(e) => {
                   e.preventDefault();
                   const formData = new FormData(e.currentTarget);
-                  const data = Object.fromEntries(formData.entries());
+                  const data = Object.fromEntries(
+                    Array.from(formData.entries()).map(([key, value]) => [
+                      key,
+                      String(value),
+                    ]),
+                  );
                   if (modalConfig.onConfirm) modalConfig.onConfirm(data);
                 }}>
                   {modalConfig.fields.map(field => (
@@ -1259,7 +1290,7 @@ export default function AdminDashboard() {
                       <div className="h-[400px] flex items-center justify-center bg-neutral-100 text-neutral-500 font-bold">No tracking data available.</div>
                     )}
                   </div>
-                  <button onClick={modalConfig.onConfirm} className="w-full px-4 py-3 bg-neutral-900 text-white font-extrabold rounded-xl hover:bg-black shadow-lg">Close Tracking</button>
+                  <button onClick={() => modalConfig.onConfirm?.()} className="w-full px-4 py-3 bg-neutral-900 text-white font-extrabold rounded-xl hover:bg-black shadow-lg">Close Tracking</button>
                 </div>
               )}
 
@@ -1271,7 +1302,7 @@ export default function AdminDashboard() {
                   <button
                     type={modalConfig.type === 'prompt' ? 'submit' : 'button'}
                     form={modalConfig.type === 'prompt' ? 'modal-form' : undefined}
-                    onClick={modalConfig.type !== 'prompt' ? modalConfig.onConfirm : undefined}
+                    onClick={modalConfig.type !== 'prompt' ? () => modalConfig.onConfirm?.() : undefined}
                     className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all text-sm"
                   >
                     {modalConfig.type === 'alert' ? 'OK' : 'Confirm'}

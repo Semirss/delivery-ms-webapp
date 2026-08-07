@@ -1,5 +1,6 @@
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,11 +17,14 @@ class EarningsScreen extends StatefulWidget {
 }
 
 class _EarningsScreenState extends State<EarningsScreen> {
+  final DriverProfileRepository _repository = DriverProfileRepository();
+
   List<Map<String, dynamic>> _deliveries = [];
   bool _isLoading = true;
   double _totalEarnings = 0;
   int _totalDeliveries = 0;
   RealtimeChannel? _earningsChannel;
+  String? _subscribedDriverId;
 
   @override
   void initState() {
@@ -30,24 +34,16 @@ class _EarningsScreenState extends State<EarningsScreen> {
 
   Future<void> _fetchEarnings() async {
     try {
-      final supabase = Supabase.instance.client;
-      final driverId = await _resolveDriverId(supabase);
-      if (driverId == null) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
-      }
-      final data = await supabase
-          .from('deliveries')
-          .select()
-          .eq('driver_id', driverId)
-          .eq('status', 'Delivered')
-          .order('created_at', ascending: false)
-          .limit(50);
-
-      final deliveries = List<Map<String, dynamic>>.from(data);
+      final authState = context.read<AuthBloc>().state;
+      final user = authState is AuthAuthenticated ? authState.user : null;
+      final snapshot = await _repository.load(user);
+      final deliveries = snapshot.deliveries
+          .where((delivery) => delivery['status'] == 'Delivered')
+          .take(50)
+          .toList();
       final total = deliveries.fold<double>(
         0,
-        (sum, delivery) => sum + _asMoney(delivery['delivery_fee']),
+        (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
       );
 
       if (mounted) {
@@ -57,14 +53,17 @@ class _EarningsScreenState extends State<EarningsScreen> {
           _totalDeliveries = deliveries.length;
           _isLoading = false;
         });
-        _subscribeToEarnings(driverId);
+        _subscribeToEarnings(snapshot.driverId);
       }
     } catch (e) {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  void _subscribeToEarnings(String driverId) {
+  void _subscribeToEarnings(String? driverId) {
+    if (driverId == null || driverId.isEmpty) return;
+    if (_subscribedDriverId == driverId) return;
+    _subscribedDriverId = driverId;
     _earningsChannel?.unsubscribe();
     _earningsChannel = Supabase.instance.client
         .channel('public:deliveries:earnings:$driverId')
@@ -80,55 +79,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
           callback: (_) => _fetchEarnings(),
         )
         .subscribe();
-  }
-
-  Future<String?> _resolveDriverId(SupabaseClient supabase) async {
-    final authState = context.read<AuthBloc>().state;
-    if (authState is AuthAuthenticated) {
-      final byId = await supabase
-          .from('drivers')
-          .select('id')
-          .eq('id', authState.user.id)
-          .maybeSingle();
-      if (byId != null) return byId['id']?.toString();
-
-      final phone = authState.user.phone?.trim() ?? '';
-      if (phone.isNotEmpty) {
-        final byPhone = await supabase
-            .from('drivers')
-            .select('id')
-            .eq('phone', phone)
-            .maybeSingle();
-        if (byPhone != null) return byPhone['id']?.toString();
-      }
-    }
-
-    final user = supabase.auth.currentUser;
-    if (user == null) return null;
-
-    final byId = await supabase
-        .from('drivers')
-        .select('id')
-        .eq('id', user.id)
-        .maybeSingle();
-    if (byId != null) return byId['id']?.toString();
-
-    final phone = user.phone?.trim().isNotEmpty == true
-        ? user.phone!.trim()
-        : user.userMetadata?['phone']?.toString() ?? user.email ?? '';
-    if (phone.isEmpty) return null;
-
-    final byPhone = await supabase
-        .from('drivers')
-        .select('id')
-        .eq('phone', phone)
-        .maybeSingle();
-    return byPhone?['id']?.toString();
-  }
-
-  double _asMoney(Object? value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   @override
@@ -258,7 +208,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final delivery = _deliveries[index];
-                        final fee = _asMoney(
+                        final fee = asMoney(
                           delivery['delivery_fee'],
                         ).toStringAsFixed(0);
                         final createdAt = delivery['created_at'] != null
