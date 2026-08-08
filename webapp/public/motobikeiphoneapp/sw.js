@@ -1,10 +1,13 @@
-const CACHE_NAME = "motobikeiphoneapp-v6";
+const CACHE_NAME = "motobikeiphoneapp-v7";
 const APP_SCOPE = "/motobikeiphoneapp/";
 const APP_SHELL = [
   APP_SCOPE,
   APP_SCOPE + "index.html",
   APP_SCOPE + "manifest.json",
   APP_SCOPE + "favicon.png",
+  APP_SCOPE + "flutter.js",
+  APP_SCOPE + "flutter_bootstrap.js",
+  APP_SCOPE + "main.dart.js",
   APP_SCOPE + "icons/Icon-192.png",
   APP_SCOPE + "icons/Icon-512.png"
 ];
