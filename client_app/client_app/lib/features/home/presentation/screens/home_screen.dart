@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:client_app/config/router/navigation_helper.dart';
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/location/reliable_position.dart';
 import 'package:client_app/core/map/addis_ababa_base_map.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
@@ -425,9 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final canReadLocation = await _ensureLocationReady();
       if (!canReadLocation) return false;
 
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
+      final position = await readReliableCurrentPosition();
       if (!mounted) return false;
 
       final location = LatLng(position.latitude, position.longitude);

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:client_app/config/router/app_routes.dart';
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/location/reliable_position.dart';
 import 'package:client_app/core/map/addis_ababa_base_map.dart';
 import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -1274,10 +1275,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
         return null;
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 12),
-      );
+      final position = await readReliableCurrentPosition();
       final point = LatLng(position.latitude, position.longitude);
       return _isValidFoodMapPoint(point) ? point : null;
     } catch (e) {
