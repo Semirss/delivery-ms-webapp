@@ -262,10 +262,12 @@
       box-shadow: 0 -12px 48px rgba(18, 38, 61, 0.22);
       padding: 0 0 env(safe-area-inset-bottom, 16px);
       transform: translateY(100%);
+      pointer-events: none;        /* off-screen: never block touches */
       transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
     }
     #ios-install-sheet.sheet-open {
       transform: translateY(0);
+      pointer-events: auto;        /* on-screen: receive touches normally */
     }
     body[data-device="supported"] #ios-install-sheet {
       display: flex;
@@ -402,10 +404,12 @@
       backdrop-filter: blur(6px);
       display: none;
       opacity: 0;
+      pointer-events: none;        /* never block touches when invisible */
       transition: opacity 0.3s;
     }
     #ios-install-backdrop.visible {
       opacity: 1;
+      pointer-events: auto;        /* only capture touches when actually shown */
     }
     body[data-device="supported"] #ios-install-backdrop {
       display: block;
