@@ -4061,9 +4061,9 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     canvas
-      ..drawCircle(center + const Offset(0, 3), 30, shadow)
-      ..drawCircle(center, 10, shell)
-      ..drawCircle(center, 5, fill);
+      ..drawCircle(center + const Offset(0, 2), 20, shadow)
+      ..drawCircle(center, 9, shell)
+      ..drawCircle(center, 4.5, fill);
   }
 
   @override

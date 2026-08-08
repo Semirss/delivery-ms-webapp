@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:driver_app/config/router/app_routes.dart';
 import 'package:driver_app/config/router/navigation_service.dart';
 import 'package:driver_app/core/storage/storage_adapter.dart';
@@ -529,14 +531,44 @@ class _LoginCallbackScreen extends StatefulWidget {
   State<_LoginCallbackScreen> createState() => _LoginCallbackScreenState();
 }
 
-class _LoginCallbackScreenState extends State<_LoginCallbackScreen> {
+class _LoginCallbackScreenState extends State<_LoginCallbackScreen>
+    with WidgetsBindingObserver {
   bool _started = false;
   int _sessionChecks = 0;
+  StreamSubscription<dynamic>? _supabaseAuthSubscription;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _supabaseAuthSubscription = Supabase.instance.client.auth.onAuthStateChange
+        .listen((_) => _finishGoogleSignIn());
     WidgetsBinding.instance.addPostFrameCallback((_) => _finishGoogleSignIn());
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_supabaseAuthSubscription?.cancel());
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _finishGoogleSignIn();
+    }
+  }
+
+  bool _hasSupabaseSession() {
+    return Supabase.instance.client.auth.currentUser != null ||
+        Supabase.instance.client.auth.currentSession?.user != null;
+  }
+
+  void _retryGoogleSignInFinish() {
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (mounted) _finishGoogleSignIn();
+    });
   }
 
   void _finishGoogleSignIn() {
@@ -548,21 +580,21 @@ class _LoginCallbackScreenState extends State<_LoginCallbackScreen> {
       return;
     }
 
-    final hasSupabaseSession =
-        Supabase.instance.client.auth.currentUser != null;
-    if (!hasSupabaseSession) {
+    if (!_hasSupabaseSession()) {
       _sessionChecks += 1;
-      if (_sessionChecks < 10) {
-        Future.delayed(const Duration(milliseconds: 250), () {
-          if (mounted) _finishGoogleSignIn();
-        });
+      if (_sessionChecks < 40) {
+        _retryGoogleSignInFinish();
         return;
       }
       context.goNamed(AppRoutes.login.name);
       return;
     }
 
-    if (_started || authState is AuthLoading) return;
+    if (_started) return;
+    if (authState is AuthLoading) {
+      _retryGoogleSignInFinish();
+      return;
+    }
     _started = true;
     context.read<AuthBloc>().add(const LoginWithGoogleEvent());
   }

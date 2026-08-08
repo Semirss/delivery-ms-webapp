@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -18,18 +19,40 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  StreamSubscription<dynamic>? _supabaseAuthSubscription;
   bool _obscurePassword = true;
   bool _handledPendingGoogleSession = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _supabaseAuthSubscription = Supabase.instance.client.auth.onAuthStateChange
+        .listen((_) => _scheduleGoogleSessionCompletion());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _completePendingGoogleSession(context.read<AuthBloc>().state);
+    });
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_supabaseAuthSubscription?.cancel());
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _scheduleGoogleSessionCompletion();
+    }
   }
 
   void _handleLogin() {
@@ -44,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleGoogleLogin() {
+    _handledPendingGoogleSession = false;
     context.read<AuthBloc>().add(const LoginWithGoogleEvent());
   }
 
@@ -51,6 +75,13 @@ class _LoginScreenState extends State<LoginScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.goNamed(AppRoutes.home.name);
+    });
+  }
+
+  void _scheduleGoogleSessionCompletion() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _completePendingGoogleSession(context.read<AuthBloc>().state);
     });
   }
 
@@ -62,7 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     final hasSupabaseSession =
-        Supabase.instance.client.auth.currentUser != null;
+        Supabase.instance.client.auth.currentUser != null ||
+        Supabase.instance.client.auth.currentSession?.user != null;
     if (!hasSupabaseSession) return;
 
     _handledPendingGoogleSession = true;
@@ -79,6 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
+            _handledPendingGoogleSession = false;
             AppModal.error<void>(
               context: context,
               title: 'Login Failed',

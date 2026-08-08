@@ -84,7 +84,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> loginWithGoogle() async {
-    final sessionUser = _supabase.auth.currentUser;
+    final sessionUser = _currentGoogleUser();
     if (sessionUser != null) {
       return _driverFromGoogleUser(sessionUser);
     }
@@ -107,16 +107,33 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
         throw Exception('Could not open Google sign-in. Please try again.');
       }
 
-      final user = await completer.future.timeout(
-        const Duration(minutes: 2),
-        onTimeout: () => throw TimeoutException(
-          'Google sign-in was not completed. Please try again.',
-        ),
-      );
+      final user = await _waitForGoogleUser(completer);
       return _driverFromGoogleUser(user);
     } finally {
       await subscription.cancel();
     }
+  }
+
+  User? _currentGoogleUser() {
+    return _supabase.auth.currentUser ?? _supabase.auth.currentSession?.user;
+  }
+
+  Future<User> _waitForGoogleUser(Completer<User> authChange) async {
+    final deadline = DateTime.now().add(const Duration(minutes: 2));
+    while (DateTime.now().isBefore(deadline)) {
+      final user = _currentGoogleUser();
+      if (user != null) return user;
+      if (authChange.isCompleted) return authChange.future;
+
+      await Future.any<Object?>([
+        authChange.future,
+        Future<void>.delayed(const Duration(milliseconds: 250)),
+      ]);
+    }
+
+    throw TimeoutException(
+      'Google sign-in was not completed. Please try again.',
+    );
   }
 
   @override
