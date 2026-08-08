@@ -1,9 +1,10 @@
+import 'package:client_ui/app_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:client_ui/app_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'config/router/app_router.dart';
@@ -17,6 +18,7 @@ import 'core/storage/storage_service.dart';
 import 'core/storage/clear_storage.dart';
 import 'core/utils/constants/asset_constants/image_constants.dart';
 import 'core/versioning/version_gate.dart';
+import 'core/widgets/pwa_install_prompt.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'core/logging/app_logger.dart';
@@ -34,10 +36,12 @@ void main() {
 
 Future<AppPreferences> _initializeApp() async {
   // Load environment variables
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (e) {
-    // Flutter builds should provide .env as an asset; validation below gives a clear setup error.
+  if (!kIsWeb || kDebugMode) {
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (_) {
+      // Runtime config validation below handles missing environment values.
+    }
   }
 
   final supabaseConfig = await const SupabaseRuntimeConfigResolver().resolve();
@@ -339,7 +343,7 @@ class _BootstrapErrorApp extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
-                  '$appName could not start',
+                  '$appName is unavailable right now',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.textPrimary,
@@ -348,10 +352,11 @@ class _BootstrapErrorApp extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                Text(
-                  error?.toString() ?? 'Startup failed.',
+                const Text(
+                  'We could not connect to the service. Check your connection '
+                  'and try again.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -468,16 +473,18 @@ class _ClientAppState extends State<ClientApp> {
                         child: widget!,
                       ),
                     );
-                    return VersionGate(
-                      app: 'client',
-                      config: getIt<AppConfig>(),
-                      child: this.widget.showLaunch
-                          ? _PremiumLaunchTransition(
-                              appName: 'MotoBike',
-                              tagline: 'Your delivery companion',
-                              child: appContent,
-                            )
-                          : appContent,
+                    return PwaInstallPrompt(
+                      child: VersionGate(
+                        app: 'client',
+                        config: getIt<AppConfig>(),
+                        child: this.widget.showLaunch
+                            ? _PremiumLaunchTransition(
+                                appName: 'MotoBike',
+                                tagline: 'Your delivery companion',
+                                child: appContent,
+                              )
+                            : appContent,
+                      ),
                     );
                   },
                 );

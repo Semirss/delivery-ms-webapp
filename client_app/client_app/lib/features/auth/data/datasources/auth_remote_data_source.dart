@@ -31,6 +31,8 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
   static const String _googleRedirectUrl = 'motobike-client://login-callback/';
+  static const String _webGoogleCallbackPath =
+      '/motobikeiphoneapp/login-callback';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
@@ -72,7 +74,7 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
     try {
       final launched = await _supabase.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? null : _googleRedirectUrl,
+        redirectTo: kIsWeb ? _webGoogleRedirectUrl : _googleRedirectUrl,
       );
       if (!launched) {
         throw Exception('Could not open Google sign-in. Please try again.');
@@ -150,6 +152,10 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Google did not return an email address.');
     }
 
+    if (kIsWeb) {
+      return _clientFromGoogleUserViaWebApi(googleUser);
+    }
+
     final data = await _clientRowForEmail(email);
 
     if (data == null) {
@@ -160,6 +166,50 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final user = UserModel.fromJson(Map<String, dynamic>.from(data));
+    return AuthResponseModel(
+      user: user,
+      accessToken: _clientToken(user),
+      refreshToken: _clientToken(user, refresh: true),
+      requiresVerification: false,
+    );
+  }
+
+  Future<AuthResponseModel> _clientFromGoogleUserViaWebApi(
+    User googleUser,
+  ) async {
+    final accessToken = _supabase.auth.currentSession?.accessToken;
+    if (accessToken == null || accessToken.trim().isEmpty) {
+      throw Exception('Google sign-in was not completed. Please try again.');
+    }
+
+    final response = await dio.Dio(
+      dio.BaseOptions(
+        connectTimeout: Duration(milliseconds: _config.apiTimeout),
+        receiveTimeout: Duration(milliseconds: _config.apiTimeout),
+        sendTimeout: Duration(milliseconds: _config.apiTimeout),
+        validateStatus: (status) => status != null && status < 500,
+      ),
+    ).post<Map<String, dynamic>>(
+      '/api/clients/google-oauth',
+      options: dio.Options(headers: {'Authorization': 'Bearer $accessToken'}),
+      data: {
+        'email': googleUser.email,
+        'metadata': googleUser.userMetadata,
+      },
+    );
+
+    if ((response.statusCode ?? 500) >= 400) {
+      throw Exception(
+        _apiErrorMessage(response.data, 'Google sign-in failed.'),
+      );
+    }
+
+    final data = response.data;
+    if (data == null) {
+      throw Exception('Google sign-in failed. Please try again.');
+    }
+
+    final user = UserModel.fromJson(data);
     return AuthResponseModel(
       user: user,
       accessToken: _clientToken(user),
@@ -315,6 +365,12 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
       return null;
     }
     return baseUrl;
+  }
+
+  String get _webGoogleRedirectUrl {
+    final base = Uri.base;
+    final port = base.hasPort ? ':${base.port}' : '';
+    return '${base.scheme}://${base.host}$port$_webGoogleCallbackPath';
   }
 
   String _apiErrorMessage(Object? data, String fallback) {

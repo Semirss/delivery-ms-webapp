@@ -18,22 +18,163 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="MotoBike client delivery app.">
+  <meta name="keywords" content="motobikeiphoneapp, MotoBike app, MotoBike client, delivery app">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="/motobikeiphoneapp/">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="MotoBike">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="motobikeiphoneapp">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>MotoBike</title>
+  <title>motobikeiphoneapp</title>
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#F26A54">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #fff7f3;
+      color: #12263d;
+      font-family: Arial, Helvetica, sans-serif;
+      overscroll-behavior: none;
+    }
+
+    #unsupported-device {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: linear-gradient(160deg, #fff7f3 0%, #ffffff 48%, #ffe7df 100%);
+      text-align: center;
+    }
+
+    body[data-device="unsupported"] #unsupported-device {
+      display: flex;
+    }
+
+    body[data-device="unsupported"] flt-glass-pane,
+    body[data-device="unsupported"] flutter-view {
+      display: none;
+    }
+
+    .unsupported-card {
+      max-width: 360px;
+      border: 1px solid rgba(242, 106, 84, 0.18);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 22px 54px rgba(18, 38, 61, 0.12);
+      padding: 30px 24px;
+    }
+
+    .unsupported-logo {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      object-fit: cover;
+      box-shadow: 0 14px 28px rgba(242, 106, 84, 0.22);
+    }
+
+    .unsupported-card h1 {
+      margin: 18px 0 8px;
+      color: #f26a54;
+      font-size: 28px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .unsupported-card p {
+      margin: 0;
+      color: #667487;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+  </style>
   <script src="https://github.com/corbado/flutter-passkeys/releases/download/2.4.0/bundle.js"></script>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="unsupported-device" aria-live="polite">
+    <div class="unsupported-card">
+      <img class="unsupported-logo" src="assets/assets/images/logo.png" alt="MotoBike">
+      <h1>Open in mobile</h1>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var appScope = "/motobikeiphoneapp/";
+      var maxPhoneWidth = 600;
+      var flutterScriptId = "flutter-bootstrap-script";
+      window.motobikePwaDeferredPrompt = null;
+
+      window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        window.motobikePwaDeferredPrompt = event;
+      });
+
+      window.addEventListener("appinstalled", function () {
+        window.motobikePwaDeferredPrompt = null;
+      });
+
+      window.motobikePwaCanPrompt = function () {
+        return !!window.motobikePwaDeferredPrompt;
+      };
+
+      window.motobikePwaIsStandalone = function () {
+        return window.matchMedia("(display-mode: standalone)").matches ||
+          window.navigator.standalone === true;
+      };
+
+      window.motobikePwaPromptInstall = async function () {
+        var promptEvent = window.motobikePwaDeferredPrompt;
+        if (!promptEvent) return { supported: false, outcome: "unavailable" };
+        promptEvent.prompt();
+        var choice = await promptEvent.userChoice;
+        window.motobikePwaDeferredPrompt = null;
+        return { supported: true, outcome: choice && choice.outcome };
+      };
+
+      function isPortraitPhone() {
+        return window.innerWidth <= maxPhoneWidth && window.innerHeight >= window.innerWidth;
+      }
+
+      function loadFlutter() {
+        if (document.getElementById(flutterScriptId)) return;
+        var script = document.createElement("script");
+        script.id = flutterScriptId;
+        script.src = "flutter_bootstrap.js";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+
+      function applyDeviceGate() {
+        var supported = isPortraitPhone();
+        document.body.dataset.device = supported ? "supported" : "unsupported";
+        if (supported) loadFlutter();
+      }
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register(appScope + "sw.js", { scope: appScope }).catch(function () {});
+        });
+      }
+
+      applyDeviceGate();
+      window.addEventListener("resize", applyDeviceGate);
+      window.addEventListener("orientationchange", applyDeviceGate);
+    })();
+  </script>
 </body>
 </html>
