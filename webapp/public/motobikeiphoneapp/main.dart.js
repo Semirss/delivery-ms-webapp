@@ -56988,7 +56988,7 @@ j=A.aW("/+$",!0,!1,!1)
 i=A.bQ(k.toLowerCase(),j,"")
 k=l.ghb(l)
 j=l.j(0)
-if(k.toLowerCase()==="login-callback"||i==="/login-callback"||B.b.aT(j.toLowerCase(),"motobike-client://login-callback")){A.hH("Google login callback received")
+if(k.toLowerCase()==="login-callback"||i==="/login-callback"||B.b.n(i,"/login-callback")||B.b.n(j.toLowerCase(),"/motobikeiphoneapp/login-callback")||B.b.aT(j.toLowerCase(),"motobike-client://login-callback")){A.hH("Google login callback received")
 if(!J.c(s,g))return g
 m=e.a2P(a)
 return m}p=e.gaSh()
@@ -57041,7 +57041,7 @@ n===$&&A.a()
 q=n.gfz().d.a
 if((q==null?o:q.r)==null){n=n.gfz().d.a
 n=(n==null?o:n.r)!=null}else n=!0
-if(!n){if(++p.e<40){p.a4w()
+if(!n){if(++p.e<480){p.a4w()
 return}n=p.c
 n.toString
 A.f6(n,"login",o,B.ai)
@@ -57754,16 +57754,16 @@ if(m){s=1
 break}s=4
 return A.i(A.qJ(),$async$t9)
 case 4:n=b
-m=A.j8(J.aa(n.a,"motobike_pwa_install_prompt_dismissed_v1"))
+m=!1
 if(m===!0){s=1
 break}m=p.c
 if(m==null){s=1
-break}s=7
-return A.i(A.be8(!1,new A.b0v(o),m,t.y),$async$t9)
-case 7:s=b===!0?5:6
+break}s=1
+break
+case 7:s=6
 break
 case 5:s=8
-return A.i(n.mt("Bool","motobike_pwa_install_prompt_dismissed_v1",!0),$async$t9)
+return A.i(n.mt("Bool","motobike_pwa_install_prompt_unused_v1",!0),$async$t9)
 case 8:case 6:case 1:return A.o(q,r)}})
 return A.p($async$t9,r)},
 G(a){return this.a.c}}
@@ -57794,7 +57794,7 @@ case 1:return A.o(q,r)}})
 return A.p($async$Fb,r)},
 G(a){var s,r,q,p,o,n=null,m=this.a.c,l=m.c
 if(m.e)s="INSTALL APP"
-else s=l?"GOT IT":"OK"
+else s=l?"GOT IT":"OPEN MENU"
 m=A.a2(30)
 r=A.a2(30)
 q=t.p
@@ -134728,9 +134728,9 @@ B.m=new A.a0c(1,"max")
 B.r=new A.ws(2,"center")
 B.by=new A.aOo(1,"down")
 B.Rs=new A.aB(63341,"MaterialIcons",null,!1)
-B.aej=new A.re(B.Rs,"Opens like an app","No browser tabs or address bar.",null)
+B.aej=new A.re(B.Rs,"Opens like an app","Fullscreen, no browser address bar.",null)
 B.RE=new A.aB(983078,"MaterialIcons",null,!1)
-B.aei=new A.re(B.RE,"Ready for app features","Built for quick delivery actions.",null)
+B.aei=new A.re(B.RE,"Ready for app features","Use MotoBike from your home screen.",null)
 B.RA=new A.aB(63625,"MaterialIcons",null,!1)
 B.aee=new A.re(B.RA,"Keeps your session","Stay signed in on this device.",null)
 B.X3=s([B.aej,B.aei,B.aee],t.p)

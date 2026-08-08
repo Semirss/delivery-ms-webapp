@@ -119,6 +119,8 @@ class AppRouter {
     final uriText = uri.toString().toLowerCase();
     return host == 'login-callback' ||
         path == AppRoutes.loginCallback.path ||
+        path.endsWith(AppRoutes.loginCallback.path) ||
+        uriText.contains('/motobikeiphoneapp/login-callback') ||
         uriText.startsWith('motobike-client://login-callback');
   }
 
@@ -135,6 +137,12 @@ class AppRouter {
   String? _loginCallbackRedirectPath(BuildContext context) {
     if (_isAuthenticated(context)) return AppRoutes.home.path;
     return null;
+  }
+
+  String _loginCallbackLocation(GoRouterState state) {
+    final query = state.uri.hasQuery ? '?${state.uri.query}' : '';
+    final fragment = state.uri.hasFragment ? '#${state.uri.fragment}' : '';
+    return '${AppRoutes.loginCallback.path}$query$fragment';
   }
 
   late final GoRouter router = GoRouter(
@@ -450,7 +458,7 @@ class AppRouter {
         if (_isLoginCallback(state)) {
           outlog('Google login callback received');
           if (location != AppRoutes.loginCallback.path) {
-            return AppRoutes.loginCallback.path;
+            return _loginCallbackLocation(state);
           }
           return _loginCallbackRedirectPath(context);
         }
@@ -587,6 +595,16 @@ class _LoginCallbackScreenState extends State<_LoginCallbackScreen>
         Supabase.instance.client.auth.currentSession?.user != null;
   }
 
+  bool _hasOAuthReturnPayload() {
+    final uri = Uri.base;
+    final fragment = uri.fragment.toLowerCase();
+    return uri.queryParameters.containsKey('code') ||
+        uri.queryParameters.containsKey('error') ||
+        fragment.contains('access_token=') ||
+        fragment.contains('refresh_token=') ||
+        fragment.contains('error=');
+  }
+
   void _retryGoogleSignInFinish() {
     Future.delayed(const Duration(milliseconds: 250), () {
       if (mounted) _finishGoogleSignIn();
@@ -604,7 +622,8 @@ class _LoginCallbackScreenState extends State<_LoginCallbackScreen>
 
     if (!_hasSupabaseSession()) {
       _sessionChecks += 1;
-      if (_sessionChecks < 40) {
+      final maxChecks = _hasOAuthReturnPayload() ? 480 : 40;
+      if (_sessionChecks < maxChecks) {
         _retryGoogleSignInFinish();
         return;
       }

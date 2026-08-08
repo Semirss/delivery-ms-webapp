@@ -26,7 +26,8 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="motobikeiphoneapp">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
@@ -102,6 +103,95 @@
       font-weight: 700;
       line-height: 1.5;
     }
+
+    #pwa-install-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(18, 38, 61, 0.42);
+      backdrop-filter: blur(12px);
+    }
+
+    body[data-device="supported"] #pwa-install-modal.is-visible {
+      display: flex;
+    }
+
+    .pwa-install-card {
+      position: relative;
+      width: min(100%, 360px);
+      border: 1px solid rgba(242, 106, 84, 0.2);
+      border-radius: 28px;
+      background: linear-gradient(160deg, #fff7f3 0%, #ffffff 54%, #ffe7df 100%);
+      box-shadow: 0 28px 72px rgba(18, 38, 61, 0.24);
+      padding: 22px;
+      text-align: center;
+    }
+
+    .pwa-install-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 18px;
+      background: rgba(18, 38, 61, 0.08);
+      color: #12263d;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .pwa-install-logo {
+      width: 74px;
+      height: 74px;
+      border-radius: 22px;
+      object-fit: cover;
+      box-shadow: 0 16px 30px rgba(242, 106, 84, 0.24);
+    }
+
+    .pwa-install-card h2 {
+      margin: 16px 0 8px;
+      color: #12263d;
+      font-size: 25px;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .pwa-install-card p {
+      margin: 0;
+      color: #667487;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .pwa-install-primary,
+    .pwa-install-secondary {
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .pwa-install-primary {
+      margin-top: 20px;
+      background: #f26a54;
+      color: #ffffff;
+      box-shadow: 0 14px 28px rgba(242, 106, 84, 0.26);
+    }
+
+    .pwa-install-secondary {
+      margin-top: 8px;
+      background: transparent;
+      color: #667487;
+    }
   </style>
   <script src="https://github.com/corbado/flutter-passkeys/releases/download/2.4.0/bundle.js"></script>
 </head>
@@ -112,20 +202,34 @@
       <h1>Open in mobile</h1>
     </div>
   </div>
+  <div id="pwa-install-modal" aria-hidden="true">
+    <div class="pwa-install-card" role="dialog" aria-modal="true" aria-labelledby="pwa-install-title">
+      <button class="pwa-install-close" id="pwa-install-close" type="button" aria-label="Close">X</button>
+      <img class="pwa-install-logo" src="assets/assets/images/logo.png" alt="MotoBike">
+      <h2 id="pwa-install-title">Install MotoBike</h2>
+      <p id="pwa-install-copy">Open fullscreen from your home screen.</p>
+      <button class="pwa-install-primary" id="pwa-install-primary" type="button">INSTALL APP</button>
+      <button class="pwa-install-secondary" id="pwa-install-later" type="button">MAYBE LATER</button>
+    </div>
+  </div>
   <script>
     (function () {
       var appScope = "/motobikeiphoneapp/";
       var maxPhoneWidth = 600;
       var flutterScriptId = "flutter-bootstrap-script";
       window.motobikePwaDeferredPrompt = null;
+      var installModalShown = false;
 
       window.addEventListener("beforeinstallprompt", function (event) {
         event.preventDefault();
         window.motobikePwaDeferredPrompt = event;
+        updateInstallModal();
+        window.setTimeout(showInstallModal, 250);
       });
 
       window.addEventListener("appinstalled", function () {
         window.motobikePwaDeferredPrompt = null;
+        hideInstallModal();
       });
 
       window.motobikePwaCanPrompt = function () {
@@ -133,7 +237,8 @@
       };
 
       window.motobikePwaIsStandalone = function () {
-        return window.matchMedia("(display-mode: standalone)").matches ||
+        return window.matchMedia("(display-mode: fullscreen)").matches ||
+          window.matchMedia("(display-mode: standalone)").matches ||
           window.navigator.standalone === true;
       };
 
@@ -145,6 +250,182 @@
         window.motobikePwaDeferredPrompt = null;
         return { supported: true, outcome: choice && choice.outcome };
       };
+
+      function installReliableBrowserGps() {
+        var geolocation = window.navigator.geolocation;
+        if (!geolocation || geolocation.__motobikeReliableGps) return;
+
+        var nativeGetCurrentPosition = geolocation.getCurrentPosition.bind(geolocation);
+        var nativeWatchPosition = geolocation.watchPosition &&
+          geolocation.watchPosition.bind(geolocation);
+        var nativeClearWatch = geolocation.clearWatch &&
+          geolocation.clearWatch.bind(geolocation);
+        if (!nativeWatchPosition || !nativeClearWatch) return;
+
+        function reliableGetCurrentPosition(onSuccess, onError, options) {
+          var finished = false;
+          var bestPosition = null;
+          var watchId = null;
+          var settleTimer = null;
+          var excellentTimer = null;
+
+          function accuracyOf(position) {
+            var accuracy = position && position.coords && position.coords.accuracy;
+            return Number.isFinite(accuracy) && accuracy > 0
+              ? accuracy
+              : Number.POSITIVE_INFINITY;
+          }
+
+          function cleanUp() {
+            if (watchId !== null) nativeClearWatch(watchId);
+            window.clearTimeout(settleTimer);
+            window.clearTimeout(excellentTimer);
+            window.clearTimeout(hardTimer);
+          }
+
+          function finish(position, error) {
+            if (finished) return;
+            finished = true;
+            cleanUp();
+            if (position) {
+              onSuccess(position);
+            } else if (typeof onError === "function") {
+              onError(error);
+            }
+          }
+
+          function consider(position) {
+            if (!bestPosition || accuracyOf(position) < accuracyOf(bestPosition)) {
+              bestPosition = position;
+            }
+            if (!settleTimer) {
+              settleTimer = window.setTimeout(function () {
+                finish(bestPosition, null);
+              }, 3500);
+            }
+            if (accuracyOf(bestPosition) <= 50 && !excellentTimer) {
+              excellentTimer = window.setTimeout(function () {
+                finish(bestPosition, null);
+              }, 350);
+            }
+          }
+
+          var requestedOptions = options || {};
+          var gpsOptions = {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: Math.min(
+              Number.isFinite(requestedOptions.timeout)
+                ? requestedOptions.timeout
+                : 8000,
+              8000
+            )
+          };
+          var hardTimer = window.setTimeout(function () {
+            if (bestPosition) {
+              finish(bestPosition, null);
+              return;
+            }
+            nativeGetCurrentPosition(onSuccess, onError, gpsOptions);
+            cleanUp();
+            finished = true;
+          }, 8500);
+
+          try {
+            watchId = nativeWatchPosition(consider, function (error) {
+              finish(bestPosition, error);
+            }, gpsOptions);
+          } catch (error) {
+            cleanUp();
+            finished = true;
+            nativeGetCurrentPosition(onSuccess, onError, gpsOptions);
+          }
+        }
+
+        try {
+          geolocation.getCurrentPosition = reliableGetCurrentPosition;
+          geolocation.__motobikeReliableGps = true;
+        } catch (_) {}
+      }
+
+      function ignoreForbiddenBrowserHeaders() {
+        var prototype = window.XMLHttpRequest && window.XMLHttpRequest.prototype;
+        if (!prototype || prototype.__motobikeSafeHeaders) return;
+        var nativeSetRequestHeader = prototype.setRequestHeader;
+        prototype.setRequestHeader = function (name, value) {
+          if (String(name).toLowerCase() === "user-agent") return;
+          return nativeSetRequestHeader.call(this, name, value);
+        };
+        prototype.__motobikeSafeHeaders = true;
+      }
+
+      function isIosDevice() {
+        var ua = window.navigator.userAgent.toLowerCase();
+        var platform = (window.navigator.platform || "").toLowerCase();
+        return ua.indexOf("iphone") >= 0 ||
+          ua.indexOf("ipad") >= 0 ||
+          ua.indexOf("ipod") >= 0 ||
+          (platform.indexOf("mac") >= 0 && window.navigator.maxTouchPoints > 1);
+      }
+
+      function installModalElements() {
+        return {
+          modal: document.getElementById("pwa-install-modal"),
+          copy: document.getElementById("pwa-install-copy"),
+          primary: document.getElementById("pwa-install-primary"),
+          close: document.getElementById("pwa-install-close"),
+          later: document.getElementById("pwa-install-later")
+        };
+      }
+
+      function updateInstallModal() {
+        var el = installModalElements();
+        if (!el.modal || !el.copy || !el.primary) return;
+        if (isIosDevice()) {
+          el.copy.textContent = "Tap Share, then Add to Home Screen.";
+          el.primary.textContent = "GOT IT";
+          return;
+        }
+        if (window.motobikePwaDeferredPrompt) {
+          el.copy.textContent = "Install for fullscreen app mode.";
+          el.primary.textContent = "INSTALL APP";
+          return;
+        }
+        el.copy.textContent = "Open Chrome menu, then Add to Home screen.";
+        el.primary.textContent = "OPEN MENU";
+      }
+
+      function showInstallModal() {
+        if (installModalShown ||
+          window.motobikePwaIsStandalone() ||
+          document.body.dataset.device !== "supported") {
+          return;
+        }
+        var el = installModalElements();
+        if (!el.modal) return;
+        updateInstallModal();
+        installModalShown = true;
+        el.modal.classList.add("is-visible");
+        el.modal.setAttribute("aria-hidden", "false");
+      }
+
+      function hideInstallModal() {
+        var el = installModalElements();
+        if (!el.modal) return;
+        el.modal.classList.remove("is-visible");
+        el.modal.setAttribute("aria-hidden", "true");
+      }
+
+      async function handleInstallPrimary() {
+        if (window.motobikePwaDeferredPrompt) {
+          await window.motobikePwaPromptInstall();
+        }
+        hideInstallModal();
+      }
+
+      function scheduleInstallModal() {
+        window.setTimeout(showInstallModal, 1200);
+      }
 
       function isPortraitPhone() {
         return window.innerWidth <= maxPhoneWidth && window.innerHeight >= window.innerWidth;
@@ -162,16 +443,31 @@
       function applyDeviceGate() {
         var supported = isPortraitPhone();
         document.body.dataset.device = supported ? "supported" : "unsupported";
-        if (supported) loadFlutter();
+        if (supported) {
+          loadFlutter();
+          scheduleInstallModal();
+        } else {
+          hideInstallModal();
+        }
       }
 
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register(appScope + "sw.js", { scope: appScope }).catch(function () {});
+          navigator.serviceWorker
+            .register(appScope + "sw.js", { scope: appScope })
+            .catch(function () {});
         });
       }
 
+      var installEls = installModalElements();
+      if (installEls.primary) installEls.primary.addEventListener("click", handleInstallPrimary);
+      if (installEls.close) installEls.close.addEventListener("click", hideInstallModal);
+      if (installEls.later) installEls.later.addEventListener("click", hideInstallModal);
+
+      installReliableBrowserGps();
+      ignoreForbiddenBrowserHeaders();
       applyDeviceGate();
+      window.addEventListener("load", scheduleInstallModal);
       window.addEventListener("resize", applyDeviceGate);
       window.addEventListener("orientationchange", applyDeviceGate);
     })();

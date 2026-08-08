@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPlace {
@@ -27,6 +28,11 @@ class MapRepository {
 
   final Dio _dio;
   static const Distance _distance = Distance();
+
+  Options? get _nominatimOptions => kIsWeb
+      ? null
+      : Options(headers: const {'User-Agent': 'MotoBikeClient/1.0'});
+
   static const List<_AddisPlace> _priorityAddisPlaces = [
     _AddisPlace('Bole', 8.9947, 38.7891, [
       'bole',
@@ -343,11 +349,7 @@ class MapRepository {
           'viewbox': '38.62,9.12,38.92,8.82',
           'limit': 8,
         },
-        options: Options(
-          headers: {
-            'User-Agent': 'MotoBikeClient/1.0', // Required by Nominatim policy
-          },
-        ),
+        options: _nominatimOptions,
       );
 
       if (response.statusCode == 200) {
@@ -385,11 +387,7 @@ class MapRepository {
           'addressdetails': 1,
           'zoom': 18,
         },
-        options: Options(
-          headers: {
-            'User-Agent': 'MotoBikeClient/1.0',
-          },
-        ),
+        options: _nominatimOptions,
       );
 
       if (response.statusCode == 200) {

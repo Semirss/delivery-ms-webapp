@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://motobikedeliveryservice.com"),
   title: {
     default: "MotoBike - Fast & Reliable Delivery Service in Ethiopia",
     template: "%s | MotoBike"
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "MotoBike - Fast & Reliable Delivery Service in Ethiopia",
     description: "Book a bike or motorbike for fast, secure, and affordable package delivery.",
-    url: "https://motobike-delivery.com",
+    url: "https://motobikedeliveryservice.com",
     siteName: "MotoBike",
     images: [
       {

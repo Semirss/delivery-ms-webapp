@@ -1,4 +1,4 @@
-const CACHE_NAME = "motobikeiphoneapp-v3";
+const CACHE_NAME = "motobikeiphoneapp-v6";
 const APP_SCOPE = "/motobikeiphoneapp/";
 const APP_SHELL = [
   APP_SCOPE,
