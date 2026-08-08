@@ -18,7 +18,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="MotoBike client delivery app.">
   <meta name="keywords" content="motobikeiphoneapp, MotoBike app, MotoBike client, delivery app">
   <meta name="robots" content="index, follow">
@@ -102,6 +102,50 @@
       font-size: 15px;
       font-weight: 700;
       line-height: 1.5;
+    }
+
+    /* ── Fullscreen nudge banner ── */
+    #fullscreen-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: linear-gradient(90deg, #f26a54 0%, #d94f38 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      gap: 10px;
+      box-shadow: 0 2px 12px rgba(242,106,84,0.4);
+    }
+    body[data-device="supported"]:not([data-standalone="true"]) #fullscreen-banner {
+      display: flex;
+    }
+    #fullscreen-banner span { flex: 1; }
+    #fullscreen-banner button {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border: 2px solid rgba(255,255,255,0.7);
+      border-radius: 20px;
+      background: transparent;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+    }
+    #fullscreen-banner .fs-dismiss {
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 4px;
+      cursor: pointer;
     }
 
     #pwa-install-modal {
@@ -196,6 +240,13 @@
   <script src="https://github.com/corbado/flutter-passkeys/releases/download/2.4.0/bundle.js"></script>
 </head>
 <body>
+  <!-- Fullscreen nudge banner (hidden when already standalone/fullscreen) -->
+  <div id="fullscreen-banner" role="banner">
+    <span>For the best experience, open fullscreen</span>
+    <button id="fs-go-btn" type="button">GO FULLSCREEN</button>
+    <button class="fs-dismiss" id="fs-dismiss-btn" type="button" aria-label="Dismiss">✕</button>
+  </div>
+
   <div id="unsupported-device" aria-live="polite">
     <div class="unsupported-card">
       <img class="unsupported-logo" src="assets/assets/images/logo.png" alt="MotoBike">
@@ -212,6 +263,68 @@
       <button class="pwa-install-secondary" id="pwa-install-later" type="button">MAYBE LATER</button>
     </div>
   </div>
+  <script>
+    /* ── Fullscreen API helper ── */
+    (function () {
+      function isStandalone() {
+        return window.matchMedia("(display-mode: fullscreen)").matches ||
+          window.matchMedia("(display-mode: standalone)").matches ||
+          window.navigator.standalone === true;
+      }
+
+      function requestFullscreen() {
+        var el = document.documentElement;
+        var fn = el.requestFullscreen || el.webkitRequestFullscreen ||
+          el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (fn) fn.call(el).catch(function () {});
+      }
+
+      function hideBanner() {
+        var b = document.getElementById("fullscreen-banner");
+        if (b) b.style.display = "none";
+      }
+
+      /* Mark standalone so CSS hides the banner */
+      if (isStandalone()) {
+        document.body.setAttribute("data-standalone", "true");
+        hideBanner();
+      }
+
+      /* Auto-request fullscreen on first user tap (requires user gesture) */
+      var fullscreenRequested = false;
+      function onFirstInteraction() {
+        if (fullscreenRequested) return;
+        fullscreenRequested = true;
+        if (!isStandalone()) {
+          requestFullscreen();
+          hideBanner();
+        }
+        document.removeEventListener("touchstart", onFirstInteraction);
+        document.removeEventListener("click", onFirstInteraction);
+      }
+      document.addEventListener("touchstart", onFirstInteraction, { once: true, passive: true });
+      document.addEventListener("click", onFirstInteraction, { once: true });
+
+      /* Banner buttons */
+      document.addEventListener("DOMContentLoaded", function () {
+        var goBtn = document.getElementById("fs-go-btn");
+        var dismissBtn = document.getElementById("fs-dismiss-btn");
+        if (goBtn) goBtn.addEventListener("click", function () {
+          requestFullscreen();
+          hideBanner();
+        });
+        if (dismissBtn) dismissBtn.addEventListener("click", hideBanner);
+
+        /* Listen for fullscreen change to hide banner */
+        document.addEventListener("fullscreenchange", function () {
+          if (document.fullscreenElement) hideBanner();
+        });
+        document.addEventListener("webkitfullscreenchange", function () {
+          if (document.webkitFullscreenElement) hideBanner();
+        });
+      });
+    })();
+  </script>
   <script>
     (function () {
       var appScope = "/motobikeiphoneapp/";
