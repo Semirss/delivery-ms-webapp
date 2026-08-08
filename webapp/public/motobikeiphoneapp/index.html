@@ -31,7 +31,40 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="motobikeiphoneapp">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <!-- iOS icons: 180px required for iPhone home-screen icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icons/Icon-512.png">
+
+  <!-- iOS splash screens (startup images) so the app looks native while loading -->
+  <!-- iPhone 16 Pro Max -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone 16 Pro -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone 15 Pro Max / 14 Plus -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone 15 / 14 Pro -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone 14 -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone 13 mini / 12 mini -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+    href="icons/Icon-512.png">
+  <!-- iPhone SE (3rd gen) -->
+  <link rel="apple-touch-startup-image"
+    media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+    href="icons/Icon-512.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png" />
@@ -50,6 +83,84 @@
       color: #12263d;
       font-family: Arial, Helvetica, sans-serif;
       overscroll-behavior: none;
+    }
+
+    /* ── Native-feel splash screen shown while Flutter loads ── */
+    #app-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #f26a54 0%, #c94735 55%, #8b2d22 100%);
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #app-splash.splash-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Hide splash entirely on unsupported (desktop) devices */
+    body[data-device="unsupported"] #app-splash {
+      display: none;
+    }
+
+    .splash-logo {
+      width: 100px;
+      height: 100px;
+      border-radius: 24px;
+      object-fit: cover;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+      margin-bottom: 28px;
+      animation: splash-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes splash-pop {
+      from {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .splash-title {
+      color: #fff;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 0 0 8px;
+    }
+
+    .splash-sub {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 0 40px;
+    }
+
+    .splash-spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: splash-spin 0.8s linear infinite;
+    }
+
+    @keyframes splash-spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     #unsupported-device {
@@ -262,16 +373,21 @@
       box-shadow: 0 -12px 48px rgba(18, 38, 61, 0.22);
       padding: 0 0 env(safe-area-inset-bottom, 16px);
       transform: translateY(100%);
-      pointer-events: none;        /* off-screen: never block touches */
+      pointer-events: none;
+      /* off-screen: never block touches */
       transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
     }
+
     #ios-install-sheet.sheet-open {
       transform: translateY(0);
-      pointer-events: auto;        /* on-screen: receive touches normally */
+      pointer-events: auto;
+      /* on-screen: receive touches normally */
     }
+
     body[data-device="supported"] #ios-install-sheet {
       display: flex;
     }
+
     .ios-sheet-handle {
       width: 40px;
       height: 4px;
@@ -279,13 +395,15 @@
       background: #d1d5db;
       margin: 12px auto 0;
     }
+
     .ios-sheet-header {
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 18px 20px 10px;
-      border-bottom: 1px solid rgba(0,0,0,0.07);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07);
     }
+
     .ios-sheet-app-icon {
       width: 56px;
       height: 56px;
@@ -294,19 +412,25 @@
       box-shadow: 0 6px 18px rgba(242, 106, 84, 0.28);
       flex-shrink: 0;
     }
-    .ios-sheet-header-text { text-align: left; }
+
+    .ios-sheet-header-text {
+      text-align: left;
+    }
+
     .ios-sheet-header-text h3 {
       margin: 0 0 2px;
       font-size: 17px;
       font-weight: 700;
       color: #12263d;
     }
+
     .ios-sheet-header-text p {
       margin: 0;
       font-size: 13px;
       color: #667487;
       font-weight: 500;
     }
+
     .ios-sheet-close {
       margin-left: auto;
       flex-shrink: 0;
@@ -323,17 +447,20 @@
       align-items: center;
       justify-content: center;
     }
+
     .ios-steps {
       padding: 16px 20px 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+
     .ios-step {
       display: flex;
       align-items: center;
       gap: 14px;
     }
+
     .ios-step-num {
       width: 28px;
       height: 28px;
@@ -347,6 +474,7 @@
       justify-content: center;
       flex-shrink: 0;
     }
+
     .ios-step-icon {
       width: 38px;
       height: 38px;
@@ -357,8 +485,15 @@
       justify-content: center;
       flex-shrink: 0;
     }
-    .ios-step-icon svg { display: block; }
-    .ios-step-text { text-align: left; }
+
+    .ios-step-icon svg {
+      display: block;
+    }
+
+    .ios-step-text {
+      text-align: left;
+    }
+
     .ios-step-text strong {
       display: block;
       font-size: 14px;
@@ -366,11 +501,13 @@
       color: #12263d;
       margin-bottom: 2px;
     }
+
     .ios-step-text span {
       font-size: 12px;
       color: #667487;
       font-weight: 500;
     }
+
     /* Bouncing arrow pointing at Safari bottom bar */
     .ios-arrow-hint {
       display: flex;
@@ -379,22 +516,33 @@
       padding: 0 20px 14px;
       gap: 4px;
     }
+
     .ios-arrow-hint span {
       font-size: 11px;
       color: #667487;
       font-weight: 600;
       letter-spacing: 0.3px;
     }
+
     .ios-bounce-arrow {
       animation: ios-bounce 1.2s ease-in-out infinite;
       color: #f26a54;
       font-size: 22px;
       line-height: 1;
     }
+
     @keyframes ios-bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(6px);
+      }
     }
+
     /* Backdrop for iOS sheet */
     #ios-install-backdrop {
       position: fixed;
@@ -404,13 +552,17 @@
       backdrop-filter: blur(6px);
       display: none;
       opacity: 0;
-      pointer-events: none;        /* never block touches when invisible */
+      pointer-events: none;
+      /* never block touches when invisible */
       transition: opacity 0.3s;
     }
+
     #ios-install-backdrop.visible {
       opacity: 1;
-      pointer-events: auto;        /* only capture touches when actually shown */
+      pointer-events: auto;
+      /* only capture touches when actually shown */
     }
+
     body[data-device="supported"] #ios-install-backdrop {
       display: block;
     }
@@ -419,6 +571,14 @@
 </head>
 
 <body>
+  <!-- Native-feel splash screen, hidden once Flutter is ready -->
+  <div id="app-splash" aria-hidden="true">
+    <img class="splash-logo" src="icons/Icon-192.png" alt="MotoBike">
+    <p class="splash-title">MotoBike</p>
+    <p class="splash-sub">Delivery at your door</p>
+    <div class="splash-spinner"></div>
+  </div>
+
   <!-- Fullscreen nudge banner (hidden when already standalone/fullscreen) -->
   <div id="fullscreen-banner" role="banner">
     <span>For the best experience, open fullscreen</span>
@@ -462,8 +622,9 @@
         <div class="ios-step-icon">
           <!-- Safari Share icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3L8 7H11V15H13V7H16L12 3Z" fill="#007AFF"/>
-            <path d="M5 11V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V11" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 3L8 7H11V15H13V7H16L12 3Z" fill="#007AFF" />
+            <path d="M5 11V19C5 20.1 5.9 21 7 21H17C18.1 21 19 20.1 19 19V11" stroke="#007AFF" stroke-width="2"
+              stroke-linecap="round" />
           </svg>
         </div>
         <div class="ios-step-text">
@@ -476,8 +637,8 @@
         <div class="ios-step-icon">
           <!-- Add to Home Screen icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="3" width="18" height="18" rx="4" stroke="#007AFF" stroke-width="2"/>
-            <path d="M12 8V16M8 12H16" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+            <rect x="3" y="3" width="18" height="18" rx="4" stroke="#007AFF" stroke-width="2" />
+            <path d="M12 8V16M8 12H16" stroke="#007AFF" stroke-width="2" stroke-linecap="round" />
           </svg>
         </div>
         <div class="ios-step-text">
@@ -490,7 +651,8 @@
         <div class="ios-step-icon">
           <!-- Tap Add icon -->
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 13L9 17L19 7" stroke="#34C759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 13L9 17L19 7" stroke="#34C759" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
         </div>
         <div class="ios-step-text">
@@ -505,7 +667,7 @@
     </div>
   </div>
   <script>
-    /* ── Fullscreen API helper ── */
+    /* ── Fullscreen API helper new updates are  ── */
     (function () {
       function isStandalone() {
         return window.matchMedia("(display-mode: fullscreen)").matches ||
@@ -830,10 +992,40 @@
 
       function loadFlutter() {
         if (document.getElementById(flutterScriptId)) return;
+
+        /* Safety fallback: hide splash after 15s no matter what */
+        var splashTimeout = window.setTimeout(function () {
+          var splash = document.getElementById("app-splash");
+          if (splash) splash.classList.add("splash-hidden");
+        }, 15000);
+
+        function hideSplash() {
+          window.clearTimeout(splashTimeout);
+          var splash = document.getElementById("app-splash");
+          if (splash) splash.classList.add("splash-hidden");
+        }
+
         var script = document.createElement("script");
         script.id = flutterScriptId;
         script.src = "flutter_bootstrap.js";
         script.async = true;
+        script.addEventListener("load", function () {
+          /* NOTE: flutter_bootstrap.js auto-initialises Flutter itself.
+             Do NOT call _flutter.loader.load() here — that would double-init
+             and cause the app to hang. Only hook splash-dismiss signals. */
+
+          /* Signal 1: Flutter's own first-frame event */
+          window.addEventListener("flutter-first-frame", hideSplash, { once: true });
+
+          /* Signal 2: Watch for flt-glass-pane in the DOM (reliable fallback) */
+          var observer = new MutationObserver(function () {
+            if (document.querySelector("flt-glass-pane")) {
+              observer.disconnect();
+              window.setTimeout(hideSplash, 400);
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        });
         document.body.appendChild(script);
       }
 
