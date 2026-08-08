@@ -26,7 +26,7 @@ class DriverProfileRepository {
       );
     }
 
-    final deliveries = await _loadDeliveries(driverId);
+    final deliveries = await _loadDeliveries(driver, user);
     final rating = await _loadRatingSummary(driverId);
     final unreadNotifications = await _loadUnreadNotificationCount(driver);
 
@@ -108,16 +108,47 @@ class DriverProfileRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> _loadDeliveries(String driverId) async {
-    try {
-      final data = await _supabase
-          .from('deliveries')
-          .select()
-          .eq('driver_id', driverId)
-          .order('created_at', ascending: false)
-          .limit(150);
+  Future<List<Map<String, dynamic>>> _loadDeliveries(
+    Map<String, dynamic> driver,
+    UserEntity? user,
+  ) async {
+    final driverIds = <String>{
+      if (_isUuidLike(driver['id']?.toString())) driver['id'].toString(),
+      if (_isUuidLike(user?.id)) user!.id,
+      if (_isUuidLike(_supabase.auth.currentUser?.id))
+        _supabase.auth.currentUser!.id,
+    }.toList(growable: false);
 
-      return List<Map<String, dynamic>>.from(data);
+    if (driverIds.isEmpty) return const [];
+
+    try {
+      final responses = await Future.wait(
+        driverIds.map(
+          (driverId) => _supabase
+              .from('deliveries')
+              .select()
+              .eq('driver_id', driverId)
+              .order('created_at', ascending: false)
+              .limit(150),
+        ),
+      );
+
+      final byId = <String, Map<String, dynamic>>{};
+      for (final response in responses) {
+        for (final delivery in List<Map<String, dynamic>>.from(response)) {
+          final id = delivery['id']?.toString();
+          if (id == null || id.isEmpty) continue;
+          byId[id] = delivery;
+        }
+      }
+
+      final deliveries = byId.values.toList();
+      deliveries.sort((a, b) {
+        final aDate = asDate(a['created_at']) ?? DateTime(0);
+        final bDate = asDate(b['created_at']) ?? DateTime(0);
+        return bDate.compareTo(aDate);
+      });
+      return deliveries;
     } catch (_) {
       return const [];
     }
@@ -363,4 +394,12 @@ DateTime? asDate(Object? value) {
 String? _clean(String? value) {
   final trimmed = value?.trim();
   return trimmed == null || trimmed.isEmpty ? null : trimmed;
+}
+
+bool _isUuidLike(String? value) {
+  final text = value?.trim();
+  if (text == null || text.isEmpty) return false;
+  return RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+  ).hasMatch(text);
 }

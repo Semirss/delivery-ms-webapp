@@ -7,6 +7,9 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+const approvalRequiredMessage =
+    'Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.';
+
 export async function OPTIONS() {
     return new NextResponse(null, { status: 204, headers: corsHeaders });
 }
@@ -21,16 +24,17 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email and password are required' }, { status: 400, headers: corsHeaders });
         }
 
-        const { data, error } = await supabase
+        const { data: rows, error } = await supabase
             .from('drivers')
             .select('*')
-            .eq('email', normalizedEmail)
-            .maybeSingle();
+            .ilike('email', normalizedEmail)
+            .limit(1);
 
         if (error) {
             return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
         }
 
+        const data = rows?.[0] || null;
         if (!data) {
             return NextResponse.json(
                 { error: 'No driver account found with this email. Ask admin to add this email to your driver profile.' },
@@ -40,6 +44,13 @@ export async function POST(request: Request) {
 
         if (data.password !== password) {
             return NextResponse.json({ error: 'Invalid email or password' }, { status: 401, headers: corsHeaders });
+        }
+
+        const approvalStatus = typeof data.approval_status === 'string'
+            ? data.approval_status.trim().toLowerCase()
+            : 'pending';
+        if (approvalStatus !== 'approved') {
+            return NextResponse.json({ error: approvalRequiredMessage }, { status: 403, headers: corsHeaders });
         }
 
         return NextResponse.json(data, { headers: corsHeaders });

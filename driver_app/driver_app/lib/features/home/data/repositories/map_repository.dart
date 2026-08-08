@@ -2,29 +2,74 @@ import 'package:dio/dio.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapRepository {
-  final Dio _dio = Dio();
+  MapRepository()
+    : _dio = Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 3),
+          receiveTimeout: const Duration(seconds: 5),
+          sendTimeout: const Duration(seconds: 3),
+        ),
+      );
+
+  final Dio _dio;
 
   /// Get route polyline using OSRM API
   Future<List<LatLng>> getRoute(LatLng start, LatLng end) async {
+    if (!_isValidPoint(start) || !_isValidPoint(end)) return [];
+
     try {
-      final url = 'http://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson';
-      final response = await _dio.get(url);
+      final url = 'https://router.project-osrm.org/route/v1/driving/'
+          '${start.longitude},${start.latitude};'
+          '${end.longitude},${end.latitude}'
+          '?overview=full&geometries=geojson';
+      final response = await _dio.get<Map<String, dynamic>>(url);
 
       if (response.statusCode == 200) {
         final data = response.data;
-        if (data['routes'] != null && (data['routes'] as List).isNotEmpty) {
-          final geometry = data['routes'][0]['geometry'];
-          final coordinates = geometry['coordinates'] as List;
-          
-          return coordinates.map((coord) {
-            return LatLng(coord[1] as double, coord[0] as double);
-          }).toList();
+        final routes = data?['routes'];
+        if (routes is List && routes.isNotEmpty) {
+          final route = routes.first;
+          if (route is! Map<String, dynamic>) return [];
+
+          final geometry = route['geometry'];
+          if (geometry is! Map<String, dynamic>) return [];
+
+          final coordinates = geometry['coordinates'];
+          if (coordinates is! List) return [];
+
+          final routePoints = <LatLng>[];
+          for (final coordinate in coordinates) {
+            if (coordinate is List && coordinate.length >= 2) {
+              final longitude = coordinate[0];
+              final latitude = coordinate[1];
+              if (longitude is num && latitude is num) {
+                final point = LatLng(latitude.toDouble(), longitude.toDouble());
+                if (_isValidPoint(point)) routePoints.add(point);
+              }
+            }
+          }
+          if (routePoints.length >= 2) return routePoints;
+          return _fallbackRoute(start, end);
         }
       }
-      return [];
+      return _fallbackRoute(start, end);
     } catch (e) {
       print('Error getting route: $e');
-      return [];
+      return _fallbackRoute(start, end);
     }
+  }
+
+  List<LatLng> _fallbackRoute(LatLng start, LatLng end) {
+    if (!_isValidPoint(start) || !_isValidPoint(end)) return [];
+    return <LatLng>[start, end];
+  }
+
+  bool _isValidPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
   }
 }

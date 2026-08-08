@@ -12,6 +12,7 @@ import 'package:driver_app/features/auth/data/repositories/auth_repository_impl.
 import 'package:driver_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:driver_app/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:driver_app/features/auth/domain/usecases/login_with_google_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/resend_otp_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/reset_password_usecase.dart';
@@ -55,6 +56,7 @@ Future<void> configureDependencies() async {
       ),
     )
     ..registerFactory(() => LoginUseCase(getIt<AuthRepository>()))
+    ..registerFactory(() => LoginWithGoogleUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => SignUpUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => VerifyOtpUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => ResendOtpUseCase(getIt<AuthRepository>()))
@@ -65,6 +67,7 @@ Future<void> configureDependencies() async {
     ..registerFactory(
       () => AuthBloc(
         loginUseCase: getIt<LoginUseCase>(),
+        loginWithGoogleUseCase: getIt<LoginWithGoogleUseCase>(),
         signUpUseCase: getIt<SignUpUseCase>(),
         verifyOtpUseCase: getIt<VerifyOtpUseCase>(),
         resendOtpUseCase: getIt<ResendOtpUseCase>(),

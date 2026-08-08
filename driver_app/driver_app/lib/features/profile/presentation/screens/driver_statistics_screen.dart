@@ -5,6 +5,7 @@ import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 class DriverStatisticsScreen extends StatefulWidget {
   const DriverStatisticsScreen({super.key});
@@ -17,6 +18,8 @@ class _DriverStatisticsScreenState extends State<DriverStatisticsScreen> {
   final DriverProfileRepository _repository = DriverProfileRepository();
 
   DriverProfileSnapshot? _snapshot;
+  RealtimeChannel? _deliveriesChannel;
+  String? _subscribedDriverId;
   bool _isLoading = true;
 
   @override
@@ -34,6 +37,35 @@ class _DriverStatisticsScreenState extends State<DriverStatisticsScreen> {
       _snapshot = snapshot;
       _isLoading = false;
     });
+    _subscribe(snapshot.driverId);
+  }
+
+  void _subscribe(String? driverId) {
+    if (driverId == null || driverId.isEmpty) return;
+    if (_subscribedDriverId == driverId) return;
+    _subscribedDriverId = driverId;
+
+    _deliveriesChannel?.unsubscribe();
+    _deliveriesChannel = Supabase.instance.client
+        .channel('public:deliveries:statistics:$driverId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'deliveries',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'driver_id',
+            value: driverId,
+          ),
+          callback: (_) => _load(),
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    _deliveriesChannel?.unsubscribe();
+    super.dispose();
   }
 
   @override

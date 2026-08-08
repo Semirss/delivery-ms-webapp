@@ -23,7 +23,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
             const { data: existingEmail, error: existingEmailError } = await supabase
                 .from('drivers')
                 .select('id')
-                .eq('email', updates.email)
+                .ilike('email', updates.email)
                 .neq('id', id)
                 .maybeSingle();
 

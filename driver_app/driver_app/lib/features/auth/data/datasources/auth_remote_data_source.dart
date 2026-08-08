@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:driver_app/core/config/app_config.dart';
@@ -10,6 +12,7 @@ import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> login(LoginParams params);
+  Future<AuthResponseModel> loginWithGoogle();
   Future<AuthResponseModel> signUp(SignUpParams params);
   Future<AuthResponseModel> verifyOtp(OtpVerificationParams params);
   Future<void> resendOtp(String verificationKey);
@@ -27,11 +30,15 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
+  static const String _googleRedirectUrl = 'motobike-driver://login-callback/';
+  static const String _supportPhone = '+251 931 323 328';
+  static const String _supportEmail = 'support@motobike.app';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
     final email = params.email.trim().toLowerCase();
     if (email.isEmpty) throw Exception('Enter your driver email.');
+    if (params.password.isEmpty) throw Exception('Please enter your password.');
 
     try {
       final apiLogin = await _tryLoginViaWebApi(
@@ -43,11 +50,13 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       if (statusCode >= 500 || statusCode == 0) rethrow;
     }
 
-    final data = await _supabase
+    final rows = await _supabase
         .from('drivers')
         .select()
-        .eq('email', email)
-        .maybeSingle();
+        .ilike('email', email)
+        .limit(1);
+    final driverRows = List<Map<String, dynamic>>.from(rows);
+    final data = driverRows.isEmpty ? null : driverRows.first;
 
     if (data == null) {
       throw Exception(
@@ -60,18 +69,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Invalid email or password.');
     }
 
-    final approvalStatus =
-        driver['approval_status']?.toString().trim().isNotEmpty == true
-        ? driver['approval_status'].toString()
-        : 'Pending';
-
-    if (approvalStatus == 'Pending') {
-      throw Exception(
-        'Waiting for approval. You cannot login until the admin approves your account.',
-      );
-    }
-    if (approvalStatus != 'Approved') {
-      throw Exception('Your driver account is not approved.');
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
+      throw Exception(_approvalRequiredMessage(approvalStatus));
     }
 
     return AuthResponseModel(
@@ -83,8 +83,98 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<AuthResponseModel> loginWithGoogle() async {
+    final sessionUser = _currentGoogleUser();
+    if (sessionUser != null) {
+      return _driverFromGoogleUser(sessionUser);
+    }
+
+    final completer = Completer<User>();
+    late final StreamSubscription<AuthState> subscription;
+    subscription = _supabase.auth.onAuthStateChange.listen((data) {
+      final user = data.session?.user;
+      if (user != null && !completer.isCompleted) {
+        completer.complete(user);
+      }
+    });
+
+    try {
+      final launched = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: kIsWeb ? null : _googleRedirectUrl,
+      );
+      if (!launched) {
+        throw Exception('Could not open Google sign-in. Please try again.');
+      }
+
+      final user = await _waitForGoogleUser(completer);
+      return _driverFromGoogleUser(user);
+    } finally {
+      await subscription.cancel();
+    }
+  }
+
+  User? _currentGoogleUser() {
+    return _supabase.auth.currentUser ?? _supabase.auth.currentSession?.user;
+  }
+
+  Future<User> _waitForGoogleUser(Completer<User> authChange) async {
+    final deadline = DateTime.now().add(const Duration(minutes: 2));
+    while (DateTime.now().isBefore(deadline)) {
+      final user = _currentGoogleUser();
+      if (user != null) return user;
+      if (authChange.isCompleted) return authChange.future;
+
+      await Future.any<Object?>([
+        authChange.future,
+        Future<void>.delayed(const Duration(milliseconds: 250)),
+      ]);
+    }
+
+    throw TimeoutException(
+      'Google sign-in was not completed. Please try again.',
+    );
+  }
+
+  @override
   Future<AuthResponseModel> signUp(SignUpParams params) async {
     return _signUpViaWebApi(params);
+  }
+
+  Future<AuthResponseModel> _driverFromGoogleUser(User googleUser) async {
+    final email = googleUser.email?.trim().toLowerCase() ?? '';
+    if (email.isEmpty) {
+      throw Exception('Google did not return an email address.');
+    }
+
+    final rows = await _supabase
+        .from('drivers')
+        .select()
+        .ilike('email', email)
+        .limit(1);
+    final driverRows = List<Map<String, dynamic>>.from(rows);
+    final data = driverRows.isEmpty ? null : driverRows.first;
+
+    if (data == null) {
+      await _supabase.auth.signOut();
+      throw Exception(
+        'No driver account exists for this Google email. Please submit a driver application first.',
+      );
+    }
+
+    final driver = Map<String, dynamic>.from(data);
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
+      await _supabase.auth.signOut();
+      throw Exception(_approvalRequiredMessage(approvalStatus));
+    }
+
+    return AuthResponseModel(
+      user: _driverUser(driver, fallbackEmail: email),
+      accessToken: _driverToken(driver),
+      refreshToken: _driverToken(driver, refresh: true),
+      requiresVerification: false,
+    );
   }
 
   Future<AuthResponseModel?> _tryLoginViaWebApi(LoginParams params) async {
@@ -93,23 +183,17 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     final response = await _dio.post<Map<String, dynamic>>(
       '$apiBaseUrl/api/drivers/login',
-      data: {'email': params.email.trim().toLowerCase(), 'password': params.password},
+      data: {
+        'email': params.email.trim().toLowerCase(),
+        'password': params.password,
+      },
     );
     final driver = Map<String, dynamic>.from(response.data ?? {});
     if (driver.isEmpty) throw Exception('Invalid driver login response.');
 
-    final approvalStatus =
-        driver['approval_status']?.toString().trim().isNotEmpty == true
-        ? driver['approval_status'].toString()
-        : 'Pending';
-
-    if (approvalStatus == 'Pending') {
-      throw Exception(
-        'Waiting for approval. You cannot login until the admin approves your account.',
-      );
-    }
-    if (approvalStatus != 'Approved') {
-      throw Exception('Your driver account is not approved.');
+    final approvalStatus = _driverApprovalStatus(driver);
+    if (!_isApprovedStatus(approvalStatus)) {
+      throw Exception(_approvalRequiredMessage(approvalStatus));
     }
 
     return AuthResponseModel(
@@ -129,18 +213,33 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final fullName = _fullName(params);
+    final email = params.email.trim().toLowerCase();
+    final phone = params.phone?.trim() ?? '';
+    final telegram = params.telegramUsername?.trim() ?? '';
+    final plate = params.plateNumber?.trim() ?? '';
+    if (fullName.isEmpty) throw Exception('Please enter your full name.');
+    if (email.isEmpty) throw Exception('Please enter your email.');
+    if (phone.isEmpty) throw Exception('Please enter your phone number.');
+    if (telegram.isEmpty)
+      throw Exception('Please enter your Telegram username.');
+    if (plate.isEmpty) throw Exception('Please enter your plate number.');
+    if (params.password.isEmpty) throw Exception('Please enter your password.');
+    if (params.password.length < 6) {
+      throw Exception('Password must be at least 6 characters.');
+    }
+
     final bytes = params.personalIdBytes;
     if (bytes == null || bytes.isEmpty) {
       throw Exception('Personal ID photo is required.');
     }
 
     final data = dio.FormData.fromMap({
-      'email': params.email.trim().toLowerCase(),
-      'name': fullName.isEmpty ? params.email.trim() : fullName,
-      'phone': params.phone?.trim() ?? '',
+      'email': email,
+      'name': fullName,
+      'phone': phone,
       'password': params.password,
-      'telegram_username': params.telegramUsername?.trim() ?? '',
-      'plate_number': params.plateNumber?.trim() ?? '',
+      'telegram_username': telegram,
+      'plate_number': plate,
       'vehicle_type': params.vehicleType ?? 'Bike',
       'status': 'Offline',
       'personal_id': dio.MultipartFile.fromBytes(
@@ -231,6 +330,22 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     return fallback;
   }
 
+  String _driverApprovalStatus(Map<String, dynamic> driver) {
+    final status = driver['approval_status']?.toString().trim();
+    return status?.isNotEmpty == true ? status! : 'Pending';
+  }
+
+  bool _isApprovedStatus(String status) =>
+      status.trim().toLowerCase() == 'approved';
+
+  String _approvalRequiredMessage(String approvalStatus) {
+    final normalizedStatus = approvalStatus.trim();
+    final statusText = normalizedStatus.toLowerCase() == 'pending'
+        ? 'Your driver application is still waiting for admin approval.'
+        : 'Your driver account is $normalizedStatus. Admin approval is required before login.';
+    return 'Approval required first. $statusText If this takes too long, contact admin at $_supportPhone or $_supportEmail.';
+  }
+
   String _fullName(SignUpParams params) {
     final firstName = params.firstName?.trim() ?? '';
     final lastName = params.lastName?.trim() ?? '';
@@ -300,7 +415,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logout() async {
-    return;
+    await _supabase.auth.signOut();
   }
 
   @override
@@ -315,7 +430,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     return UserModel(
       id: driver['id']?.toString() ?? '',
-      email: storedEmail?.isNotEmpty == true ? storedEmail! : fallbackEmail ?? '',
+      email: storedEmail?.isNotEmpty == true
+          ? storedEmail!
+          : fallbackEmail ?? '',
       isEmailVerified: false,
       firstName: nameParts.isEmpty ? name : nameParts.first,
       lastName: nameParts.length > 1 ? nameParts.skip(1).join(' ') : null,

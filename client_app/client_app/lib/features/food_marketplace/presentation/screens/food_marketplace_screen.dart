@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:client_app/config/router/app_routes.dart';
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/map/addis_ababa_base_map.dart';
+import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_app/features/home/data/repositories/map_repository.dart';
@@ -8,8 +13,12 @@ import 'package:client_app/features/search/presentation/screens/search_destinati
 import 'package:client_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 class _FoodDeliveryPricing {
@@ -43,6 +52,24 @@ const Map<String, _FoodDeliveryPricing> _foodDeliveryPricing = {
 
 const double _fallbackFoodPickupLat = 9.0108;
 const double _fallbackFoodPickupLng = 38.7612;
+const LatLng _fallbackFoodDeliveryCenter = LatLng(8.9806, 38.7578);
+
+bool _isValidFoodMapPoint(LatLng point) {
+  return point.latitude.isFinite &&
+      point.longitude.isFinite &&
+      point.latitude >= -90 &&
+      point.latitude <= 90 &&
+      point.longitude >= -180 &&
+      point.longitude <= 180;
+}
+
+LatLng _safeFoodMapPoint(LatLng? point) {
+  return point != null && _isValidFoodMapPoint(point)
+      ? point
+      : _fallbackFoodDeliveryCenter;
+}
+
+enum _FoodDeliveryAddressChoice { gps, neighborhood, pinOnMap }
 
 int _clampFoodRating(int value) {
   if (value < 1) return 1;
@@ -57,8 +84,14 @@ class FoodMarketplaceScreen extends StatefulWidget {
   State<FoodMarketplaceScreen> createState() => _FoodMarketplaceScreenState();
 }
 
-class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
+class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
+    with WidgetsBindingObserver {
   static const double _bottomNavClearance = 132;
+  static const String _foodCategoriesCacheKey =
+      'food_marketplace.categories.v1';
+  static const String _foodItemsCacheKey = 'food_marketplace.items.v1';
+  static const String _foodRestaurantsCacheKey =
+      'food_marketplace.restaurants.v1';
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final MapRepository _mapRepository = MapRepository();
@@ -85,23 +118,29 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
   Uint8List? _selectedImageBytes;
   String? _selectedImageName;
   String? _uploadedImageUrl;
-  bool _isLoading = true;
+  bool _isLoading = false;
+  bool _isSyncingMarketplace = false;
   bool _isSubmitting = false;
+  RealtimeChannel? _marketplaceChannel;
+  Timer? _marketplaceRefreshDebounce;
 
   @override
   void initState() {
     super.initState();
-    _loadFoodMarketplace();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_loadFoodMarketplace());
+    _subscribeFoodMarketplaceUpdates();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<AuthBloc>().state;
       if (state is AuthAuthenticated && mounted) {
-        _phoneController.text = state.user.phone ?? '';
+        _phoneController.text = ethiopianPhoneInputText(state.user.phone ?? '');
       }
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchFocusNode.dispose();
     _searchController.dispose();
     _titleController.dispose();
@@ -110,49 +149,118 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     _phoneController.dispose();
     _pickupController.dispose();
     _descriptionController.dispose();
+    _marketplaceRefreshDebounce?.cancel();
+    _marketplaceChannel?.unsubscribe();
     super.dispose();
   }
 
-  Future<void> _loadFoodMarketplace() async {
-    setState(() => _isLoading = true);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    unawaited(
+      _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
+    );
+  }
+
+  void _subscribeFoodMarketplaceUpdates() {
+    _marketplaceChannel?.unsubscribe();
+    _marketplaceChannel = _supabase
+        .channel('public:food_marketplace:client')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_categories',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_marketplace_items',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_restaurants',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'food_item_ratings',
+          callback: (_) => _scheduleMarketplaceRefresh(),
+        )
+        .subscribe();
+  }
+
+  void _scheduleMarketplaceRefresh() {
+    _marketplaceRefreshDebounce?.cancel();
+    _marketplaceRefreshDebounce = Timer(const Duration(milliseconds: 450), () {
+      if (!mounted) return;
+      unawaited(
+        _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
+      );
+    });
+  }
+
+  Future<void> _loadFoodMarketplace({
+    bool forceRefresh = false,
+    bool restoreCache = true,
+  }) async {
+    final restoredFromCache = restoreCache
+        ? await _restoreFoodMarketplaceCache()
+        : _items.isNotEmpty;
+    if (!mounted) return;
+    setState(() {
+      _isSyncingMarketplace = true;
+      _isLoading = forceRefresh && !restoredFromCache && _items.isEmpty;
+    });
+
     try {
       final authState = context.read<AuthBloc>().state;
       final currentUserId = authState is AuthAuthenticated
           ? authState.user.id
           : null;
-      final categoriesData = await _supabase
-          .from('food_categories')
-          .select()
-          .eq('is_active', true)
-          .order('sort_order', ascending: true)
-          .order('name', ascending: true);
-      final itemsData = await _supabase
-          .from('food_marketplace_items')
-          .select(
-            '*, category:food_categories(name), restaurant:food_restaurants(name)',
-          )
-          .eq('is_active', true)
-          .order('is_featured', ascending: false)
-          .order('sort_order', ascending: true)
-          .order('created_at', ascending: false);
-      final restaurantsData = await _supabase
-          .from('food_restaurants')
-          .select()
-          .eq('is_active', true)
-          .order('is_featured', ascending: false)
-          .order('sort_order', ascending: true)
-          .order('name', ascending: true);
+      final responses = await Future.wait<dynamic>([
+        _supabase
+            .from('food_categories')
+            .select()
+            .eq('is_active', true)
+            .order('sort_order', ascending: true)
+            .order('name', ascending: true),
+        _supabase
+            .from('food_marketplace_items')
+            .select(
+              '*, category:food_categories(name), restaurant:food_restaurants(name)',
+            )
+            .eq('is_active', true)
+            .order('is_featured', ascending: false)
+            .order('sort_order', ascending: true)
+            .order('created_at', ascending: false),
+        _supabase
+            .from('food_restaurants')
+            .select()
+            .eq('is_active', true)
+            .order('is_featured', ascending: false)
+            .order('sort_order', ascending: true)
+            .order('name', ascending: true),
+      ]);
 
-      final categories = List<Map<String, dynamic>>.from(
-        categoriesData,
-      ).map(_FoodCategory.fromMap).toList();
-      final items = List<Map<String, dynamic>>.from(
-        itemsData,
-      ).map(_FoodItem.fromMap).toList();
+      final categoriesRows = _rowsFromResponse(responses[0]);
+      final itemsRows = _rowsFromResponse(responses[1]);
+      final restaurantsRows = _rowsFromResponse(responses[2]);
+
+      final categories = categoriesRows.map(_FoodCategory.fromMap).toList();
+      final items = itemsRows.map(_FoodItem.fromMap).toList();
       final ratedItems = await _attachFoodRatings(items, currentUserId);
-      final restaurants = List<Map<String, dynamic>>.from(
-        restaurantsData,
-      ).map(_RestaurantFeature.fromMap).toList();
+      final restaurants = restaurantsRows
+          .map(_RestaurantFeature.fromMap)
+          .toList();
+      await _saveFoodMarketplaceCache(
+        categories: categoriesRows,
+        items: ratedItems.map((item) => item.toCacheMap()).toList(),
+        restaurants: restaurantsRows,
+      );
 
       if (!mounted) return;
       setState(() {
@@ -161,18 +269,85 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         _restaurants = restaurants.isEmpty ? _featuredRestaurants : restaurants;
         _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
         _isLoading = false;
+        _isSyncingMarketplace = false;
       });
     } catch (e) {
       debugPrint('Food marketplace fallback: $e');
       if (!mounted) return;
       setState(() {
-        _categories = _sampleCategories;
-        _items = _sampleItems;
-        _restaurants = _featuredRestaurants;
+        if (!restoredFromCache) {
+          _categories = _sampleCategories;
+          _items = _sampleItems;
+          _restaurants = _featuredRestaurants;
+        }
         _sellCategoryId ??= _sampleCategories.first.id;
         _isLoading = false;
+        _isSyncingMarketplace = false;
       });
     }
+  }
+
+  Future<bool> _restoreFoodMarketplaceCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final categoryRows = _cachedRows(prefs.getString(_foodCategoriesCacheKey));
+      final itemRows = _cachedRows(prefs.getString(_foodItemsCacheKey));
+      final restaurantRows = _cachedRows(
+        prefs.getString(_foodRestaurantsCacheKey),
+      );
+      if (categoryRows.isEmpty && itemRows.isEmpty && restaurantRows.isEmpty) {
+        return false;
+      }
+
+      if (!mounted) return false;
+      setState(() {
+        if (categoryRows.isNotEmpty) {
+          _categories = categoryRows.map(_FoodCategory.fromMap).toList();
+        }
+        if (itemRows.isNotEmpty) {
+          _items = itemRows.map(_FoodItem.fromMap).toList();
+        }
+        if (restaurantRows.isNotEmpty) {
+          _restaurants = restaurantRows.map(_RestaurantFeature.fromMap).toList();
+        }
+        _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
+      });
+      return true;
+    } catch (e) {
+      debugPrint('Food marketplace cache restore failed: $e');
+      return false;
+    }
+  }
+
+  Future<void> _saveFoodMarketplaceCache({
+    required List<Map<String, dynamic>> categories,
+    required List<Map<String, dynamic>> items,
+    required List<Map<String, dynamic>> restaurants,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    await Future.wait([
+      prefs.setString(_foodCategoriesCacheKey, jsonEncode(categories)),
+      prefs.setString(_foodItemsCacheKey, jsonEncode(items)),
+      prefs.setString(_foodRestaurantsCacheKey, jsonEncode(restaurants)),
+    ]);
+  }
+
+  List<Map<String, dynamic>> _cachedRows(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return const [];
+    final decoded = jsonDecode(raw);
+    return _rowsFromResponse(decoded);
+  }
+
+  List<Map<String, dynamic>> _rowsFromResponse(Object? response) {
+    if (response is! Iterable<Object?>) return const [];
+    return response
+        .whereType<Map<Object?, Object?>>()
+        .map(
+          (row) => row.map(
+            (key, value) => MapEntry(key.toString(), value),
+          ),
+        )
+        .toList();
   }
 
   List<_FoodItem> get _visibleItems {
@@ -403,13 +578,30 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     );
   }
 
-  void _selectRestaurant(_RestaurantFeature restaurant) {
-    setState(() {
-      _tab = 'for_you';
-      _categoryFilterId = null;
-      _restaurantFilterId = restaurant.id;
-      _restaurantFilterName = restaurant.name;
-    });
+  List<_FoodItem> _itemsForRestaurant(_RestaurantFeature restaurant) {
+    return _items.where((item) {
+      final matchesId =
+          restaurant.id != null && item.restaurantId == restaurant.id;
+      final matchesLinkedName = _sameText(item.restaurantName, restaurant.name);
+      final matchesSellerName =
+          item.restaurantId == null &&
+          _sameText(item.sellerName, restaurant.name);
+      return matchesId || matchesLinkedName || matchesSellerName;
+    }).toList();
+  }
+
+  Future<void> _openRestaurant(_RestaurantFeature restaurant) async {
+    final restaurantItems = _itemsForRestaurant(restaurant);
+    await Navigator.of(context, rootNavigator: true).push<void>(
+      MaterialPageRoute(
+        builder: (_) => _RestaurantMenuScreen(
+          restaurant: restaurant,
+          items: restaurantItems,
+          onOrder: _openOrderSheet,
+          onRatingTap: _openFoodRatingSheet,
+        ),
+      ),
+    );
   }
 
   void _clearRestaurantFilter() {
@@ -523,7 +715,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         'image_url': imageUrl,
         'restaurant_name': restaurantName.isEmpty ? null : restaurantName,
         'seller_name': name.isEmpty ? state.user.email : name,
-        'seller_phone': _phoneController.text.trim(),
+        'seller_phone': normalizeEthiopianPhone(_phoneController.text),
         'pickup_location': _pickupController.text.trim(),
         'category_id': _sellCategoryId,
         'source_type': 'client',
@@ -541,7 +733,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         _selectedImageName = null;
         _uploadedImageUrl = null;
       });
-      await _loadFoodMarketplace();
+      await _loadFoodMarketplace(forceRefresh: true, restoreCache: false);
 
       if (!mounted) return;
       setState(() => _tab = 'for_you');
@@ -590,7 +782,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
   Future<void> _openOrderSheet(_FoodItem item) async {
     final state = context.read<AuthBloc>().state;
     final initialPhone = state is AuthAuthenticated
-        ? state.user.phone ?? ''
+        ? ethiopianPhoneInputText(state.user.phone ?? '')
         : '';
 
     await showModalBottomSheet<void>(
@@ -750,9 +942,31 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                     const SizedBox(height: AppSpacing.lg),
                     _FoodDeliveryAddressPicker(
                       address: selectedDestination?.displayName,
-                      onTap: () => _pickFoodDeliveryAddress(
-                        addressController: addressController,
-                        onDestinationChanged: onDestinationChanged,
+                      onTap: () => unawaited(
+                        _chooseFoodDeliveryAddress(
+                          initialPoint: selectedDestination?.location,
+                          addressController: addressController,
+                          onDestinationChanged: onDestinationChanged,
+                        ),
+                      ),
+                      onGpsTap: () => unawaited(
+                        _useFoodGpsDeliveryAddress(
+                          addressController: addressController,
+                          onDestinationChanged: onDestinationChanged,
+                        ),
+                      ),
+                      onNeighborhoodTap: () => unawaited(
+                        _chooseFoodNeighborhoodAddress(
+                          addressController: addressController,
+                          onDestinationChanged: onDestinationChanged,
+                        ),
+                      ),
+                      onPinTap: () => unawaited(
+                        _pinFoodDeliveryAddress(
+                          initialPoint: selectedDestination?.location,
+                          addressController: addressController,
+                          onDestinationChanged: onDestinationChanged,
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.md),
@@ -773,6 +987,8 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                       label: 'Phone number',
                       icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
+                      prefixText: '$ethiopianDialCode ',
+                      validator: validateEthiopianPhone,
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     AppButton.primary(
@@ -780,11 +996,14 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                       icon: Icons.delivery_dining_rounded,
                       fullWidth: true,
                       onPressed: () async {
-                        final phone = phoneController.text.trim();
+                        final phone = normalizeEthiopianPhone(
+                          phoneController.text,
+                        );
                         if (selectedDestination == null) {
                           AppToast.show(
                             context: context,
-                            message: 'Choose a delivery address.',
+                            message:
+                                'Choose where to deliver: use GPS, Neighborhood, or Pin map.',
                             type: AppToastType.error,
                           );
                           return;
@@ -792,15 +1011,17 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                         if (selectedVehicle == null) {
                           AppToast.show(
                             context: context,
-                            message: 'Choose Bike or Motor.',
+                            message:
+                                'Choose delivery vehicle: tap Bicycle or Motorbike.',
                             type: AppToastType.error,
                           );
                           return;
                         }
-                        if (phone.isEmpty) {
+                        final phoneError = validateEthiopianPhone(phone);
+                        if (phoneError != null) {
                           AppToast.show(
                             context: context,
-                            message: 'Add phone number.',
+                            message: phoneError,
                             type: AppToastType.error,
                           );
                           return;
@@ -841,20 +1062,234 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
     );
   }
 
-  Future<void> _pickFoodDeliveryAddress({
+  Future<void> _chooseFoodDeliveryAddress({
+    required LatLng? initialPoint,
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final choice = await showModalBottomSheet<_FoodDeliveryAddressChoice>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return SafeArea(
+          top: false,
+          child: Container(
+            margin: const EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: sheetContext.appSurface,
+              borderRadius: BorderRadius.circular(26),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.18),
+                  blurRadius: 28,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText(
+                  'Where should we deliver?',
+                  variant: AppTextVariant.heading3,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                AppText(
+                  'Choose the easiest way to set your exact delivery point.',
+                  variant: AppTextVariant.bodySmall,
+                  color: sheetContext.appTextSecondary,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                _FoodAddressChoiceTile(
+                  icon: Icons.my_location_rounded,
+                  title: 'Use current GPS',
+                  subtitle: 'Best for door-to-door food delivery.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _FoodDeliveryAddressChoice.gps,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _FoodAddressChoiceTile(
+                  icon: Icons.travel_explore_rounded,
+                  title: 'Choose neighborhood',
+                  subtitle: 'Pick an Addis Ababa area manually.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _FoodDeliveryAddressChoice.neighborhood,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                _FoodAddressChoiceTile(
+                  icon: Icons.add_location_alt_rounded,
+                  title: 'Pin on map',
+                  subtitle: 'Move the map and place the delivery pin.',
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _FoodDeliveryAddressChoice.pinOnMap,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (!mounted || choice == null) return;
+
+    switch (choice) {
+      case _FoodDeliveryAddressChoice.gps:
+        await _useFoodGpsDeliveryAddress(
+          addressController: addressController,
+          onDestinationChanged: onDestinationChanged,
+        );
+      case _FoodDeliveryAddressChoice.neighborhood:
+        await _chooseFoodNeighborhoodAddress(
+          addressController: addressController,
+          onDestinationChanged: onDestinationChanged,
+        );
+      case _FoodDeliveryAddressChoice.pinOnMap:
+        await _pinFoodDeliveryAddress(
+          initialPoint: initialPoint,
+          addressController: addressController,
+          onDestinationChanged: onDestinationChanged,
+        );
+    }
+  }
+
+  Future<void> _chooseFoodNeighborhoodAddress({
     required TextEditingController addressController,
     required ValueChanged<MapPlace> onDestinationChanged,
   }) async {
     final destination = await Navigator.of(context, rootNavigator: true)
-        .push<MapPlace>(
+        .push<Object?>(
           MaterialPageRoute(
-            builder: (context) => const SearchDestinationScreen(),
+            builder: (context) => const SearchDestinationScreen(
+              title: 'Where should we deliver?',
+              subtitle: 'Choose the delivery neighborhood or closest area.',
+              emptyTitle: 'No delivery area found',
+              emptyMessagePrefix: 'Try another spelling for',
+              defaultSectionTitle: 'Major delivery areas',
+              defaultSectionSubtitle: 'Tap an area to use it for delivery.',
+            ),
           ),
         );
     if (destination == null || !mounted) return;
+    if (destination == SearchDestinationAction.pinOnMap) {
+      await _pinFoodDeliveryAddress(
+        initialPoint: null,
+        addressController: addressController,
+        onDestinationChanged: onDestinationChanged,
+      );
+      return;
+    }
+    if (destination is! MapPlace) return;
 
     addressController.text = destination.displayName;
     onDestinationChanged(destination);
+  }
+
+  Future<void> _useFoodGpsDeliveryAddress({
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final point = await _currentFoodGpsPoint();
+    if (point == null || !mounted) return;
+    await _setFoodDeliveryAddressFromPoint(
+      point,
+      fallbackName: 'Current GPS delivery address',
+      addressController: addressController,
+      onDestinationChanged: onDestinationChanged,
+    );
+  }
+
+  Future<void> _pinFoodDeliveryAddress({
+    required LatLng? initialPoint,
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
+      MaterialPageRoute(
+        builder: (context) => _FoodPinLocationScreen(
+          initialCenter: _safeFoodMapPoint(initialPoint),
+        ),
+      ),
+    );
+    if (point == null || !mounted) return;
+    await _setFoodDeliveryAddressFromPoint(
+      point,
+      fallbackName: 'Pinned delivery address',
+      addressController: addressController,
+      onDestinationChanged: onDestinationChanged,
+    );
+  }
+
+  Future<void> _setFoodDeliveryAddressFromPoint(
+    LatLng point, {
+    required String fallbackName,
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    if (!_isValidFoodMapPoint(point)) return;
+    final destination = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
+    );
+    if (!mounted) return;
+    addressController.text = destination.displayName;
+    onDestinationChanged(destination);
+  }
+
+  Future<LatLng?> _currentFoodGpsPoint() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (!mounted) return null;
+        await AppModal.info<void>(
+          context: context,
+          title: 'Turn on location',
+          contentText: 'Enable GPS to use your current delivery address.',
+          icon: Icons.location_off_outlined,
+        );
+        return null;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (!mounted) return null;
+        AppToast.show(
+          context: context,
+          message: 'Location permission is needed for GPS delivery.',
+          type: AppToastType.error,
+        );
+        return null;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 12),
+      );
+      final point = LatLng(position.latitude, position.longitude);
+      return _isValidFoodMapPoint(point) ? point : null;
+    } catch (e) {
+      debugPrint('Food GPS lookup error: $e');
+      if (!mounted) return null;
+      AppToast.show(
+        context: context,
+        message: 'Could not read GPS. Choose neighborhood or pin map.',
+        type: AppToastType.error,
+      );
+      return null;
+    }
   }
 
   LatLng _foodPickupPoint(_FoodItem item) {
@@ -925,29 +1360,42 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       ].join(' - ');
       final pickupPoint = _foodPickupPoint(item);
 
-      await _supabase.from('deliveries').insert({
-        'customer_name': customerName.isEmpty ? state.user.email : customerName,
-        'customer_phone': phone,
-        'client_id': state.user.id,
-        'pickup_location': pickupDetails,
-        'pickup_lat': pickupPoint.latitude,
-        'pickup_lng': pickupPoint.longitude,
-        'dropoff_location': destination.displayName,
-        'dropoff_lat': destination.location.latitude,
-        'dropoff_lng': destination.location.longitude,
-        'package_type': 'Food: $packageDetails',
-        'service_type': 'food_marketplace',
-        'vehicle_category': vehicleCategory,
-        'delivery_fee': deliveryFee,
-        'status': 'Pending',
-      });
+      final inserted = await _supabase
+          .from('deliveries')
+          .insert({
+            'customer_name': customerName.isEmpty
+                ? state.user.email
+                : customerName,
+            'customer_phone': phone,
+            'client_id': state.user.id,
+            'pickup_location': pickupDetails,
+            'pickup_lat': pickupPoint.latitude,
+            'pickup_lng': pickupPoint.longitude,
+            'dropoff_location': destination.displayName,
+            'dropoff_lat': destination.location.latitude,
+            'dropoff_lng': destination.location.longitude,
+            'package_type': 'Food: $packageDetails',
+            'service_type': 'food_marketplace',
+            'vehicle_category': vehicleCategory,
+            'delivery_fee': deliveryFee,
+            'status': 'Pending',
+          })
+          .select('id')
+          .single();
 
       if (!mounted) return;
       AppToast.show(
         context: context,
-        message: 'Food delivery request sent.',
+        message: 'Food delivery request sent. Opening tracking.',
         type: AppToastType.success,
       );
+      final deliveryId = inserted['id']?.toString();
+      if (deliveryId != null && deliveryId.isNotEmpty) {
+        context.goNamed(
+          AppRoutes.tracking.name,
+          queryParameters: {'deliveryId': deliveryId},
+        );
+      }
     } catch (e) {
       debugPrint('Food delivery request error: $e');
       if (!mounted) return;
@@ -978,10 +1426,21 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
       backgroundColor: context.appBackground,
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: _loadFoodMarketplace,
+          onRefresh: () =>
+              _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(child: _buildHeader()),
+              if (_isSyncingMarketplace)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    child: LinearProgressIndicator(
+                      minHeight: 2,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
               if (_isLoading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -1115,9 +1574,10 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
         separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
         itemBuilder: (context, index) {
           final restaurant = _restaurants[index];
+          final foodCount = _itemsForRestaurant(restaurant).length;
           return InkWell(
             borderRadius: BorderRadius.circular(18),
-            onTap: () => _selectRestaurant(restaurant),
+            onTap: () => _openRestaurant(restaurant),
             child: Container(
               width: 220,
               decoration: BoxDecoration(
@@ -1160,7 +1620,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                         borderRadius: BorderRadius.circular(AppRadius.full),
                       ),
                       child: AppText(
-                        restaurant.isFeatured ? 'Featured' : 'Restaurant',
+                        restaurant.isFeatured
+                            ? 'Featured restaurant'
+                            : 'Restaurant',
                         variant: AppTextVariant.labelSmall,
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -1189,6 +1651,42 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
                           color: Colors.white.withValues(alpha: 0.84),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.full,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.storefront_rounded,
+                                    color: AppColors.primary,
+                                    size: 15,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  AppText(
+                                    foodCount == 1
+                                        ? 'Open menu - 1 food'
+                                        : 'Open menu - $foodCount foods',
+                                    variant: AppTextVariant.labelSmall,
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -1433,6 +1931,8 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen> {
               label: 'Phone number',
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
+              prefixText: '$ethiopianDialCode ',
+              validator: validateEthiopianPhone,
             ),
             const SizedBox(height: AppSpacing.md),
             _FormFieldBox(
@@ -1581,6 +2081,295 @@ class _FoodItemCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RestaurantMenuScreen extends StatefulWidget {
+  const _RestaurantMenuScreen({
+    required this.restaurant,
+    required this.items,
+    required this.onOrder,
+    required this.onRatingTap,
+  });
+
+  final _RestaurantFeature restaurant;
+  final List<_FoodItem> items;
+  final ValueChanged<_FoodItem> onOrder;
+  final ValueChanged<_FoodItem> onRatingTap;
+
+  @override
+  State<_RestaurantMenuScreen> createState() => _RestaurantMenuScreenState();
+}
+
+class _RestaurantMenuScreenState extends State<_RestaurantMenuScreen> {
+  String? _selectedCategoryId;
+
+  List<_FoodCategory> get _menuCategories {
+    final seen = <String>{};
+    final categories = <_FoodCategory>[];
+    for (final item in widget.items) {
+      final id =
+          (item.categoryId?.trim().isNotEmpty == true
+                  ? item.categoryId
+                  : item.categoryName)
+              ?.trim();
+      final name = item.categoryName.trim().isEmpty
+          ? 'Food'
+          : item.categoryName.trim();
+      if (id == null || id.isEmpty || seen.contains(id)) continue;
+      seen.add(id);
+      categories.add(_FoodCategory(id: id, name: name));
+    }
+    return categories;
+  }
+
+  List<_FoodItem> get _visibleItems {
+    final selected = _selectedCategoryId;
+    if (selected == null) return widget.items;
+    return widget.items.where((item) {
+      final id = item.categoryId?.trim().isNotEmpty == true
+          ? item.categoryId!.trim()
+          : item.categoryName.trim();
+      return id == selected;
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final restaurant = widget.restaurant;
+    final items = widget.items;
+    final visibleItems = _visibleItems;
+    final menuCategories = _menuCategories;
+
+    return Scaffold(
+      backgroundColor: context.appBackground,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 282,
+            backgroundColor: context.appSurface,
+            foregroundColor: context.appTextPrimary,
+            leading: Padding(
+              padding: const EdgeInsetsDirectional.only(start: AppSpacing.sm),
+              child: Material(
+                color: Colors.white.withValues(alpha: 0.92),
+                shape: const CircleBorder(),
+                child: IconButton(
+                  tooltip: 'Back',
+                  icon: const Icon(
+                    Icons.arrow_back_rounded,
+                    color: Color(0xFF10243A),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  _NetworkFoodImage(url: restaurant.imageUrl),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.12),
+                          Colors.black.withValues(alpha: 0.34),
+                          Colors.black.withValues(alpha: 0.78),
+                        ],
+                      ),
+                    ),
+                  ),
+                  PositionedDirectional(
+                    start: AppSpacing.lg,
+                    end: AppSpacing.lg,
+                    bottom: AppSpacing.xl,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary,
+                            borderRadius: BorderRadius.circular(AppRadius.full),
+                          ),
+                          child: const AppText(
+                            'Restaurant menu',
+                            variant: AppTextVariant.labelSmall,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        AppText(
+                          restaurant.name,
+                          variant: AppTextVariant.heading1,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.md,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.storefront_rounded,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText(
+                          restaurant.subtitle.trim().isEmpty
+                              ? 'Restaurant'
+                              : restaurant.subtitle,
+                          variant: AppTextVariant.bodyMedium,
+                          color: context.appTextSecondary,
+                          fontWeight: FontWeight.w700,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        AppText(
+                          items.length == 1
+                              ? '1 food available'
+                              : '${items.length} foods available',
+                          variant: AppTextVariant.labelLarge,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (items.isNotEmpty && menuCategories.length > 1)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppText(
+                      'Menu categories',
+                      variant: AppTextVariant.bodyMedium,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _CategoryChip(
+                            label: 'All',
+                            selected: _selectedCategoryId == null,
+                            onTap: () =>
+                                setState(() => _selectedCategoryId = null),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          ...menuCategories.map(
+                            (category) => Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                end: AppSpacing.sm,
+                              ),
+                              child: _CategoryChip(
+                                label: category.name,
+                                selected: _selectedCategoryId == category.id,
+                                onTap: () => setState(
+                                  () => _selectedCategoryId = category.id,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (items.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Center(
+                  child: AppText(
+                    'No foods are linked to this restaurant yet.',
+                    variant: AppTextVariant.heading3,
+                    color: context.appTextSecondary,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+              ),
+              sliver: SliverGrid(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final item = visibleItems[index];
+                  return _FoodItemCard(
+                    item: item,
+                    onTap: () => widget.onOrder(item),
+                    onRatingTap: () => widget.onRatingTap(item),
+                  );
+                }, childCount: visibleItems.length),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 1,
+                  crossAxisSpacing: 1,
+                  childAspectRatio: 0.66,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -2027,6 +2816,7 @@ class _FormFieldBox extends StatelessWidget {
     required this.label,
     required this.icon,
     this.keyboardType,
+    this.prefixText,
     this.validator,
     this.minLines = 1,
   });
@@ -2035,6 +2825,7 @@ class _FormFieldBox extends StatelessWidget {
   final String label;
   final IconData icon;
   final TextInputType? keyboardType;
+  final String? prefixText;
   final String? Function(String?)? validator;
   final int minLines;
 
@@ -2054,6 +2845,7 @@ class _FormFieldBox extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
+        prefixText: prefixText,
         filled: true,
         fillColor: context.appSurface,
         border: OutlineInputBorder(
@@ -2079,21 +2871,27 @@ class _SheetField extends StatelessWidget {
     required this.label,
     required this.icon,
     this.keyboardType,
+    this.prefixText,
+    this.validator,
   });
 
   final TextEditingController controller;
   final String label;
   final IconData icon;
   final TextInputType? keyboardType;
+  final String? prefixText;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
+      validator: validator,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
+        prefixText: prefixText,
         filled: true,
         fillColor: context.appSurfaceAlt,
         border: OutlineInputBorder(
@@ -2117,60 +2915,337 @@ class _FoodDeliveryAddressPicker extends StatelessWidget {
   const _FoodDeliveryAddressPicker({
     required this.address,
     required this.onTap,
+    required this.onGpsTap,
+    required this.onNeighborhoodTap,
+    required this.onPinTap,
   });
 
   final String? address;
   final VoidCallback onTap;
+  final VoidCallback onGpsTap;
+  final VoidCallback onNeighborhoodTap;
+  final VoidCallback onPinTap;
 
   @override
   Widget build(BuildContext context) {
     final hasAddress = address != null && address!.trim().isNotEmpty;
+    final borderColor = hasAddress ? AppColors.success : AppColors.primary;
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      onTap: onTap,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: context.appSurfaceAlt,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(
-            color: hasAddress ? AppColors.primary : context.appBorder,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: hasAddress
+                ? AppColors.success.withValues(alpha: 0.08)
+                : AppColors.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: borderColor, width: 2),
+            boxShadow: [
+              if (!hasAddress)
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.14),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+            ],
           ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.location_on_outlined,
-              color: hasAddress ? AppColors.primary : context.appTextSecondary,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  AppText(
-                    'Delivery address',
-                    variant: AppTextVariant.labelSmall,
-                    color: context.appTextSecondary,
-                    fontWeight: FontWeight.w800,
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: borderColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Icon(
+                      Icons.add_location_alt_rounded,
+                      color: Colors.white,
+                    ),
                   ),
-                  const SizedBox(height: 2),
-                  AppText(
-                    hasAddress ? address! : 'Choose where to deliver',
-                    variant: AppTextVariant.bodyMedium,
-                    fontWeight: FontWeight.w900,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AppText(
+                          hasAddress
+                              ? 'Delivery address selected'
+                              : 'Delivery address',
+                          variant: AppTextVariant.labelSmall,
+                          color: borderColor,
+                          fontWeight: FontWeight.w900,
+                        ),
+                        const SizedBox(height: 2),
+                        AppText(
+                          hasAddress ? address! : 'Choose where to deliver',
+                          variant: hasAddress
+                              ? AppTextVariant.bodyMedium
+                              : AppTextVariant.heading3,
+                          fontWeight: FontWeight.w900,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    hasAddress
+                        ? Icons.check_circle_rounded
+                        : Icons.expand_more_rounded,
+                    color: borderColor,
+                    size: hasAddress ? 30 : 32,
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Icon(Icons.chevron_right_rounded, color: context.appTextSecondary),
-          ],
+              const SizedBox(height: AppSpacing.md),
+              Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  _FoodAddressAction(
+                    icon: Icons.my_location_rounded,
+                    label: 'GPS',
+                    onTap: onGpsTap,
+                  ),
+                  _FoodAddressAction(
+                    icon: Icons.travel_explore_rounded,
+                    label: 'Neighborhood',
+                    onTap: onNeighborhoodTap,
+                  ),
+                  _FoodAddressAction(
+                    icon: Icons.add_location_alt_rounded,
+                    label: 'Pin map',
+                    onTap: onPinTap,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _FoodAddressChoiceTile extends StatelessWidget {
+  const _FoodAddressChoiceTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.appSurfaceAlt,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(icon, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      title,
+                      variant: AppTextVariant.bodyMedium,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      subtitle,
+                      variant: AppTextVariant.bodySmall,
+                      color: context.appTextSecondary,
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: context.appTextSecondary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FoodAddressAction extends StatelessWidget {
+  const _FoodAddressAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ActionChip(
+      avatar: Icon(icon, size: 18, color: AppColors.primary),
+      label: Text(label),
+      labelStyle: TextStyle(
+        color: context.appTextPrimary,
+        fontWeight: FontWeight.w900,
+      ),
+      backgroundColor: context.appSurface,
+      side: BorderSide(color: context.appBorder),
+      onPressed: onTap,
+    );
+  }
+}
+
+class _FoodPinLocationScreen extends StatefulWidget {
+  const _FoodPinLocationScreen({required this.initialCenter});
+
+  final LatLng initialCenter;
+
+  @override
+  State<_FoodPinLocationScreen> createState() => _FoodPinLocationScreenState();
+}
+
+class _FoodPinLocationScreenState extends State<_FoodPinLocationScreen> {
+  final MapController _controller = MapController();
+  late LatLng _center;
+
+  @override
+  void initState() {
+    super.initState();
+    _center = _safeFoodMapPoint(widget.initialCenter);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          FlutterMap(
+            mapController: _controller,
+            options: MapOptions(
+              initialCenter: _center,
+              initialZoom: 15,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
+              onPositionChanged: (camera, _) {
+                if (_isValidFoodMapPoint(camera.center)) {
+                  _center = camera.center;
+                }
+              },
+            ),
+            children: [
+              ...addisAbabaBaseMapLayers(
+                userAgentPackageName: 'com.motobikedeliveryservice.client',
+              ),
+            ],
+          ),
+          Center(
+            child: IgnorePointer(
+              child: Transform.translate(
+                offset: const Offset(0, -26),
+                child: const Icon(
+                  Icons.location_on_rounded,
+                  color: AppColors.primary,
+                  size: 52,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Material(
+                  color: context.appSurface,
+                  shape: const CircleBorder(),
+                  elevation: 8,
+                  child: IconButton(
+                    tooltip: 'Back',
+                    icon: Icon(
+                      Icons.arrow_back_rounded,
+                      color: context.appTextPrimary,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            bottom: AppSpacing.lg,
+            child: SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: context.appSurface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.16),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppText(
+                      'Pin delivery address',
+                      variant: AppTextVariant.heading3,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppButton.primary(
+                      label: 'USE DELIVERY PIN',
+                      fullWidth: true,
+                      icon: Icons.add_location_alt_rounded,
+                      onPressed: () => Navigator.pop(context, _center),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -2187,35 +3262,93 @@ class _FoodVehicleSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const AppText(
-          'Choose delivery vehicle',
-          variant: AppTextVariant.bodyMedium,
-          fontWeight: FontWeight.w900,
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Expanded(
-              child: _FoodVehicleOption(
-                vehicleCategory: 'Bike',
-                selected: selectedVehicle == 'Bike',
-                onTap: () => onChanged('Bike'),
-              ),
+    final hasSelection = selectedVehicle != null;
+    final borderColor = hasSelection ? AppColors.success : AppColors.primary;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: hasSelection
+            ? AppColors.success.withValues(alpha: 0.07)
+            : AppColors.primary.withValues(alpha: 0.09),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: borderColor, width: 2),
+        boxShadow: [
+          if (!hasSelection)
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
             ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: _FoodVehicleOption(
-                vehicleCategory: 'Motor',
-                selected: selectedVehicle == 'Motor',
-                onTap: () => onChanged('Motor'),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: borderColor,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.two_wheeler_rounded,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      hasSelection
+                          ? 'Delivery vehicle selected'
+                          : 'Choose delivery vehicle',
+                      variant: AppTextVariant.bodyMedium,
+                      color: borderColor,
+                      fontWeight: FontWeight.w900,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      'Tap Bicycle or Motorbike to continue.',
+                      variant: AppTextVariant.bodySmall,
+                      color: context.appTextSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ],
+                ),
+              ),
+              if (hasSelection)
+                Icon(Icons.check_circle_rounded, color: borderColor, size: 28),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: _FoodVehicleOption(
+                  vehicleCategory: 'Bike',
+                  selected: selectedVehicle == 'Bike',
+                  onTap: () => onChanged('Bike'),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _FoodVehicleOption(
+                  vehicleCategory: 'Motor',
+                  selected: selectedVehicle == 'Motor',
+                  onTap: () => onChanged('Motor'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -2491,6 +3624,10 @@ class _CategoryChip extends StatelessWidget {
       onSelected: (_) => onTap(),
       selectedColor: AppColors.primary.withValues(alpha: 0.14),
       backgroundColor: context.appSurface,
+      labelStyle: TextStyle(
+        color: selected ? AppColors.primary : context.appTextPrimary,
+        fontWeight: FontWeight.w900,
+      ),
       side: BorderSide(color: selected ? AppColors.primary : context.appBorder),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.full),
@@ -2562,6 +3699,7 @@ class _FoodItem {
       isFeatured: map['is_featured'] == true,
       ratingAverage: _asNullableDouble(map['rating_average']) ?? 0,
       ratingCount: int.tryParse(map['rating_count']?.toString() ?? '') ?? 0,
+      userRating: int.tryParse(map['user_rating']?.toString() ?? ''),
     );
   }
 
@@ -2641,6 +3779,29 @@ class _FoodItem {
     );
   }
 
+  Map<String, dynamic> toCacheMap() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'image_url': imageUrl,
+      'seller_name': sellerName,
+      'seller_phone': sellerPhone,
+      'pickup_location': pickupLocation,
+      'pickup_lat': pickupLat,
+      'pickup_lng': pickupLng,
+      'category_id': categoryId,
+      'category_name': categoryName,
+      'restaurant_id': restaurantId,
+      'restaurant_name': restaurantName,
+      'is_featured': isFeatured,
+      'rating_average': ratingAverage,
+      'rating_count': ratingCount,
+      'user_rating': userRating,
+    };
+  }
+
   static double? _asNullableDouble(Object? value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();
@@ -2663,7 +3824,8 @@ class _RestaurantFeature {
       id: map['id']?.toString(),
       name: map['name']?.toString() ?? 'Restaurant',
       subtitle: map['subtitle']?.toString() ?? '',
-      imageUrl: map['image_url']?.toString() ?? '',
+      imageUrl:
+          map['banner_url']?.toString() ?? map['image_url']?.toString() ?? '',
       isFeatured: map['is_featured'] == true,
       sortOrder: int.tryParse(map['sort_order']?.toString() ?? '') ?? 0,
     );

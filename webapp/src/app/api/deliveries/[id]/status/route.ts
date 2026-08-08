@@ -1,17 +1,50 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 
+const ASSIGN_TIMEOUT_MS = 2 * 60 * 1000;
+
+function errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error';
+}
+
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
     const supabase = await getSupabaseAdmin();
     try {
         const { id } = await context.params;
         const { status, cancelled_by, cancellation_reason } = await request.json();
 
-        const updatePayload: Record<string, any> = { status };
+        if (status === 'Pending' && cancelled_by === 'timeout') {
+            const { data: current, error: currentError } = await supabase
+                .from('deliveries')
+                .select('id,status,assigned_at,driver_id,cancelled_by,cancellation_reason')
+                .eq('id', id)
+                .single();
 
-        // Track who/what caused a cancellation or re-pending
+            if (currentError) throw currentError;
+
+            const assignedTime = current.assigned_at
+                ? new Date(current.assigned_at).getTime()
+                : Number.NaN;
+            const isExpired =
+                Number.isFinite(assignedTime) &&
+                Date.now() - assignedTime > ASSIGN_TIMEOUT_MS;
+
+            if (current.status !== 'Assigned' || !isExpired) {
+                return NextResponse.json(current);
+            }
+        }
+
+        const updatePayload: Record<string, unknown> = { status };
+
+        // Track who/what caused a cancellation or re-pending. Once a delivery
+        // moves forward, clear stale timeout/reject metadata so admin cards do
+        // not keep showing "no accept" after the driver accepted.
         if (cancelled_by) updatePayload.cancelled_by = cancelled_by;
         if (cancellation_reason) updatePayload.cancellation_reason = cancellation_reason;
+        if (status !== 'Pending' && status !== 'Cancelled') {
+            updatePayload.cancelled_by = null;
+            updatePayload.cancellation_reason = null;
+        }
 
         if (status === 'Pending' || status === 'Cancelled') {
             updatePayload.driver_id = null;
@@ -40,7 +73,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
             console.error('Broadcast failed', e);
         }
         return NextResponse.json(data);
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return NextResponse.json({ error: errorMessage(err) }, { status: 500 });
     }
 }

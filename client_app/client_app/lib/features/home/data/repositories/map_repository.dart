@@ -354,11 +354,13 @@ class MapRepository {
         final data = response.data ?? <dynamic>[];
         final onlineMatches = data.map((item) {
           final place = Map<String, dynamic>.from(item as Map);
+          final location = _latLngFromFields(place['lat'], place['lon']);
+          if (location == null) return null;
           return MapPlace(
             displayName: place['display_name']?.toString() ?? '',
-            location: LatLng(_asDouble(place['lat']), _asDouble(place['lon'])),
+            location: location,
           );
-        }).toList();
+        }).whereType<MapPlace>().toList();
         return _dedupePlaces([...localMatches, ...onlineMatches]);
       }
       return localMatches;
@@ -371,6 +373,7 @@ class MapRepository {
   Future<MapPlace> describeLocation(
     LatLng location, {
     String fallbackName = 'Pinned location',
+    bool exactPinLabel = false,
   }) async {
     try {
       final response = await _dio.get<Map<String, dynamic>>(
@@ -395,20 +398,35 @@ class MapRepository {
           location,
           fallbackName,
         );
-        return MapPlace(displayName: displayName, location: location);
+        return MapPlace(
+          displayName: exactPinLabel
+              ? _exactPinnedDisplayName(location, fallbackName, displayName)
+              : displayName,
+          location: location,
+        );
       }
     } catch (e) {
       print('Error describing location: $e');
     }
 
+    final fallbackDisplayName = _nearestLocalDisplayName(
+      location,
+      fallbackName,
+    );
     return MapPlace(
-      displayName: _nearestLocalDisplayName(location, fallbackName),
+      displayName: exactPinLabel
+          ? _exactPinnedDisplayName(location, fallbackName, fallbackDisplayName)
+          : fallbackDisplayName,
       location: location,
     );
   }
 
   /// Get route polyline and road distance using OSRM API.
   Future<MapRoute> getRoute(LatLng start, LatLng end) async {
+    if (!_isValidMapPoint(start) || !_isValidMapPoint(end)) {
+      return const MapRoute(points: [], distanceKm: 0);
+    }
+
     try {
       final url =
           'https://router.project-osrm.org/route/v1/driving/${start.longitude},${start.latitude};${end.longitude},${end.latitude}?overview=full&geometries=geojson';
@@ -429,12 +447,13 @@ class MapRepository {
           }
 
           final points = coordinates.map((coord) {
-            final pair = coord as List<dynamic>;
-            return LatLng(_asDouble(pair[1]), _asDouble(pair[0]));
-          }).toList();
+            if (coord is! List<dynamic> || coord.length < 2) return null;
+            return _latLngFromFields(coord[1], coord[0]);
+          }).whereType<LatLng>().toList();
           final meters = route['distance'];
-          final distanceKm = meters is num
-              ? meters.toDouble() / 1000
+          final routeMeters = meters is num ? meters.toDouble() : null;
+          final distanceKm = routeMeters != null && routeMeters.isFinite
+              ? routeMeters / 1000
               : _polylineDistanceKm(points);
 
           return MapRoute(points: points, distanceKm: distanceKm);
@@ -454,22 +473,47 @@ class MapRepository {
   }
 
   double straightLineDistanceKm(LatLng start, LatLng end) {
-    return _distance.as(LengthUnit.Kilometer, start, end);
+    if (!_isValidMapPoint(start) || !_isValidMapPoint(end)) return 0;
+    final distance = _distance.as(LengthUnit.Kilometer, start, end);
+    return distance.isFinite ? distance : 0;
   }
 
   static double _polylineDistanceKm(List<LatLng> points) {
-    if (points.length < 2) return 0;
+    final validPoints = points.where(_isValidMapPoint).toList(growable: false);
+    if (validPoints.length < 2) return 0;
 
     var totalMeters = 0.0;
-    for (var i = 0; i < points.length - 1; i++) {
-      totalMeters += _distance(points[i], points[i + 1]);
+    for (var i = 0; i < validPoints.length - 1; i++) {
+      totalMeters += _distance(validPoints[i], validPoints[i + 1]);
     }
-    return totalMeters / 1000;
+    final totalKm = totalMeters / 1000;
+    return totalKm.isFinite ? totalKm : 0;
   }
 
-  static double _asDouble(Object? value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
+  static LatLng? _latLngFromFields(Object? lat, Object? lng) {
+    final latitude = _asNullableDouble(lat);
+    final longitude = _asNullableDouble(lng);
+    if (latitude == null || longitude == null) return null;
+    final point = LatLng(latitude, longitude);
+    return _isValidMapPoint(point) ? point : null;
+  }
+
+  static bool _isValidMapPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
+  }
+
+  static double? _asNullableDouble(Object? value) {
+    if (value == null) return null;
+    final parsed = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString());
+    if (parsed == null || !parsed.isFinite) return null;
+    return parsed;
   }
 
   static List<MapPlace> _localAddisMatches(String query) {
@@ -602,6 +646,39 @@ class MapRepository {
     }
 
     return '$fallbackName, Addis Ababa, Ethiopia';
+  }
+
+  static String _exactPinnedDisplayName(
+    LatLng location,
+    String fallbackName,
+    String nearbyName,
+  ) {
+    final label = fallbackName.trim().isEmpty
+        ? 'Pinned location'
+        : fallbackName.trim();
+    final lat = location.latitude.toStringAsFixed(5);
+    final lng = location.longitude.toStringAsFixed(5);
+    final coordinates = '$lat, $lng';
+    final nearby = _shortNearbyLabel(nearbyName, label);
+
+    if (nearby == null) return '$label ($coordinates)';
+    return '$label ($coordinates) - near $nearby';
+  }
+
+  static String? _shortNearbyLabel(String value, String fallbackName) {
+    final normalizedFallback = fallbackName.toLowerCase();
+    final parts = value
+        .split(',')
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty)
+        .where((part) => part.toLowerCase() != 'ethiopia')
+        .where((part) => part.toLowerCase() != 'addis ababa')
+        .where((part) => part.toLowerCase() != normalizedFallback)
+        .take(2)
+        .toList();
+
+    if (parts.isEmpty) return null;
+    return parts.join(', ');
   }
 }
 

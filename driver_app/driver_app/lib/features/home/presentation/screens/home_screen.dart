@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:driver_app/config/router/navigation_helper.dart';
+import 'package:driver_app/core/map/addis_ababa_base_map.dart';
+import 'package:driver_app/core/notifications/local_notification_service.dart';
 import 'package:driver_app/core/preferences/app_preferences.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
@@ -15,6 +18,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,11 +32,16 @@ class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
   final SupabaseClient _supabase = Supabase.instance.client;
+  static const String _supportPhone = '+251 931 323 328';
+  static const String _supportEmail = 'support@motobike.app';
 
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
+  RealtimeChannel? _driverChannel;
   RealtimeChannel? _deliveriesChannel;
   RealtimeChannel? _notificationsChannel;
+  final LocalNotificationService _localNotifications =
+      LocalNotificationService();
 
   bool _isOnline = false;
   bool _isResolvingDriver = false;
@@ -41,12 +50,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _activeDelivery;
   List<LatLng> _routePoints = [];
   String? _lastNotifiedDeliveryId;
+  DateTime? _lastRouteRefreshAt;
+  LatLng? _lastRouteStart;
+  LatLng? _lastRouteDestination;
+  bool _isRefreshingRoute = false;
   final Set<String> _ratingPromptedDeliveries = <String>{};
+  final Set<String> _shownSystemNotificationIds = <String>{};
   int _unreadNotificationCount = 0;
 
   @override
   void initState() {
     super.initState();
+    unawaited(
+      _localNotifications.initialize(onTap: _handleSystemNotificationTap),
+    );
     _checkLocationPermission();
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDriverRecord());
   }
@@ -102,43 +119,141 @@ class _HomeScreenState extends State<HomeScreen> {
     double zoom = 16,
     bool updateRemote = false,
   }) async {
-    final position = await Geolocator.getCurrentPosition();
-    if (!mounted) return;
-    setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-    });
-    if (updateRemote) {
-      final driverId = _driverRecord?['id']?.toString();
-      if (driverId != null) {
-        await _updateDriverLocation(
-          driverId,
-          status: _isOnline ? 'Online' : 'Offline',
-        );
+    try {
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown != null && mounted) {
+        _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: true);
+        if (updateRemote) {
+          final driverId = _driverRecord?['id']?.toString();
+          if (driverId != null) {
+            unawaited(
+              _updateDriverLocation(
+                driverId,
+                status: _isOnline ? 'Online' : 'Offline',
+              ),
+            );
+          }
+        }
       }
+    } catch (e) {
+      debugPrint('Last known GPS skipped: $e');
     }
-    _mapController.move(_currentPosition, zoom);
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 4),
+      );
+      if (!mounted) return;
+      _applyCurrentPosition(position, zoom: zoom, moveMap: true);
+      if (updateRemote) {
+        final driverId = _driverRecord?['id']?.toString();
+        if (driverId != null) {
+          await _updateDriverLocation(
+            driverId,
+            status: _isOnline ? 'Online' : 'Offline',
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('GPS refresh skipped: $e');
+    }
   }
 
   Future<void> _focusOnCurrentLocation() async {
     if (!await _ensureLocationAccess(showMessages: true)) return;
 
     try {
+      _moveMapSafely(_currentPosition, 17.5);
       await _getCurrentLocation(zoom: 17.5, updateRemote: true);
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'Map centered on your GPS location.',
-        type: AppToastType.success,
-      );
     } catch (e) {
       debugPrint('Error focusing current location: $e');
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'Could not read your current GPS location.',
-        type: AppToastType.error,
-      );
     }
+  }
+
+  void _applyCurrentPosition(
+    Position position, {
+    required double zoom,
+    required bool moveMap,
+  }) {
+    final next = LatLng(position.latitude, position.longitude);
+    if (!_isValidMapPoint(next)) return;
+    setState(() {
+      _currentPosition = next;
+    });
+    if (moveMap) _moveMapSafely(next, zoom);
+  }
+
+  bool _isValidMapPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
+  }
+
+  double _safeMapZoom(double zoom, {double fallback = 15}) {
+    final value = zoom.isFinite ? zoom : fallback;
+    return value.clamp(3.0, 18.0).toDouble();
+  }
+
+  void _moveMapSafely(LatLng center, double zoom) {
+    if (!mounted || !_isValidMapPoint(center)) return;
+    try {
+      _mapController.move(center, _safeMapZoom(zoom));
+    } catch (e) {
+      debugPrint('Driver map move skipped: $e');
+    }
+  }
+
+  bool _hasUsableMapBounds(List<LatLng> points) {
+    if (points.length < 2) return false;
+
+    var minLat = points.first.latitude;
+    var maxLat = points.first.latitude;
+    var minLng = points.first.longitude;
+    var maxLng = points.first.longitude;
+    for (final point in points.skip(1)) {
+      minLat = math.min(minLat, point.latitude);
+      maxLat = math.max(maxLat, point.latitude);
+      minLng = math.min(minLng, point.longitude);
+      maxLng = math.max(maxLng, point.longitude);
+    }
+
+    return (maxLat - minLat).abs() > 0.00005 ||
+        (maxLng - minLng).abs() > 0.00005;
+  }
+
+  void _fitMapSafely(
+    List<LatLng> rawPoints, {
+    EdgeInsets padding = const EdgeInsets.all(50),
+    double fallbackZoom = 15,
+  }) {
+    if (!mounted) return;
+    final points = rawPoints.where(_isValidMapPoint).toList(growable: false);
+    if (points.isEmpty) return;
+    if (!_hasUsableMapBounds(points)) {
+      _moveMapSafely(points.first, fallbackZoom);
+      return;
+    }
+
+    try {
+      _mapController.fitCamera(
+        CameraFit.bounds(
+          bounds: LatLngBounds.fromPoints(points),
+          padding: padding,
+        ),
+      );
+    } catch (e) {
+      debugPrint('Driver map fit skipped: $e');
+      _moveMapSafely(points.first, fallbackZoom);
+    }
+  }
+
+  void _handleSystemNotificationTap(String? payload) {
+    if (!mounted) return;
+    context.navigator.pushNotificationScreen();
   }
 
   Future<Map<String, dynamic>?> _loadDriverRecord() async {
@@ -149,13 +264,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isResolvingDriver = true);
     try {
+      final previousApprovalStatus = _driverRecord?['approval_status']
+          ?.toString();
       final record = await _findOrCreateDriver(authState.user);
       if (!mounted) return record;
       setState(() {
         _driverRecord = record;
         _isOnline = record?['status'] == 'Online';
       });
+      if (previousApprovalStatus != null &&
+          !_isApprovedStatus(previousApprovalStatus) &&
+          _isApprovedStatus(record?['approval_status']?.toString())) {
+        AppToast.show(
+          context: context,
+          message: 'Your driver account is approved. You can go online now.',
+          type: AppToastType.success,
+        );
+      }
       if (record != null) {
+        _subscribeToDriverRecord(record['id'].toString());
         await _loadUnreadNotificationCount();
         _subscribeToNotifications();
       }
@@ -225,11 +352,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return phone.isEmpty ? user.email : phone;
   }
 
+  bool _isApprovedStatus(String? status) =>
+      status?.trim().toLowerCase() == 'approved';
+
+  String _approvalRequiredMessage(String? approvalStatus) {
+    final status = approvalStatus?.trim();
+    final statusText =
+        status == null || status.isEmpty || status.toLowerCase() == 'pending'
+        ? 'Your driver application is still waiting for admin approval.'
+        : 'Your driver account is $status. Admin approval is required first.';
+    return '$statusText Contact admin at $_supportPhone or $_supportEmail if it takes too long.';
+  }
+
   bool _canGoOnline(Map<String, dynamic> driver) {
-    if (driver['approval_status'] != 'Approved') {
+    if (!_isApprovedStatus(driver['approval_status']?.toString())) {
       AppToast.show(
         context: context,
-        message: 'Waiting for admin approval.',
+        message: _approvalRequiredMessage(
+          driver['approval_status']?.toString(),
+        ),
         type: AppToastType.warning,
       );
       return false;
@@ -245,11 +386,49 @@ class _HomeScreenState extends State<HomeScreen> {
     return true;
   }
 
+  void _subscribeToDriverRecord(String driverId) {
+    _driverChannel?.unsubscribe();
+    _driverChannel = _supabase
+        .channel('public:drivers:home:$driverId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'drivers',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: driverId,
+          ),
+          callback: (payload) {
+            final nextRecord = Map<String, dynamic>.from(payload.newRecord);
+            final previousApprovalStatus = _driverRecord?['approval_status']
+                ?.toString();
+            if (!mounted) return;
+            setState(() {
+              _driverRecord = nextRecord;
+              _isOnline = nextRecord['status'] == 'Online';
+            });
+            if (previousApprovalStatus != null &&
+                !_isApprovedStatus(previousApprovalStatus) &&
+                _isApprovedStatus(nextRecord['approval_status']?.toString())) {
+              AppToast.show(
+                context: context,
+                message:
+                    'Your driver account is approved. You can go online now.',
+                type: AppToastType.success,
+              );
+            }
+          },
+        )
+        .subscribe();
+  }
+
   Future<void> _toggleOnlineStatus() async {
     if (_isUpdating) return;
 
     final driver = _driverRecord ?? await _loadDriverRecord();
     if (driver == null) return;
+    if (!mounted) return;
 
     if (!_isOnline && !_canGoOnline(driver)) return;
     if (_isOnline && _activeDelivery != null) {
@@ -327,6 +506,9 @@ class _HomeScreenState extends State<HomeScreen> {
             driverId,
             status: _activeDelivery == null ? 'Online' : 'Online',
           );
+          if (_activeDelivery != null) {
+            unawaited(_refreshActiveRoute());
+          }
         });
   }
 
@@ -401,9 +583,35 @@ class _HomeScreenState extends State<HomeScreen> {
             column: 'app',
             value: 'driver',
           ),
-          callback: (_) => _loadUnreadNotificationCount(),
+          callback: (payload) {
+            _handleNotificationChange(payload.newRecord);
+          },
         )
         .subscribe();
+  }
+
+  void _handleNotificationChange(Map<String, dynamic> record) {
+    final notification = Map<String, dynamic>.from(record);
+    if (!_matchesDriverNotification(notification)) {
+      unawaited(_loadUnreadNotificationCount());
+      return;
+    }
+
+    final id = notification['id']?.toString();
+    if (notification['read_at'] == null &&
+        id != null &&
+        _shownSystemNotificationIds.add(id)) {
+      unawaited(
+        _localNotifications.showDriverAlert(
+          id: id,
+          title: notification['title']?.toString() ?? 'Driver alert',
+          body: notification['body']?.toString() ?? '',
+          payload: notification['delivery_id']?.toString() ?? id,
+        ),
+      );
+    }
+
+    unawaited(_loadUnreadNotificationCount());
   }
 
   bool _matchesDriverNotification(Map<String, dynamic> notification) {
@@ -457,12 +665,21 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _activeDelivery = null;
         _routePoints = [];
+        _lastRouteStart = null;
+        _lastRouteDestination = null;
+        _lastRouteRefreshAt = null;
       });
       return;
     }
 
+    final destination = _activeDestination(delivery);
     setState(() {
       _activeDelivery = delivery;
+      if (destination != null) {
+        _routePoints = <LatLng>[_currentPosition, destination];
+      } else {
+        _routePoints = [];
+      }
     });
 
     final deliveryId = delivery['id']?.toString();
@@ -478,27 +695,119 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final destination = delivery['status'] == 'Picked Up'
-        ? LatLng(
-            _asDouble(delivery['dropoff_lat']),
-            _asDouble(delivery['dropoff_lng']),
-          )
-        : LatLng(
-            _asDouble(delivery['pickup_lat']),
-            _asDouble(delivery['pickup_lng']),
-          );
+    if (destination == null) return;
+    unawaited(_refreshActiveRoute(fit: true, force: true));
+  }
 
-    if (destination.latitude == 0 && destination.longitude == 0) return;
+  LatLng? _activeDestination([Map<String, dynamic>? deliveryOverride]) {
+    final delivery = deliveryOverride ?? _activeDelivery;
+    if (delivery == null) return null;
 
-    final route = await _mapRepository.getRoute(_currentPosition, destination);
-    if (!mounted) return;
-    setState(() {
-      _routePoints = route;
-    });
-    final bounds = LatLngBounds.fromPoints([_currentPosition, destination]);
-    _mapController.fitCamera(
-      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
-    );
+    return delivery['status'] == 'Picked Up'
+        ? _deliveryPoint(delivery, 'dropoff_lat', 'dropoff_lng')
+        : _deliveryPoint(delivery, 'pickup_lat', 'pickup_lng');
+  }
+
+  List<LatLng> _visibleRoutePoints(Map<String, dynamic>? delivery) {
+    final routePoints = _routePoints
+        .where(_isValidMapPoint)
+        .toList(growable: false);
+    if (routePoints.length >= 2) return routePoints;
+
+    final destination = _activeDestination(delivery);
+    if (destination == null || !_isValidMapPoint(_currentPosition)) {
+      return const [];
+    }
+
+    return <LatLng>[_currentPosition, destination];
+  }
+
+  LatLng? _deliveryPoint(
+    Map<String, dynamic> delivery,
+    String latKey,
+    String lngKey,
+  ) {
+    final lat = _asNullableDouble(delivery[latKey]);
+    final lng = _asNullableDouble(delivery[lngKey]);
+    if (lat == null || lng == null) return null;
+
+    final point = LatLng(lat, lng);
+    return _isValidMapPoint(point) ? point : null;
+  }
+
+  List<LatLng> _deliveryConnectorPoints(Map<String, dynamic>? delivery) {
+    if (delivery == null) return const [];
+
+    final pickup = _deliveryPoint(delivery, 'pickup_lat', 'pickup_lng');
+    final dropoff = _deliveryPoint(delivery, 'dropoff_lat', 'dropoff_lng');
+    if (pickup == null || dropoff == null) return const [];
+
+    final points = <LatLng>[pickup, dropoff];
+    return _hasUsableMapBounds(points) ? points : const [];
+  }
+
+  Future<void> _refreshActiveRoute({
+    bool fit = false,
+    bool force = false,
+  }) async {
+    if (_isRefreshingRoute) return;
+
+    final destination = _activeDestination();
+    if (destination == null) return;
+
+    final now = DateTime.now();
+    final previousStart = _lastRouteStart;
+    final previousDestination = _lastRouteDestination;
+    final movedEnough =
+        previousStart == null ||
+        const Distance().as(
+              LengthUnit.Meter,
+              previousStart,
+              _currentPosition,
+            ) >=
+            45;
+    final destinationChanged =
+        previousDestination == null ||
+        const Distance().as(
+              LengthUnit.Meter,
+              previousDestination,
+              destination,
+            ) >=
+            5;
+    final cooledDown =
+        _lastRouteRefreshAt == null ||
+        now.difference(_lastRouteRefreshAt!) >= const Duration(seconds: 8);
+
+    if (!force && !destinationChanged && (!movedEnough || !cooledDown)) {
+      return;
+    }
+
+    _isRefreshingRoute = true;
+    _lastRouteRefreshAt = now;
+    _lastRouteStart = _currentPosition;
+    _lastRouteDestination = destination;
+
+    final fallback = <LatLng>[_currentPosition, destination];
+    if (mounted && (_routePoints.isEmpty || force)) {
+      setState(() => _routePoints = fallback);
+    }
+
+    try {
+      final route = await _mapRepository.getRoute(_currentPosition, destination);
+      if (!mounted) return;
+      setState(() {
+        _routePoints = route.isEmpty ? fallback : route;
+      });
+      if (fit) {
+        _fitMapSafely(
+          [_currentPosition, destination],
+          padding: const EdgeInsets.all(50),
+          fallbackZoom: 15,
+        );
+      }
+    } finally {
+      _isRefreshingRoute = false;
+    }
   }
 
   Future<void> _rejectDelivery() async {
@@ -554,9 +863,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isUpdating = true);
     try {
+      final updateValues = <String, dynamic>{
+        'status': status,
+        'driver_id': driverId,
+      };
+      if (status == 'Picked Up' || status == 'Delivered') {
+        updateValues['cancelled_by'] = null;
+        updateValues['cancellation_reason'] = null;
+      }
       final updated = await _supabase
           .from('deliveries')
-          .update({'status': status})
+          .update(updateValues)
           .eq('id', deliveryId)
           .select()
           .single();
@@ -685,81 +1002,113 @@ class _HomeScreenState extends State<HomeScreen> {
     required String subtitle,
     required int initialRating,
   }) {
-    var selectedRating = initialRating.clamp(1, 5).toInt();
+    var selectedRating = initialRating;
+    if (selectedRating < 1) selectedRating = 1;
+    if (selectedRating > 5) selectedRating = 5;
 
-    return showModalBottomSheet<int>(
+    return showDialog<int>(
       context: context,
-      backgroundColor: context.appSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (sheetContext, setSheetState) {
+          builder: (dialogContext, setSheetState) {
+            final bottomInset = MediaQuery.viewInsetsOf(dialogContext).bottom;
             return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.appBorder,
-                        borderRadius: BorderRadius.circular(999),
+              child: AnimatedPadding(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg + bottomInset,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Material(
+                      color: dialogContext.appSurface,
+                      borderRadius: BorderRadius.circular(24),
+                      clipBehavior: Clip.antiAlias,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 52,
+                              height: 52,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.12,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber,
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            AppText(
+                              title,
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.bold,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            AppText(
+                              subtitle,
+                              variant: AppTextVariant.bodyMedium,
+                              color: dialogContext.appTextSecondary,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(5, (index) {
+                                final value = index + 1;
+                                return IconButton(
+                                  tooltip: '$value star',
+                                  onPressed: () {
+                                    setSheetState(
+                                      () => selectedRating = value,
+                                    );
+                                  },
+                                  icon: Icon(
+                                    value <= selectedRating
+                                        ? Icons.star_rounded
+                                        : Icons.star_border_rounded,
+                                    color: Colors.amber,
+                                    size: 38,
+                                  ),
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            AppButton.primary(
+                              label: 'SUBMIT RATING',
+                              fullWidth: true,
+                              onPressed: () => Navigator.of(
+                                dialogContext,
+                              ).pop(selectedRating),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(dialogContext).pop(),
+                              child: AppText(
+                                'Skip',
+                                variant: AppTextVariant.button,
+                                color: dialogContext.appTextSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppText(
-                      title,
-                      variant: AppTextVariant.heading3,
-                      fontWeight: FontWeight.bold,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    AppText(
-                      subtitle,
-                      variant: AppTextVariant.bodyMedium,
-                      color: context.appTextSecondary,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final value = index + 1;
-                        return IconButton(
-                          tooltip: '$value star',
-                          onPressed: () {
-                            setSheetState(() => selectedRating = value);
-                          },
-                          icon: Icon(
-                            value <= selectedRating
-                                ? Icons.star_rounded
-                                : Icons.star_border_rounded,
-                            color: Colors.amber,
-                            size: 38,
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppButton.primary(
-                      label: 'SUBMIT RATING',
-                      fullWidth: true,
-                      onPressed: () =>
-                          Navigator.of(sheetContext).pop(selectedRating),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(sheetContext).pop(),
-                      child: AppText(
-                        'Skip',
-                        variant: AppTextVariant.button,
-                        color: context.appTextSecondary,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -769,9 +1118,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  double _asDouble(Object? value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
+  double? _asNullableDouble(Object? value) {
+    if (value == null) return null;
+    final parsed = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString());
+    if (parsed == null || !parsed.isFinite) return null;
+    return parsed;
   }
 
   int _asInt(Object? value) {
@@ -782,6 +1135,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _positionStream?.cancel();
+    _driverChannel?.unsubscribe();
     _deliveriesChannel?.unsubscribe();
     _notificationsChannel?.unsubscribe();
     super.dispose();
@@ -790,8 +1144,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final delivery = _activeDelivery;
+    final visibleRoutePoints = _visibleRoutePoints(delivery);
+    final deliveryConnectorPoints = _deliveryConnectorPoints(delivery);
+    final pickupPoint = delivery == null
+        ? null
+        : _deliveryPoint(delivery, 'pickup_lat', 'pickup_lng');
+    final dropoffPoint = delivery == null
+        ? null
+        : _deliveryPoint(delivery, 'dropoff_lat', 'dropoff_lng');
     final approvalStatus =
         _driverRecord?['approval_status']?.toString() ?? 'Pending';
+    final isApproved = _isApprovedStatus(approvalStatus);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -809,17 +1172,36 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ...addisAbabaBaseMapLayers(
                 userAgentPackageName: 'com.motobikedeliveryservice.driver',
               ),
-              if (_routePoints.isNotEmpty)
+              if (deliveryConnectorPoints.length >= 2)
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: _routePoints,
-                      color: AppColors.primary,
+                      points: deliveryConnectorPoints,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      strokeWidth: 8,
+                    ),
+                    Polyline(
+                      points: deliveryConnectorPoints,
+                      color: AppColors.success.withValues(alpha: 0.9),
                       strokeWidth: 4,
+                    ),
+                  ],
+                ),
+              if (visibleRoutePoints.length >= 2)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: visibleRoutePoints,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      strokeWidth: 10,
+                    ),
+                    Polyline(
+                      points: visibleRoutePoints,
+                      color: AppColors.primary,
+                      strokeWidth: 6,
                     ),
                   ],
                 ),
@@ -859,14 +1241,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  if (delivery != null &&
-                      delivery['pickup_lat'] != null &&
-                      delivery['pickup_lng'] != null)
+                  if (pickupPoint != null)
                     Marker(
-                      point: LatLng(
-                        _asDouble(delivery['pickup_lat']),
-                        _asDouble(delivery['pickup_lng']),
-                      ),
+                      point: pickupPoint,
                       width: 40,
                       height: 40,
                       child: const Icon(
@@ -875,14 +1252,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         size: 36,
                       ),
                     ),
-                  if (delivery != null &&
-                      delivery['dropoff_lat'] != null &&
-                      delivery['dropoff_lng'] != null)
+                  if (dropoffPoint != null)
                     Marker(
-                      point: LatLng(
-                        _asDouble(delivery['dropoff_lat']),
-                        _asDouble(delivery['dropoff_lng']),
-                      ),
+                      point: dropoffPoint,
                       width: 40,
                       height: 40,
                       child: const Icon(
@@ -982,6 +1354,29 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Positioned(
+            right: AppSpacing.lg,
+            top: MediaQuery.viewPaddingOf(context).top + 86,
+            child: Material(
+              color: context.appSurface,
+              borderRadius: BorderRadius.circular(18),
+              elevation: 10,
+              shadowColor: Colors.black.withValues(alpha: 0.20),
+              child: InkWell(
+                onTap: _focusOnCurrentLocation,
+                borderRadius: BorderRadius.circular(18),
+                child: const SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: Icon(
+                    Icons.my_location_rounded,
+                    color: AppColors.primary,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
             left: 0,
             right: 0,
             bottom: 0,
@@ -1004,155 +1399,158 @@ class _HomeScreenState extends State<HomeScreen> {
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: context.appBorder,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      if (_isResolvingDriver) ...[
-                        const CircularProgressIndicator(
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        const AppText(
-                          'Checking driver approval...',
-                          variant: AppTextVariant.heading3,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ] else if (!_isOnline) ...[
-                        Icon(
-                          approvalStatus == 'Approved'
-                              ? Icons.power_settings_new_rounded
-                              : Icons.verified_user_outlined,
-                          size: 48,
-                          color: approvalStatus == 'Approved'
-                              ? context.appTextSecondary
-                              : AppColors.warning,
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        AppText(
-                          approvalStatus == 'Approved'
-                              ? 'You are offline'
-                              : 'Waiting for approval',
-                          variant: AppTextVariant.heading3,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        AppText(
-                          approvalStatus == 'Approved'
-                              ? 'Go online to receive admin-assigned deliveries.'
-                              : 'An admin must approve your driver profile before you can work.',
-                          variant: AppTextVariant.bodyMedium,
-                          color: context.appTextSecondary,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.primary(
-                          label: approvalStatus == 'Approved'
-                              ? 'GO ONLINE'
-                              : 'CHECK APPROVAL',
-                          fullWidth: true,
-                          isLoading: _isUpdating,
-                          onPressed: approvalStatus == 'Approved'
-                              ? _toggleOnlineStatus
-                              : _loadDriverRecord,
-                        ),
-                      ] else if (delivery == null) ...[
-                        const CircularProgressIndicator(
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        const AppText(
-                          'Waiting for assignments...',
-                          variant: AppTextVariant.heading3,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        AppText(
-                          'Keep GPS enabled so dispatch can assign nearby deliveries.',
-                          variant: AppTextVariant.bodyMedium,
-                          color: context.appTextSecondary,
-                          textAlign: TextAlign.center,
-                        ),
-                      ] else if (delivery['status'] == 'Assigned') ...[
-                        _buildDeliveryHeader('Assigned Delivery', delivery),
-                        Divider(color: context.appBorder),
-                        _buildDeliveryLocation(
-                          Icons.storefront_rounded,
-                          'Pickup',
-                          delivery['pickup_location']?.toString() ??
-                              'Pickup location',
-                        ),
-                        _buildDeliveryLocation(
-                          Icons.flag_rounded,
-                          'Dropoff',
-                          delivery['dropoff_location']?.toString() ??
-                              'Dropoff location',
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: AppButton.outlinedSecondary(
-                                label: 'REJECT',
-                                isLoading: _isUpdating,
-                                onPressed: _rejectDelivery,
-                              ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.sizeOf(context).height * 0.58,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: context.appBorder,
+                              borderRadius: BorderRadius.circular(2),
                             ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: AppButton.primary(
-                                label: 'PICKED UP',
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          if (_isResolvingDriver) ...[
+                            const CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            const AppText(
+                              'Checking driver approval...',
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ] else if (!_isOnline) ...[
+                            _buildApprovalStatusBanner(approvalStatus),
+                            const SizedBox(height: AppSpacing.lg),
+                            Icon(
+                              isApproved
+                                  ? Icons.power_settings_new_rounded
+                                  : Icons.verified_user_outlined,
+                              size: 48,
+                              color: isApproved
+                                  ? context.appTextSecondary
+                                  : AppColors.warning,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            AppText(
+                              isApproved
+                                  ? 'You are offline'
+                                  : 'Waiting for approval',
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            AppText(
+                              isApproved
+                                  ? 'Go online to receive admin-assigned deliveries.'
+                                  : 'Approval is needed before you can work.',
+                              variant: AppTextVariant.bodyMedium,
+                              color: context.appTextSecondary,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            if (isApproved)
+                              AppButton.primary(
+                                label: 'GO ONLINE',
+                                fullWidth: true,
                                 isLoading: _isUpdating,
-                                onPressed: () =>
-                                    _updateDeliveryStatus('Picked Up'),
+                                onPressed: _toggleOnlineStatus,
+                              )
+                            else
+                              AppButton.inactive(
+                                label: 'WAITING FOR ADMIN',
+                                fullWidth: true,
+                                icon: Icons.schedule_rounded,
                               ),
+                          ] else if (delivery == null) ...[
+                            const CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            const AppText(
+                              'Waiting for assignments...',
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            AppText(
+                              'Keep GPS enabled so dispatch can assign nearby deliveries.',
+                              variant: AppTextVariant.bodyMedium,
+                              color: context.appTextSecondary,
+                              textAlign: TextAlign.center,
+                            ),
+                          ] else if (delivery['status'] == 'Assigned') ...[
+                            _buildDeliveryHeader('Assigned Delivery', delivery),
+                            Divider(color: context.appBorder),
+                            _buildDeliveryLocation(
+                              Icons.storefront_rounded,
+                              'Pickup',
+                              delivery['pickup_location']?.toString() ??
+                                  'Pickup location',
+                            ),
+                            _buildDeliveryLocation(
+                              Icons.flag_rounded,
+                              'Dropoff',
+                              delivery['dropoff_location']?.toString() ??
+                                  'Dropoff location',
+                            ),
+                            _buildDeliveryDetails(delivery),
+                            const SizedBox(height: AppSpacing.lg),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppButton.outlinedSecondary(
+                                    label: 'REJECT',
+                                    isLoading: _isUpdating,
+                                    onPressed: _rejectDelivery,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: AppButton.primary(
+                                    label: 'PICKED UP',
+                                    isLoading: _isUpdating,
+                                    onPressed: () =>
+                                        _updateDeliveryStatus('Picked Up'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ] else ...[
+                            _buildDeliveryHeader('Deliver Package', delivery),
+                            Divider(color: context.appBorder),
+                            _buildDeliveryLocation(
+                              Icons.flag_rounded,
+                              'Dropoff',
+                              delivery['dropoff_location']?.toString() ??
+                                  'Dropoff location',
+                            ),
+                            _buildDeliveryDetails(delivery),
+                            const SizedBox(height: AppSpacing.xl),
+                            AppButton.primary(
+                              label: 'MARK DELIVERED',
+                              fullWidth: true,
+                              isLoading: _isUpdating,
+                              onPressed: () =>
+                                  _updateDeliveryStatus('Delivered'),
                             ),
                           ],
-                        ),
-                      ] else ...[
-                        _buildDeliveryHeader('Deliver Package', delivery),
-                        Divider(color: context.appBorder),
-                        _buildDeliveryLocation(
-                          Icons.flag_rounded,
-                          'Dropoff',
-                          delivery['dropoff_location']?.toString() ??
-                              'Dropoff location',
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.primary(
-                          label: 'MARK DELIVERED',
-                          fullWidth: true,
-                          isLoading: _isUpdating,
-                          onPressed: () => _updateDeliveryStatus('Delivered'),
-                        ),
-                      ],
-                    ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ],
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 300),
-        child: FloatingActionButton(
-          backgroundColor: context.appSurface,
-          tooltip: 'Center on my location',
-          onPressed: _focusOnCurrentLocation,
-          child: const Icon(
-            Icons.my_location_rounded,
-            color: AppColors.primary,
-          ),
-        ),
       ),
     );
   }
@@ -1290,6 +1688,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final name = _driverRecord?['name']?.toString() ?? 'Driver';
     final approvalStatus =
         _driverRecord?['approval_status']?.toString() ?? 'Pending';
+    final isApproved = _isApprovedStatus(approvalStatus);
 
     return Drawer(
       backgroundColor: Colors.transparent,
@@ -1364,7 +1763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           AppText(
                             approvalStatus,
                             variant: AppTextVariant.bodySmall,
-                            color: approvalStatus == 'Approved'
+                            color: isApproved
                                 ? AppColors.success
                                 : AppColors.warning,
                             fontWeight: FontWeight.bold,
@@ -1602,6 +2001,53 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _callPhone(String? phone) async {
+    final cleaned = phone?.trim();
+    if (cleaned == null || cleaned.isEmpty) {
+      AppToast.show(
+        context: context,
+        message: 'No phone number is available for this delivery.',
+        type: AppToastType.warning,
+      );
+      return;
+    }
+
+    final opened = await launchUrl(
+      Uri(scheme: 'tel', path: cleaned),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!opened && mounted) {
+      AppToast.show(
+        context: context,
+        message: 'Could not open the phone dialer.',
+        type: AppToastType.error,
+      );
+    }
+  }
+
+  String? _deliveryPhone(Map<String, dynamic> delivery) {
+    for (final key in const [
+      'customer_phone',
+      'recipient_phone',
+      'dropoff_phone',
+      'pickup_phone',
+      'seller_phone',
+      'phone',
+    ]) {
+      final value = delivery[key]?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
+  String _deliveryCustomerName(Map<String, dynamic> delivery) {
+    for (final key in const ['customer_name', 'recipient_name', 'seller_name']) {
+      final value = delivery[key]?.toString().trim();
+      if (value != null && value.isNotEmpty) return value;
+    }
+    return 'Customer';
+  }
+
   Widget _buildDeliveryHeader(String title, Map<String, dynamic> delivery) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1625,19 +2071,216 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDeliveryLocation(IconData icon, String title, String subtitle) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(
-        icon,
-        color: title == 'Pickup' ? AppColors.success : AppColors.primary,
+  Widget _buildApprovalStatusBanner(String approvalStatus) {
+    final isApproved = _isApprovedStatus(approvalStatus);
+    final accent = isApproved ? AppColors.success : AppColors.warning;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: context.isAppDark ? 0.18 : 0.10),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: accent.withValues(alpha: 0.36)),
       ),
-      title: AppText(title, variant: AppTextVariant.labelLarge),
-      subtitle: AppText(
-        subtitle,
-        variant: AppTextVariant.bodyMedium,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: accent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              isApproved ? Icons.verified_rounded : Icons.hourglass_top_rounded,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  isApproved ? 'Approved driver' : 'Approval pending',
+                  variant: AppTextVariant.bodyMedium,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: 2),
+                AppText(
+                  isApproved
+                      ? 'You can receive deliveries now.'
+                      : 'You will be notified after admin approval.',
+                  variant: AppTextVariant.bodySmall,
+                  color: context.appTextSecondary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: 6,
+            ),
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(AppRadius.full),
+            ),
+            child: AppText(
+              isApproved ? 'APPROVED' : 'PENDING',
+              variant: AppTextVariant.labelSmall,
+              color: accent,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeliveryDetails(Map<String, dynamic> delivery) {
+    final phone = _deliveryPhone(delivery);
+    final packageType = delivery['package_type']?.toString().trim();
+    final vehicle = delivery['vehicle_category']?.toString().trim();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: Column(
+        children: [
+          _buildCompactDetailRow(
+            Icons.person_rounded,
+            'Customer',
+            _deliveryCustomerName(delivery),
+          ),
+          if (phone != null)
+            _buildCompactDetailRow(
+              Icons.phone_rounded,
+              'Phone',
+              phone,
+              onTap: () => _callPhone(phone),
+              trailing: const Icon(
+                Icons.call_rounded,
+                color: AppColors.success,
+                size: 20,
+              ),
+            ),
+          if (packageType != null && packageType.isNotEmpty)
+            _buildCompactDetailRow(
+              Icons.inventory_2_rounded,
+              'Package',
+              packageType,
+            ),
+          if (vehicle != null && vehicle.isNotEmpty)
+            _buildCompactDetailRow(
+              Icons.two_wheeler_rounded,
+              'Vehicle',
+              vehicle,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactDetailRow(
+    IconData icon,
+    String label,
+    String value, {
+    VoidCallback? onTap,
+    Widget? trailing,
+  }) {
+    final child = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Icon(icon, color: context.appTextSecondary, size: 18),
+          const SizedBox(width: AppSpacing.sm),
+          SizedBox(
+            width: 72,
+            child: AppText(
+              label,
+              variant: AppTextVariant.labelSmall,
+              color: context.appTextSecondary,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          Expanded(
+            child: AppText(
+              value,
+              variant: AppTextVariant.bodySmall,
+              color: context.appTextPrimary,
+              fontWeight: FontWeight.w900,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (trailing != null) ...[
+            const SizedBox(width: AppSpacing.sm),
+            trailing,
+          ],
+        ],
+      ),
+    );
+
+    if (onTap == null) return child;
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      onTap: onTap,
+      child: child,
+    );
+  }
+
+  Widget _buildDeliveryLocation(
+    IconData icon,
+    String title,
+    String subtitle, {
+    bool compact = false,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(bottom: compact ? AppSpacing.xs : AppSpacing.sm),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 0 : AppSpacing.sm,
+        vertical: compact ? AppSpacing.xs : AppSpacing.sm,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            color: title == 'Pickup' ? AppColors.success : AppColors.primary,
+            size: 24,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  title,
+                  variant: AppTextVariant.labelLarge,
+                  color: context.appTextPrimary,
+                  fontWeight: FontWeight.w900,
+                ),
+                const SizedBox(height: 2),
+                AppText(
+                  subtitle,
+                  variant: AppTextVariant.bodyMedium,
+                  color: context.appTextSecondary,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

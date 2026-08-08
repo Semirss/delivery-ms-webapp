@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SupabaseRuntimeConfig {
@@ -19,12 +20,16 @@ class SupabaseRuntimeConfigResolver {
   const SupabaseRuntimeConfigResolver();
 
   Future<SupabaseRuntimeConfig> resolve() async {
-    final fallback = _fallbackConfig();
+    if (kIsWeb) {
+      final webConfig = await _webRuntimeConfig();
+      if (webConfig != null) return webConfig;
+    }
+
     final masterUrl = _env('MASTER_SUPABASE_URL');
     final masterAnonKey = _env('MASTER_SUPABASE_ANON_KEY');
 
     if (masterUrl.isEmpty || masterAnonKey.isEmpty) {
-      return fallback;
+      return _fallbackConfig();
     }
 
     try {
@@ -51,12 +56,12 @@ class SupabaseRuntimeConfigResolver {
       );
 
       final rows = response.data ?? const [];
-      if (rows.isEmpty || rows.first is! Map) return fallback;
+      if (rows.isEmpty || rows.first is! Map) return _fallbackConfig();
 
       final row = Map<String, dynamic>.from(rows.first as Map);
       final url = row['supabase_url']?.toString().trim() ?? '';
       final anonKey = row['supabase_anon_key']?.toString().trim() ?? '';
-      if (!_looksLikeSupabaseConfig(url, anonKey)) return fallback;
+      if (!_looksLikeSupabaseConfig(url, anonKey)) return _fallbackConfig();
 
       return SupabaseRuntimeConfig(
         url: url,
@@ -65,7 +70,36 @@ class SupabaseRuntimeConfigResolver {
         updatedAt: DateTime.tryParse(row['updated_at']?.toString() ?? ''),
       );
     } catch (_) {
-      return fallback;
+      return _fallbackConfig();
+    }
+  }
+
+  Future<SupabaseRuntimeConfig?> _webRuntimeConfig() async {
+    try {
+      final response = await Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 8),
+          receiveTimeout: const Duration(seconds: 8),
+          sendTimeout: const Duration(seconds: 8),
+        ),
+      ).get<dynamic>('/api/public/backend-config');
+
+      final data = response.data;
+      if (data is! Map) return null;
+
+      final url = data['supabaseUrl']?.toString().trim() ?? '';
+      final anonKey = data['supabaseAnonKey']?.toString().trim() ?? '';
+      if (!_looksLikeSupabaseConfig(url, anonKey)) return null;
+      final source = data['source']?.toString().trim();
+
+      return SupabaseRuntimeConfig(
+        url: url,
+        anonKey: anonKey,
+        source: (source?.isNotEmpty ?? false) ? 'web-$source' : 'web',
+        updatedAt: DateTime.tryParse(data['updatedAt']?.toString() ?? ''),
+      );
+    } catch (_) {
+      return null;
     }
   }
 
@@ -87,7 +121,29 @@ class SupabaseRuntimeConfigResolver {
   }
 
   String _env(String key, {String fallback = ''}) {
-    return (dotenv.env[key] ?? fallback).trim();
+    final dartDefine = _dartDefine(key);
+    final effectiveFallback = dartDefine.isNotEmpty ? dartDefine : fallback;
+    try {
+      return (dotenv.env[key] ?? effectiveFallback).trim();
+    } catch (_) {
+      return effectiveFallback.trim();
+    }
+  }
+
+  String _dartDefine(String key) {
+    switch (key) {
+      case 'SUPABASE_URL':
+        return const String.fromEnvironment('SUPABASE_URL');
+      case 'SUPABASE_ANON_KEY':
+        return const String.fromEnvironment('SUPABASE_ANON_KEY');
+      case 'MASTER_SUPABASE_URL':
+        return const String.fromEnvironment('MASTER_SUPABASE_URL');
+      case 'MASTER_SUPABASE_ANON_KEY':
+        return const String.fromEnvironment('MASTER_SUPABASE_ANON_KEY');
+      case 'MASTER_BACKEND_CONFIG_VIEW':
+        return const String.fromEnvironment('MASTER_BACKEND_CONFIG_VIEW');
+    }
+    return '';
   }
 
   String _withoutTrailingSlash(String value) {

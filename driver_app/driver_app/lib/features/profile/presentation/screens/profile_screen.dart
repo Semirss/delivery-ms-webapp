@@ -177,13 +177,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.primary,
       pinned: true,
       automaticallyImplyLeading: false,
-      actions: [
-        IconButton(
-          tooltip: 'Refresh profile',
-          icon: const Icon(Icons.refresh_rounded, color: Colors.white),
-          onPressed: _loadProfile,
-        ),
-      ],
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: const BoxDecoration(

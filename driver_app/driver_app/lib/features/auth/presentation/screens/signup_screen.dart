@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:driver_app/config/router/app_routes.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/core/utils/constants/ui_constants.dart';
+import 'package:driver_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:driver_app/core/utils/functions/base_functions/validators.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
@@ -113,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        phone: _phoneController.text.trim(),
+        phone: normalizeEthiopianPhone(_phoneController.text),
         telegramUsername: _telegramController.text.trim(),
         plateNumber: _plateController.text.trim(),
         vehicleType: _selectedVehicleType,
@@ -138,7 +139,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (lastName.isEmpty) return 'Please enter your last name.';
     if (email.isEmpty || !isValidEmail(email))
       return 'Please enter a valid email.';
-    if (phone.isEmpty) return 'Please enter your phone number.';
+    final phoneError = validateEthiopianPhone(phone);
+    if (phoneError != null) return phoneError;
     if (telegram.isEmpty) return 'Please enter your Telegram username.';
     if (plate.isEmpty) return 'Please enter your plate number.';
     if (!isValidPassword(password))
@@ -214,8 +216,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppTextField.outlined(
                     controller: _phoneController,
                     label: 'Phone Number',
-                    hint: '0987733... or +251 944...',
+                    hint: '912 345 678',
                     prefixIcon: Icons.phone_outlined,
+                    prefixText: '$ethiopianDialCode ',
                     keyboardType: TextInputType.phone,
                   ),
                   kVerticalGap16,

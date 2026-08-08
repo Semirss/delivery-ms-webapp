@@ -3,7 +3,9 @@ import 'dart:math' as math;
 
 import 'package:client_app/config/router/navigation_helper.dart';
 import 'package:client_app/config/router/navigation_service.dart';
+import 'package:client_app/core/map/addis_ababa_base_map.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
+import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import 'package:client_app/features/auth/domain/entities/user_entity.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
@@ -24,6 +26,8 @@ import '../../../../config/router/app_routes.dart';
 import '../../../../core/preferences/app_preferences.dart';
 
 enum _PickupChoice { currentLocation, neighborhood, pinOnMap }
+
+enum _DeliveryDestinationChoice { currentLocation, neighborhood, pinOnMap }
 
 class _DeliveryPricing {
   const _DeliveryPricing({
@@ -269,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoadingActiveDelivery = false;
   bool _showMap = false;
   bool _isPreparingDelivery = false;
+  bool _isRequestingAnotherDelivery = false;
   bool _isSubmitting = false;
   bool _isResolvingPickup = false;
   bool _hasAutoOpenedDestinationSearch = false;
@@ -339,7 +344,81 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   LatLng get _mapCenter =>
-      _deliveryPickup ?? _currentLocation ?? _fallbackCenter;
+      _firstValidPoint([_deliveryPickup, _currentLocation]) ?? _fallbackCenter;
+
+  LatLng? _firstValidPoint(Iterable<LatLng?> points) {
+    for (final point in points) {
+      if (point != null && _isValidMapPoint(point)) return point;
+    }
+    return null;
+  }
+
+  bool _isValidMapPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
+  }
+
+  double _safeMapZoom(double zoom, {double fallback = 14}) {
+    final value = zoom.isFinite ? zoom : fallback;
+    return value.clamp(3.0, 18.0).toDouble();
+  }
+
+  bool _hasUsableMapBounds(List<LatLng> points) {
+    if (points.length < 2) return false;
+
+    var minLat = points.first.latitude;
+    var maxLat = points.first.latitude;
+    var minLng = points.first.longitude;
+    var maxLng = points.first.longitude;
+    for (final point in points.skip(1)) {
+      minLat = math.min(minLat, point.latitude);
+      maxLat = math.max(maxLat, point.latitude);
+      minLng = math.min(minLng, point.longitude);
+      maxLng = math.max(maxLng, point.longitude);
+    }
+
+    return (maxLat - minLat).abs() > 0.00005 ||
+        (maxLng - minLng).abs() > 0.00005;
+  }
+
+  void _moveMapSafely(LatLng center, double zoom) {
+    if (!mounted || !_isValidMapPoint(center)) return;
+    try {
+      _mapController.move(center, _safeMapZoom(zoom));
+    } catch (e) {
+      debugPrint('Map move skipped: $e');
+    }
+  }
+
+  void _fitMapSafely(
+    List<LatLng> rawPoints, {
+    EdgeInsets padding = const EdgeInsets.all(50),
+    double fallbackZoom = 15,
+  }) {
+    if (!mounted) return;
+    final points = rawPoints.where(_isValidMapPoint).toList(growable: false);
+    if (points.isEmpty) return;
+    if (!_hasUsableMapBounds(points)) {
+      _moveMapSafely(points.first, fallbackZoom);
+      return;
+    }
+
+    try {
+      _mapController.fitCamera(
+        CameraFit.bounds(
+          bounds: LatLngBounds.fromPoints(points),
+          padding: padding,
+        ),
+      );
+    } catch (e) {
+      debugPrint('Map fit skipped: $e');
+      _moveMapSafely(points.first, fallbackZoom);
+    }
+  }
 
   Future<bool> _loadCurrentLocation() async {
     try {
@@ -352,9 +431,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return false;
 
       final location = LatLng(position.latitude, position.longitude);
+      if (!_isValidMapPoint(location)) return false;
       setState(() => _currentLocation = location);
       if (!_showMap) return true;
-      _mapController.move(location, 14);
+      _moveMapSafely(location, 14);
       return true;
     } catch (e) {
       debugPrint('Error loading current location: $e');
@@ -651,16 +731,19 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _driverMarkers = List<Map<String, dynamic>>.from(data)
           .where(_isVisibleDriver)
-          .map(
-            (driver) => _buildDriverMarker(
+          .map((driver) {
+            final position = _latLngFromFields(
+              driver['current_lat'],
+              driver['current_lng'],
+            );
+            if (position == null) return null;
+            return _buildDriverMarker(
               driver['id'].toString(),
-              LatLng(
-                _asDouble(driver['current_lat']),
-                _asDouble(driver['current_lng']),
-              ),
+              position,
               driver['vehicle_type']?.toString() ?? 'Motorbike',
-            ),
-          )
+            );
+          })
+          .whereType<Marker>()
           .toList();
     });
   }
@@ -669,8 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return driver['status'] == 'Online' &&
         driver['approval_status'] == 'Approved' &&
         driver['is_active'] != false &&
-        driver['current_lat'] != null &&
-        driver['current_lng'] != null;
+        _latLngFromFields(driver['current_lat'], driver['current_lng']) != null;
   }
 
   void _handleDriverUpdate(PostgresChangePayload payload) {
@@ -684,13 +766,15 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _driverMarkers.removeWhere((marker) => marker.key == ValueKey(id));
       if (data.isNotEmpty && _isVisibleDriver(data)) {
+        final position = _latLngFromFields(
+          data['current_lat'],
+          data['current_lng'],
+        );
+        if (position == null) return;
         _driverMarkers.add(
           _buildDriverMarker(
             id,
-            LatLng(
-              _asDouble(data['current_lat']),
-              _asDouble(data['current_lng']),
-            ),
+            position,
             data['vehicle_type']?.toString() ?? 'Motorbike',
           ),
         );
@@ -788,13 +872,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!widget.deliveryPage ||
         !widget.autoSearchDestination ||
         _hasAutoOpenedDestinationSearch ||
-        _currentDeliveryId != null ||
         _destination != null ||
         _isPreparingDelivery) {
       return;
     }
 
     _hasAutoOpenedDestinationSearch = true;
+    _isRequestingAnotherDelivery = _hasActiveDelivery;
     unawaited(_startDeliveryFlow(service: _selectedService));
   }
 
@@ -873,71 +957,38 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.32),
       builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: Container(
-            margin: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: sheetContext.appSurface,
-              borderRadius: BorderRadius.circular(26),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.18),
-                  blurRadius: 28,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+        return _LocationChoiceSheet<_PickupChoice>(
+          accentColor: AppColors.success,
+          heroIcon: Icons.trip_origin_rounded,
+          title: 'Pickup',
+          amharicTitle: 'መነሻ ቦታ',
+          subtitle: 'Set collection point',
+          amharicSubtitle: 'እቃው የሚነሳበትን ቦታ ይምረጡ',
+          options: const [
+            _LocationChoiceOption(
+              value: _PickupChoice.currentLocation,
+              icon: Icons.my_location_rounded,
+              title: 'GPS',
+              caption: 'Here',
+              amharicCaption: 'አሁን ያሉበት',
             ),
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppText(
-                  'Choose pickup location',
-                  variant: AppTextVariant.heading3,
-                  fontWeight: FontWeight.w900,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                AppText(
-                  'Price is calculated from this pickup to your drop-off.',
-                  variant: AppTextVariant.bodySmall,
-                  color: sheetContext.appTextSecondary,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                _PickupChoiceTile(
-                  icon: Icons.my_location_rounded,
-                  title: 'Use current GPS',
-                  subtitle: 'Best for door-to-door pickup.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.currentLocation,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.travel_explore_rounded,
-                  title: 'Choose neighborhood',
-                  subtitle: 'Pick an Addis Ababa area manually.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.neighborhood,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                _PickupChoiceTile(
-                  icon: Icons.add_location_alt_rounded,
-                  title: 'Pin on map',
-                  subtitle: 'Move the map and drop the pickup pin.',
-                  onTap: () => Navigator.pop(
-                    sheetContext,
-                    _PickupChoice.pinOnMap,
-                  ),
-                ),
-              ],
+            _LocationChoiceOption(
+              value: _PickupChoice.neighborhood,
+              icon: Icons.travel_explore_rounded,
+              title: 'Area',
+              caption: 'Search',
+              amharicCaption: 'አካባቢ ይፈልጉ',
             ),
-          ),
+            _LocationChoiceOption(
+              value: _PickupChoice.pinOnMap,
+              icon: Icons.add_location_alt_rounded,
+              title: 'Pin',
+              caption: 'Map',
+              amharicCaption: 'በካርታ ይምረጡ',
+            ),
+          ],
         );
       },
     );
@@ -949,14 +1000,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    await _setPickupFromPoint(
-      location,
-      fallbackName: 'Current GPS pickup',
-    );
+    await _setPickupFromPoint(location, fallbackName: 'Current GPS pickup');
   }
 
   Future<void> _choosePickupNeighborhood() async {
-    final result = await Navigator.push<MapPlace>(
+    final result = await Navigator.push<Object?>(
       context,
       MaterialPageRoute(
         builder: (context) => const SearchDestinationScreen(
@@ -973,16 +1021,28 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (!mounted || result == null) return;
+    if (result == SearchDestinationAction.pinOnMap) {
+      await _pinPickupOnMap();
+      return;
+    }
+    if (result is! MapPlace) return;
     await _setPickupPlace(result);
   }
 
   Future<void> _pinPickupOnMap() async {
-    final initialCenter =
-        _deliveryPickup ?? _currentLocation ?? _destination?.location;
+    final initialCenter = _firstValidPoint([
+      _deliveryPickup,
+      _currentLocation,
+      _destination?.location,
+    ]);
     final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
       MaterialPageRoute(
         builder: (context) => _PinLocationScreen(
           initialCenter: initialCenter ?? _fallbackCenter,
+          title: 'Pin pickup',
+          subtitle: 'Move the map until the pin is on the collection point.',
+          buttonLabel: 'USE PINNED PICKUP',
+          pinColor: AppColors.success,
         ),
       ),
     );
@@ -1010,6 +1070,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final place = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
+      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
     );
     if (!mounted) return;
 
@@ -1033,30 +1094,40 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    if (!_isValidMapPoint(pickup) || !_isValidMapPoint(destination.location)) {
+      if (!mounted) return;
+      setState(() {
+        _routePoints = [];
+        _distanceKm = null;
+      });
+      return;
+    }
+
     final route = await _mapRepository.getRoute(pickup, destination.location);
     if (!mounted) return;
 
+    final routePoints = _validRoutePoints(route.points);
     setState(() {
-      _routePoints = route.points.isNotEmpty
-          ? route.points
+      _routePoints = routePoints.length >= 2
+          ? routePoints
           : [pickup, destination.location];
       _distanceKm = route.distanceKm > 0
           ? route.distanceKm
-          : _mapRepository.straightLineDistanceKm(
-              pickup,
-              destination.location,
-            );
+          : _mapRepository.straightLineDistanceKm(pickup, destination.location);
     });
     _fitRoute(pickup, destination.location);
   }
 
   void _fitRoute(LatLng pickup, LatLng dropoff) {
-    _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: LatLngBounds.fromPoints([pickup, dropoff]),
-        padding: const EdgeInsets.all(50),
-      ),
+    _fitMapSafely(
+      [pickup, dropoff],
+      padding: const EdgeInsets.all(50),
+      fallbackZoom: 15,
     );
+  }
+
+  List<LatLng> _validRoutePoints(List<LatLng> points) {
+    return points.where(_isValidMapPoint).toList(growable: false);
   }
 
   String? _resolvedPackageType() {
@@ -1071,38 +1142,164 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedService = service;
       _showMap = true;
+      _isRequestingAnotherDelivery =
+          _isRequestingAnotherDelivery || _hasActiveDelivery;
     });
 
     await Future<void>.delayed(Duration.zero);
     if (!mounted) return;
-    await _handleSearchDestination();
+    await _chooseDeliveryDestination();
   }
 
-  Future<void> _handleSearchDestination() async {
-    final result = await Navigator.push<MapPlace>(
+  Future<void> _chooseDeliveryDestination() async {
+    final choice = await _showDestinationChoiceSheet();
+    if (!mounted) return;
+
+    if (choice == null) {
+      _handleDestinationSelectionCancelled();
+      return;
+    }
+
+    switch (choice) {
+      case _DeliveryDestinationChoice.currentLocation:
+        await _useCurrentLocationForDestination();
+      case _DeliveryDestinationChoice.neighborhood:
+        await _chooseDestinationNeighborhood();
+      case _DeliveryDestinationChoice.pinOnMap:
+        await _pinDestinationOnMap();
+    }
+  }
+
+  Future<_DeliveryDestinationChoice?> _showDestinationChoiceSheet() {
+    return showModalBottomSheet<_DeliveryDestinationChoice>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.32),
+      builder: (sheetContext) {
+        return _LocationChoiceSheet<_DeliveryDestinationChoice>(
+          accentColor: AppColors.primary,
+          heroIcon: Icons.flag_rounded,
+          title: 'Drop-off',
+          amharicTitle: 'መድረሻ ቦታ',
+          subtitle: 'Set delivery point',
+          amharicSubtitle: 'እቃው የሚደርስበትን ቦታ ይምረጡ',
+          options: const [
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.currentLocation,
+              icon: Icons.my_location_rounded,
+              title: 'GPS',
+              caption: 'Here',
+              amharicCaption: 'አሁን ያሉበት',
+            ),
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.neighborhood,
+              icon: Icons.travel_explore_rounded,
+              title: 'Area',
+              caption: 'Search',
+              amharicCaption: 'አካባቢ ይፈልጉ',
+            ),
+            _LocationChoiceOption(
+              value: _DeliveryDestinationChoice.pinOnMap,
+              icon: Icons.add_location_alt_rounded,
+              title: 'Pin',
+              caption: 'Map',
+              amharicCaption: 'በካርታ ይምረጡ',
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _chooseDestinationNeighborhood() async {
+    final result = await Navigator.push<Object?>(
       context,
       MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
     );
     if (!mounted) return;
 
+    if (result == SearchDestinationAction.pinOnMap) {
+      await _pinDestinationOnMap();
+      return;
+    }
     if (result == null) {
-      if (widget.deliveryPage &&
-          widget.autoSearchDestination &&
-          _destination == null &&
-          _currentDeliveryId == null) {
-        NavigationService().triggerHomeAction();
-        return;
-      }
-      if (!_isPreparingDelivery && _currentDeliveryId == null) {
-        setState(() => _showMap = false);
-      }
+      _handleDestinationSelectionCancelled();
+      return;
+    }
+    if (result is! MapPlace) {
+      _handleDestinationSelectionCancelled();
       return;
     }
 
+    await _setDeliveryDestination(result);
+  }
+
+  Future<void> _useCurrentLocationForDestination() async {
+    final hasLocation = await _loadCurrentLocation();
+    if (!hasLocation || !mounted) return;
+
+    final location = _currentLocation;
+    if (location == null) return;
+    final place = await _mapRepository.describeLocation(
+      location,
+      fallbackName: 'Current GPS delivery destination',
+    );
+    if (!mounted) return;
+    await _setDeliveryDestination(place);
+  }
+
+  Future<void> _pinDestinationOnMap() async {
+    final initialCenter = _firstValidPoint([
+      _destination?.location,
+      _currentLocation,
+      _deliveryPickup,
+    ]);
+    final point = await Navigator.of(context, rootNavigator: true).push<LatLng>(
+      MaterialPageRoute(
+        builder: (context) => _PinLocationScreen(
+          initialCenter: initialCenter ?? _fallbackCenter,
+          title: 'Pin drop-off',
+          subtitle: 'Move the map until the pin is on the delivery point.',
+          buttonLabel: 'USE PINNED DROP-OFF',
+          pinColor: AppColors.primary,
+        ),
+      ),
+    );
+    if (!mounted || point == null) return;
+
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: 'Pinned delivery destination',
+      exactPinLabel: true,
+    );
+    if (!mounted) return;
+    await _setDeliveryDestination(place);
+  }
+
+  void _handleDestinationSelectionCancelled() {
+    if (widget.deliveryPage &&
+        widget.autoSearchDestination &&
+        _destination == null &&
+        !_hasActiveDelivery) {
+      NavigationService().triggerHomeAction();
+      return;
+    }
+    if (!_isPreparingDelivery && !_hasActiveDelivery) {
+      setState(() => _showMap = false);
+    }
+  }
+
+  Future<void> _setDeliveryDestination(MapPlace result) async {
+    final isAnotherDelivery =
+        _isRequestingAnotherDelivery || _hasActiveDelivery;
     setState(() {
       _destination = result;
       _isPreparingDelivery = true;
-      _deliveryStatus = 'none';
+      _isRequestingAnotherDelivery = isAnotherDelivery;
+      if (!isAnotherDelivery) {
+        _deliveryStatus = 'none';
+      }
       _routePoints = [];
       _distanceKm = null;
     });
@@ -1116,6 +1313,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _requestDelivery() async {
     if (_destination == null || _isSubmitting) return;
+    final previousDelivery = _currentDelivery == null
+        ? null
+        : Map<String, dynamic>.from(_currentDelivery!);
+    final previousDeliveryId = _currentDeliveryId;
+    final previousDeliveryStatus = _deliveryStatus;
     final hasPickup = await _ensurePickupSelected();
     if (!hasPickup) {
       if (!mounted) return;
@@ -1182,7 +1384,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .insert({
             'customer_name': customerName.isEmpty ? user.email : customerName,
             'customer_phone': user.phone?.trim().isNotEmpty == true
-                ? user.phone!.trim()
+                ? normalizeEthiopianPhone(user.phone!)
                 : user.email,
             'client_id': user.id,
             'pickup_location': pickupLabel,
@@ -1209,6 +1411,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _currentDelivery = Map<String, dynamic>.from(response);
         _deliveryStatus = response['status']?.toString() ?? 'Pending';
+        _isRequestingAnotherDelivery = false;
       });
       AppToast.show(
         context: context,
@@ -1219,7 +1422,11 @@ class _HomeScreenState extends State<HomeScreen> {
       debugPrint('Error requesting delivery: $e');
       if (!mounted) return;
       setState(() {
-        _deliveryStatus = 'none';
+        _currentDelivery = previousDelivery;
+        _currentDeliveryId = previousDeliveryId;
+        _deliveryStatus = previousDeliveryId == null
+            ? 'none'
+            : previousDeliveryStatus;
       });
       AppToast.show(
         context: context,
@@ -1375,81 +1582,113 @@ class _HomeScreenState extends State<HomeScreen> {
     required String subtitle,
     required int initialRating,
   }) {
-    var selectedRating = initialRating.clamp(1, 5).toInt();
+    var selectedRating = initialRating;
+    if (selectedRating < 1) selectedRating = 1;
+    if (selectedRating > 5) selectedRating = 5;
 
-    return showModalBottomSheet<int>(
+    return showDialog<int>(
       context: context,
-      backgroundColor: context.appSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (sheetContext) {
+      builder: (dialogContext) {
         return StatefulBuilder(
-          builder: (sheetContext, setSheetState) {
+          builder: (dialogContext, setSheetState) {
+            final bottomInset = MediaQuery.viewInsetsOf(dialogContext).bottom;
             return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.appBorder,
-                        borderRadius: BorderRadius.circular(999),
+              child: AnimatedPadding(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg + bottomInset,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Material(
+                      color: dialogContext.appSurface,
+                      borderRadius: BorderRadius.circular(24),
+                      clipBehavior: Clip.antiAlias,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 52,
+                              height: 52,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.12,
+                                ),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.star_rounded,
+                                color: Colors.amber,
+                                size: 32,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            AppText(
+                              title,
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.w900,
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            AppText(
+                              subtitle,
+                              variant: AppTextVariant.bodyMedium,
+                              color: dialogContext.appTextSecondary,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(5, (index) {
+                                final value = index + 1;
+                                return IconButton(
+                                  tooltip: '$value star',
+                                  onPressed: () {
+                                    setSheetState(
+                                      () => selectedRating = value,
+                                    );
+                                  },
+                                  icon: Icon(
+                                    value <= selectedRating
+                                        ? Icons.star_rounded
+                                        : Icons.star_border_rounded,
+                                    color: Colors.amber,
+                                    size: 38,
+                                  ),
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            AppButton.primary(
+                              label: 'SUBMIT RATING',
+                              fullWidth: true,
+                              onPressed: () => Navigator.of(
+                                dialogContext,
+                              ).pop(selectedRating),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(dialogContext).pop(),
+                              child: AppText(
+                                'Skip',
+                                variant: AppTextVariant.button,
+                                color: dialogContext.appTextSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppText(
-                      title,
-                      variant: AppTextVariant.heading3,
-                      fontWeight: FontWeight.w900,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    AppText(
-                      subtitle,
-                      variant: AppTextVariant.bodyMedium,
-                      color: context.appTextSecondary,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        final value = index + 1;
-                        return IconButton(
-                          tooltip: '$value star',
-                          onPressed: () {
-                            setSheetState(() => selectedRating = value);
-                          },
-                          icon: Icon(
-                            value <= selectedRating
-                                ? Icons.star_rounded
-                                : Icons.star_border_rounded,
-                            color: Colors.amber,
-                            size: 38,
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppButton.primary(
-                      label: 'SUBMIT RATING',
-                      fullWidth: true,
-                      onPressed: () =>
-                          Navigator.of(sheetContext).pop(selectedRating),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(sheetContext).pop(),
-                      child: AppText(
-                        'Skip',
-                        variant: AppTextVariant.button,
-                        color: context.appTextSecondary,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -1487,7 +1726,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       var delivery = _firstActiveDelivery(byClient);
       final customerLookup = user.phone?.trim().isNotEmpty == true
-          ? user.phone!.trim()
+          ? normalizeEthiopianPhone(user.phone!)
           : user.email;
 
       if (delivery == null && customerLookup.trim().isNotEmpty) {
@@ -1525,6 +1764,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
   }
 
+  bool get _hasActiveDelivery =>
+      _currentDeliveryId != null && _isActiveDeliveryStatus(_deliveryStatus);
+
   Future<void> _adoptDelivery(
     Map<String, dynamic> delivery, {
     required bool showMap,
@@ -1547,6 +1789,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _deliveryPickup = pickup;
       _showMap = showMap;
       _isPreparingDelivery = true;
+      _isRequestingAnotherDelivery = false;
       if (vehicleCategory == 'Bike' || vehicleCategory == 'Motor') {
         _selectedVehicleCategory = vehicleCategory!;
       }
@@ -1597,7 +1840,65 @@ class _HomeScreenState extends State<HomeScreen> {
     final latitude = _asNullableDouble(lat);
     final longitude = _asNullableDouble(lng);
     if (latitude == null || longitude == null) return null;
-    return LatLng(latitude, longitude);
+    final point = LatLng(latitude, longitude);
+    return _isValidMapPoint(point) ? point : null;
+  }
+
+  bool get _canCancelCurrentDelivery =>
+      _currentDeliveryId != null &&
+      (_deliveryStatus == 'Pending' || _deliveryStatus == 'Assigned');
+
+  Future<void> _confirmCancelCurrentDelivery() async {
+    if (!_canCancelCurrentDelivery) return;
+
+    final confirmed = await AppModal.confirm(
+      context: context,
+      title: 'Cancel delivery?',
+      contentText: 'This delivery will be cancelled before pickup.',
+      confirmLabel: 'Cancel delivery',
+      cancelLabel: 'Keep delivery',
+      icon: Icons.cancel_outlined,
+      heightPercentage: 0.46,
+    );
+    if (confirmed != true || !mounted) return;
+
+    await _cancelDeliveryRequest();
+    if (!mounted) return;
+    AppToast.show(
+      context: context,
+      message: 'Delivery cancelled.',
+      type: AppToastType.success,
+    );
+  }
+
+  Future<void> _startAnotherDeliveryRequest() async {
+    setState(() {
+      _isRequestingAnotherDelivery = true;
+      _isPreparingDelivery = false;
+      _showMap = true;
+      _destination = null;
+      _routePoints = [];
+      _distanceKm = null;
+      _selectedPackageType = 'Documents';
+      _otherItemController.clear();
+    });
+    await _startDeliveryFlow(service: _selectedService);
+  }
+
+  void _discardDraftDelivery() {
+    setState(() {
+      _isRequestingAnotherDelivery = false;
+      _isPreparingDelivery = false;
+      _destination = null;
+      _routePoints = [];
+      _distanceKm = null;
+      if (!_hasActiveDelivery) {
+        _showMap = false;
+        _pickupPlace = null;
+        _deliveryPickup = null;
+        _deliveryStatus = 'none';
+      }
+    });
   }
 
   Future<void> _cancelDeliveryRequest() async {
@@ -1614,7 +1915,8 @@ class _HomeScreenState extends State<HomeScreen> {
               'cancelled_by': 'customer',
               'cancellation_reason': 'Cancelled from client app',
             })
-            .eq('id', deliveryId);
+            .eq('id', deliveryId)
+            .inFilter('status', const ['Pending', 'Assigned']);
       } catch (e) {
         debugPrint('Error cancelling delivery: $e');
       }
@@ -1664,18 +1966,13 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_deliveryPickup != null) _deliveryPickup!,
       if (_destination != null) _destination!.location,
       if (_currentDriverPosition != null) _currentDriverPosition!,
-    ];
+    ].where(_isValidMapPoint).toList(growable: false);
 
-    if (points.length >= 2) {
-      _mapController.fitCamera(
-        CameraFit.bounds(
-          bounds: LatLngBounds.fromPoints(points),
-          padding: const EdgeInsets.all(70),
-        ),
-      );
-    } else if (points.length == 1) {
-      _mapController.move(points.first, 15);
-    }
+    _fitMapSafely(
+      points,
+      padding: const EdgeInsets.all(70),
+      fallbackZoom: 15,
+    );
   }
 
   Map<String, dynamic>? get _currentDriver {
@@ -1721,13 +2018,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _closeMapView() {
+    if (_isRequestingAnotherDelivery) {
+      _discardDraftDelivery();
+      return;
+    }
+
     if (widget.deliveryPage) {
       NavigationService().triggerHomeAction();
       return;
     }
 
-    if (_currentDeliveryId != null &&
-        _isActiveDeliveryStatus(_deliveryStatus)) {
+    if (_hasActiveDelivery) {
       setState(() => _showMap = false);
       return;
     }
@@ -1743,6 +2044,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _showMap = false;
       _isPreparingDelivery = false;
+      _isRequestingAnotherDelivery = false;
       _pickupPlace = null;
       _destination = null;
       _routePoints = [];
@@ -1754,18 +2056,20 @@ class _HomeScreenState extends State<HomeScreen> {
       _isResolvingPickup = false;
     });
     _deliveryChannel?.unsubscribe();
-    _mapController.move(_mapCenter, 14);
+    _moveMapSafely(_mapCenter, 14);
   }
 
   double _asDouble(Object? value) {
-    if (value is num) return value.toDouble();
-    return double.tryParse(value?.toString() ?? '') ?? 0;
+    return _asNullableDouble(value) ?? 0;
   }
 
   double? _asNullableDouble(Object? value) {
     if (value == null) return null;
-    if (value is num) return value.toDouble();
-    return double.tryParse(value.toString());
+    final parsed = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString());
+    if (parsed == null || !parsed.isFinite) return null;
+    return parsed;
   }
 
   @override
@@ -1898,7 +2202,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildMapExperience(Map<String, dynamic>? driver) {
     final assignedDriverMarker = _buildAssignedDriverMarker(driver);
-    final pickupMarkerPoint = _deliveryPickup ?? _currentLocation;
+    final pickupMarkerPoint = _firstValidPoint([
+      _deliveryPickup,
+      _currentLocation,
+    ]);
+    final destinationPoint = _destination == null
+        ? null
+        : _firstValidPoint([_destination!.location]);
+    final routePoints = _validRoutePoints(_routePoints);
+    final driverMarkers = _driverMarkers
+        .where((marker) => _isValidMapPoint(marker.point))
+        .toList(growable: false);
 
     return Scaffold(
       body: Stack(
@@ -1913,23 +2227,20 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ...addisAbabaBaseMapLayers(
                 userAgentPackageName: 'com.motobikedeliveryservice.client',
-                maxNativeZoom: 19,
-                keepBuffer: 5,
               ),
-              if (_routePoints.isNotEmpty)
+              if (routePoints.length >= 2)
                 PolylineLayer(
                   polylines: [
                     Polyline(
-                      points: _routePoints,
+                      points: routePoints,
                       color: AppColors.success,
                       strokeWidth: 5,
                     ),
                   ],
                 ),
-              MarkerLayer(markers: _driverMarkers),
+              MarkerLayer(markers: driverMarkers),
               if (assignedDriverMarker != null)
                 MarkerLayer(markers: [assignedDriverMarker]),
               MarkerLayer(
@@ -1957,9 +2268,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                  if (_destination != null)
+                  if (destinationPoint != null)
                     Marker(
-                      point: _destination!.location,
+                      point: destinationPoint,
                       width: 44,
                       height: 44,
                       child: const Icon(
@@ -2002,21 +2313,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   _roundMapButton(
                     Icons.search_rounded,
-                    _handleSearchDestination,
+                    () => unawaited(_chooseDeliveryDestination()),
                   ),
                 ],
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildBottomSheet(driver),
+          Positioned.fill(
+            child: DraggableScrollableSheet(
+              key: ValueKey(
+                'delivery-sheet-$_isPreparingDelivery-'
+                '$_isRequestingAnotherDelivery-$_deliveryStatus',
+              ),
+              initialChildSize: _initialMapSheetSize,
+              minChildSize: _minMapSheetSize,
+              maxChildSize: 0.88,
+              snap: true,
+              snapSizes: _mapSheetSnapSizes,
+              builder: (context, scrollController) {
+                return _buildBottomSheet(driver, scrollController);
+              },
+            ),
           ),
         ],
       ),
     );
+  }
+
+  double get _initialMapSheetSize {
+    if (!_isPreparingDelivery) return 0.32;
+    if (_deliveryStatus == 'none' || _isRequestingAnotherDelivery) {
+      return 0.62;
+    }
+    if (_deliveryStatus == 'Pending') return 0.52;
+    return 0.62;
+  }
+
+  double get _minMapSheetSize {
+    if (!_isPreparingDelivery) return 0.30;
+    if (_deliveryStatus == 'Pending') return 0.50;
+    return 0.32;
+  }
+
+  List<double> get _mapSheetSnapSizes {
+    if (!_isPreparingDelivery) return const [0.32, 0.62, 0.88];
+    if (_deliveryStatus == 'Pending') return const [0.50, 0.68, 0.88];
+    return const [0.32, 0.62, 0.88];
   }
 
   void _showSettingsSheet() {
@@ -2452,7 +2794,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: AppSpacing.sm),
           AppText(
             driver == null
-                ? 'Waiting for driver assignment.'
+                ? 'Waiting for dispatch. You can request another delivery below.'
                 : driverHasGps
                 ? 'Driver GPS is live.'
                 : 'Driver assigned. Waiting for GPS update.',
@@ -2479,16 +2821,32 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+          const SizedBox(height: AppSpacing.sm),
+          AppButton.outlinedSecondary(
+            label: 'REQUEST ANOTHER',
+            icon: Icons.add_road_rounded,
+            fullWidth: true,
+            onPressed: () => unawaited(_startAnotherDeliveryRequest()),
+          ),
+          if (_canCancelCurrentDelivery) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AppButton.outlinedDanger(
+              label: 'CANCEL DELIVERY',
+              icon: Icons.cancel_outlined,
+              fullWidth: true,
+              onPressed: () => unawaited(_confirmCancelCurrentDelivery()),
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildBottomSheet(Map<String, dynamic>? driver) {
+  Widget _buildBottomSheet(
+    Map<String, dynamic>? driver,
+    ScrollController scrollController,
+  ) {
     return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.78,
-      ),
       decoration: BoxDecoration(
         color: context.appSurface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
@@ -2503,6 +2861,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
+          controller: scrollController,
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.lg,
             AppSpacing.lg,
@@ -2527,7 +2886,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildWhereToCard(),
               ] else if (!_isPreparingDelivery) ...[
                 _buildWhereToCard(),
-              ] else if (_deliveryStatus == 'none') ...[
+              ] else if (_deliveryStatus == 'none' ||
+                  _isRequestingAnotherDelivery) ...[
                 _buildPackageTypeSelector(),
                 const SizedBox(height: AppSpacing.md),
                 _buildVehicleSelector(compact: true),
@@ -2537,7 +2897,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildDeliverySummary(),
                 const SizedBox(height: AppSpacing.lg),
                 AppButton.primary(
-                  label: 'REQUEST DELIVERY',
+                  label: _isRequestingAnotherDelivery
+                      ? 'REQUEST ANOTHER DELIVERY'
+                      : 'REQUEST DELIVERY',
                   fullWidth: true,
                   isLoading: _isSubmitting,
                   onPressed: _requestDelivery,
@@ -2548,10 +2910,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 const AppText(
-                  'Waiting for admin dispatch...',
+                  'Waiting for dispatch',
                   variant: AppTextVariant.heading3,
                   fontWeight: FontWeight.bold,
                   textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppText(
+                  'We are looking for a courier. You can send another request while this one is waiting.',
+                  variant: AppTextVariant.bodySmall,
+                  color: context.appTextSecondary,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                AppButton.primary(
+                  label: 'REQUEST ANOTHER',
+                  icon: Icons.add_road_rounded,
+                  fullWidth: true,
+                  onPressed: () => unawaited(_startAnotherDeliveryRequest()),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 AppButton.outlinedSecondary(
@@ -3289,7 +3665,9 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisSpacing: AppSpacing.sm,
             mainAxisSpacing: AppSpacing.sm,
             children: gridDeals
-                .map((deal) => _DealGridAdCard(deal: deal, onTap: _openDealAction))
+                .map(
+                  (deal) => _DealGridAdCard(deal: deal, onTap: _openDealAction),
+                )
                 .toList(),
           ),
         ],
@@ -3334,10 +3712,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppText(
-                      'Pickup',
-                      variant: AppTextVariant.labelLarge,
-                      fontWeight: FontWeight.w900,
+                    Row(
+                      children: [
+                        const AppText(
+                          'Pickup',
+                          variant: AppTextVariant.labelLarge,
+                          fontWeight: FontWeight.w900,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.full,
+                            ),
+                          ),
+                          child: const AppText(
+                            'መነሻ',
+                            variant: AppTextVariant.labelSmall,
+                            color: AppColors.success,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 2),
                     AppText(
@@ -3419,7 +3820,9 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             IconButton(
               icon: Icon(Icons.close_rounded, color: context.appTextPrimary),
-              onPressed: _cancelDeliveryRequest,
+              onPressed: _isRequestingAnotherDelivery
+                  ? _discardDraftDelivery
+                  : _cancelDeliveryRequest,
             ),
             Expanded(
               child: AppText(
@@ -3658,9 +4061,9 @@ class _PreviewRouteOverlayPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     canvas
-      ..drawCircle(center + const Offset(0, 3), 30, shadow)
-      ..drawCircle(center, 10, shell)
-      ..drawCircle(center, 5, fill);
+      ..drawCircle(center + const Offset(0, 2), 20, shadow)
+      ..drawCircle(center, 9, shell)
+      ..drawCircle(center, 4.5, fill);
   }
 
   @override
@@ -3845,9 +4248,7 @@ class _DealGridAdCard extends StatelessWidget {
                       Colors.black.withValues(
                         alpha: math.max(0.04, overlay - 0.40),
                       ),
-                      Colors.black.withValues(
-                        alpha: math.max(0.24, overlay),
-                      ),
+                      Colors.black.withValues(alpha: math.max(0.24, overlay)),
                       Colors.black.withValues(
                         alpha: math.min(0.90, overlay + 0.26),
                       ),
@@ -3930,7 +4331,222 @@ class _DealImage extends StatelessWidget {
   }
 }
 
-const LatLng _deliveryPreviewCenter = LatLng(8.9806, 38.7578);
+class _OfflineDeliveryPreviewMap extends StatelessWidget {
+  const _OfflineDeliveryPreviewMap();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      ImageConstants.fastCityDeliveryMapBackground,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const _OfflineDeliveryPreviewMapFallback(),
+    );
+  }
+}
+
+class _OfflineDeliveryPreviewMapFallback extends StatelessWidget {
+  const _OfflineDeliveryPreviewMapFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    return const ColoredBox(
+      color: Color(0xFF172635),
+      child: CustomPaint(
+        painter: _OfflineDeliveryPreviewMapPainter(),
+        child: SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+class _OfflineDeliveryPreviewMapPainter extends CustomPainter {
+  const _OfflineDeliveryPreviewMapPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF203143), Color(0xFF121D29)],
+        ).createShader(rect),
+    );
+
+    final blockPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.045)
+      ..style = PaintingStyle.fill;
+    final parkPaint = Paint()
+      ..color = const Color(0xFF3CBF89).withValues(alpha: 0.12)
+      ..style = PaintingStyle.fill;
+    final minorRoadPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 2.6;
+    final roadEdgePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.18)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 10;
+    final roadPaint = Paint()
+      ..color = const Color(0xFF8090A0).withValues(alpha: 0.58)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 6;
+    final arterialEdgePaint = Paint()
+      ..color = const Color(0xFFFFC46A).withValues(alpha: 0.22)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 15;
+    final arterialPaint = Paint()
+      ..color = const Color(0xFFECA84C).withValues(alpha: 0.64)
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = 8;
+
+    _drawPolygon(canvas, size, parkPaint, const [
+      Offset(0.05, 0.05),
+      Offset(0.29, 0.02),
+      Offset(0.35, 0.21),
+      Offset(0.14, 0.26),
+    ]);
+    _drawPolygon(canvas, size, parkPaint, const [
+      Offset(0.71, 0.62),
+      Offset(0.98, 0.58),
+      Offset(0.98, 0.92),
+      Offset(0.76, 0.88),
+    ]);
+
+    for (final block in const [
+      Rect.fromLTWH(0.07, 0.35, 0.18, 0.18),
+      Rect.fromLTWH(0.30, 0.29, 0.14, 0.16),
+      Rect.fromLTWH(0.51, 0.16, 0.18, 0.18),
+      Rect.fromLTWH(0.75, 0.14, 0.16, 0.23),
+      Rect.fromLTWH(0.10, 0.65, 0.22, 0.20),
+      Rect.fromLTWH(0.42, 0.67, 0.17, 0.18),
+      Rect.fromLTWH(0.61, 0.38, 0.14, 0.14),
+    ]) {
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            block.left * size.width,
+            block.top * size.height,
+            block.width * size.width,
+            block.height * size.height,
+          ),
+          const Radius.circular(12),
+        ),
+        blockPaint,
+      );
+    }
+
+    for (final y in const [0.18, 0.33, 0.48, 0.63, 0.78]) {
+      _drawLine(
+        canvas,
+        size,
+        Offset(-0.05, y),
+        Offset(1.05, y + 0.08),
+        minorRoadPaint,
+      );
+    }
+    for (final x in const [0.16, 0.34, 0.56, 0.81]) {
+      _drawLine(
+        canvas,
+        size,
+        Offset(x, -0.05),
+        Offset(x - 0.08, 1.05),
+        minorRoadPaint,
+      );
+    }
+
+    final arterial = Path()
+      ..moveTo(-size.width * 0.05, size.height * 0.58)
+      ..cubicTo(
+        size.width * 0.22,
+        size.height * 0.48,
+        size.width * 0.45,
+        size.height * 0.45,
+        size.width * 0.63,
+        size.height * 0.53,
+      )
+      ..cubicTo(
+        size.width * 0.76,
+        size.height * 0.59,
+        size.width * 0.91,
+        size.height * 0.57,
+        size.width * 1.05,
+        size.height * 0.44,
+      );
+    canvas
+      ..drawPath(arterial, arterialEdgePaint)
+      ..drawPath(arterial, arterialPaint);
+
+    final ringRoad = Path()
+      ..moveTo(size.width * 0.07, size.height * 0.86)
+      ..cubicTo(
+        size.width * 0.20,
+        size.height * 0.64,
+        size.width * 0.34,
+        size.height * 0.54,
+        size.width * 0.50,
+        size.height * 0.49,
+      )
+      ..cubicTo(
+        size.width * 0.67,
+        size.height * 0.44,
+        size.width * 0.83,
+        size.height * 0.30,
+        size.width * 0.95,
+        size.height * 0.08,
+      );
+    canvas
+      ..drawPath(ringRoad, roadEdgePaint)
+      ..drawPath(ringRoad, roadPaint);
+
+    _drawLine(
+      canvas,
+      size,
+      const Offset(0.02, 0.12),
+      const Offset(0.92, 0.92),
+      roadPaint..strokeWidth = 4.5,
+    );
+  }
+
+  void _drawLine(
+    Canvas canvas,
+    Size size,
+    Offset start,
+    Offset end,
+    Paint paint,
+  ) {
+    canvas.drawLine(
+      Offset(start.dx * size.width, start.dy * size.height),
+      Offset(end.dx * size.width, end.dy * size.height),
+      paint,
+    );
+  }
+
+  void _drawPolygon(
+    Canvas canvas,
+    Size size,
+    Paint paint,
+    List<Offset> points,
+  ) {
+    final path = Path()
+      ..moveTo(points.first.dx * size.width, points.first.dy * size.height);
+    for (final point in points.skip(1)) {
+      path.lineTo(point.dx * size.width, point.dy * size.height);
+    }
+    path.close();
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 double _clampUnit(double value) {
   if (value < 0) return 0;
@@ -4020,23 +4636,7 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
           ),
           child: AnimatedBuilder(
             animation: _controller,
-            child: FlutterMap(
-              options: const MapOptions(
-                initialCenter: _deliveryPreviewCenter,
-                initialZoom: 13.6,
-                interactionOptions: InteractionOptions(
-                  flags: InteractiveFlag.none,
-                ),
-              ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.motobikedeliveryservice.client',
-                  maxNativeZoom: 19,
-                  keepBuffer: 5,
-                ),
-              ],
-            ),
+            child: const _OfflineDeliveryPreviewMap(),
             builder: (context, staticMap) {
               final sweepProgress = _controller.value <= 0.5
                   ? _controller.value * 2
@@ -4226,62 +4826,238 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
   }
 }
 
-class _PickupChoiceTile extends StatelessWidget {
-  const _PickupChoiceTile({
+class _LocationChoiceOption<T> {
+  const _LocationChoiceOption({
+    required this.value,
     required this.icon,
     required this.title,
-    required this.subtitle,
-    required this.onTap,
+    required this.caption,
+    required this.amharicCaption,
   });
 
+  final T value;
   final IconData icon;
   final String title;
+  final String caption;
+  final String amharicCaption;
+}
+
+class _LocationChoiceSheet<T> extends StatelessWidget {
+  const _LocationChoiceSheet({
+    required this.accentColor,
+    required this.heroIcon,
+    required this.title,
+    required this.amharicTitle,
+    required this.subtitle,
+    required this.amharicSubtitle,
+    required this.options,
+  });
+
+  final Color accentColor;
+  final IconData heroIcon;
+  final String title;
+  final String amharicTitle;
   final String subtitle;
-  final VoidCallback onTap;
+  final String amharicSubtitle;
+  final List<_LocationChoiceOption<T>> options;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        decoration: BoxDecoration(
+          color: context.appSurface,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 44,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: context.appBorder,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.14),
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(heroIcon, color: accentColor, size: 28),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: AppText(
+                              title,
+                              variant: AppTextVariant.heading3,
+                              fontWeight: FontWeight.w900,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: accentColor.withValues(alpha: 0.12),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.full),
+                            ),
+                            child: AppText(
+                              amharicTitle,
+                              variant: AppTextVariant.labelSmall,
+                              color: accentColor,
+                              fontWeight: FontWeight.w900,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      AppText(
+                        subtitle,
+                        variant: AppTextVariant.bodySmall,
+                        color: context.appTextSecondary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      AppText(
+                        amharicSubtitle,
+                        variant: AppTextVariant.labelSmall,
+                        color: context.appTextSecondary,
+                        fontWeight: FontWeight.w800,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                for (int index = 0; index < options.length; index++) ...[
+                  if (index > 0) const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _LocationChoiceTile<T>(
+                      option: options[index],
+                      accentColor: accentColor,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LocationChoiceTile<T> extends StatelessWidget {
+  const _LocationChoiceTile({required this.option, required this.accentColor});
+
+  final _LocationChoiceOption<T> option;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.appSurfaceAlt,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      color: Color.alphaBlend(
+        accentColor.withValues(alpha: context.isAppDark ? 0.18 : 0.08),
+        context.appSurfaceAlt,
+      ),
+      borderRadius: BorderRadius.circular(18),
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Row(
+        onTap: () => Navigator.of(context).pop(option.value),
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          height: 142,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.xs,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: accentColor.withValues(alpha: 0.22)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: Icon(icon, color: AppColors.primary),
+                child: Icon(option.icon, color: Colors.white, size: 21),
               ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      title,
-                      variant: AppTextVariant.bodyMedium,
-                      fontWeight: FontWeight.w900,
-                    ),
-                    const SizedBox(height: 2),
-                    AppText(
-                      subtitle,
-                      variant: AppTextVariant.bodySmall,
-                      color: context.appTextSecondary,
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 6),
+              AppText(
+                option.title,
+                variant: AppTextVariant.bodyMedium,
+                fontWeight: FontWeight.w900,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
-              Icon(
-                Icons.chevron_right_rounded,
+              const SizedBox(height: 2),
+              AppText(
+                option.caption,
+                variant: AppTextVariant.labelSmall,
                 color: context.appTextSecondary,
+                fontWeight: FontWeight.w700,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 2),
+              AppText(
+                option.amharicCaption,
+                variant: AppTextVariant.labelSmall,
+                color: accentColor,
+                fontWeight: FontWeight.w900,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
               ),
             ],
           ),
@@ -4325,9 +5101,19 @@ class _PickupActionChip extends StatelessWidget {
 }
 
 class _PinLocationScreen extends StatefulWidget {
-  const _PinLocationScreen({required this.initialCenter});
+  const _PinLocationScreen({
+    required this.initialCenter,
+    required this.title,
+    required this.subtitle,
+    required this.buttonLabel,
+    required this.pinColor,
+  });
 
   final LatLng initialCenter;
+  final String title;
+  final String subtitle;
+  final String buttonLabel;
+  final Color pinColor;
 
   @override
   State<_PinLocationScreen> createState() => _PinLocationScreenState();
@@ -4335,12 +5121,26 @@ class _PinLocationScreen extends StatefulWidget {
 
 class _PinLocationScreenState extends State<_PinLocationScreen> {
   final MapController _controller = MapController();
+  static const LatLng _fallbackPinCenter = LatLng(8.9806, 38.7578);
   late LatLng _center;
 
   @override
   void initState() {
     super.initState();
-    _center = widget.initialCenter;
+    _center = _safePoint(widget.initialCenter);
+  }
+
+  bool _isValidPoint(LatLng point) {
+    return point.latitude.isFinite &&
+        point.longitude.isFinite &&
+        point.latitude >= -90 &&
+        point.latitude <= 90 &&
+        point.longitude >= -180 &&
+        point.longitude <= 180;
+  }
+
+  LatLng _safePoint(LatLng point) {
+    return _isValidPoint(point) ? point : _fallbackPinCenter;
   }
 
   @override
@@ -4351,31 +5151,30 @@ class _PinLocationScreenState extends State<_PinLocationScreen> {
           FlutterMap(
             mapController: _controller,
             options: MapOptions(
-              initialCenter: widget.initialCenter,
+              initialCenter: _center,
               initialZoom: 15,
               interactionOptions: const InteractionOptions(
                 flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
               ),
               onPositionChanged: (camera, _) {
-                _center = camera.center;
+                if (_isValidPoint(camera.center)) {
+                  _center = camera.center;
+                }
               },
             ),
             children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ...addisAbabaBaseMapLayers(
                 userAgentPackageName: 'com.motobikedeliveryservice.client',
-                maxNativeZoom: 19,
-                keepBuffer: 5,
               ),
             ],
           ),
           Center(
             child: IgnorePointer(
               child: Transform.translate(
-                offset: const Offset(0, -18),
-                child: const Icon(
+                offset: const Offset(0, -26),
+                child: Icon(
                   Icons.location_on_rounded,
-                  color: AppColors.primary,
+                  color: widget.pinColor,
                   size: 52,
                 ),
               ),
@@ -4425,21 +5224,20 @@ class _PinLocationScreenState extends State<_PinLocationScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AppText(
-                      'Pin pickup',
+                    AppText(
+                      widget.title,
                       variant: AppTextVariant.heading3,
                       fontWeight: FontWeight.w900,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     AppText(
-                      'Move the map until the pin is exactly on the '
-                      'pickup point.',
+                      widget.subtitle,
                       variant: AppTextVariant.bodySmall,
                       color: context.appTextSecondary,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppButton.primary(
-                      label: 'USE PINNED PICKUP',
+                      label: widget.buttonLabel,
                       fullWidth: true,
                       icon: Icons.add_location_alt_rounded,
                       onPressed: () => Navigator.pop(context, _center),

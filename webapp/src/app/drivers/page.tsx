@@ -35,6 +35,14 @@ type DriverNotification = {
   created_at: string;
 };
 
+type WebkitAudioWindow = Window &
+  typeof globalThis & {
+    webkitAudioContext?: typeof AudioContext;
+  };
+
+const approvalRequiredMessage =
+  "Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.";
+
 export default function DriverPortal() {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
@@ -67,7 +75,11 @@ export default function DriverPortal() {
   // ── Web Audio ping + vibration ────────────────────────────────────────
   const playPing = useCallback(() => {
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as WebkitAudioWindow).webkitAudioContext;
+      if (!AudioContextClass) return;
+      const ctx = new AudioContextClass();
       // First tone — high pitch
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
@@ -351,8 +363,11 @@ export default function DriverPortal() {
         if (!res.ok) throw new Error("Invalid email or password");
         const session = await res.json();
         
-        if (session.approval_status === "Pending") {
-           throw new Error("Waiting for approval. You cannot login until the admin approves your account.");
+        if (
+          (session.approval_status || "Pending").trim().toLowerCase() !==
+          "approved"
+        ) {
+           throw new Error(approvalRequiredMessage);
         }
         
         setDriver(session);
@@ -377,11 +392,11 @@ export default function DriverPortal() {
         }
         
         setAuthMode("login");
-        setAuthError("Signup successful! Please wait for admin approval to login.");
+        setAuthError("Signup successful. Admin approval is required before login. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.");
         formElement.reset();
       }
-    } catch (err: any) {
-      setAuthError(err.message);
+    } catch (err: unknown) {
+      setAuthError(err instanceof Error ? err.message : "Something went wrong.");
     }
     setLoading(false);
   };
@@ -429,7 +444,7 @@ export default function DriverPortal() {
           body: JSON.stringify({ status: newStatus })
        });
      } catch (err) {
-        console.error("Failed to toggle status");
+        console.error("Failed to toggle status", err);
         // Revert local state on failure
         setDriver({ ...driver, status: driver.status });
      }
@@ -447,7 +462,7 @@ export default function DriverPortal() {
           body: JSON.stringify({ vehicle_type: newType })
        });
      } catch (err) {
-        console.error("Failed to toggle vehicle type");
+        console.error("Failed to toggle vehicle type", err);
         setDriver({ ...driver, vehicle_type: driver.vehicle_type });
      }
   };
@@ -471,7 +486,7 @@ export default function DriverPortal() {
               <h3 className="text-2xl font-extrabold text-neutral-900">Sign Up via Telegram</h3>
               <p className="text-neutral-500 font-medium text-sm leading-relaxed">
                 Driver accounts are created through our Telegram bot.<br />
-                Open the bot, tap <strong>"I am a Driver"</strong> then <strong>"Sign Up"</strong> to register.
+                Open the bot, tap <strong>&quot;I am a Driver&quot;</strong> then <strong>&quot;Sign Up&quot;</strong> to register.
               </p>
               <a
                 href="https://t.me/sgcherosbot"

@@ -44,11 +44,18 @@ class DebugService {
   //   }
   // }
 
-  String get baseUrl => dotenv.env[isProduction
-      ? 'PROD_BASE_URL'
-      : const bool.fromEnvironment('dart.vm.product')
-          ? 'DEV_BASE_URL'
-          : 'DEV_BASE_URL']!;
+  String get baseUrl {
+    final key = isProduction
+        ? 'PROD_BASE_URL'
+        : const bool.fromEnvironment('dart.vm.product')
+            ? 'DEV_BASE_URL'
+            : 'DEV_BASE_URL';
+    try {
+      return dotenv.env[key] ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
 
 
 

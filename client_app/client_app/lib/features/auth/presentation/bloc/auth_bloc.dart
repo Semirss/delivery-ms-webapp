@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/params/auth_params.dart';
 import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/login_with_google_usecase.dart';
 import '../../domain/usecases/signup_usecase.dart';
 import '../../domain/usecases/verify_otp_usecase.dart';
 import '../../domain/usecases/resend_otp_usecase.dart';
@@ -16,6 +17,7 @@ import 'auth_state.dart';
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
+  final LoginWithGoogleUseCase loginWithGoogleUseCase;
   final SignUpUseCase signUpUseCase;
   final VerifyOtpUseCase verifyOtpUseCase;
   final ResendOtpUseCase resendOtpUseCase;
@@ -26,6 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({
     required this.loginUseCase,
+    required this.loginWithGoogleUseCase,
     required this.signUpUseCase,
     required this.verifyOtpUseCase,
     required this.resendOtpUseCase,
@@ -35,6 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.getCurrentUserUseCase,
   }) : super(const AuthInitial()) {
     on<LoginEvent>(_onLogin);
+    on<LoginWithGoogleEvent>(_onLoginWithGoogle);
     on<SignUpEvent>(_onSignUp);
     on<VerifyOtpEvent>(_onVerifyOtp);
     on<ResendOtpEvent>(_onResendOtp);
@@ -49,17 +53,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUseCase(
       LoginParams(email: event.email, password: event.password),
     );
+    result.fold((failure) => emit(AuthError(message: failure.errMessage)), (
+      authResult,
+    ) {
+      if (authResult.requiresVerification) {
+        emit(
+          AuthVerificationRequired(
+            verificationKey: authResult.verificationKey ?? '',
+          ),
+        );
+      } else {
+        emit(AuthAuthenticated(user: authResult.user));
+      }
+    });
+  }
+
+  Future<void> _onLoginWithGoogle(
+    LoginWithGoogleEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await loginWithGoogleUseCase(NoParams());
     result.fold(
       (failure) => emit(AuthError(message: failure.errMessage)),
-      (authResult) {
-        if (authResult.requiresVerification) {
-          emit(AuthVerificationRequired(
-            verificationKey: authResult.verificationKey ?? '',
-          ));
-        } else {
-          emit(AuthAuthenticated(user: authResult.user));
-        }
-      },
+      (authResult) => emit(AuthAuthenticated(user: authResult.user)),
     );
   }
 
@@ -74,18 +91,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         phone: event.phone,
       ),
     );
-    result.fold(
-      (failure) => emit(AuthError(message: failure.errMessage)),
-      (authResult) {
-        if (authResult.requiresVerification) {
-          emit(AuthVerificationRequired(
+    result.fold((failure) => emit(AuthError(message: failure.errMessage)), (
+      authResult,
+    ) {
+      if (authResult.requiresVerification) {
+        emit(
+          AuthVerificationRequired(
             verificationKey: authResult.verificationKey ?? '',
-          ));
-        } else {
-          emit(AuthAuthenticated(user: authResult.user));
-        }
-      },
-    );
+          ),
+        );
+      } else {
+        emit(AuthAuthenticated(user: authResult.user));
+      }
+    });
   }
 
   Future<void> _onVerifyOtp(
@@ -122,10 +140,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
     final result = await resetPasswordUseCase(
-      ResetPasswordParams(
-        phone: event.phone,
-        newPassword: event.newPassword,
-      ),
+      ResetPasswordParams(phone: event.phone, newPassword: event.newPassword),
     );
     result.fold(
       (failure) => emit(AuthError(message: failure.errMessage)),
