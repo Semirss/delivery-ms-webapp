@@ -17,6 +17,7 @@ enum StorageKeys {
   userProfile,
   selectedProfile,
   appLanguage,
+  lastLoginEmail,
 }
 
 extension StorageKeysExtension on StorageKeys {
@@ -56,6 +57,8 @@ extension StorageKeysExtension on StorageKeys {
         return 'selectedProfile';
       case StorageKeys.appLanguage:
         return 'appLanguage';
+      case StorageKeys.lastLoginEmail:
+        return 'lastLoginEmail';
     }
   }
 }

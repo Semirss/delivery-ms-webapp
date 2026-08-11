@@ -1,16 +1,17 @@
 import 'dart:async';
-import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:client_ui/app_ui.dart';
 import 'package:client_app/config/router/app_routes.dart';
+import 'package:client_app/core/di/injection.dart';
 import 'package:client_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:client_app/core/utils/functions/base_functions/validators.dart';
+import 'package:client_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:client_ui/app_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 class LoginScreen extends StatefulWidget {
@@ -27,11 +28,13 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   StreamSubscription<dynamic>? _supabaseAuthSubscription;
   bool _obscurePassword = true;
   bool _handledPendingGoogleSession = false;
+  String? _suggestedEmail;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _loadSuggestedEmail();
     _supabaseAuthSubscription = Supabase.instance.client.auth.onAuthStateChange
         .listen((_) => _scheduleGoogleSessionCompletion());
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,6 +59,34 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _loadSuggestedEmail() async {
+    try {
+      final email = await getIt<AuthLocalDataSource>()
+          .getCachedLastLoginEmail();
+      if (!mounted || email == null) return;
+      setState(() => _suggestedEmail = email);
+    } catch (_) {
+      // A missing cache should not block the login screen.
+    }
+  }
+
+  bool get _shouldShowSuggestedEmail {
+    final email = _suggestedEmail?.trim() ?? '';
+    return email.isNotEmpty && _emailController.text.trim().isEmpty;
+  }
+
+  void _useSuggestedEmail() {
+    final email = _suggestedEmail;
+    if (email == null) return;
+
+    setState(() {
+      _emailController.text = email;
+      _emailController.selection = TextSelection.collapsed(
+        offset: email.length,
+      );
+    });
+  }
+
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
@@ -65,11 +96,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
         ),
       );
     }
-  }
-
-  void _handleGoogleLogin() {
-    _handledPendingGoogleSession = false;
-    context.read<AuthBloc>().add(const LoginWithGoogleEvent());
   }
 
   void _goHomeAfterFrame() {
@@ -216,6 +242,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                           hint: 'your@email.com',
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
+                          onChanged: (_) => setState(() {}),
                           validator: (v) {
                             if (v == null || v.isEmpty)
                               return 'Email is required';
@@ -223,6 +250,13 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                             return null;
                           },
                         ),
+                        if (_shouldShowSuggestedEmail) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          _PreviousEmailSuggestion(
+                            email: _suggestedEmail!.trim(),
+                            onTap: _useSuggestedEmail,
+                          ),
+                        ],
                         const SizedBox(height: AppSpacing.md),
                         AppTextField.outlined(
                           controller: _passwordController,
@@ -265,11 +299,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                           isLoading: isLoading,
                           fullWidth: true,
                         ),
-                        const SizedBox(height: AppSpacing.md),
-                        _GoogleSignInButton(
-                          isLoading: isLoading,
-                          onPressed: isLoading ? null : _handleGoogleLogin,
-                        ),
                         const SizedBox(height: AppSpacing.xl),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -305,52 +334,62 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   }
 }
 
-class _GoogleSignInButton extends StatelessWidget {
-  const _GoogleSignInButton({required this.isLoading, required this.onPressed});
+class _PreviousEmailSuggestion extends StatelessWidget {
+  const _PreviousEmailSuggestion({required this.email, required this.onTap});
 
-  final bool isLoading;
-  final VoidCallback? onPressed;
+  final String email;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final enabled = onPressed != null && !isLoading;
-
     return Material(
-      color: enabled ? Colors.white : context.appSurfaceAlt,
+      color: Color.alphaBlend(
+        AppColors.primary.withValues(alpha: context.isAppDark ? 0.18 : 0.08),
+        context.appSurface,
+      ),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        onTap: enabled ? onPressed : null,
-        child: Container(
-          width: double.infinity,
-          height: 56,
+        onTap: onTap,
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(
-              color: enabled ? const Color(0xFFE2E8F0) : context.appBorder,
-            ),
-            boxShadow: [
-              if (enabled)
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
-                ),
-            ],
-          ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const _GoogleMark(size: 28),
+              const Icon(
+                Icons.history_rounded,
+                color: AppColors.primary,
+                size: 18,
+              ),
               const SizedBox(width: AppSpacing.sm),
-              AppText(
-                isLoading ? 'Opening Google...' : 'Continue with Google',
-                variant: AppTextVariant.labelLarge,
-                fontWeight: FontWeight.w900,
-                color: enabled
-                    ? context.appTextPrimary
-                    : context.appTextSecondary,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        'Use previous email',
+                        variant: AppTextVariant.labelSmall,
+                        fontWeight: FontWeight.w800,
+                        color: context.appTextSecondary,
+                      ),
+                      AppText(
+                        email,
+                        variant: AppTextVariant.bodySmall,
+                        fontWeight: FontWeight.w900,
+                        color: context.appTextPrimary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              const Icon(
+                Icons.arrow_forward_rounded,
+                color: AppColors.primary,
+                size: 18,
               ),
             ],
           ),
@@ -358,54 +397,4 @@ class _GoogleSignInButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class _GoogleMark extends StatelessWidget {
-  const _GoogleMark({required this.size});
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(painter: _GoogleMarkPainter()),
-    );
-  }
-}
-
-class _GoogleMarkPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final strokeWidth = size.width * 0.16;
-    final rect =
-        Offset(strokeWidth / 2, strokeWidth / 2) &
-        Size(size.width - strokeWidth, size.height - strokeWidth);
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
-
-    paint.color = const Color(0xFF4285F4);
-    canvas.drawArc(rect, -0.08 * math.pi, 0.58 * math.pi, false, paint);
-    paint.color = const Color(0xFF34A853);
-    canvas.drawArc(rect, 0.50 * math.pi, 0.48 * math.pi, false, paint);
-    paint.color = const Color(0xFFFBBC05);
-    canvas.drawArc(rect, 0.98 * math.pi, 0.42 * math.pi, false, paint);
-    paint.color = const Color(0xFFEA4335);
-    canvas.drawArc(rect, 1.40 * math.pi, 0.52 * math.pi, false, paint);
-
-    paint
-      ..color = const Color(0xFF4285F4)
-      ..strokeCap = StrokeCap.square;
-    canvas.drawLine(
-      Offset(size.width * 0.54, size.height * 0.50),
-      Offset(size.width * 0.86, size.height * 0.50),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

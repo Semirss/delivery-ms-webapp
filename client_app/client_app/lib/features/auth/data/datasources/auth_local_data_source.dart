@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:get_it/get_it.dart';
+
 import 'package:client_app/core/databases/cache/cache_helper.dart';
 import 'package:client_app/core/errors/failure.dart';
 import 'package:client_app/core/storage/storage_adapter.dart';
 import 'package:client_app/core/storage/storage_key_constants.dart';
+import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+
 import '../models/user_model.dart';
 
 abstract class AuthLocalDataSource {
@@ -13,10 +15,12 @@ abstract class AuthLocalDataSource {
   Future<void> cacheRefreshToken(String token);
   Future<void> cacheVerificationKey(String key);
   Future<void> cacheLoginTimestamp(int timestamp);
+  Future<void> cacheLastLoginEmail(String email);
   Future<UserModel?> getCachedUser();
   Future<String?> getCachedAccessToken();
   Future<String?> getCachedRefreshToken();
   Future<String?> getCachedVerificationKey();
+  Future<String?> getCachedLastLoginEmail();
   Future<void> clearAll();
 }
 
@@ -113,6 +117,22 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
+  Future<void> cacheLastLoginEmail(String email) async {
+    final normalizedEmail = email.trim();
+    if (normalizedEmail.isEmpty) return;
+
+    try {
+      await cacheHelper.saveData(
+        key: StorageKeys.lastLoginEmail.name,
+        value: normalizedEmail,
+      );
+      await _cacheInStorageService(StorageKeys.lastLoginEmail, normalizedEmail);
+    } catch (e) {
+      throw CacheFailure('Failed to cache last login email: $e');
+    }
+  }
+
+  @override
   Future<UserModel?> getCachedUser() async {
     try {
       final userJson = cacheHelper.getDataString(key: StorageKeys.user.name);
@@ -150,6 +170,19 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       return cacheHelper.getDataString(key: StorageKeys.verificationKey.name);
     } catch (e) {
       throw CacheFailure('Failed to get cached verification key: $e');
+    }
+  }
+
+  @override
+  Future<String?> getCachedLastLoginEmail() async {
+    try {
+      final email = cacheHelper.getDataString(
+        key: StorageKeys.lastLoginEmail.name,
+      );
+      final normalizedEmail = email?.trim() ?? '';
+      return normalizedEmail.isEmpty ? null : normalizedEmail;
+    } catch (e) {
+      throw CacheFailure('Failed to get cached last login email: $e');
     }
   }
 

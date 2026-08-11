@@ -44,6 +44,9 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         await localDataSource.cacheLoginTimestamp(
           DateTime.now().millisecondsSinceEpoch,
         );
+        await _rememberLoginEmail(
+          response.user!.email.isNotEmpty ? response.user!.email : params.email,
+        );
         if (response.verificationKey != null) {
           await localDataSource.cacheVerificationKey(response.verificationKey!);
         }
@@ -86,6 +89,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         await localDataSource.cacheLoginTimestamp(
           DateTime.now().millisecondsSinceEpoch,
         );
+        await _rememberLoginEmail(response.user!.email);
 
         return Right(
           AuthResult(
@@ -128,6 +132,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         }
         if (response.user != null) {
           await localDataSource.cacheUser(response.user!);
+          await _rememberLoginEmail(response.user!.email);
         }
         if (!response.requiresVerification) {
           await localDataSource.cacheLoginTimestamp(
@@ -172,6 +177,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           }
           if (response.user != null) {
             await localDataSource.cacheUser(response.user!);
+            await _rememberLoginEmail(response.user!.email);
           }
           await localDataSource.cacheLoginTimestamp(
             DateTime.now().millisecondsSinceEpoch,
@@ -303,6 +309,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
+      await _rememberCachedUserEmail();
       if (await networkInfo.isConnected) {
         final refreshToken = await localDataSource.getCachedRefreshToken();
         if (refreshToken != null) {
@@ -352,6 +359,26 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
       return Right(user);
     } catch (e) {
       return Left(CacheFailure(e.toString()));
+    }
+  }
+
+  Future<void> _rememberCachedUserEmail() async {
+    try {
+      final cachedUser = await localDataSource.getCachedUser();
+      await _rememberLoginEmail(cachedUser?.email ?? '');
+    } catch (_) {
+      // Do not block logout if the existing session cache cannot be read.
+    }
+  }
+
+  Future<void> _rememberLoginEmail(String email) async {
+    final normalizedEmail = email.trim();
+    if (normalizedEmail.isEmpty) return;
+
+    try {
+      await localDataSource.cacheLastLoginEmail(normalizedEmail);
+    } catch (e, stackTrace) {
+      logger.error('Failed to cache last login email', e, stackTrace);
     }
   }
 
