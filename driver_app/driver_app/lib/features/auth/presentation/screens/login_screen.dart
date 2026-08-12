@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:driver_app/config/router/app_routes.dart';
 import 'package:driver_app/core/di/injection.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
+import 'package:driver_app/core/utils/functions/base_functions/ethiopian_phone.dart';
+import 'package:driver_app/core/utils/functions/base_functions/validators.dart';
 import 'package:driver_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
@@ -269,21 +271,33 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 
                         AppTextField.outlined(
                           controller: _emailController,
-                          label: 'Email',
-                          hint: 'driver@email.com',
-                          prefixIcon: Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress,
+                          label: 'Email or Phone Number',
+                          hint: 'driver@email.com or 0912345678',
+                          prefixIcon: Icons.account_circle_outlined,
+                          keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           onChanged: (_) => setState(() {}),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return 'Email is required';
+                            final value = v?.trim() ?? '';
+                            if (value.isEmpty) {
+                              return 'Email or phone number is required';
                             }
-                            if (!v.contains('@')) {
-                              return 'Enter a valid email';
+                            if (value.contains('@')) {
+                              if (!isValidEmail(value)) {
+                                return 'Enter a valid email';
+                              }
+                              return null;
                             }
-                            return null;
+                            return validateEthiopianPhone(value);
                           },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: AppText(
+                            'For phone login, start with 09. Do not use +251.',
+                            variant: AppTextVariant.bodySmall,
+                            color: context.appTextSecondary,
+                          ),
                         ),
                         if (_shouldShowSuggestedEmail) ...[
                           const SizedBox(height: AppSpacing.sm),
@@ -404,7 +418,7 @@ class _PreviousEmailSuggestion extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        'Use previous email',
+                        'Use previous login',
                         variant: AppTextVariant.labelSmall,
                         fontWeight: FontWeight.w800,
                         color: context.appTextSecondary,

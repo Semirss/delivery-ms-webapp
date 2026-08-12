@@ -16,6 +16,9 @@ const PRICING = {
   Motor: { base: 40, perKm: 50 },
 };
 
+const BICYCLE_MAX_KM = 10;
+const LONG_DISTANCE_PER_KM = 15;
+
 import { ADDIS_LOCATIONS, ADDIS_NEIGHBORHOODS } from "@/lib/locations";
 
 
@@ -161,9 +164,15 @@ async function getRoadDistanceKm(
   }
 }
 
+function vehicleForDistance(vehicle: "Bike" | "Motor", km: number | null): "Bike" | "Motor" {
+  return vehicle === "Bike" && km !== null && km > BICYCLE_MAX_KM ? "Motor" : vehicle;
+}
+
 function calcPrice(km: number, vehicle: "Bike" | "Motor"): number {
   const { base, perKm } = PRICING[vehicle];
-  const raw = base + km * perKm;
+  const firstLegKm = Math.min(km, BICYCLE_MAX_KM);
+  const extraKm = Math.max(0, km - BICYCLE_MAX_KM);
+  const raw = base + firstLegKm * perKm + extraKm * LONG_DISTANCE_PER_KM;
   return Math.round(raw / 10) * 10; // round to nearest 10
 }
 
@@ -205,8 +214,10 @@ export default function Book() {
       setPriceLoading(true);
       const km = await getRoadDistanceKm(pickupValue, dropoffValue);
       if (km !== null) {
+        const effectiveVehicle = vehicleForDistance(vehicleCategory, km);
+        if (effectiveVehicle !== vehicleCategory) setVehicleCategory(effectiveVehicle);
         setDistanceKm(km);
-        setPriceEstimate(calcPrice(km, vehicleCategory));
+        setPriceEstimate(calcPrice(km, effectiveVehicle));
       } else {
         setDistanceKm(null);
         setPriceEstimate(null);
@@ -232,8 +243,9 @@ export default function Book() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
+    const submitVehicleCategory = vehicleForDistance(vehicleCategory, distanceKm);
     // Use live price estimate as a number (DB-compatible)
-    const feeValue = priceEstimate ?? null;
+    const feeValue = priceEstimate ?? (distanceKm !== null ? calcPrice(distanceKm, submitVehicleCategory) : null);
 
     try {
       let pickupLat = null, pickupLng = null, dropoffLat = null, dropoffLng = null;
@@ -262,7 +274,7 @@ export default function Book() {
           pickup_location: pickupValue,
           dropoff_location: dropoffValue,
           package_type: data.package_type,
-          vehicle_category: vehicleCategory,
+          vehicle_category: submitVehicleCategory,
           delivery_fee: feeValue,
           pickup_lat: pickupLat, pickup_lng: pickupLng,
           dropoff_lat: dropoffLat, dropoff_lng: dropoffLng,
@@ -291,7 +303,9 @@ export default function Book() {
     setLoading(false);
   };
 
-  const { base, perKm } = PRICING[vehicleCategory];
+  const activeVehicleCategory = vehicleForDistance(vehicleCategory, distanceKm);
+  const bikeDisabled = distanceKm !== null && distanceKm > BICYCLE_MAX_KM;
+  const { base, perKm } = PRICING[activeVehicleCategory];
 
   return (
     <div className="min-h-screen bg-[#ebf0ee] text-neutral-900 flex flex-col font-sans selection:bg-purple-200">
@@ -352,7 +366,7 @@ export default function Book() {
                   className="w-full px-5 py-4 rounded-2xl bg-[#f0f2f5] border-2 border-transparent focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 transition-all outline-none text-neutral-900 font-medium placeholder:text-neutral-500 placeholder:font-normal"
                 />
                 <input
-                  name="customer_phone" required placeholder="Phone Number" type="tel"
+                  name="customer_phone" required placeholder="Phone Number (starts with 09)" type="tel" pattern="09[0-9]{8}"
                   className="w-full px-5 py-4 rounded-2xl bg-[#f0f2f5] border-2 border-transparent focus:bg-white focus:border-black/10 focus:ring-4 focus:ring-black/5 transition-all outline-none text-neutral-900 font-medium placeholder:text-neutral-500 placeholder:font-normal"
                 />
               </div>
@@ -394,12 +408,12 @@ export default function Book() {
                           {priceEstimate} <span className="text-base font-semibold text-neutral-500">Birr</span>
                         </p>
                         <p className="text-xs text-neutral-400 mt-1">
-                          {distanceKm.toFixed(1)} km · {base} base + {distanceKm.toFixed(1)} × {perKm} Birr/km
+                          {distanceKm.toFixed(1)} km - {base} base + {perKm} Birr/km first 10 km + {LONG_DISTANCE_PER_KM} Birr/km after
                         </p>
                       </div>
                       <div className="flex flex-col items-end text-right">
                         <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-xl mb-1">
-                          {vehicleCategory === "Bike" ? "🚲" : "🏍️"}
+                          {activeVehicleCategory === "Bike" ? "🚲" : "🏍️"}
                         </div>
                         <p className="text-[10px] font-bold text-neutral-400">Real road distance</p>
                       </div>
@@ -422,13 +436,17 @@ export default function Book() {
 
             {/* Vehicle Type */}
             <div className="pt-2">
-              <input type="hidden" name="vehicle_category" value={vehicleCategory} />
+              <input type="hidden" name="vehicle_category" value={activeVehicleCategory} />
               <p className="text-sm font-semibold text-neutral-400 mb-3 px-1">Vehicle Type</p>
               <div className="grid grid-cols-2 gap-3">
                 <div 
-                  onClick={() => setVehicleCategory("Bike")}
+                  onClick={() => {
+                    if (!bikeDisabled) setVehicleCategory("Bike");
+                  }}
                   className={`cursor-pointer p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-2 ${
-                    vehicleCategory === "Bike"
+                    bikeDisabled
+                      ? "bg-[#f0f2f5] border-transparent text-neutral-400 opacity-60 cursor-not-allowed"
+                    : activeVehicleCategory === "Bike"
                       ? "bg-white border-black text-black shadow-lg shadow-black/5"
                       : "bg-[#f0f2f5] border-transparent text-neutral-500 hover:bg-[#e4e7ea]"
                   }`}
@@ -436,14 +454,14 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🚲</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Bike</span>
-                    <span className="text-xs font-semibold opacity-70">30 + 40/km Birr</span>
+                    <span className="text-xs font-semibold opacity-70">{bikeDisabled ? "Up to 10 km only" : "30 + 40/km first 10 km"}</span>
                   </div>
                 </div>
 
                 <div 
                   onClick={() => setVehicleCategory("Motor")}
                   className={`cursor-pointer p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-2 ${
-                    vehicleCategory === "Motor"
+                    activeVehicleCategory === "Motor"
                       ? "bg-white border-black text-black shadow-lg shadow-black/5"
                       : "bg-[#f0f2f5] border-transparent text-neutral-500 hover:bg-[#e4e7ea]"
                   }`}
@@ -451,7 +469,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🏍️</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Motorbike</span>
-                    <span className="text-xs font-semibold opacity-70">40 + 50/km Birr</span>
+                    <span className="text-xs font-semibold opacity-70">40 + 50/km first 10 km</span>
                   </div>
                 </div>
               </div>
@@ -466,7 +484,7 @@ export default function Book() {
             </button>
 
             <p className="text-center text-xs text-neutral-400 pt-1">
-              Final price confirmed by rider · {base} Birr base + {perKm} Birr/km for {vehicleCategory}
+              Final price confirmed by rider - {base} Birr base + {perKm} Birr/km first 10 km + {LONG_DISTANCE_PER_KM} Birr/km after for {activeVehicleCategory}
             </p>
           </form>
         </div>

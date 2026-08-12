@@ -421,6 +421,10 @@ class _AppTextFieldState extends State<AppTextField> {
   Color _getLabelColor() {
     final colorScheme = Theme.of(context).colorScheme;
 
+    if (widget.errorText != null) {
+      return AppColors.error;
+    }
+
     if (!widget.enabled) {
       return colorScheme.onSurface.withValues(alpha: 0.38);
     }
@@ -612,10 +616,15 @@ class _AppTextFieldState extends State<AppTextField> {
 
   /// Returns the focused border based on variant and style
   InputBorder get _focusedBorder {
-    // For dark style, use white border when focused
-    final Color focusedBorderColor = widget.style == AppTextFieldStyle.dark
-        ? Colors.white
-        : (widget.borderColor ?? Theme.of(context).colorScheme.primary);
+    final Color focusedBorderColor;
+    if (widget.errorText != null) {
+      focusedBorderColor = AppColors.error;
+    } else if (widget.style == AppTextFieldStyle.dark) {
+      focusedBorderColor = Colors.white;
+    } else {
+      focusedBorderColor =
+          widget.borderColor ?? Theme.of(context).colorScheme.primary;
+    }
 
     switch (widget.variant) {
       case AppTextFieldVariant.outlined:

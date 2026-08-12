@@ -216,10 +216,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppTextField.outlined(
                     controller: _phoneController,
                     label: 'Phone Number',
-                    hint: '912 345 678',
+                    hint: '0912345678',
                     prefixIcon: Icons.phone_outlined,
-                    prefixText: '$ethiopianDialCode ',
                     keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 6),
+                  AppText(
+                    'Start with 09. Do not use +251.',
+                    variant: AppTextVariant.bodySmall,
+                    color: context.appTextSecondary,
                   ),
                   kVerticalGap16,
                   AppTextField.outlined(

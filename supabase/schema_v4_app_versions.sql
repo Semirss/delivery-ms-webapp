@@ -339,18 +339,27 @@ RETURNS TABLE (
 ) AS $$
 DECLARE
     matched public.clients%ROWTYPE;
+    normalized_identifier TEXT;
     normalized_email TEXT;
+    normalized_phone TEXT;
 BEGIN
-    normalized_email := lower(btrim(p_email));
+    normalized_identifier := btrim(coalesce(p_email, ''));
+    normalized_email := lower(normalized_identifier);
+    normalized_phone := public.normalize_phone_number(normalized_identifier);
 
     SELECT *
     INTO matched
     FROM public.clients c
     WHERE lower(c.email) = normalized_email
+       OR (
+            normalized_phone IS NOT NULL
+            AND public.normalize_phone_number(c.phone) = normalized_phone
+       )
+    ORDER BY CASE WHEN lower(c.email) = normalized_email THEN 0 ELSE 1 END
     LIMIT 1;
 
     IF matched.id IS NULL OR NOT public.verify_client_password(p_password, matched.password_hash) THEN
-        RAISE EXCEPTION 'Invalid email or password';
+        RAISE EXCEPTION 'Invalid email/phone or password';
     END IF;
 
     IF NOT matched.is_active OR matched.status <> 'Active' THEN

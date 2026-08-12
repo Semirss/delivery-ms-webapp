@@ -36,13 +36,15 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
-    final email = params.email.trim().toLowerCase();
-    if (email.isEmpty) throw Exception('Enter your driver email.');
+    final identifier = _loginIdentifier(params.email);
+    if (identifier.isEmpty) {
+      throw Exception('Enter your driver email or phone number.');
+    }
     if (params.password.isEmpty) throw Exception('Please enter your password.');
 
     try {
       final apiLogin = await _tryLoginViaWebApi(
-        LoginParams(email: email, password: params.password),
+        LoginParams(email: identifier, password: params.password),
       );
       if (apiLogin != null) return apiLogin;
     } on dio.DioException catch (error) {
@@ -50,23 +52,17 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       if (statusCode >= 500 || statusCode == 0) rethrow;
     }
 
-    final rows = await _supabase
-        .from('drivers')
-        .select()
-        .ilike('email', email)
-        .limit(1);
-    final driverRows = List<Map<String, dynamic>>.from(rows);
-    final data = driverRows.isEmpty ? null : driverRows.first;
+    final data = await _findDriverByLoginIdentifier(identifier);
 
     if (data == null) {
       throw Exception(
-        'No driver account found with this email. Ask admin to add this email to your driver profile.',
+        'No driver account found with this email or phone. Ask admin to add it to your driver profile.',
       );
     }
 
     final driver = Map<String, dynamic>.from(data);
     if (driver['password']?.toString() != params.password) {
-      throw Exception('Invalid email or password.');
+      throw Exception('Invalid email/phone or password.');
     }
 
     final approvalStatus = _driverApprovalStatus(driver);
@@ -75,7 +71,10 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     return AuthResponseModel(
-      user: _driverUser(driver, fallbackEmail: email),
+      user: _driverUser(
+        driver,
+        fallbackEmail: _isEmailIdentifier(identifier) ? identifier : null,
+      ),
       accessToken: _driverToken(driver),
       refreshToken: _driverToken(driver, refresh: true),
       requiresVerification: false,
@@ -183,10 +182,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     final response = await _dio.post<Map<String, dynamic>>(
       '$apiBaseUrl/api/drivers/login',
-      data: {
-        'email': params.email.trim().toLowerCase(),
-        'password': params.password,
-      },
+      data: {'identifier': params.email.trim(), 'password': params.password},
     );
     final driver = Map<String, dynamic>.from(response.data ?? {});
     if (driver.isEmpty) throw Exception('Invalid driver login response.');
@@ -202,6 +198,48 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       refreshToken: _driverToken(driver, refresh: true),
       requiresVerification: false,
     );
+  }
+
+  String _loginIdentifier(String value) {
+    final raw = value.trim();
+    if (raw.isEmpty) return '';
+    if (_isEmailIdentifier(raw)) return raw.toLowerCase();
+
+    final digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (!RegExp(r'^09\d{8}$').hasMatch(digits)) {
+      throw Exception(
+        'Use an Ethiopian phone number starting with 09, for example 0912345678',
+      );
+    }
+    return _normalizeEthiopianPhone(raw);
+  }
+
+  bool _isEmailIdentifier(String value) => value.contains('@');
+
+  Future<Map<String, dynamic>?> _findDriverByLoginIdentifier(
+    String identifier,
+  ) async {
+    if (_isEmailIdentifier(identifier)) {
+      final rows = await _supabase
+          .from('drivers')
+          .select()
+          .ilike('email', identifier)
+          .limit(1);
+      final driverRows = List<Map<String, dynamic>>.from(rows);
+      return driverRows.isEmpty ? null : driverRows.first;
+    }
+
+    final rows = await _supabase
+        .from('drivers')
+        .select()
+        .not('phone', 'is', null);
+    final driverRows = List<Map<String, dynamic>>.from(rows);
+    for (final driver in driverRows) {
+      if (_normalizeEthiopianPhone(driver['phone']) == identifier) {
+        return driver;
+      }
+    }
+    return null;
   }
 
   Future<AuthResponseModel> _signUpViaWebApi(SignUpParams params) async {
@@ -486,19 +524,15 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final digits = value?.toString().replaceAll(RegExp(r'\D'), '') ?? '';
     if (digits.isEmpty) return '';
 
-    if (digits.length == 12 &&
-        digits.startsWith('251') &&
-        (digits[3] == '7' || digits[3] == '9')) {
+    if (digits.length == 12 && digits.startsWith('251') && digits[3] == '9') {
       return '0${digits.substring(3)}';
     }
 
-    if (digits.length == 9 && (digits[0] == '7' || digits[0] == '9')) {
+    if (digits.length == 9 && digits[0] == '9') {
       return '0$digits';
     }
 
-    if (digits.length == 10 &&
-        digits.startsWith('0') &&
-        (digits[1] == '7' || digits[1] == '9')) {
+    if (digits.length == 10 && digits.startsWith('0') && digits[1] == '9') {
       return digits;
     }
 

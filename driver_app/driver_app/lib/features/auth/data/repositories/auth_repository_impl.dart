@@ -44,9 +44,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         await localDataSource.cacheLoginTimestamp(
           DateTime.now().millisecondsSinceEpoch,
         );
-        await _rememberLoginEmail(
-          response.user!.email.isNotEmpty ? response.user!.email : params.email,
-        );
+        await _rememberLoginEmail(params.email);
         if (response.verificationKey != null) {
           await localDataSource.cacheVerificationKey(response.verificationKey!);
         }
@@ -397,9 +395,10 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
       return 'A driver account already exists with these details.';
     }
     if (message.contains('Invalid name or password') ||
+        message.contains('Invalid email/phone or password') ||
         message.contains('Invalid email or password') ||
         message.contains('Invalid credentials')) {
-      return 'Invalid email or password.';
+      return 'Invalid email/phone or password.';
     }
     final lower = message.toLowerCase();
     if (lower.contains('email is required')) {
