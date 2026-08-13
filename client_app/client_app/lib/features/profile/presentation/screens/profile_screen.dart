@@ -21,6 +21,12 @@ class ProfileScreen extends StatelessWidget {
   static final Uri _privacyUri = Uri.parse(
     'https://www.motobikedeliveryservice.com/privacy-policy.html',
   );
+  static final Uri _playStoreUri = Uri.parse(
+    'https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client',
+  );
+  static final Uri _marketUri = Uri.parse(
+    'market://details?id=com.motobikedeliveryservice.client',
+  );
 
   Future<void> _openWebsite(BuildContext context) async {
     await _openUri(context, _websiteUri, 'Could not open website.');
@@ -28,6 +34,23 @@ class ProfileScreen extends StatelessWidget {
 
   Future<void> _openPrivacyPolicy(BuildContext context) async {
     await _openUri(context, _privacyUri, 'Could not open privacy policy.');
+  }
+
+  Future<void> _openPlayStoreListing(BuildContext context) async {
+    var openedMarket = false;
+    try {
+      openedMarket = await launchUrl(
+        _marketUri,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      openedMarket = false;
+    }
+    if (openedMarket) return;
+
+    if (context.mounted) {
+      await _openUri(context, _playStoreUri, 'Could not open Play Store.');
+    }
   }
 
   Future<void> _openUri(
@@ -260,7 +283,7 @@ class ProfileScreen extends StatelessWidget {
                             icon: Icons.star_border_rounded,
                             title: 'Rate the App',
                             subtitle: 'Share your experience',
-                            onTap: () {},
+                            onTap: () => _openPlayStoreListing(context),
                           ),
                           _buildTile(
                             context,

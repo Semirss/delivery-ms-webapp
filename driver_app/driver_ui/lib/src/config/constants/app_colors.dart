@@ -113,20 +113,20 @@ abstract class AppColors {
 
   // Dark Mode Variants
   /// Dark theme background color
-  static const Color darkBackground = Color(0xFF111827);
+  static const Color darkBackground = Color(0xFF171513);
 
   /// Dark theme surface color
-  static const Color darkSurface = Color(0xFF1F2937);
+  static const Color darkSurface = Color(0xFF24211F);
 
   /// Dark theme alternative surface color
-  static const Color darkSurfaceAlt = Color(0xFF374151);
+  static const Color darkSurfaceAlt = Color(0xFF302C29);
 
   /// Dark theme border color
-  static const Color darkBorder = Color(0xFF4B5563);
+  static const Color darkBorder = Color(0xFF4B4541);
 
   /// Dark theme primary text color
-  static const Color darkTextPrimary = Color(0xFFF9FAFB);
+  static const Color darkTextPrimary = Color(0xFFFFF8F4);
 
   /// Dark theme secondary text color
-  static const Color darkTextSecondary = Color(0xFFD1D5DB);
+  static const Color darkTextSecondary = Color(0xFFE4D7CF);
 }

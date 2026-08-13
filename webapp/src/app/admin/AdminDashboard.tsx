@@ -60,12 +60,19 @@ type Driver = {
   telegram_username: string;
   plate_number: string;
   personal_id_url: string;
+  license_number?: string | null;
+  licence_number?: string | null;
+  driver_license_number?: string | null;
+  license_url?: string | null;
+  licence_url?: string | null;
+  driver_license_url?: string | null;
   status: string;
   approval_status: string;
   vehicle_type?: string;
   is_active?: boolean;
   current_lat?: number | null;
   current_lng?: number | null;
+  created_at?: string | null;
 };
 
 type DeliveryNotification = {
@@ -154,6 +161,38 @@ function shouldShowCancellationNotice(delivery: Delivery): boolean {
 function coordinateLabel(lat?: number, lng?: number): string {
   if (lat == null || lng == null) return 'Not set';
   return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+}
+
+function valueText(value: unknown, fallback = 'N/A'): string {
+  if (value == null) return fallback;
+  const text = String(value).trim();
+  return text.length > 0 ? text : fallback;
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) return 'N/A';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'N/A';
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+function driverLicenseNumber(driver: Driver): string {
+  return valueText(
+    driver.license_number ||
+      driver.licence_number ||
+      driver.driver_license_number
+  );
+}
+
+function driverLicenseUrl(driver: Driver): string {
+  return valueText(
+    driver.license_url || driver.licence_url || driver.driver_license_url,
+    ''
+  );
 }
 
 // ── Main Component ────────────────────────────────────────────────────────────
@@ -1152,29 +1191,87 @@ export default function AdminDashboard() {
 
               {/* ── PENDING APPROVALS TAB ───────────────────────────────── */}
               {activeTab === 'pending' && (
-                <div className="max-w-3xl mx-auto space-y-4">
-                  {pendingDrivers.map(drv => (
-                    <div key={drv.id} className="bg-white rounded-2xl shadow-md border-l-4 border-l-amber-500 border-y border-r border-neutral-200 p-6 flex items-center justify-between">
-                      <div className="flex items-center space-x-5">
-                        <div className="h-14 w-14 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl font-bold">{drv.name.charAt(0)}</div>
+                <div className="mx-auto max-w-7xl space-y-4">
+                  {pendingDrivers.length > 0 && (
+                    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+                      <div className="flex flex-col gap-1 border-b border-neutral-100 px-5 py-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                          <h3 className="text-xl font-extrabold text-neutral-900">{drv.name}</h3>
-                          <div className="flex space-x-4 mt-1 text-sm text-neutral-500 font-medium">
-                            <span>{drv.email || 'No email'}</span>
-                            <span>📞 {drv.phone}</span>
-                            <span>📱 {drv.telegram_id}</span>
-                          </div>
+                          <h3 className="text-lg font-extrabold text-neutral-900">Pending driver details</h3>
+                          <p className="text-xs font-semibold text-neutral-500">Review the full submitted profile before approving.</p>
                         </div>
+                        <span className="text-xs font-extrabold uppercase tracking-wide text-amber-600">{pendingDrivers.length} pending</span>
                       </div>
-                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto mt-4 sm:mt-0">
-                        {drv.personal_id_url && (
-                          <a href={drv.personal_id_url} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-blue-50 text-blue-600 font-bold text-center rounded-xl hover:bg-blue-100 transition-colors w-full sm:w-auto text-sm">View ID</a>
-                        )}
-                        <button onClick={() => rejectDriver(drv.id)} className="px-4 py-2 bg-neutral-100 text-neutral-600 font-bold rounded-xl hover:bg-neutral-200 transition-colors w-full sm:w-auto text-sm">Reject</button>
-                        <button onClick={() => approveDriver(drv)} className="px-4 py-2 bg-blue-600 shadow-lg shadow-blue-600/20 text-white font-bold rounded-xl hover:bg-blue-700 transition-all w-full sm:w-auto text-sm">Approve</button>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-neutral-100 text-left text-sm">
+                          <thead className="bg-neutral-50 text-[11px] font-extrabold uppercase tracking-wide text-neutral-500">
+                            <tr>
+                              <th className="px-4 py-3">Driver</th>
+                              <th className="px-4 py-3">Contact</th>
+                              <th className="px-4 py-3">Telegram</th>
+                              <th className="px-4 py-3">Vehicle / licence</th>
+                              <th className="px-4 py-3">Documents</th>
+                              <th className="px-4 py-3">Status</th>
+                              <th className="px-4 py-3">Submitted</th>
+                              <th className="px-4 py-3 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-neutral-100">
+                            {pendingDrivers.map((drv) => {
+                              const licenseUrl = driverLicenseUrl(drv);
+                              return (
+                                <tr key={drv.id} className="align-top hover:bg-neutral-50/70">
+                                  <td className="px-4 py-4">
+                                    <p className="font-extrabold text-neutral-900">{valueText(drv.name)}</p>
+                                    <p className="mt-1 max-w-[180px] truncate text-[11px] font-semibold text-neutral-400">ID: {drv.id}</p>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <p className="font-bold text-neutral-800">{valueText(drv.email)}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">{valueText(drv.phone)}</p>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <p className="font-bold text-neutral-800">{valueText(drv.telegram_username)}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">Chat ID: {valueText(drv.telegram_id)}</p>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <p className="font-bold text-neutral-800">{valueText(drv.vehicle_type, 'Bike')}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">Plate: {valueText(drv.plate_number)}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">Licence: {driverLicenseNumber(drv)}</p>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex min-w-[120px] flex-col gap-2">
+                                      {drv.personal_id_url ? (
+                                        <a href={drv.personal_id_url} target="_blank" rel="noopener noreferrer" className="rounded-lg bg-blue-50 px-3 py-1.5 text-center text-xs font-extrabold text-blue-600 transition-colors hover:bg-blue-100">View ID</a>
+                                      ) : (
+                                        <span className="rounded-lg bg-neutral-100 px-3 py-1.5 text-center text-xs font-extrabold text-neutral-400">No ID</span>
+                                      )}
+                                      {licenseUrl ? (
+                                        <a href={licenseUrl} target="_blank" rel="noopener noreferrer" className="rounded-lg bg-amber-50 px-3 py-1.5 text-center text-xs font-extrabold text-amber-700 transition-colors hover:bg-amber-100">View licence</a>
+                                      ) : (
+                                        <span className="rounded-lg bg-neutral-100 px-3 py-1.5 text-center text-xs font-extrabold text-neutral-400">No licence file</span>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td className="px-4 py-4">
+                                    <p className="font-bold text-amber-700">{valueText(drv.approval_status, 'Pending')}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">Work: {valueText(drv.status, 'Offline')}</p>
+                                    <p className="mt-1 text-xs font-semibold text-neutral-500">Account: {drv.is_active === false ? 'Inactive' : 'Active'}</p>
+                                    <p className="mt-1 max-w-[160px] text-xs font-semibold text-neutral-500">Location: {coordinateLabel(drv.current_lat ?? undefined, drv.current_lng ?? undefined)}</p>
+                                  </td>
+                                  <td className="px-4 py-4 text-xs font-bold text-neutral-500">{formatDate(drv.created_at)}</td>
+                                  <td className="px-4 py-4">
+                                    <div className="flex justify-end gap-2">
+                                      <button onClick={() => rejectDriver(drv.id)} className="rounded-lg bg-neutral-100 px-3 py-2 text-xs font-extrabold text-neutral-700 transition-colors hover:bg-neutral-200">Reject</button>
+                                      <button onClick={() => approveDriver(drv)} className="rounded-lg bg-blue-600 px-3 py-2 text-xs font-extrabold text-white shadow-lg shadow-blue-600/20 transition-colors hover:bg-blue-700">Approve</button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  ))}
+                  )}
                   {pendingDrivers.length === 0 && (
                     <div className="bg-white p-16 text-center rounded-3xl border border-dashed border-neutral-300">
                       <div className="text-4xl mb-4">✨</div>

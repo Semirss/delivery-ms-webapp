@@ -19,7 +19,7 @@ enum AppTextVariant {
 /// typography system.
 ///
 /// This component allows you to use standard typography tokens within `const`
-/// widget trees. It resolves the non-const GoogleFonts internally during `build`.
+/// widget trees while relying on stable platform font fallbacks.
 class AppText extends StatelessWidget {
   /// The text string to display
   final String? text;

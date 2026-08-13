@@ -7,9 +7,6 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
-const approvalRequiredMessage =
-    'Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.';
-
 type SupabaseAdmin = Awaited<ReturnType<typeof getSupabaseAdmin>>;
 type DriverRow = Record<string, unknown>;
 
@@ -104,13 +101,6 @@ export async function POST(request: Request) {
 
         if (data.password !== password) {
             return NextResponse.json({ error: 'Invalid email/phone or password' }, { status: 401, headers: corsHeaders });
-        }
-
-        const approvalStatus = typeof data.approval_status === 'string'
-            ? data.approval_status.trim().toLowerCase()
-            : 'pending';
-        if (approvalStatus !== 'approved') {
-            return NextResponse.json({ error: approvalRequiredMessage }, { status: 403, headers: corsHeaders });
         }
 
         return NextResponse.json(data, { headers: corsHeaders });

@@ -394,6 +394,8 @@ class _AppTextFieldState extends State<AppTextField> {
   late bool _ownsFocusNode;
   bool _isFocused = false;
 
+  Color get _errorColor => Theme.of(context).colorScheme.error;
+
   @override
   void initState() {
     super.initState();
@@ -422,7 +424,7 @@ class _AppTextFieldState extends State<AppTextField> {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (widget.errorText != null) {
-      return AppColors.error;
+      return _errorColor;
     }
 
     if (!widget.enabled) {
@@ -535,7 +537,7 @@ class _AppTextFieldState extends State<AppTextField> {
   /// Returns the border color based on variant, style, and state
   Color get _borderColor {
     if (widget.errorText != null) {
-      return AppColors.error;
+      return _errorColor;
     }
 
     final colorScheme = Theme.of(context).colorScheme;
@@ -618,7 +620,7 @@ class _AppTextFieldState extends State<AppTextField> {
   InputBorder get _focusedBorder {
     final Color focusedBorderColor;
     if (widget.errorText != null) {
-      focusedBorderColor = AppColors.error;
+      focusedBorderColor = _errorColor;
     } else if (widget.style == AppTextFieldStyle.dark) {
       focusedBorderColor = Colors.white;
     } else {
@@ -658,21 +660,21 @@ class _AppTextFieldState extends State<AppTextField> {
       case AppTextFieldVariant.outlined:
         return OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+          borderSide: BorderSide(color: _errorColor, width: 1.5),
         );
       case AppTextFieldVariant.filled:
         return OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: AppColors.error, width: 2.0),
+          borderSide: BorderSide(color: _errorColor, width: 2.0),
         );
       case AppTextFieldVariant.underlined:
         return UnderlineInputBorder(
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+          borderSide: BorderSide(color: _errorColor, width: 1.5),
         );
       case AppTextFieldVariant.custom:
         return OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+          borderSide: BorderSide(color: _errorColor, width: 1.5),
         );
     }
   }
@@ -759,11 +761,11 @@ class _AppTextFieldState extends State<AppTextField> {
                           icon: AppIcon(
                             icon: widget.prefixIcon,
                             color: widget.errorText != null
-                                ? AppColors.error
+                                ? _errorColor
                                 : _getIconColor(),
                           ),
                           color: widget.errorText != null
-                              ? AppColors.error
+                              ? _errorColor
                               : _getIconColor(),
                           onPressed: widget.onPrefixPressed,
                         ),
@@ -777,7 +779,7 @@ class _AppTextFieldState extends State<AppTextField> {
                         child: IconButton(
                           icon: AppIcon(icon: widget.suffixIcon),
                           color: widget.errorText != null
-                              ? AppColors.error
+                              ? _errorColor
                               : _isFocused
                               ? AppColors.primary
                               : _getIconColor(),
@@ -795,7 +797,7 @@ class _AppTextFieldState extends State<AppTextField> {
               child: AppText(
                 widget.errorText!,
                 variant: AppTextVariant.bodySmall,
-                color: AppColors.error,
+                color: _errorColor,
               ),
             ),
           ],

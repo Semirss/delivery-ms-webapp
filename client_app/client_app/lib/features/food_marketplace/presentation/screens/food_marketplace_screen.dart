@@ -890,64 +890,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: sheetContext.appSurfaceAlt,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: sheetContext.appBorder),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const AppText(
-                            'Food details',
-                            variant: AppTextVariant.bodyMedium,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          _FoodDetailRow(
-                            icon: Icons.storefront_outlined,
-                            label: 'Restaurant',
-                            value: item.restaurantDisplayName,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.person_outline_rounded,
-                            label: 'Seller',
-                            value: item.sellerName.isEmpty
-                                ? 'Not specified'
-                                : item.sellerName,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.phone_outlined,
-                            label: 'Seller phone',
-                            value: item.sellerPhone.isEmpty
-                                ? 'Not specified'
-                                : item.sellerPhone,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.location_on_outlined,
-                            label: 'Pickup',
-                            value: item.pickupLocation.isEmpty
-                                ? 'Not specified'
-                                : item.pickupLocation,
-                          ),
-                          if (item.pickupCoordinateLabel != null)
-                            _FoodDetailRow(
-                              icon: Icons.my_location_outlined,
-                              label: 'Map point',
-                              value: item.pickupCoordinateLabel!,
-                            ),
-                          const SizedBox(height: AppSpacing.sm),
-                          AppText(
-                            description,
-                            variant: AppTextVariant.bodySmall,
-                            color: sheetContext.appTextSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
+                    _FoodDetailsSummary(item: item, description: description),
                     const SizedBox(height: AppSpacing.lg),
                     _FoodDeliveryAddressPicker(
                       address: selectedDestination?.displayName,
@@ -3589,8 +3532,88 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
   }
 }
 
-class _FoodDetailRow extends StatelessWidget {
-  const _FoodDetailRow({
+class _FoodDetailsSummary extends StatelessWidget {
+  const _FoodDetailsSummary({required this.item, required this.description});
+
+  final _FoodItem item;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final chips = <Widget>[
+      _FoodDetailChip(
+        icon: Icons.storefront_outlined,
+        label: 'Restaurant',
+        value: item.restaurantDisplayName,
+      ),
+      _FoodDetailChip(
+        icon: Icons.person_outline_rounded,
+        label: 'Seller',
+        value: _compactValue(item.sellerName),
+      ),
+      _FoodDetailChip(
+        icon: Icons.phone_outlined,
+        label: 'Phone',
+        value: _compactValue(item.sellerPhone),
+      ),
+      _FoodDetailChip(
+        icon: Icons.location_on_outlined,
+        label: 'Pickup',
+        value: _compactValue(item.pickupLocation),
+      ),
+      if (item.pickupCoordinateLabel != null)
+        _FoodDetailChip(
+          icon: Icons.my_location_outlined,
+          label: 'Map',
+          value: item.pickupCoordinateLabel!,
+        ),
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppText(
+            'Food details',
+            variant: AppTextVariant.bodyMedium,
+            fontWeight: FontWeight.w900,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: chips,
+          ),
+          if (description.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AppText(
+              description,
+              variant: AppTextVariant.bodySmall,
+              color: context.appTextSecondary,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _compactValue(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? 'Not specified' : trimmed;
+  }
+}
+
+class _FoodDetailChip extends StatelessWidget {
+  const _FoodDetailChip({
     required this.icon,
     required this.label,
     required this.value,
@@ -3602,30 +3625,45 @@ class _FoodDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 176),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: context.appSurface,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: context.appBorder),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: context.appTextSecondary),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  label,
-                  variant: AppTextVariant.labelSmall,
-                  color: context.appTextSecondary,
-                  fontWeight: FontWeight.w800,
-                ),
-                const SizedBox(height: 1),
-                AppText(
-                  value,
-                  variant: AppTextVariant.bodySmall,
-                  fontWeight: FontWeight.w800,
-                ),
-              ],
+          Icon(icon, size: 16, color: AppColors.primary),
+          const SizedBox(width: AppSpacing.xs),
+          Flexible(
+            child: AppText.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '$label: ',
+                    style: TextStyle(
+                      color: context.appTextSecondary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  TextSpan(
+                    text: value,
+                    style: TextStyle(
+                      color: context.appTextPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+              variant: AppTextVariant.labelSmall,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

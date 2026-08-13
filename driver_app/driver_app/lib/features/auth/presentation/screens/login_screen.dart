@@ -9,6 +9,7 @@ import 'package:driver_app/features/auth/data/datasources/auth_local_data_source
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:driver_app/features/auth/presentation/widgets/auth_form_notice.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,10 +27,16 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
   StreamSubscription<dynamic>? _supabaseAuthSubscription;
   bool _obscurePassword = true;
   bool _handledPendingGoogleSession = false;
+  bool _hasSubmitted = false;
   String? _suggestedEmail;
+  String? _formError;
+  String? _emailError;
+  String? _passwordError;
 
   @override
   void initState() {
@@ -50,6 +57,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     unawaited(_supabaseAuthSubscription?.cancel());
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -82,6 +91,8 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 
     setState(() {
       _emailController.text = email;
+      _formError = null;
+      _emailError = null;
       _emailController.selection = TextSelection.collapsed(
         offset: email.length,
       );
@@ -89,14 +100,120 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
   }
 
   void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
-        LoginEvent(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        ),
-      );
+    setState(() {
+      _hasSubmitted = true;
+      _formError = null;
+      _emailError = null;
+      _passwordError = null;
+    });
+
+    if (!_formKey.currentState!.validate()) {
+      _focusFirstLocalLoginError();
+      return;
     }
+
+    context.read<AuthBloc>().add(
+      LoginEvent(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
+  }
+
+  void _handleEmailChanged(String _) {
+    setState(() {
+      _formError = null;
+      _emailError = null;
+    });
+  }
+
+  void _handlePasswordChanged(String _) {
+    if (_formError == null && _passwordError == null) return;
+    setState(() {
+      _formError = null;
+      _passwordError = null;
+    });
+  }
+
+  void _applyLoginError(String rawMessage) {
+    final message = _cleanAuthMessage(rawMessage);
+    final lower = message.toLowerCase();
+    String? formError = message;
+    String? emailError;
+    String? passwordError;
+    FocusNode? focusNode;
+
+    if ((lower.contains('invalid') &&
+            lower.contains('password') &&
+            (lower.contains('email') || lower.contains('phone'))) ||
+        lower.contains('could not match')) {
+      formError = 'We could not match these login details. ';
+
+      emailError = 'Check the email or phone number entered here.';
+      passwordError = 'Check this password.';
+      focusNode = _emailFocusNode;
+    } else if (lower.contains('email') && lower.contains('not found')) {
+      formError = 'No account was found for this email.';
+      emailError = 'Use a registered email, or register first.';
+      focusNode = _emailFocusNode;
+    } else if (lower.contains('phone') &&
+        (lower.contains('09') ||
+            lower.contains('ethiopian') ||
+            lower.contains('required'))) {
+      formError = 'Check the highlighted phone number.';
+      emailError = message;
+      focusNode = _emailFocusNode;
+    } else if (lower.contains('email') &&
+        (lower.contains('valid') || lower.contains('required'))) {
+      formError = 'Check the highlighted email.';
+      emailError = message;
+      focusNode = _emailFocusNode;
+    } else if (lower.contains('password') &&
+        (lower.contains('required') || lower.contains('characters'))) {
+      formError = 'Check the highlighted password.';
+      passwordError = message;
+      focusNode = _passwordFocusNode;
+    }
+
+    setState(() {
+      _formError = formError;
+      _emailError = emailError;
+      _passwordError = passwordError;
+    });
+
+    _focusAfterFrame(focusNode);
+  }
+
+  String _cleanAuthMessage(String rawMessage) {
+    return rawMessage.replaceFirst('Exception: ', '').trim();
+  }
+
+  void _focusFirstLocalLoginError() {
+    final email = _emailController.text.trim();
+    if (email.isEmpty ||
+        (email.contains('@') && !isValidEmail(email)) ||
+        (!email.contains('@') && validateEthiopianPhone(email) != null)) {
+      _focusAfterFrame(_emailFocusNode);
+      return;
+    }
+
+    final password = _passwordController.text;
+    if (password.isEmpty || password.length < 6) {
+      _focusAfterFrame(_passwordFocusNode);
+    }
+  }
+
+  void _focusAfterFrame(FocusNode? focusNode) {
+    if (focusNode == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      focusNode.requestFocus();
+    });
+  }
+
+  void _submitLoginFromKeyboard(String _) {
+    if (context.read<AuthBloc>().state is AuthLoading) return;
+    _handleLogin();
   }
 
   void _goHomeAfterFrame() {
@@ -140,11 +257,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
         listener: (context, state) {
           if (state is AuthError) {
             _handledPendingGoogleSession = false;
-            AppModal.error<void>(
-              context: context,
-              title: 'Login Failed',
-              contentText: state.message,
-            );
+            _applyLoginError(state.message);
           }
         },
         builder: (context, state) {
@@ -252,6 +365,9 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Form(
                     key: _formKey,
+                    autovalidateMode: _hasSubmitted
+                        ? AutovalidateMode.onUserInteraction
+                        : AutovalidateMode.disabled,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -267,16 +383,22 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                           variant: AppTextVariant.bodyMedium,
                           color: context.appTextSecondary,
                         ),
+                        if (_formError != null) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          AuthFormNotice(message: _formError!),
+                        ],
                         const SizedBox(height: AppSpacing.xl),
 
                         AppTextField.outlined(
                           controller: _emailController,
+                          focusNode: _emailFocusNode,
                           label: 'Email or Phone Number',
                           hint: 'driver@email.com or 0912345678',
+                          errorText: _emailError,
                           prefixIcon: Icons.account_circle_outlined,
                           keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
-                          onChanged: (_) => setState(() {}),
+                          onChanged: _handleEmailChanged,
                           validator: (v) {
                             final value = v?.trim() ?? '';
                             if (value.isEmpty) {
@@ -309,10 +431,15 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                         const SizedBox(height: AppSpacing.md),
                         AppTextField.outlined(
                           controller: _passwordController,
+                          focusNode: _passwordFocusNode,
                           label: 'Password',
                           hint: '********',
+                          errorText: _passwordError,
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: _obscurePassword,
+                          textInputAction: TextInputAction.done,
+                          onChanged: _handlePasswordChanged,
+                          onSubmitted: _submitLoginFromKeyboard,
                           suffixIcon: _obscurePassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,

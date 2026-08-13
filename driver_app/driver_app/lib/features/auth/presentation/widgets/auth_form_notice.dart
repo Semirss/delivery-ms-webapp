@@ -1,4 +1,4 @@
-import 'package:client_ui/app_ui.dart';
+import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 
 class AuthFormNotice extends StatelessWidget {

@@ -147,8 +147,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
             lower.contains('password') &&
             (lower.contains('email') || lower.contains('phone'))) ||
         lower.contains('could not match')) {
-      formError = 'We could not match these login details. '
-          'Fix the highlighted fields and try again.';
+      formError = 'Invalid Credentials';
       emailError = 'Check the email or phone number entered here.';
       passwordError = 'Check this password.';
       focusNode = _emailFocusNode;

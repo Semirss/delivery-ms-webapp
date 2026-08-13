@@ -353,7 +353,7 @@ class _BootstrapErrorApp extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 const Text(
-                  'We could not connect to the service. Check your connection '
+                  'Check your connection '
                   'and try again.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
