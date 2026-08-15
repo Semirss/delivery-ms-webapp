@@ -40,16 +40,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
     if (params.password.isEmpty) throw Exception('Please enter your password.');
 
-    try {
-      final apiLogin = await _tryLoginViaWebApi(
-        LoginParams(email: identifier, password: params.password),
-      );
-      if (apiLogin != null) return apiLogin;
-    } on dio.DioException catch (error) {
-      final statusCode = error.response?.statusCode ?? 0;
-      if (statusCode >= 500 || statusCode == 0) rethrow;
-    }
-
     final data = await _findDriverByLoginIdentifier(identifier);
 
     if (data == null) {
@@ -158,25 +148,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     return AuthResponseModel(
       user: _driverUser(driver, fallbackEmail: email),
-      accessToken: _driverToken(driver),
-      refreshToken: _driverToken(driver, refresh: true),
-      requiresVerification: false,
-    );
-  }
-
-  Future<AuthResponseModel?> _tryLoginViaWebApi(LoginParams params) async {
-    final apiBaseUrl = _apiBaseUrl;
-    if (apiBaseUrl == null) return null;
-
-    final response = await _dio.post<Map<String, dynamic>>(
-      '$apiBaseUrl/api/drivers/login',
-      data: {'identifier': params.email.trim(), 'password': params.password},
-    );
-    final driver = Map<String, dynamic>.from(response.data ?? {});
-    if (driver.isEmpty) throw Exception('Invalid driver login response.');
-
-    return AuthResponseModel(
-      user: _driverUser(driver),
       accessToken: _driverToken(driver),
       refreshToken: _driverToken(driver, refresh: true),
       requiresVerification: false,

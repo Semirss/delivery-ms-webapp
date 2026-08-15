@@ -6,6 +6,7 @@ import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 enum _NotificationFilter { all, unread }
@@ -18,19 +19,25 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  static const String _clearedNotificationIdsKey =
+      'driver_cleared_notification_ids';
+
   final SupabaseClient _supabase = Supabase.instance.client;
   final DriverProfileRepository _profileRepository = DriverProfileRepository();
 
   List<Map<String, dynamic>> _notifications = [];
+  Set<String> _clearedNotificationIds = <String>{};
   Map<String, dynamic>? _driver;
   RealtimeChannel? _channel;
   _NotificationFilter _filter = _NotificationFilter.all;
   String? _errorMessage;
   bool _isLoading = true;
   bool _isMarkingAll = false;
+  bool _isClearing = false;
 
-  int get _unreadCount =>
-      _notifications.where((notification) => notification['read_at'] == null).length;
+  int get _unreadCount => _notifications
+      .where((notification) => notification['read_at'] == null)
+      .length;
 
   List<Map<String, dynamic>> get _visibleNotifications {
     if (_filter == _NotificationFilter.unread) {
@@ -48,9 +55,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _initialize() async {
+    await _loadClearedNotificationIds();
     await _resolveDriver();
     await _fetchNotifications();
     _subscribe();
+  }
+
+  Future<void> _loadClearedNotificationIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    _clearedNotificationIds = Set<String>.from(
+      prefs.getStringList(_clearedNotificationIdsKey) ?? const <String>[],
+    );
   }
 
   Future<void> _resolveDriver() async {
@@ -71,10 +86,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       final driver = _driver;
       final notifications = List<Map<String, dynamic>>.from(data)
           .where(
-            (notification) => driver == null
-                ? true
-                : matchesDriverNotification(notification, driver),
+            (notification) =>
+                driver == null ||
+                matchesDriverNotification(notification, driver),
           )
+          .where((notification) {
+            final id = notification['id']?.toString();
+            return id == null || !_clearedNotificationIds.contains(id);
+          })
           .toList();
 
       if (!mounted) return;
@@ -146,7 +165,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         unreadIds.map(
           (id) => _supabase
               .from('app_notifications')
-              .update({'read_at': readAt}).eq('id', id),
+              .update({'read_at': readAt})
+              .eq('id', id),
         ),
       );
       await _fetchNotifications();
@@ -165,6 +185,52 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       );
     } finally {
       if (mounted) setState(() => _isMarkingAll = false);
+    }
+  }
+
+  Future<void> _clearNotification(Map<String, dynamic> notification) async {
+    final id = notification['id']?.toString();
+    if (id == null || id.isEmpty) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final nextIds = {..._clearedNotificationIds, id};
+    await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+    if (!mounted) return;
+    setState(() {
+      _clearedNotificationIds = nextIds;
+      _notifications.removeWhere(
+        (notification) => notification['id']?.toString() == id,
+      );
+    });
+  }
+
+  Future<void> _clearVisibleNotifications() async {
+    final ids = _visibleNotifications
+        .map((notification) => notification['id']?.toString())
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    if (ids.isEmpty || _isClearing) return;
+
+    setState(() => _isClearing = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final nextIds = {..._clearedNotificationIds, ...ids};
+      await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+      if (!mounted) return;
+      setState(() {
+        _clearedNotificationIds = nextIds;
+        _notifications.removeWhere(
+          (notification) => ids.contains(notification['id']?.toString()),
+        );
+      });
+      AppToast.show(
+        context: context,
+        message: 'Alerts cleared.',
+        type: AppToastType.success,
+      );
+    } finally {
+      if (mounted) setState(() => _isClearing = false);
     }
   }
 
@@ -265,7 +331,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     ),
                     child: AppText(
                       notification['body']?.toString() ?? '',
-                      variant: AppTextVariant.bodyMedium,
                       color: sheetContext.appTextPrimary,
                     ),
                   ),
@@ -355,8 +420,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       backgroundColor: context.appBackground,
       appBar: AppAppBar(
         titleText: 'Alerts',
-        centerTitle: false,
         actions: [
+          IconButton(
+            tooltip: 'Clear alerts',
+            icon: _isClearing
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    Icons.clear_all_rounded,
+                    color: _visibleNotifications.isEmpty
+                        ? context.appTextSecondary
+                        : AppColors.primary,
+                  ),
+            onPressed: _visibleNotifications.isEmpty || _isClearing
+                ? null
+                : _clearVisibleNotifications,
+          ),
           IconButton(
             tooltip: 'Mark all read',
             icon: _isMarkingAll
@@ -388,7 +470,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       );
     }
 
-    if (_errorMessage != null) {
+    final errorMessage = _errorMessage;
+    if (errorMessage != null) {
       return RefreshIndicator(
         onRefresh: _fetchNotifications,
         color: AppColors.primary,
@@ -400,8 +483,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Icon(Icons.cloud_off_rounded, size: 64, color: context.appBorder),
             const SizedBox(height: AppSpacing.lg),
             AppText(
-              _errorMessage!,
-              variant: AppTextVariant.bodyMedium,
+              errorMessage,
               color: context.appTextSecondary,
               textAlign: TextAlign.center,
             ),
@@ -435,6 +517,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 child: _NotificationCard(
                   notification: notification,
                   onTap: () => _markAsRead(notification),
+                  onClear: () => _clearNotification(notification),
                 ),
               ),
         ],
@@ -443,6 +526,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Widget _buildSummaryHeader() {
+    final unreadSummary = _unreadCount == 0
+        ? 'Everything is read'
+        : '$_unreadCount unread notification${_unreadCount == 1 ? '' : 's'}';
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -462,7 +549,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           const CircleAvatar(
             radius: 28,
             backgroundColor: AppColors.primary,
-            child: Icon(Icons.notifications_active_rounded, color: Colors.white),
+            child: Icon(
+              Icons.notifications_active_rounded,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -477,9 +567,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 ),
                 const SizedBox(height: 4),
                 AppText(
-                  _unreadCount == 0
-                      ? 'Everything is read'
-                      : '$_unreadCount unread notification${_unreadCount == 1 ? '' : 's'}',
+                  unreadSummary,
                   variant: AppTextVariant.bodySmall,
                   color: context.appTextSecondary,
                 ),
@@ -569,7 +657,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             unreadOnly
                 ? 'New delivery updates will appear here.'
                 : 'Assignments and status changes will appear here.',
-            variant: AppTextVariant.bodyMedium,
             color: context.appTextSecondary,
             textAlign: TextAlign.center,
           ),
@@ -617,10 +704,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 }
 
 class _NotificationCard extends StatelessWidget {
-  const _NotificationCard({required this.notification, required this.onTap});
+  const _NotificationCard({
+    required this.notification,
+    required this.onTap,
+    required this.onClear,
+  });
 
   final Map<String, dynamic> notification;
   final VoidCallback onTap;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -668,7 +760,6 @@ class _NotificationCard extends StatelessWidget {
                       Expanded(
                         child: AppText(
                           notification['title']?.toString() ?? 'Notification',
-                          variant: AppTextVariant.bodyMedium,
                           color: context.appTextPrimary,
                           fontWeight: isUnread
                               ? FontWeight.bold
@@ -686,6 +777,16 @@ class _NotificationCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                         ),
+                      IconButton(
+                        tooltip: 'Clear',
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: context.appTextSecondary,
+                          size: 18,
+                        ),
+                        onPressed: onClear,
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.xs),

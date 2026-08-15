@@ -1175,6 +1175,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
       fallbackName: 'Current GPS delivery address',
       addressController: addressController,
       onDestinationChanged: onDestinationChanged,
+      resolveInBackground: true,
     );
   }
 
@@ -1204,14 +1205,68 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     required String fallbackName,
     required TextEditingController addressController,
     required ValueChanged<MapPlace> onDestinationChanged,
+    bool resolveInBackground = false,
   }) async {
     if (!_isValidFoodMapPoint(point)) return;
+    final exactPinLabel = fallbackName.toLowerCase().startsWith('pinned');
+
+    if (resolveInBackground) {
+      final quickDestination = _quickFoodLocationPlace(
+        point,
+        fallbackName: fallbackName,
+        exactPinLabel: exactPinLabel,
+      );
+      addressController.text = quickDestination.displayName;
+      onDestinationChanged(quickDestination);
+      unawaited(
+        _resolveFoodDeliveryAddressLabel(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+          quickLabel: quickDestination.displayName,
+          addressController: addressController,
+          onDestinationChanged: onDestinationChanged,
+        ),
+      );
+      return;
+    }
+
     final destination = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
-      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
+      exactPinLabel: exactPinLabel,
     );
     if (!mounted) return;
+    addressController.text = destination.displayName;
+    onDestinationChanged(destination);
+  }
+
+  MapPlace _quickFoodLocationPlace(
+    LatLng point, {
+    required String fallbackName,
+    bool exactPinLabel = false,
+  }) {
+    final label = exactPinLabel
+        ? '$fallbackName (${point.latitude.toStringAsFixed(5)}, '
+              '${point.longitude.toStringAsFixed(5)})'
+        : fallbackName;
+    return MapPlace(displayName: label, location: point);
+  }
+
+  Future<void> _resolveFoodDeliveryAddressLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+    required String quickLabel,
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final destination = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || addressController.text != quickLabel) return;
     addressController.text = destination.displayName;
     onDestinationChanged(destination);
   }
@@ -3382,9 +3437,7 @@ class _FoodVehicleOption extends StatelessWidget {
         : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
-    final subtitle = disabled
-        ? 'Up to 10 km only'
-        : '${pricing.perKm} Birr/km first 10 km';
+    final subtitle = disabled ? '' : '${pricing.perKm} Birr/km';
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -3480,7 +3533,7 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
     } else {
       subtitle =
           '${resolvedDistanceKm.toStringAsFixed(1)} km estimate - '
-          '${pricing!.baseFare} base + ${pricing.perKm} Birr/km first 10 km + '
+          '${pricing!.baseFare} base + ${pricing.perKm} Birr/km, '
           '$_foodLongDistancePerKm Birr/km after';
     }
 
@@ -3540,29 +3593,29 @@ class _FoodDetailsSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chips = <Widget>[
-      _FoodDetailChip(
+    final details = <_FoodDetailItem>[
+      _FoodDetailItem(
         icon: Icons.storefront_outlined,
         label: 'Restaurant',
         value: item.restaurantDisplayName,
       ),
-      _FoodDetailChip(
+      _FoodDetailItem(
         icon: Icons.person_outline_rounded,
         label: 'Seller',
         value: _compactValue(item.sellerName),
       ),
-      _FoodDetailChip(
+      _FoodDetailItem(
         icon: Icons.phone_outlined,
         label: 'Phone',
         value: _compactValue(item.sellerPhone),
       ),
-      _FoodDetailChip(
+      _FoodDetailItem(
         icon: Icons.location_on_outlined,
         label: 'Pickup',
         value: _compactValue(item.pickupLocation),
       ),
       if (item.pickupCoordinateLabel != null)
-        _FoodDetailChip(
+        _FoodDetailItem(
           icon: Icons.my_location_outlined,
           label: 'Map',
           value: item.pickupCoordinateLabel!,
@@ -3580,16 +3633,27 @@ class _FoodDetailsSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AppText(
-            'Food details',
-            variant: AppTextVariant.bodyMedium,
-            fontWeight: FontWeight.w900,
-          ),
+          const AppText('Food details', fontWeight: FontWeight.w900),
           const SizedBox(height: AppSpacing.sm),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: chips,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final useTwoColumns = constraints.maxWidth >= 420;
+              final itemWidth = useTwoColumns
+                  ? (constraints.maxWidth - AppSpacing.sm) / 2
+                  : constraints.maxWidth;
+
+              return Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  for (final detail in details)
+                    SizedBox(
+                      width: itemWidth,
+                      child: _FoodDetailRow(detail: detail),
+                    ),
+                ],
+              );
+            },
           ),
           if (description.trim().isNotEmpty) ...[
             const SizedBox(height: AppSpacing.sm),
@@ -3597,8 +3661,6 @@ class _FoodDetailsSummary extends StatelessWidget {
               description,
               variant: AppTextVariant.bodySmall,
               color: context.appTextSecondary,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ],
@@ -3612,8 +3674,8 @@ class _FoodDetailsSummary extends StatelessWidget {
   }
 }
 
-class _FoodDetailChip extends StatelessWidget {
-  const _FoodDetailChip({
+class _FoodDetailItem {
+  const _FoodDetailItem({
     required this.icon,
     required this.label,
     required this.value,
@@ -3622,48 +3684,57 @@ class _FoodDetailChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+}
+
+class _FoodDetailRow extends StatelessWidget {
+  const _FoodDetailRow({required this.detail});
+
+  final _FoodDetailItem detail;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 176),
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: context.appSurface,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: context.appBorder),
+        horizontal: AppSpacing.xs,
+        vertical: 4,
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: AppColors.primary),
+          Container(
+            width: 22,
+            height: 22,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(detail.icon, size: 13, color: AppColors.primary),
+          ),
           const SizedBox(width: AppSpacing.xs),
-          Flexible(
-            child: AppText.rich(
-              TextSpan(
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.copyWith(fontSize: 12, height: 1.28, letterSpacing: 0),
                 children: [
                   TextSpan(
-                    text: '$label: ',
+                    text: '${detail.label}: ',
                     style: TextStyle(
                       color: context.appTextSecondary,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   TextSpan(
-                    text: value,
+                    text: detail.value,
                     style: TextStyle(
                       color: context.appTextPrimary,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
               ),
-              variant: AppTextVariant.labelSmall,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

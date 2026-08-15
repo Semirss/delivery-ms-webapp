@@ -132,7 +132,7 @@ abstract class AppTypography {
   static TextStyle button = _style(
     fontSize: 14,
     fontWeight: FontWeight.bold,
-    letterSpacing: 1.25,
+    letterSpacing: 0,
   );
 
   /// Medium 14 Notifications - Medium weight text for notifications

@@ -1,10 +1,11 @@
+import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:client_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:client_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:client_app/features/auth/presentation/bloc/auth_state.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -14,14 +15,19 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
+  static const String _clearedNotificationIdsKey =
+      'client_cleared_notification_ids';
+
   final SupabaseClient _supabase = Supabase.instance.client;
 
   List<Map<String, dynamic>> _notifications = [];
+  Set<String> _clearedNotificationIds = <String>{};
   RealtimeChannel? _channel;
   String? _recipientId;
   String? _recipientPhone;
   String? _errorMessage;
   bool _isLoading = true;
+  bool _isClearing = false;
 
   @override
   void initState() {
@@ -34,11 +40,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final user = authState is AuthAuthenticated ? authState.user : null;
     _recipientId = user?.id;
     _recipientPhone =
-        _cleanRecipient(user?.phone) ??
-        _cleanRecipient(user?.email);
+        _cleanRecipient(user?.phone) ?? _cleanRecipient(user?.email);
 
+    await _loadClearedNotificationIds();
     await _fetchNotifications();
     _subscribe();
+  }
+
+  Future<void> _loadClearedNotificationIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    _clearedNotificationIds = Set<String>.from(
+      prefs.getStringList(_clearedNotificationIdsKey) ?? const <String>[],
+    );
   }
 
   Future<void> _fetchNotifications() async {
@@ -52,6 +65,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
       final notifications = List<Map<String, dynamic>>.from(data)
           .where(_matchesCurrentUser)
+          .where((notification) {
+            final id = notification['id']?.toString();
+            return id == null || !_clearedNotificationIds.contains(id);
+          })
           .toList();
 
       if (!mounted) return;
@@ -63,7 +80,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Notifications are not ready yet. Run schema_v4 in Supabase.';
+        _errorMessage =
+            'Notifications are not ready yet. Run schema_v4 in Supabase.';
         _isLoading = false;
       });
     }
@@ -71,8 +89,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _subscribe() {
     _channel?.unsubscribe();
+    final channelKey = _recipientPhone ?? _recipientId ?? 'anonymous';
     _channel = _supabase
-        .channel('public:app_notifications:client:${_recipientPhone ?? _recipientId ?? 'anonymous'}')
+        .channel('public:app_notifications:client:$channelKey')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
@@ -93,7 +112,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     if (recipientId == null && recipientPhone == null) return true;
     if (_recipientId != null && recipientId == _recipientId) return true;
-    if (_recipientPhone != null && recipientPhone == _recipientPhone) return true;
+    if (_recipientPhone != null && recipientPhone == _recipientPhone) {
+      return true;
+    }
     return false;
   }
 
@@ -107,11 +128,56 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final id = notification['id']?.toString();
     if (id == null) return;
 
-    await _supabase.from('app_notifications').update({
-      'read_at': DateTime.now().toUtc().toIso8601String(),
-    }).eq('id', id);
+    await _supabase
+        .from('app_notifications')
+        .update({'read_at': DateTime.now().toUtc().toIso8601String()})
+        .eq('id', id);
 
     await _fetchNotifications();
+  }
+
+  Future<void> _clearNotification(Map<String, dynamic> notification) async {
+    final id = notification['id']?.toString();
+    if (id == null || id.isEmpty) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final nextIds = {..._clearedNotificationIds, id};
+    await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+    if (!mounted) return;
+    setState(() {
+      _clearedNotificationIds = nextIds;
+      _notifications.removeWhere(
+        (notification) => notification['id']?.toString() == id,
+      );
+    });
+  }
+
+  Future<void> _clearAllNotifications() async {
+    final ids = _notifications
+        .map((notification) => notification['id']?.toString())
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    if (ids.isEmpty || _isClearing) return;
+
+    setState(() => _isClearing = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final nextIds = {..._clearedNotificationIds, ...ids};
+      await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+      if (!mounted) return;
+      setState(() {
+        _clearedNotificationIds = nextIds;
+        _notifications = const [];
+      });
+      AppToast.show(
+        context: context,
+        message: 'Notifications cleared.',
+        type: AppToastType.success,
+      );
+    } finally {
+      if (mounted) setState(() => _isClearing = false);
+    }
   }
 
   @override
@@ -123,23 +189,42 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(titleText: 'Notifications', centerTitle: false),
+      appBar: AppAppBar(
+        titleText: 'Notifications',
+        actions: [
+          IconButton(
+            tooltip: 'Clear notifications',
+            icon: _isClearing
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.clear_all_rounded),
+            onPressed: _notifications.isEmpty || _isClearing
+                ? null
+                : _clearAllNotifications,
+          ),
+        ],
+      ),
       body: _buildBody(),
     );
   }
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary),
+      );
     }
 
-    if (_errorMessage != null) {
+    final errorMessage = _errorMessage;
+    if (errorMessage != null) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
           child: AppText(
-            _errorMessage!,
-            variant: AppTextVariant.bodyMedium,
+            errorMessage,
             color: context.appTextSecondary,
             textAlign: TextAlign.center,
           ),
@@ -154,7 +239,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             const SizedBox(height: 160),
-            Icon(Icons.notifications_none_rounded, size: 72, color: context.appBorder),
+            Icon(
+              Icons.notifications_none_rounded,
+              size: 72,
+              color: context.appBorder,
+            ),
             const SizedBox(height: AppSpacing.md),
             Center(
               child: AppText(
@@ -178,6 +267,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           return _NotificationCard(
             notification: _notifications[index],
             onTap: () => _markAsRead(_notifications[index]),
+            onClear: () => _clearNotification(_notifications[index]),
           );
         },
       ),
@@ -189,10 +279,12 @@ class _NotificationCard extends StatelessWidget {
   const _NotificationCard({
     required this.notification,
     required this.onTap,
+    required this.onClear,
   });
 
   final Map<String, dynamic> notification;
   final VoidCallback onTap;
+  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -204,16 +296,25 @@ class _NotificationCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isUnread ? AppColors.primary.withOpacity(0.08) : context.appSurface,
+          color: isUnread
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : context.appSurface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isUnread ? AppColors.primary.withOpacity(0.22) : context.appBorder),
+          border: Border.all(
+            color: isUnread
+                ? AppColors.primary.withValues(alpha: 0.22)
+                : context.appBorder,
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundColor: AppColors.primary.withOpacity(0.1),
-              child: Icon(_iconForType(notification['type']), color: AppColors.primary),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              child: Icon(
+                _iconForType(notification['type']),
+                color: AppColors.primary,
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -225,8 +326,9 @@ class _NotificationCard extends StatelessWidget {
                       Expanded(
                         child: AppText(
                           notification['title']?.toString() ?? 'Notification',
-                          variant: AppTextVariant.bodyMedium,
-                          fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
+                          fontWeight: isUnread
+                              ? FontWeight.bold
+                              : FontWeight.w600,
                         ),
                       ),
                       if (isUnread)
@@ -238,6 +340,16 @@ class _NotificationCard extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                         ),
+                      IconButton(
+                        tooltip: 'Clear',
+                        visualDensity: VisualDensity.compact,
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: context.appTextSecondary,
+                          size: 18,
+                        ),
+                        onPressed: onClear,
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.xs),

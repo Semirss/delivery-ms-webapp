@@ -408,7 +408,7 @@ export default function Book() {
                           {priceEstimate} <span className="text-base font-semibold text-neutral-500">Birr</span>
                         </p>
                         <p className="text-xs text-neutral-400 mt-1">
-                          {distanceKm.toFixed(1)} km - {base} base + {perKm} Birr/km first 10 km + {LONG_DISTANCE_PER_KM} Birr/km after
+                          {distanceKm.toFixed(1)} km - {base} base + {perKm} Birr/km + {LONG_DISTANCE_PER_KM} Birr/km after
                         </p>
                       </div>
                       <div className="flex flex-col items-end text-right">
@@ -454,7 +454,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🚲</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Bike</span>
-                    <span className="text-xs font-semibold opacity-70">{bikeDisabled ? "Up to 10 km only" : "30 + 40/km first 10 km"}</span>
+                    <span className="text-xs font-semibold opacity-70">{bikeDisabled ? "Up to 10 km only" : "30 + 40/km"}</span>
                   </div>
                 </div>
 
@@ -469,7 +469,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🏍️</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Motorbike</span>
-                    <span className="text-xs font-semibold opacity-70">40 + 50/km first 10 km</span>
+                    <span className="text-xs font-semibold opacity-70">40 + 50/km </span>
                   </div>
                 </div>
               </div>
@@ -484,7 +484,7 @@ export default function Book() {
             </button>
 
             <p className="text-center text-xs text-neutral-400 pt-1">
-              Final price confirmed by rider - {base} Birr base + {perKm} Birr/km first 10 km + {LONG_DISTANCE_PER_KM} Birr/km after for {activeVehicleCategory}
+              Final price confirmed by rider - {base} Birr base + {perKm} Birr/km  + {LONG_DISTANCE_PER_KM} Birr/km after for {activeVehicleCategory}
             </p>
           </form>
         </div>

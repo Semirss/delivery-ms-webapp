@@ -123,14 +123,14 @@ const int _longDistancePerKm = 15;
 const Map<String, _DeliveryPricing> _deliveryPricing = {
   'Bike': _DeliveryPricing(
     title: 'Bicycle',
-    subtitle: '40 Birr/km up to 10 km',
+    subtitle: '40 Birr/km',
     baseFare: 30,
     perKm: 40,
     icon: Icons.directions_bike_rounded,
   ),
   'Motor': _DeliveryPricing(
     title: 'Motorbike',
-    subtitle: '50 Birr/km first 10 km',
+    subtitle: '50 Birr/km',
     baseFare: 40,
     perKm: 50,
     icon: Icons.motorcycle_rounded,
@@ -969,7 +969,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _pricingBreakdownLabel(_DeliveryPricing pricing) {
-    return '${pricing.baseFare} base + ${pricing.perKm} Birr/km first 10 km + $_longDistancePerKm Birr/km after';
+    return '${pricing.baseFare} base + ${pricing.perKm} Birr/km ';
   }
 
   String _distanceLabel() {
@@ -1063,7 +1063,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    await _setPickupFromPoint(location, fallbackName: 'Current GPS pickup');
+    await _setPickupFromPoint(
+      location,
+      fallbackName: 'Current GPS pickup',
+      resolveInBackground: true,
+    );
   }
 
   Future<void> _choosePickupNeighborhood() async {
@@ -1126,14 +1130,37 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _setPickupFromPoint(
     LatLng point, {
     required String fallbackName,
+    bool resolveInBackground = false,
   }) async {
     if (!mounted) return;
-    setState(() => _isResolvingPickup = true);
+    final exactPinLabel = fallbackName.toLowerCase().startsWith('pinned');
 
+    if (resolveInBackground) {
+      setState(() {
+        _pickupPlace = _quickLocationPlace(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+        );
+        _deliveryPickup = point;
+        _isResolvingPickup = true;
+      });
+      unawaited(_refreshRouteEstimate());
+      unawaited(
+        _resolvePickupLabel(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isResolvingPickup = true);
     final place = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
-      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
+      exactPinLabel: exactPinLabel,
     );
     if (!mounted) return;
 
@@ -1143,6 +1170,55 @@ class _HomeScreenState extends State<HomeScreen> {
       _isResolvingPickup = false;
     });
     await _refreshRouteEstimate();
+  }
+
+  MapPlace _quickLocationPlace(
+    LatLng point, {
+    required String fallbackName,
+    bool exactPinLabel = false,
+  }) {
+    final label = exactPinLabel
+        ? '$fallbackName (${point.latitude.toStringAsFixed(5)}, '
+              '${point.longitude.toStringAsFixed(5)})'
+        : fallbackName;
+    return MapPlace(displayName: label, location: point);
+  }
+
+  bool _samePoint(LatLng? left, LatLng right) {
+    if (left == null) return false;
+    return (left.latitude - right.latitude).abs() < 0.000001 &&
+        (left.longitude - right.longitude).abs() < 0.000001;
+  }
+
+  Future<void> _resolvePickupLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+  }) async {
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || !_samePoint(_deliveryPickup, point)) return;
+    setState(() {
+      _pickupPlace = place;
+      _isResolvingPickup = false;
+    });
+  }
+
+  Future<void> _resolveDestinationLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+  }) async {
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || !_samePoint(_destination?.location, point)) return;
+    setState(() => _destination = place);
   }
 
   Future<void> _refreshRouteEstimate() async {
@@ -1165,6 +1241,17 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return;
     }
+
+    final fallbackDistance = _mapRepository.straightLineDistanceKm(
+      pickup,
+      destination.location,
+    );
+    setState(() {
+      _routePoints = [pickup, destination.location];
+      _distanceKm = fallbackDistance;
+      _enforceVehicleAvailabilityForDistance(_distanceKm);
+    });
+    _fitRoute(pickup, destination.location);
 
     final route = await _mapRepository.getRoute(pickup, destination.location);
     if (!mounted) return;
@@ -1305,12 +1392,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    final place = await _mapRepository.describeLocation(
-      location,
-      fallbackName: 'Current GPS delivery destination',
-    );
-    if (!mounted) return;
+    final fallbackName = 'Current GPS delivery destination';
+    final place = _quickLocationPlace(location, fallbackName: fallbackName);
     await _setDeliveryDestination(place);
+    unawaited(
+      _resolveDestinationLabel(
+        location,
+        fallbackName: fallbackName,
+        exactPinLabel: false,
+      ),
+    );
   }
 
   Future<void> _pinDestinationOnMap() async {
@@ -1369,7 +1460,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     if (_hasPickup) {
-      await _refreshRouteEstimate();
+      unawaited(_refreshRouteEstimate());
     } else {
       await _ensurePickupSelected();
     }
@@ -1433,7 +1524,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _distanceKm ??
           _mapRepository.straightLineDistanceKm(pickup, _destination!.location);
       if (_distanceKm == null) {
-        await _refreshRouteEstimate();
+        unawaited(_refreshRouteEstimate());
       }
       final pricedDistanceKm = _distanceKm ?? distanceKm;
       final effectiveVehicleCategory = _vehicleCategoryForDistance(

@@ -119,7 +119,7 @@ function PriceCalculator() {
             <span className="text-base font-bold text-[#6c7a89]">ETB</span>
           </p>
           <p className="mt-1 text-xs font-bold text-[#8b98a8]">
-            {base} base + {perKm} ETB/km first 10 km + {LONG_DISTANCE_PER_KM} ETB/km after
+            {base} base + {perKm} ETB/km + {LONG_DISTANCE_PER_KM} ETB/km after
           </p>
         </div>
         <Link href="/book">
@@ -575,7 +575,7 @@ export default function LandingPage() {
                     >
                       {plan.perKm}{" "}
                       <span className="text-sm font-bold text-[#6c7a89]">
-                        ETB / km first 10 km
+                        ETB / km 
                       </span>
                     </p>
                     <p className="mt-2 text-sm font-bold text-[#6c7a89]">
