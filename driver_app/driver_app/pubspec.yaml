@@ -68,8 +68,8 @@ dependencies:
   image_picker: ^1.1.2
   
   # Error Handling & Monitoring
-  sentry_flutter: ^8.0.0
-  sentry_dio: ^8.0.0
+  sentry_flutter: ^9.27.0
+  sentry_dio: ^9.27.0
   
   # UI & Theming
   flutter_svg: ^2.2.1
