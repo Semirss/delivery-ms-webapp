@@ -104,7 +104,11 @@ jobs:
             build_number="${INPUT_BUILD_NUMBER:-$((100000 + GITHUB_RUN_NUMBER))}"
 
             flutter pub get
-            flutter test
+            if [ -d test ]; then
+              flutter test
+            else
+              echo "No test directory found for $label; skipping flutter test."
+            fi
 
             keychain initialize
             app-store-connect fetch-signing-files "$bundle_id" \
