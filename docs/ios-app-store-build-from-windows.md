@@ -12,11 +12,11 @@ In App Store Connect, create two app records before running the workflow:
 - MotoBike, bundle ID `com.motobikedeliveryservice.client`
 - MotoBike Driver, bundle ID `com.motobikedeliveryservice.driver`
 
-If the bundle IDs do not exist yet, create them in Apple Developer Certificates, Identifiers & Profiles first. Use the same Apple team already configured in Xcode project files: `XG24GK28VP`.
+If the bundle IDs do not exist yet, create them in Apple Developer Certificates, Identifiers & Profiles first. Use the same Apple team already configured in Xcode project files: `UZUY982QUZ`.
 
 ## GitHub secrets
 
-Add these repository secrets in GitHub under `Settings > Secrets and variables > Actions`:
+The setup script adds these repository secrets to GitHub under `Settings > Secrets and variables > Actions`:
 
 - `APP_STORE_CONNECT_ISSUER_ID`
 - `APP_STORE_CONNECT_KEY_IDENTIFIER`
@@ -27,6 +27,26 @@ Add these repository secrets in GitHub under `Settings > Secrets and variables >
 
 The App Store Connect key must be a Team API key with access to create signing files and upload builds. Keep the `.p8` private key out of git.
 
+Run the setup script after you have the Issuer ID:
+
+```powershell
+.\scripts\setup_ios_github_secrets.ps1 -IssuerId "PASTE_ISSUER_ID_HERE"
+```
+
+On this Windows machine, use this first-time setup command so the script can install GitHub CLI and start GitHub login if needed:
+
+```powershell
+.\scripts\setup_ios_github_secrets.ps1 -IssuerId "PASTE_ISSUER_ID_HERE" -InstallGitHubCli -LoginGitHub
+```
+
+If the GitHub repository cannot be detected automatically, pass it explicitly:
+
+```powershell
+.\scripts\setup_ios_github_secrets.ps1 -IssuerId "PASTE_ISSUER_ID_HERE" -Repo "owner/repository"
+```
+
+The script checks for missing files and existing duplicate secrets. It stops before overwriting any existing secret unless you pass `-Force`.
+
 `CERTIFICATE_PRIVATE_KEY` is a reusable private key that the signing tool uses to create or reuse an Apple Distribution certificate. If you do not already have an exported iOS Distribution certificate private key, create one locally and store the whole PEM text as the secret:
 
 ```powershell
@@ -36,14 +56,14 @@ Get-Content -Raw ios_distribution_private_key.pem
 
 Do not commit `ios_distribution_private_key.pem`.
 
-Create the base64 `.env` secrets from Windows PowerShell:
+The script creates the base64 `.env` secrets for you. The commands below are only a manual fallback:
 
 ```powershell
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("client_app\client_app\.env"))
 [Convert]::ToBase64String([IO.File]::ReadAllBytes("driver_app\driver_app\.env"))
 ```
 
-Paste the first output into `CLIENT_DOTENV_BASE64` and the second into `DRIVER_DOTENV_BASE64`.
+If setting secrets manually, paste the first output into `CLIENT_DOTENV_BASE64` and the second into `DRIVER_DOTENV_BASE64`.
 
 ## Run the build
 

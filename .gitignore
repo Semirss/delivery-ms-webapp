@@ -16,10 +16,12 @@ telegram-bot/.env
 # Apple release signing secrets - NEVER commit these
 ios_distribution_private_key.pem
 **/*.p8
+**/*.p8c
 **/*.p12
 **/*.mobileprovision
 
 # Dependency directories
+.tools/
 **/node_modules/
 **/__pycache__/
 **/*.pyc
