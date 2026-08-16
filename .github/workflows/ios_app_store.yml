@@ -51,8 +51,10 @@ jobs:
       - name: Install iOS signing tools
         shell: bash
         run: |
-          python3 -m pip install --user codemagic-cli-tools
-          python3 -c 'import site; from pathlib import Path; print(Path(site.USER_BASE) / "bin")' >> "$GITHUB_PATH"
+          python3 -m venv "$RUNNER_TEMP/codemagic-cli-tools"
+          "$RUNNER_TEMP/codemagic-cli-tools/bin/python" -m pip install --upgrade pip
+          "$RUNNER_TEMP/codemagic-cli-tools/bin/python" -m pip install codemagic-cli-tools
+          echo "$RUNNER_TEMP/codemagic-cli-tools/bin" >> "$GITHUB_PATH"
 
       - name: Build selected app
         shell: bash

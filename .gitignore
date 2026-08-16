@@ -7,13 +7,11 @@ telegram-bot/.env
 **/.env.local
 **/.env
 
-# Android release signing secrets - NEVER commit these
+# Release signing secrets - NEVER commit these
 **/android/key.properties
 **/android/app/upload-keystore.jks
 **/*.jks
 **/*.keystore
-
-# Apple release signing secrets - NEVER commit these
 ios_distribution_private_key.pem
 **/*.p8
 **/*.p8c
