@@ -51,6 +51,9 @@ const Map<String, _FoodDeliveryPricing> _foodDeliveryPricing = {
   ),
 };
 
+const double _foodBicycleMaxDistanceKm = 10;
+const int _foodLongDistancePerKm = 15;
+
 const double _fallbackFoodPickupLat = 9.0108;
 const double _fallbackFoodPickupLng = 38.7612;
 const LatLng _fallbackFoodDeliveryCenter = LatLng(8.9806, 38.7578);
@@ -158,9 +161,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state != AppLifecycleState.resumed) return;
-    unawaited(
-      _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
-    );
+    unawaited(_loadFoodMarketplace(forceRefresh: true, restoreCache: false));
   }
 
   void _subscribeFoodMarketplaceUpdates() {
@@ -198,9 +199,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     _marketplaceRefreshDebounce?.cancel();
     _marketplaceRefreshDebounce = Timer(const Duration(milliseconds: 450), () {
       if (!mounted) return;
-      unawaited(
-        _loadFoodMarketplace(forceRefresh: true, restoreCache: false),
-      );
+      unawaited(_loadFoodMarketplace(forceRefresh: true, restoreCache: false));
     });
   }
 
@@ -291,7 +290,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
   Future<bool> _restoreFoodMarketplaceCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final categoryRows = _cachedRows(prefs.getString(_foodCategoriesCacheKey));
+      final categoryRows = _cachedRows(
+        prefs.getString(_foodCategoriesCacheKey),
+      );
       final itemRows = _cachedRows(prefs.getString(_foodItemsCacheKey));
       final restaurantRows = _cachedRows(
         prefs.getString(_foodRestaurantsCacheKey),
@@ -309,7 +310,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
           _items = itemRows.map(_FoodItem.fromMap).toList();
         }
         if (restaurantRows.isNotEmpty) {
-          _restaurants = restaurantRows.map(_RestaurantFeature.fromMap).toList();
+          _restaurants = restaurantRows
+              .map(_RestaurantFeature.fromMap)
+              .toList();
         }
         _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
       });
@@ -343,11 +346,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     if (response is! Iterable<Object?>) return const [];
     return response
         .whereType<Map<Object?, Object?>>()
-        .map(
-          (row) => row.map(
-            (key, value) => MapEntry(key.toString(), value),
-          ),
-        )
+        .map((row) => row.map((key, value) => MapEntry(key.toString(), value)))
         .toList();
   }
 
@@ -846,13 +845,22 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     final description = item.description.trim().isEmpty
         ? 'No description added.'
         : item.description.trim();
-    final estimate = selectedVehicle == null || selectedDestination == null
-        ? null
-        : _calculateFoodDeliveryFee(item, selectedDestination, selectedVehicle);
-    final estimateDistance =
-        selectedVehicle == null || selectedDestination == null
+    final estimateDistance = selectedDestination == null
         ? null
         : _foodDeliveryDistanceKm(item, selectedDestination);
+    final bikeDisabled = _isFoodBikeDisabledForDistance(estimateDistance);
+    final effectiveSelectedVehicle = _foodVehicleForDistance(
+      selectedVehicle,
+      estimateDistance,
+    );
+    final estimate =
+        effectiveSelectedVehicle == null || selectedDestination == null
+        ? null
+        : _calculateFoodDeliveryFee(
+            item,
+            selectedDestination,
+            effectiveSelectedVehicle,
+          );
 
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -882,64 +890,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: sheetContext.appSurfaceAlt,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: sheetContext.appBorder),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const AppText(
-                            'Food details',
-                            variant: AppTextVariant.bodyMedium,
-                            fontWeight: FontWeight.w900,
-                          ),
-                          const SizedBox(height: AppSpacing.md),
-                          _FoodDetailRow(
-                            icon: Icons.storefront_outlined,
-                            label: 'Restaurant',
-                            value: item.restaurantDisplayName,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.person_outline_rounded,
-                            label: 'Seller',
-                            value: item.sellerName.isEmpty
-                                ? 'Not specified'
-                                : item.sellerName,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.phone_outlined,
-                            label: 'Seller phone',
-                            value: item.sellerPhone.isEmpty
-                                ? 'Not specified'
-                                : item.sellerPhone,
-                          ),
-                          _FoodDetailRow(
-                            icon: Icons.location_on_outlined,
-                            label: 'Pickup',
-                            value: item.pickupLocation.isEmpty
-                                ? 'Not specified'
-                                : item.pickupLocation,
-                          ),
-                          if (item.pickupCoordinateLabel != null)
-                            _FoodDetailRow(
-                              icon: Icons.my_location_outlined,
-                              label: 'Map point',
-                              value: item.pickupCoordinateLabel!,
-                            ),
-                          const SizedBox(height: AppSpacing.sm),
-                          AppText(
-                            description,
-                            variant: AppTextVariant.bodySmall,
-                            color: sheetContext.appTextSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
+                    _FoodDetailsSummary(item: item, description: description),
                     const SizedBox(height: AppSpacing.lg),
                     _FoodDeliveryAddressPicker(
                       address: selectedDestination?.displayName,
@@ -972,12 +923,25 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _FoodVehicleSelector(
-                      selectedVehicle: selectedVehicle,
-                      onChanged: onVehicleChanged,
+                      selectedVehicle: effectiveSelectedVehicle,
+                      bikeDisabled: bikeDisabled,
+                      onChanged: (vehicleCategory) {
+                        if (vehicleCategory == 'Bike' && bikeDisabled) {
+                          AppToast.show(
+                            context: context,
+                            message:
+                                'Bicycle is available up to 10 km. Motorbike is required after 10 km.',
+                            type: AppToastType.warning,
+                          );
+                          onVehicleChanged('Motor');
+                          return;
+                        }
+                        onVehicleChanged(vehicleCategory);
+                      },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _FoodDeliveryEstimateCard(
-                      vehicleCategory: selectedVehicle,
+                      vehicleCategory: effectiveSelectedVehicle,
                       estimate: estimate,
                       distanceKm: estimateDistance,
                       hasExactAddress: selectedDestination != null,
@@ -988,8 +952,13 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                       label: 'Phone number',
                       icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
-                      prefixText: '$ethiopianDialCode ',
                       validator: validateEthiopianPhone,
+                    ),
+                    const SizedBox(height: 6),
+                    AppText(
+                      'Start with 09. Do not use +251.',
+                      variant: AppTextVariant.bodySmall,
+                      color: sheetContext.appTextSecondary,
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     AppButton.primary(
@@ -1009,7 +978,8 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                           );
                           return;
                         }
-                        if (selectedVehicle == null) {
+                        final requestVehicle = effectiveSelectedVehicle;
+                        if (requestVehicle == null) {
                           AppToast.show(
                             context: context,
                             message:
@@ -1032,7 +1002,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                             _calculateFoodDeliveryFee(
                               item,
                               selectedDestination,
-                              selectedVehicle,
+                              requestVehicle,
                             );
                         if (deliveryFee == null) {
                           AppToast.show(
@@ -1047,7 +1017,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
                         await _requestFoodDelivery(
                           item,
                           selectedDestination,
-                          selectedVehicle,
+                          requestVehicle,
                           deliveryFee,
                           phone,
                         );
@@ -1205,6 +1175,7 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
       fallbackName: 'Current GPS delivery address',
       addressController: addressController,
       onDestinationChanged: onDestinationChanged,
+      resolveInBackground: true,
     );
   }
 
@@ -1234,14 +1205,68 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     required String fallbackName,
     required TextEditingController addressController,
     required ValueChanged<MapPlace> onDestinationChanged,
+    bool resolveInBackground = false,
   }) async {
     if (!_isValidFoodMapPoint(point)) return;
+    final exactPinLabel = fallbackName.toLowerCase().startsWith('pinned');
+
+    if (resolveInBackground) {
+      final quickDestination = _quickFoodLocationPlace(
+        point,
+        fallbackName: fallbackName,
+        exactPinLabel: exactPinLabel,
+      );
+      addressController.text = quickDestination.displayName;
+      onDestinationChanged(quickDestination);
+      unawaited(
+        _resolveFoodDeliveryAddressLabel(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+          quickLabel: quickDestination.displayName,
+          addressController: addressController,
+          onDestinationChanged: onDestinationChanged,
+        ),
+      );
+      return;
+    }
+
     final destination = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
-      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
+      exactPinLabel: exactPinLabel,
     );
     if (!mounted) return;
+    addressController.text = destination.displayName;
+    onDestinationChanged(destination);
+  }
+
+  MapPlace _quickFoodLocationPlace(
+    LatLng point, {
+    required String fallbackName,
+    bool exactPinLabel = false,
+  }) {
+    final label = exactPinLabel
+        ? '$fallbackName (${point.latitude.toStringAsFixed(5)}, '
+              '${point.longitude.toStringAsFixed(5)})'
+        : fallbackName;
+    return MapPlace(displayName: label, location: point);
+  }
+
+  Future<void> _resolveFoodDeliveryAddressLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+    required String quickLabel,
+    required TextEditingController addressController,
+    required ValueChanged<MapPlace> onDestinationChanged,
+  }) async {
+    final destination = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || addressController.text != quickLabel) return;
     addressController.text = destination.displayName;
     onDestinationChanged(destination);
   }
@@ -1319,8 +1344,30 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
         _foodDeliveryPricing[vehicleCategory] ?? _foodDeliveryPricing['Motor']!;
     final distanceKm = _foodDeliveryDistanceKm(item, destination);
     if (distanceKm == null) return null;
-    final raw = pricing.baseFare + (distanceKm * pricing.perKm);
+    final firstLegKm = distanceKm < _foodBicycleMaxDistanceKm
+        ? distanceKm
+        : _foodBicycleMaxDistanceKm;
+    final extraKm = distanceKm > _foodBicycleMaxDistanceKm
+        ? distanceKm - _foodBicycleMaxDistanceKm
+        : 0;
+    final raw =
+        pricing.baseFare +
+        (firstLegKm * pricing.perKm) +
+        (extraKm * _foodLongDistancePerKm);
     return (raw / 10).round() * 10;
+  }
+
+  bool _isFoodBikeDisabledForDistance(double? distanceKm) {
+    return (distanceKm ?? 0) > _foodBicycleMaxDistanceKm;
+  }
+
+  String? _foodVehicleForDistance(String? vehicleCategory, double? distanceKm) {
+    if (vehicleCategory == null) return null;
+    if (vehicleCategory == 'Bike' &&
+        _isFoodBikeDisabledForDistance(distanceKm)) {
+      return 'Motor';
+    }
+    return vehicleCategory;
   }
 
   Future<void> _requestFoodDelivery(
@@ -1929,8 +1976,13 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
               label: 'Phone number',
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
-              prefixText: '$ethiopianDialCode ',
               validator: validateEthiopianPhone,
+            ),
+            const SizedBox(height: 6),
+            AppText(
+              'Start with 09. Do not use +251.',
+              variant: AppTextVariant.bodySmall,
+              color: context.appTextSecondary,
             ),
             const SizedBox(height: AppSpacing.md),
             _FormFieldBox(
@@ -2814,7 +2866,6 @@ class _FormFieldBox extends StatelessWidget {
     required this.label,
     required this.icon,
     this.keyboardType,
-    this.prefixText,
     this.validator,
     this.minLines = 1,
   });
@@ -2823,7 +2874,6 @@ class _FormFieldBox extends StatelessWidget {
   final String label;
   final IconData icon;
   final TextInputType? keyboardType;
-  final String? prefixText;
   final String? Function(String?)? validator;
   final int minLines;
 
@@ -2843,7 +2893,6 @@ class _FormFieldBox extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
-        prefixText: prefixText,
         filled: true,
         fillColor: context.appSurface,
         border: OutlineInputBorder(
@@ -2869,7 +2918,6 @@ class _SheetField extends StatelessWidget {
     required this.label,
     required this.icon,
     this.keyboardType,
-    this.prefixText,
     this.validator,
   });
 
@@ -2877,7 +2925,6 @@ class _SheetField extends StatelessWidget {
   final String label;
   final IconData icon;
   final TextInputType? keyboardType;
-  final String? prefixText;
   final String? Function(String?)? validator;
 
   @override
@@ -2889,7 +2936,6 @@ class _SheetField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
-        prefixText: prefixText,
         filled: true,
         fillColor: context.appSurfaceAlt,
         border: OutlineInputBorder(
@@ -3252,10 +3298,12 @@ class _FoodPinLocationScreenState extends State<_FoodPinLocationScreen> {
 class _FoodVehicleSelector extends StatelessWidget {
   const _FoodVehicleSelector({
     required this.selectedVehicle,
+    required this.bikeDisabled,
     required this.onChanged,
   });
 
   final String? selectedVehicle;
+  final bool bikeDisabled;
   final ValueChanged<String> onChanged;
 
   @override
@@ -3313,7 +3361,9 @@ class _FoodVehicleSelector extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     AppText(
-                      'Tap Bicycle or Motorbike to continue.',
+                      bikeDisabled
+                          ? 'Motorbike only after 10 km.'
+                          : 'Tap Bicycle or Motorbike to continue.',
                       variant: AppTextVariant.bodySmall,
                       color: context.appTextSecondary,
                       fontWeight: FontWeight.w700,
@@ -3331,7 +3381,8 @@ class _FoodVehicleSelector extends StatelessWidget {
               Expanded(
                 child: _FoodVehicleOption(
                   vehicleCategory: 'Bike',
-                  selected: selectedVehicle == 'Bike',
+                  selected: selectedVehicle == 'Bike' && !bikeDisabled,
+                  disabled: bikeDisabled,
                   onTap: () => onChanged('Bike'),
                 ),
               ),
@@ -3340,6 +3391,7 @@ class _FoodVehicleSelector extends StatelessWidget {
                 child: _FoodVehicleOption(
                   vehicleCategory: 'Motor',
                   selected: selectedVehicle == 'Motor',
+                  disabled: false,
                   onTap: () => onChanged('Motor'),
                 ),
               ),
@@ -3355,11 +3407,13 @@ class _FoodVehicleOption extends StatelessWidget {
   const _FoodVehicleOption({
     required this.vehicleCategory,
     required this.selected,
+    required this.disabled,
     required this.onTap,
   });
 
   final String vehicleCategory;
   final bool selected;
+  final bool disabled;
   final VoidCallback onTap;
 
   @override
@@ -3383,62 +3437,67 @@ class _FoodVehicleOption extends StatelessWidget {
         : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
+    final subtitle = disabled ? '' : '${pricing.perKm} Birr/km';
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: onTap,
-      child: AnimatedContainer(
+      child: AnimatedOpacity(
         duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: selected
-              ? (isMotor ? motorSelectedCover : accent)
-              : (isMotor ? motorCover : context.appSurfaceAlt),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
+        opacity: disabled ? 0.48 : 1,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
             color: selected
-                ? accent
-                : (isMotor ? motorBorder : context.appBorder),
-            width: isMotor ? 1.4 : 1,
-          ),
-          boxShadow: [
-            if (selected || isMotor)
-              BoxShadow(
-                color: accent.withValues(alpha: selected ? 0.18 : 0.10),
-                blurRadius: selected ? 18 : 12,
-                offset: const Offset(0, 8),
-              ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Icon(pricing.icon, color: foreground, size: 24),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppText(
-                    pricing.title,
-                    variant: AppTextVariant.bodyMedium,
-                    color: foreground,
-                    fontWeight: FontWeight.w900,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  AppText(
-                    '${pricing.perKm} ETB/km',
-                    variant: AppTextVariant.labelSmall,
-                    color: subtitleColor,
-                    fontWeight: FontWeight.w800,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+                ? (isMotor ? motorSelectedCover : accent)
+                : (isMotor ? motorCover : context.appSurfaceAlt),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected
+                  ? accent
+                  : (isMotor ? motorBorder : context.appBorder),
+              width: isMotor ? 1.4 : 1,
             ),
-          ],
+            boxShadow: [
+              if (selected || isMotor)
+                BoxShadow(
+                  color: accent.withValues(alpha: selected ? 0.18 : 0.10),
+                  blurRadius: selected ? 18 : 12,
+                  offset: const Offset(0, 8),
+                ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(pricing.icon, color: foreground, size: 24),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText(
+                      pricing.title,
+                      variant: AppTextVariant.bodyMedium,
+                      color: foreground,
+                      fontWeight: FontWeight.w900,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    AppText(
+                      subtitle,
+                      variant: AppTextVariant.labelSmall,
+                      color: subtitleColor,
+                      fontWeight: FontWeight.w800,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -3474,7 +3533,8 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
     } else {
       subtitle =
           '${resolvedDistanceKm.toStringAsFixed(1)} km estimate - '
-          '${pricing!.baseFare} base + ${pricing.perKm} ETB/km';
+          '${pricing!.baseFare} base + ${pricing.perKm} Birr/km, '
+          '$_foodLongDistancePerKm Birr/km after';
     }
 
     return Container(
@@ -3525,8 +3585,97 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
   }
 }
 
-class _FoodDetailRow extends StatelessWidget {
-  const _FoodDetailRow({
+class _FoodDetailsSummary extends StatelessWidget {
+  const _FoodDetailsSummary({required this.item, required this.description});
+
+  final _FoodItem item;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final details = <_FoodDetailItem>[
+      _FoodDetailItem(
+        icon: Icons.storefront_outlined,
+        label: 'Restaurant',
+        value: item.restaurantDisplayName,
+      ),
+      _FoodDetailItem(
+        icon: Icons.person_outline_rounded,
+        label: 'Seller',
+        value: _compactValue(item.sellerName),
+      ),
+      _FoodDetailItem(
+        icon: Icons.phone_outlined,
+        label: 'Phone',
+        value: _compactValue(item.sellerPhone),
+      ),
+      _FoodDetailItem(
+        icon: Icons.location_on_outlined,
+        label: 'Pickup',
+        value: _compactValue(item.pickupLocation),
+      ),
+      if (item.pickupCoordinateLabel != null)
+        _FoodDetailItem(
+          icon: Icons.my_location_outlined,
+          label: 'Map',
+          value: item.pickupCoordinateLabel!,
+        ),
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AppText('Food details', fontWeight: FontWeight.w900),
+          const SizedBox(height: AppSpacing.sm),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final useTwoColumns = constraints.maxWidth >= 420;
+              final itemWidth = useTwoColumns
+                  ? (constraints.maxWidth - AppSpacing.sm) / 2
+                  : constraints.maxWidth;
+
+              return Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  for (final detail in details)
+                    SizedBox(
+                      width: itemWidth,
+                      child: _FoodDetailRow(detail: detail),
+                    ),
+                ],
+              );
+            },
+          ),
+          if (description.trim().isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            AppText(
+              description,
+              variant: AppTextVariant.bodySmall,
+              color: context.appTextSecondary,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _compactValue(String value) {
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? 'Not specified' : trimmed;
+  }
+}
+
+class _FoodDetailItem {
+  const _FoodDetailItem({
     required this.icon,
     required this.label,
     required this.value,
@@ -3535,33 +3684,57 @@ class _FoodDetailRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+}
+
+class _FoodDetailRow extends StatelessWidget {
+  const _FoodDetailRow({required this.detail});
+
+  final _FoodDetailItem detail;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xs,
+        vertical: 4,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: context.appTextSecondary),
-          const SizedBox(width: AppSpacing.sm),
+          Container(
+            width: 22,
+            height: 22,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(detail.icon, size: 13, color: AppColors.primary),
+          ),
+          const SizedBox(width: AppSpacing.xs),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  label,
-                  variant: AppTextVariant.labelSmall,
-                  color: context.appTextSecondary,
-                  fontWeight: FontWeight.w800,
-                ),
-                const SizedBox(height: 1),
-                AppText(
-                  value,
-                  variant: AppTextVariant.bodySmall,
-                  fontWeight: FontWeight.w800,
-                ),
-              ],
+            child: RichText(
+              text: TextSpan(
+                style: DefaultTextStyle.of(
+                  context,
+                ).style.copyWith(fontSize: 12, height: 1.28, letterSpacing: 0),
+                children: [
+                  TextSpan(
+                    text: '${detail.label}: ',
+                    style: TextStyle(
+                      color: context.appTextSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  TextSpan(
+                    text: detail.value,
+                    style: TextStyle(
+                      color: context.appTextPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

@@ -25,6 +25,9 @@ const PRICING_CALC = {
   Motor: { base: 40, perKm: 50 },
 };
 
+const BICYCLE_MAX_KM = 10;
+const LONG_DISTANCE_PER_KM = 15;
+
 const CONTACT_PHONE = "+251931323328";
 const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
@@ -41,8 +44,16 @@ type TelegramWindow = Window & {
 function PriceCalculator() {
   const [km, setKm] = useState(3);
   const [vehicle, setVehicle] = useState<"Bike" | "Motor">("Motor");
-  const { base, perKm } = PRICING_CALC[vehicle];
-  const price = Math.round((base + km * perKm) / 10) * 10;
+  const bikeDisabled = km > BICYCLE_MAX_KM;
+  const activeVehicle = vehicle === "Bike" && bikeDisabled ? "Motor" : vehicle;
+  const { base, perKm } = PRICING_CALC[activeVehicle];
+  const firstLegKm = Math.min(km, BICYCLE_MAX_KM);
+  const extraKm = Math.max(0, km - BICYCLE_MAX_KM);
+  const price = Math.round((base + firstLegKm * perKm + extraKm * LONG_DISTANCE_PER_KM) / 10) * 10;
+
+  useEffect(() => {
+    if (vehicle === "Bike" && bikeDisabled) setVehicle("Motor");
+  }, [bikeDisabled, vehicle]);
 
   return (
     <div className="mx-auto mt-14 max-w-xl rounded-[2rem] border border-[#ffe2dc] bg-white/90 p-8 shadow-[0_24px_60px_rgba(242,106,84,0.12)] backdrop-blur-xl">
@@ -56,19 +67,27 @@ function PriceCalculator() {
       </div>
 
       <div className="mb-6 flex rounded-2xl bg-[#fff3ef] p-1.5">
-        {(["Bike", "Motor"] as const).map((item) => (
-          <button
-            key={item}
-            onClick={() => setVehicle(item)}
-            className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-black transition-all ${
-              vehicle === item
-                ? "bg-white text-[#12263d] shadow-[0_10px_22px_rgba(242,106,84,0.14)]"
-                : "text-[#6c7a89] hover:text-[#12263d]"
-            }`}
-          >
-            {item === "Bike" ? "Bicycle" : "Motorbike"}
-          </button>
-        ))}
+        {(["Bike", "Motor"] as const).map((item) => {
+          const disabled = item === "Bike" && bikeDisabled;
+          return (
+            <button
+              key={item}
+              onClick={() => {
+                if (!disabled) setVehicle(item);
+              }}
+              disabled={disabled}
+              className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-black transition-all ${
+                activeVehicle === item
+                  ? "bg-white text-[#12263d] shadow-[0_10px_22px_rgba(242,106,84,0.14)]"
+                  : disabled
+                    ? "cursor-not-allowed text-[#b0bac7] opacity-60"
+                  : "text-[#6c7a89] hover:text-[#12263d]"
+              }`}
+            >
+              {item === "Bike" && disabled ? "Bicycle up to 10 km" : item === "Bike" ? "Bicycle" : "Motorbike"}
+            </button>
+          );
+        })}
       </div>
 
       <div className="mb-6">
@@ -100,7 +119,7 @@ function PriceCalculator() {
             <span className="text-base font-bold text-[#6c7a89]">ETB</span>
           </p>
           <p className="mt-1 text-xs font-bold text-[#8b98a8]">
-            {base} base + {km} x {perKm} ETB/km
+            {base} base + {perKm} ETB/km + {LONG_DISTANCE_PER_KM} ETB/km after
           </p>
         </div>
         <Link href="/book">
@@ -501,7 +520,7 @@ export default function LandingPage() {
             {[
               {
                 title: "Bicycle Courier",
-                desc: "Best for light items, documents, and local traffic.",
+                desc: "Best for light items, documents, and local trips up to 10 km.",
                 base: "30",
                 perKm: "+40",
                 accent: "#f26a54",
@@ -510,7 +529,7 @@ export default function LandingPage() {
               },
               {
                 title: "Motorbike Courier",
-                desc: "Fastest option for cross-city delivery and heavier items.",
+                desc: "Fastest option for cross-city delivery and trips over 10 km.",
                 base: "40",
                 perKm: "+50",
                 accent: "#2aa7d6",
@@ -556,8 +575,11 @@ export default function LandingPage() {
                     >
                       {plan.perKm}{" "}
                       <span className="text-sm font-bold text-[#6c7a89]">
-                        ETB / km
+                        ETB / km 
                       </span>
+                    </p>
+                    <p className="mt-2 text-sm font-bold text-[#6c7a89]">
+                      +{LONG_DISTANCE_PER_KM} ETB / km after 10 km
                     </p>
                     <ul className="mt-8 space-y-4 text-sm font-bold text-[#5f7082]">
                       <li className="flex items-center gap-3">

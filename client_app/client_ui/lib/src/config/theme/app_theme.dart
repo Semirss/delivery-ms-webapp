@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_radius.dart';
 import 'app_typography.dart';
@@ -11,6 +10,17 @@ import 'app_typography.dart';
 /// modes, ensuring consistent styling across all components and proper contrast
 /// ratios for accessibility.
 class AppTheme {
+  static const List<String> _fontFallbacks = [
+    'Noto Sans Ethiopic',
+    'Noto Sans Ethiopic UI',
+    'Abyssinica SIL',
+    'Nyala',
+    'Ebrima',
+    'Roboto',
+    'Arial',
+    'sans-serif',
+  ];
+
   /// Light theme configuration using design tokens
   ///
   /// Provides a complete Material 3 theme with light color scheme,
@@ -19,7 +29,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: GoogleFonts.poppins().fontFamily,
+      fontFamilyFallback: _fontFallbacks,
       colorScheme: ColorScheme.light(
         primary: AppColors.primary,
         primaryContainer: const Color(0xFFFFE2DC),
@@ -136,23 +146,23 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      fontFamily: GoogleFonts.poppins().fontFamily,
+      fontFamilyFallback: _fontFallbacks,
       colorScheme: ColorScheme.dark(
         primary: AppColors.primaryLight,
-        primaryContainer: AppColors.primary,
+        primaryContainer: const Color(0xFFFFD9D1),
         secondary: AppColors.secondaryLight,
         secondaryContainer: AppColors.secondary,
         tertiary: const Color(0xFFD5A6F5),
         tertiaryContainer: AppColors.accent5,
         surface: AppColors.darkSurface,
         surfaceContainerHighest: AppColors.darkSurfaceAlt,
-        error: AppColors.error,
-        onPrimary: AppColors.darkTextPrimary,
+        error: AppColors.errorLight,
+        onPrimary: const Color(0xFF2A1714),
         onSecondary: AppColors.darkTextPrimary,
         onTertiary: AppColors.darkTextPrimary,
         onSurface: AppColors.darkTextPrimary,
         onSurfaceVariant: AppColors.darkTextSecondary,
-        onError: Colors.white,
+        onError: const Color(0xFF3B1712),
         outline: AppColors.darkBorder,
       ),
       scaffoldBackgroundColor: AppColors.darkBackground,
@@ -233,11 +243,11 @@ class AppTheme {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderSide: const BorderSide(color: AppColors.errorLight),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
+          borderSide: const BorderSide(color: AppColors.errorLight, width: 2),
         ),
       ),
     );

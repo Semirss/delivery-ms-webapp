@@ -32,8 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
   final SupabaseClient _supabase = Supabase.instance.client;
-  static const String _supportPhone = '+251 931 323 328';
-  static const String _supportEmail = 'support@motobike.app';
 
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
@@ -264,23 +262,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isResolvingDriver = true);
     try {
-      final previousApprovalStatus = _driverRecord?['approval_status']
-          ?.toString();
       final record = await _findOrCreateDriver(authState.user);
       if (!mounted) return record;
       setState(() {
         _driverRecord = record;
         _isOnline = record?['status'] == 'Online';
       });
-      if (previousApprovalStatus != null &&
-          !_isApprovedStatus(previousApprovalStatus) &&
-          _isApprovedStatus(record?['approval_status']?.toString())) {
-        AppToast.show(
-          context: context,
-          message: 'Your driver account is approved. You can go online now.',
-          type: AppToastType.success,
-        );
-      }
       if (record != null) {
         _subscribeToDriverRecord(record['id'].toString());
         await _loadUnreadNotificationCount();
@@ -352,29 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return phone.isEmpty ? user.email : phone;
   }
 
-  bool _isApprovedStatus(String? status) =>
-      status?.trim().toLowerCase() == 'approved';
-
-  String _approvalRequiredMessage(String? approvalStatus) {
-    final status = approvalStatus?.trim();
-    final statusText =
-        status == null || status.isEmpty || status.toLowerCase() == 'pending'
-        ? 'Your driver application is still waiting for admin approval.'
-        : 'Your driver account is $status. Admin approval is required first.';
-    return '$statusText Contact admin at $_supportPhone or $_supportEmail if it takes too long.';
-  }
-
   bool _canGoOnline(Map<String, dynamic> driver) {
-    if (!_isApprovedStatus(driver['approval_status']?.toString())) {
-      AppToast.show(
-        context: context,
-        message: _approvalRequiredMessage(
-          driver['approval_status']?.toString(),
-        ),
-        type: AppToastType.warning,
-      );
-      return false;
-    }
     if (driver['is_active'] == false) {
       AppToast.show(
         context: context,
@@ -401,23 +366,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           callback: (payload) {
             final nextRecord = Map<String, dynamic>.from(payload.newRecord);
-            final previousApprovalStatus = _driverRecord?['approval_status']
-                ?.toString();
             if (!mounted) return;
             setState(() {
               _driverRecord = nextRecord;
               _isOnline = nextRecord['status'] == 'Online';
             });
-            if (previousApprovalStatus != null &&
-                !_isApprovedStatus(previousApprovalStatus) &&
-                _isApprovedStatus(nextRecord['approval_status']?.toString())) {
-              AppToast.show(
-                context: context,
-                message:
-                    'Your driver account is approved. You can go online now.',
-                type: AppToastType.success,
-              );
-            }
           },
         )
         .subscribe();
@@ -1152,9 +1105,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final dropoffPoint = delivery == null
         ? null
         : _deliveryPoint(delivery, 'dropoff_lat', 'dropoff_lng');
-    final approvalStatus =
-        _driverRecord?['approval_status']?.toString() ?? 'Pending';
-    final isApproved = _isApprovedStatus(approvalStatus);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -1422,53 +1372,36 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: AppSpacing.lg),
                             const AppText(
-                              'Checking driver approval...',
+                              'Loading driver profile...',
                               variant: AppTextVariant.heading3,
                               fontWeight: FontWeight.bold,
                             ),
                           ] else if (!_isOnline) ...[
-                            _buildApprovalStatusBanner(approvalStatus),
-                            const SizedBox(height: AppSpacing.lg),
                             Icon(
-                              isApproved
-                                  ? Icons.power_settings_new_rounded
-                                  : Icons.verified_user_outlined,
+                              Icons.power_settings_new_rounded,
                               size: 48,
-                              color: isApproved
-                                  ? context.appTextSecondary
-                                  : AppColors.warning,
+                              color: context.appTextSecondary,
                             ),
                             const SizedBox(height: AppSpacing.md),
-                            AppText(
-                              isApproved
-                                  ? 'You are offline'
-                                  : 'Waiting for approval',
+                            const AppText(
+                              'You are offline',
                               variant: AppTextVariant.heading3,
                               fontWeight: FontWeight.bold,
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             AppText(
-                              isApproved
-                                  ? 'Go online to receive admin-assigned deliveries.'
-                                  : 'Approval is needed before you can work.',
+                              'Go online to receive admin-assigned deliveries.',
                               variant: AppTextVariant.bodyMedium,
                               color: context.appTextSecondary,
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: AppSpacing.xl),
-                            if (isApproved)
-                              AppButton.primary(
-                                label: 'GO ONLINE',
-                                fullWidth: true,
-                                isLoading: _isUpdating,
-                                onPressed: _toggleOnlineStatus,
-                              )
-                            else
-                              AppButton.inactive(
-                                label: 'WAITING FOR ADMIN',
-                                fullWidth: true,
-                                icon: Icons.schedule_rounded,
-                              ),
+                            AppButton.primary(
+                              label: 'GO ONLINE',
+                              fullWidth: true,
+                              isLoading: _isUpdating,
+                              onPressed: _toggleOnlineStatus,
+                            ),
                           ] else if (delivery == null) ...[
                             const CircularProgressIndicator(
                               color: AppColors.primary,
@@ -1686,9 +1619,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeDrawer() {
     final name = _driverRecord?['name']?.toString() ?? 'Driver';
-    final approvalStatus =
-        _driverRecord?['approval_status']?.toString() ?? 'Pending';
-    final isApproved = _isApprovedStatus(approvalStatus);
+    final status = _driverRecord?['status']?.toString() ?? 'Offline';
+    final vehicle = _driverRecord?['vehicle_type']?.toString() ?? 'Driver';
 
     return Drawer(
       backgroundColor: Colors.transparent,
@@ -1761,11 +1693,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 2),
                           AppText(
-                            approvalStatus,
+                            '$vehicle - $status',
                             variant: AppTextVariant.bodySmall,
-                            color: isApproved
+                            color: status == 'Online'
                                 ? AppColors.success
-                                : AppColors.warning,
+                                : context.appTextSecondary,
                             fontWeight: FontWeight.bold,
                           ),
                         ],
@@ -2068,76 +2000,6 @@ class _HomeScreenState extends State<HomeScreen> {
           fontWeight: FontWeight.bold,
         ),
       ],
-    );
-  }
-
-  Widget _buildApprovalStatusBanner(String approvalStatus) {
-    final isApproved = _isApprovedStatus(approvalStatus);
-    final accent = isApproved ? AppColors.success : AppColors.warning;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: context.isAppDark ? 0.18 : 0.10),
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: accent.withValues(alpha: 0.36)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: accent,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              isApproved ? Icons.verified_rounded : Icons.hourglass_top_rounded,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppText(
-                  isApproved ? 'Approved driver' : 'Approval pending',
-                  variant: AppTextVariant.bodyMedium,
-                  fontWeight: FontWeight.w900,
-                ),
-                const SizedBox(height: 2),
-                AppText(
-                  isApproved
-                      ? 'You can receive deliveries now.'
-                      : 'You will be notified after admin approval.',
-                  variant: AppTextVariant.bodySmall,
-                  color: context.appTextSecondary,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.16),
-              borderRadius: BorderRadius.circular(AppRadius.full),
-            ),
-            child: AppText(
-              isApproved ? 'APPROVED' : 'PENDING',
-              variant: AppTextVariant.labelSmall,
-              color: accent,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

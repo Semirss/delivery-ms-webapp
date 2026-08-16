@@ -17,7 +17,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   DriverProfileSnapshot? _snapshot;
   bool _isLoading = true;
-  bool _isSaving = false;
 
   @override
   void initState() {
@@ -34,197 +33,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       _snapshot = snapshot;
       _isLoading = false;
     });
-  }
-
-  Future<void> _showEditSheet() async {
-    final snapshot = _snapshot;
-    final driverId = snapshot?.driverId;
-    if (snapshot == null || driverId == null) return;
-
-    final nameController = TextEditingController(text: snapshot.name);
-    final phoneController = TextEditingController(text: snapshot.phone);
-    final plateController = TextEditingController(
-      text: snapshot.plateNumber == 'Not added' ? '' : snapshot.plateNumber,
-    );
-    final telegramController = TextEditingController(
-      text: snapshot.telegramUsername == 'Not connected'
-          ? ''
-          : snapshot.telegramUsername,
-    );
-    const vehicleOptions = {'Motor', 'Bike', 'Motorbike'};
-    var vehicleType = vehicleOptions.contains(snapshot.vehicleType)
-        ? snapshot.vehicleType
-        : 'Motorbike';
-
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return SafeArea(
-              top: false,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.viewInsetsOf(context).bottom,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: context.appSurface,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(26),
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Center(
-                          child: Container(
-                            width: 42,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: context.appBorder,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        AppText(
-                          'Edit Details',
-                          variant: AppTextVariant.heading2,
-                          color: context.appTextPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        TextField(
-                          controller: nameController,
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Full name',
-                            prefixIcon: Icon(Icons.person_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        TextField(
-                          controller: phoneController,
-                          keyboardType: TextInputType.phone,
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Phone number',
-                            prefixIcon: Icon(Icons.phone_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        DropdownButtonFormField<String>(
-                          value: vehicleType,
-                          decoration: const InputDecoration(
-                            labelText: 'Vehicle type',
-                            prefixIcon: Icon(Icons.two_wheeler_rounded),
-                          ),
-                          dropdownColor: context.appSurface,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'Motor',
-                              child: Text('Motor'),
-                            ),
-                            DropdownMenuItem(value: 'Bike', child: Text('Bike')),
-                            DropdownMenuItem(
-                              value: 'Motorbike',
-                              child: Text('Motorbike'),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setSheetState(() => vehicleType = value);
-                            }
-                          },
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        TextField(
-                          controller: plateController,
-                          textCapitalization: TextCapitalization.characters,
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Plate number',
-                            prefixIcon: Icon(Icons.confirmation_number_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        TextField(
-                          controller: telegramController,
-                          textInputAction: TextInputAction.done,
-                          decoration: const InputDecoration(
-                            labelText: 'Telegram username',
-                            prefixIcon: Icon(Icons.alternate_email_rounded),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppButton.primary(
-                          label: 'SAVE CHANGES',
-                          fullWidth: true,
-                          isLoading: _isSaving,
-                          onPressed: () async {
-                            final name = nameController.text.trim();
-                            final phone = phoneController.text.trim();
-                            if (name.isEmpty || phone.isEmpty) {
-                              AppToast.show(
-                                context: context,
-                                message: 'Name and phone are required.',
-                                type: AppToastType.warning,
-                              );
-                              return;
-                            }
-
-                            setState(() => _isSaving = true);
-                            try {
-                              await _repository.updateDriver(driverId, {
-                                'name': name,
-                                'phone': phone,
-                                'vehicle_type': vehicleType,
-                                'plate_number': plateController.text.trim(),
-                                'telegram_username':
-                                    telegramController.text.trim(),
-                              });
-                              if (!mounted) return;
-                              Navigator.pop(sheetContext);
-                              await _load();
-                              if (!mounted) return;
-                              AppToast.show(
-                                context: context,
-                                message: 'Profile details updated.',
-                                type: AppToastType.success,
-                              );
-                            } catch (_) {
-                              if (!mounted) return;
-                              AppToast.show(
-                                context: context,
-                                message: 'Could not update profile details.',
-                                type: AppToastType.error,
-                              );
-                            } finally {
-                              if (mounted) setState(() => _isSaving = false);
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-
-    nameController.dispose();
-    phoneController.dispose();
-    plateController.dispose();
-    telegramController.dispose();
   }
 
   @override
@@ -271,12 +79,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                     _snapshot?.approvalStatus ?? '--',
                   ),
                   const SizedBox(height: AppSpacing.xl),
-                  AppButton.primary(
-                    label: 'EDIT DETAILS',
-                    icon: Icons.edit_rounded,
-                    fullWidth: true,
-                    onPressed: _showEditSheet,
-                  ),
+                  _buildReadOnlyNotice(),
                 ],
               ),
             ),
@@ -329,6 +132,34 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReadOnlyNotice() {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: context.appSurfaceAlt,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: context.appBorder),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.admin_panel_settings_outlined,
+            color: context.appTextSecondary,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: AppText(
+              'Admins manage driver information.',
+              variant: AppTextVariant.bodySmall,
+              color: context.appTextSecondary,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],

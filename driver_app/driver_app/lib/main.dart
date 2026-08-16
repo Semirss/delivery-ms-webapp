@@ -460,13 +460,11 @@ class _DriverAppState extends State<DriverApp> {
                   locale: Locale(widget.preferences.languageCode),
                   routerConfig: _appRouter.router,
                   builder: (context, widget) {
-                    final appContent = _GlobalPullToRefresh(
-                      child: MediaQuery(
-                        data: MediaQuery.of(
-                          context,
-                        ).copyWith(textScaleFactor: 1.0),
-                        child: widget!,
-                      ),
+                    final appContent = MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(textScaleFactor: 1.0),
+                      child: widget!,
                     );
                     return VersionGate(
                       app: 'driver',
@@ -486,34 +484,6 @@ class _DriverAppState extends State<DriverApp> {
           ),
         );
       },
-    );
-  }
-}
-
-class _GlobalPullToRefresh extends StatefulWidget {
-  const _GlobalPullToRefresh({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_GlobalPullToRefresh> createState() => _GlobalPullToRefreshState();
-}
-
-class _GlobalPullToRefreshState extends State<_GlobalPullToRefresh> {
-  int _refreshKey = 0;
-
-  Future<void> _handleRefresh() async {
-    setState(() => _refreshKey++);
-    await Future<void>.delayed(const Duration(milliseconds: 260));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator.adaptive(
-      color: AppColors.primary,
-      notificationPredicate: (notification) => notification.depth == 0,
-      onRefresh: _handleRefresh,
-      child: KeyedSubtree(key: ValueKey(_refreshKey), child: widget.child),
     );
   }
 }

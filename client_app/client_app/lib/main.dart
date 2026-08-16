@@ -353,7 +353,7 @@ class _BootstrapErrorApp extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 const Text(
-                  'We could not connect to the service. Check your connection '
+                  'Check your connection '
                   'and try again.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -465,13 +465,11 @@ class _ClientAppState extends State<ClientApp> {
                   locale: Locale(widget.preferences.languageCode),
                   routerConfig: _appRouter.router,
                   builder: (context, widget) {
-                    final appContent = _GlobalPullToRefresh(
-                      child: MediaQuery(
-                        data: MediaQuery.of(
-                          context,
-                        ).copyWith(textScaleFactor: 1.0),
-                        child: widget!,
-                      ),
+                    final appContent = MediaQuery(
+                      data: MediaQuery.of(
+                        context,
+                      ).copyWith(textScaleFactor: 1.0),
+                      child: widget!,
                     );
                     return PwaInstallPrompt(
                       child: VersionGate(
@@ -493,34 +491,6 @@ class _ClientAppState extends State<ClientApp> {
           ),
         );
       },
-    );
-  }
-}
-
-class _GlobalPullToRefresh extends StatefulWidget {
-  const _GlobalPullToRefresh({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_GlobalPullToRefresh> createState() => _GlobalPullToRefreshState();
-}
-
-class _GlobalPullToRefreshState extends State<_GlobalPullToRefresh> {
-  int _refreshKey = 0;
-
-  Future<void> _handleRefresh() async {
-    setState(() => _refreshKey++);
-    await Future<void>.delayed(const Duration(milliseconds: 260));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator.adaptive(
-      color: AppColors.primary,
-      notificationPredicate: (notification) => notification.depth == 0,
-      onRefresh: _handleRefresh,
-      child: KeyedSubtree(key: ValueKey(_refreshKey), child: widget.child),
     );
   }
 }

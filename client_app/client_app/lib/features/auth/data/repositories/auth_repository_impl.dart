@@ -1,10 +1,10 @@
-import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:client_app/core/base/base_repository.dart';
 import 'package:client_app/core/connection/network_info.dart';
 import 'package:client_app/core/errors/expentions.dart';
 import 'package:client_app/core/errors/failure.dart';
 import 'package:client_app/core/params/auth_params.dart';
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/user_entity.dart';
@@ -44,6 +44,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         await localDataSource.cacheLoginTimestamp(
           DateTime.now().millisecondsSinceEpoch,
         );
+        await _rememberLoginEmail(params.email);
         if (response.verificationKey != null) {
           await localDataSource.cacheVerificationKey(response.verificationKey!);
         }
@@ -86,6 +87,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         await localDataSource.cacheLoginTimestamp(
           DateTime.now().millisecondsSinceEpoch,
         );
+        await _rememberLoginEmail(response.user!.email);
 
         return Right(
           AuthResult(
@@ -128,6 +130,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         }
         if (response.user != null) {
           await localDataSource.cacheUser(response.user!);
+          await _rememberLoginEmail(response.user!.email);
         }
         if (!response.requiresVerification) {
           await localDataSource.cacheLoginTimestamp(
@@ -172,6 +175,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
           }
           if (response.user != null) {
             await localDataSource.cacheUser(response.user!);
+            await _rememberLoginEmail(response.user!.email);
           }
           await localDataSource.cacheLoginTimestamp(
             DateTime.now().millisecondsSinceEpoch,
@@ -303,6 +307,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   @override
   Future<Either<Failure, void>> logout() async {
     try {
+      await _rememberCachedUserEmail();
       await remoteDataSource.logout();
       await localDataSource.clearAll();
       return const Right(null);
@@ -334,6 +339,26 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     }
   }
 
+  Future<void> _rememberCachedUserEmail() async {
+    try {
+      final cachedUser = await localDataSource.getCachedUser();
+      await _rememberLoginEmail(cachedUser?.email ?? '');
+    } catch (_) {
+      // Do not block logout if the existing session cache cannot be read.
+    }
+  }
+
+  Future<void> _rememberLoginEmail(String email) async {
+    final normalizedEmail = email.trim();
+    if (normalizedEmail.isEmpty) return;
+
+    try {
+      await localDataSource.cacheLastLoginEmail(normalizedEmail);
+    } catch (e, stackTrace) {
+      logger.error('Failed to cache last login email', e, stackTrace);
+    }
+  }
+
   bool _isUsableToken(String? value) {
     final token = value?.trim() ?? '';
     if (token.isEmpty) return false;
@@ -361,8 +386,9 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
       }
       return 'A client account already exists for this email';
     }
-    if (message.contains('Invalid email or password')) {
-      return 'Invalid email or password';
+    if (message.contains('Invalid email/phone or password') ||
+        message.contains('Invalid email or password')) {
+      return 'Invalid email/phone or password';
     }
     final lower = message.toLowerCase();
     if (lower.contains('email is required')) {

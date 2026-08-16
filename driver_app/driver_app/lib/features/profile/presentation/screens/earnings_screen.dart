@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
@@ -16,48 +18,163 @@ class EarningsScreen extends StatefulWidget {
   State<EarningsScreen> createState() => _EarningsScreenState();
 }
 
+enum _EarningsPeriod { day, week, month }
+
+class _DateWindow {
+  const _DateWindow({required this.start, required this.end});
+
+  final DateTime start;
+  final DateTime end;
+}
+
+extension _EarningsPeriodDetails on _EarningsPeriod {
+  String get label {
+    switch (this) {
+      case _EarningsPeriod.day:
+        return 'Day';
+      case _EarningsPeriod.week:
+        return 'Week';
+      case _EarningsPeriod.month:
+        return 'Month';
+    }
+  }
+
+  String get summaryTitle {
+    switch (this) {
+      case _EarningsPeriod.day:
+        return "Today's Earnings";
+      case _EarningsPeriod.week:
+        return "This Week's Earnings";
+      case _EarningsPeriod.month:
+        return "This Month's Earnings";
+    }
+  }
+
+  String get statValue {
+    switch (this) {
+      case _EarningsPeriod.day:
+        return 'Today';
+      case _EarningsPeriod.week:
+        return 'Week';
+      case _EarningsPeriod.month:
+        return 'Month';
+    }
+  }
+
+  String get emptyTitle {
+    switch (this) {
+      case _EarningsPeriod.day:
+        return 'No earnings today';
+      case _EarningsPeriod.week:
+        return 'No earnings this week';
+      case _EarningsPeriod.month:
+        return 'No earnings this month';
+    }
+  }
+
+  String get emptyMessage {
+    switch (this) {
+      case _EarningsPeriod.day:
+        return 'Completed deliveries from today will appear here.';
+      case _EarningsPeriod.week:
+        return 'Completed deliveries from this week will appear here.';
+      case _EarningsPeriod.month:
+        return 'Completed deliveries from this month will appear here.';
+    }
+  }
+
+  _DateWindow window(DateTime now) {
+    final today = DateTime(now.year, now.month, now.day);
+    switch (this) {
+      case _EarningsPeriod.day:
+        return _DateWindow(
+          start: today,
+          end: today.add(const Duration(days: 1)),
+        );
+      case _EarningsPeriod.week:
+        final weekStart = today.subtract(Duration(days: now.weekday - 1));
+        return _DateWindow(
+          start: weekStart,
+          end: weekStart.add(const Duration(days: 7)),
+        );
+      case _EarningsPeriod.month:
+        final monthStart = DateTime(now.year, now.month);
+        return _DateWindow(
+          start: monthStart,
+          end: DateTime(now.year, now.month + 1),
+        );
+    }
+  }
+}
+
 class _EarningsScreenState extends State<EarningsScreen> {
   final DriverProfileRepository _repository = DriverProfileRepository();
 
   List<Map<String, dynamic>> _deliveries = [];
   bool _isLoading = true;
+  bool _isFilterLoading = false;
+  bool _hasMoreDeliveries = false;
   double _totalEarnings = 0;
   int _totalDeliveries = 0;
+  String? _errorMessage;
+  _EarningsPeriod _period = _EarningsPeriod.day;
   RealtimeChannel? _earningsChannel;
   String? _subscribedDriverId;
 
   @override
   void initState() {
     super.initState();
-    _fetchEarnings();
+    unawaited(_fetchEarnings());
   }
 
-  Future<void> _fetchEarnings() async {
+  Future<void> _fetchEarnings({bool showLoader = false}) async {
+    final period = _period;
+    if (showLoader && mounted) {
+      setState(() {
+        _isFilterLoading = true;
+        _errorMessage = null;
+      });
+    }
+
     try {
       final authState = context.read<AuthBloc>().state;
       final user = authState is AuthAuthenticated ? authState.user : null;
-      final snapshot = await _repository.load(user);
-      final deliveries = snapshot.deliveries
-          .where((delivery) => delivery['status'] == 'Delivered')
-          .take(50)
-          .toList();
-      final total = deliveries.fold<double>(
-        0,
-        (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+      final window = period.window(DateTime.now());
+      final snapshot = await _repository.loadEarnings(
+        user,
+        startAt: window.start,
+        endAt: window.end,
       );
 
-      if (mounted) {
-        setState(() {
-          _deliveries = deliveries;
-          _totalEarnings = total;
-          _totalDeliveries = deliveries.length;
-          _isLoading = false;
-        });
-        _subscribeToEarnings(snapshot.driverId);
-      }
-    } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
+      if (!mounted || period != _period) return;
+      setState(() {
+        _deliveries = snapshot.deliveries;
+        _totalEarnings = snapshot.totalEarnings;
+        _totalDeliveries = snapshot.totalDeliveries;
+        _hasMoreDeliveries = snapshot.hasMoreDeliveries;
+        _errorMessage = snapshot.errorMessage;
+        _isLoading = false;
+        _isFilterLoading = false;
+      });
+      _subscribeToEarnings(snapshot.driverId);
+    } catch (_) {
+      if (!mounted || period != _period) return;
+      setState(() {
+        _deliveries = const [];
+        _totalEarnings = 0;
+        _totalDeliveries = 0;
+        _hasMoreDeliveries = false;
+        _errorMessage = 'Could not load earnings right now.';
+        _isLoading = false;
+        _isFilterLoading = false;
+      });
     }
+  }
+
+  void _selectPeriod(_EarningsPeriod period) {
+    if (_period == period) return;
+    setState(() => _period = period);
+    unawaited(_fetchEarnings(showLoader: true));
   }
 
   void _subscribeToEarnings(String? driverId) {
@@ -76,7 +193,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
             column: 'driver_id',
             value: driverId,
           ),
-          callback: (_) => _fetchEarnings(),
+          callback: (_) => unawaited(_fetchEarnings()),
         )
         .subscribe();
   }
@@ -98,7 +215,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
           : CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 220,
+                  expandedHeight: 224,
                   backgroundColor: AppColors.primary,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -115,18 +232,25 @@ class _EarningsScreenState extends State<EarningsScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const SizedBox(height: 40),
-                            const AppText(
-                              'Total Earnings',
-                              variant: AppTextVariant.bodyMedium,
+                            AppText(
+                              _period.summaryTitle,
                               color: Colors.white70,
                             ),
                             const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              '${_totalEarnings.toStringAsFixed(0)} ETB',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 40,
-                                fontWeight: FontWeight.w900,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.lg,
+                              ),
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '${_totalEarnings.toStringAsFixed(0)} ETB',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               ),
                             ),
                             const SizedBox(height: AppSpacing.md),
@@ -145,7 +269,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                                     horizontal: AppSpacing.lg,
                                   ),
                                 ),
-                                _buildStatBadge('5.0', 'Rating'),
+                                _buildStatBadge(_period.statValue, 'Filter'),
                               ],
                             ),
                           ],
@@ -168,36 +292,42 @@ class _EarningsScreenState extends State<EarningsScreen> {
                         Icons.refresh_rounded,
                         color: Colors.white,
                       ),
-                      onPressed: _fetchEarnings,
+                      onPressed: () =>
+                          unawaited(_fetchEarnings(showLoader: true)),
                     ),
                   ],
                 ),
-                if (_deliveries.isEmpty)
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      _buildPeriodFilter(),
+                      if (_isFilterLoading)
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppSpacing.md,
+                            AppSpacing.sm,
+                            AppSpacing.md,
+                            0,
+                          ),
+                          child: LinearProgressIndicator(
+                            minHeight: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (_errorMessage != null)
                   SliverFillRemaining(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.payments_outlined,
-                            size: 80,
-                            color: context.appBorder,
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          AppText(
-                            'No completed deliveries yet',
-                            variant: AppTextVariant.heading3,
-                            color: context.appTextSecondary,
-                          ),
-                          const AppText(
-                            'Go online to start earning.',
-                            variant: AppTextVariant.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
+                    hasScrollBody: false,
+                    child: _buildErrorState(),
                   )
-                else
+                else if (_deliveries.isEmpty)
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: _buildEmptyState(),
+                  )
+                else ...[
                   SliverPadding(
                     padding: EdgeInsets.fromLTRB(
                       AppSpacing.md,
@@ -247,7 +377,6 @@ class _EarningsScreenState extends State<EarningsScreen> {
                             ),
                             title: AppText(
                               dropoff.split(',').first,
-                              variant: AppTextVariant.bodyMedium,
                               fontWeight: FontWeight.bold,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -268,8 +397,104 @@ class _EarningsScreenState extends State<EarningsScreen> {
                       }, childCount: _deliveries.length),
                     ),
                   ),
+                  if (_hasMoreDeliveries)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          0,
+                          AppSpacing.lg,
+                          MediaQuery.viewPaddingOf(context).bottom +
+                              AppSpacing.lg,
+                        ),
+                        child: AppText(
+                          'Showing latest ${_deliveries.length} of '
+                          '$_totalDeliveries completed deliveries.',
+                          variant: AppTextVariant.bodySmall,
+                          color: context.appTextSecondary,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ],
             ),
+    );
+  }
+
+  Widget _buildPeriodFilter() {
+    const periods = _EarningsPeriod.values;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.md,
+        AppSpacing.md,
+        0,
+      ),
+      child: Row(
+        children: [
+          for (final period in periods) ...[
+            Expanded(
+              child: _EarningsPeriodButton(
+                label: period.label,
+                selected: _period == period,
+                onTap: () => _selectPeriod(period),
+              ),
+            ),
+            if (period != periods.last) const SizedBox(width: AppSpacing.sm),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState() {
+    final errorMessage = _errorMessage ?? 'Could not load earnings right now.';
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.cloud_off_rounded, size: 72, color: context.appBorder),
+          const SizedBox(height: AppSpacing.lg),
+          AppText(
+            errorMessage,
+            variant: AppTextVariant.heading3,
+            color: context.appTextSecondary,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          TextButton.icon(
+            onPressed: () => unawaited(_fetchEarnings(showLoader: true)),
+            icon: const Icon(Icons.refresh_rounded),
+            label: const Text('Refresh'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.payments_outlined, size: 80, color: context.appBorder),
+          const SizedBox(height: AppSpacing.lg),
+          AppText(
+            _period.emptyTitle,
+            variant: AppTextVariant.heading3,
+            color: context.appTextSecondary,
+            textAlign: TextAlign.center,
+          ),
+          AppText(
+            _period.emptyMessage,
+            color: context.appTextSecondary,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -289,6 +514,51 @@ class _EarningsScreenState extends State<EarningsScreen> {
           style: const TextStyle(color: Colors.white70, fontSize: 12),
         ),
       ],
+    );
+  }
+}
+
+class _EarningsPeriodButton extends StatelessWidget {
+  const _EarningsPeriodButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? AppColors.primary : context.appSurface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          onTap: onTap,
+          child: Container(
+            height: 44,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(
+                color: selected ? AppColors.primary : context.appBorder,
+              ),
+            ),
+            child: AppText(
+              label,
+              color: selected ? Colors.white : context.appTextPrimary,
+              fontWeight: FontWeight.bold,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

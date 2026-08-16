@@ -40,9 +40,6 @@ type WebkitAudioWindow = Window &
     webkitAudioContext?: typeof AudioContext;
   };
 
-const approvalRequiredMessage =
-  "Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.";
-
 export default function DriverPortal() {
   const [driver, setDriver] = useState<Driver | null>(null);
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
@@ -362,14 +359,7 @@ export default function DriverPortal() {
         
         if (!res.ok) throw new Error("Invalid email or password");
         const session = await res.json();
-        
-        if (
-          (session.approval_status || "Pending").trim().toLowerCase() !==
-          "approved"
-        ) {
-           throw new Error(approvalRequiredMessage);
-        }
-        
+
         setDriver(session);
         localStorage.setItem('mvp_driver_session', JSON.stringify(session));
 

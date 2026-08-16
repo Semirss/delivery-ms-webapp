@@ -339,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.badge_outlined,
             title: 'Documents & Verification',
             subtitle: snapshot.personalIdUrl == null
-                ? 'Upload your ID document'
+                ? 'ID document is not on file'
                 : 'ID document is on file',
             onTap: () => context.pushNamed(AppRoutes.driverDocuments.name),
           ),

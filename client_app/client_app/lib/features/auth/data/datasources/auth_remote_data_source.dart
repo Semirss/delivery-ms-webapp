@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:client_app/core/config/app_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:client_app/core/params/auth_params.dart';
+import 'package:client_app/core/utils/functions/base_functions/ethiopian_phone.dart';
 import '../models/auth_response_model.dart';
 import '../models/user_model.dart';
 
@@ -36,13 +37,15 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
-    final email = params.email.trim().toLowerCase();
-    if (email.isEmpty) throw Exception('Please enter your email.');
+    final identifier = _loginIdentifier(params.email);
+    if (identifier.isEmpty) {
+      throw Exception('Please enter your email or phone number.');
+    }
     if (params.password.isEmpty) throw Exception('Please enter your password.');
 
     final data = await _supabase.rpc<List<dynamic>>(
       'login_client',
-      params: {'p_email': email, 'p_password': params.password},
+      params: {'p_email': identifier, 'p_password': params.password},
     );
 
     final user = UserModel.fromJson(_singleRow(data));
@@ -174,6 +177,16 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
     );
   }
 
+  String _loginIdentifier(String value) {
+    final raw = value.trim();
+    if (raw.isEmpty) return '';
+    if (raw.contains('@')) return raw.toLowerCase();
+
+    final error = validateEthiopianPhone(raw);
+    if (error != null) throw Exception(error);
+    return normalizeEthiopianPhone(raw);
+  }
+
   Future<AuthResponseModel> _clientFromGoogleUserViaWebApi(
     User googleUser,
   ) async {
@@ -182,21 +195,24 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Google sign-in was not completed. Please try again.');
     }
 
-    final response = await dio.Dio(
-      dio.BaseOptions(
-        connectTimeout: Duration(milliseconds: _config.apiTimeout),
-        receiveTimeout: Duration(milliseconds: _config.apiTimeout),
-        sendTimeout: Duration(milliseconds: _config.apiTimeout),
-        validateStatus: (status) => status != null && status < 500,
-      ),
-    ).post<Map<String, dynamic>>(
-      '/api/clients/google-oauth',
-      options: dio.Options(headers: {'Authorization': 'Bearer $accessToken'}),
-      data: {
-        'email': googleUser.email,
-        'metadata': googleUser.userMetadata,
-      },
-    );
+    final response =
+        await dio.Dio(
+          dio.BaseOptions(
+            connectTimeout: Duration(milliseconds: _config.apiTimeout),
+            receiveTimeout: Duration(milliseconds: _config.apiTimeout),
+            sendTimeout: Duration(milliseconds: _config.apiTimeout),
+            validateStatus: (status) => status != null && status < 500,
+          ),
+        ).post<Map<String, dynamic>>(
+          '/api/clients/google-oauth',
+          options: dio.Options(
+            headers: {'Authorization': 'Bearer $accessToken'},
+          ),
+          data: {
+            'email': googleUser.email,
+            'metadata': googleUser.userMetadata,
+          },
+        );
 
     if ((response.statusCode ?? 500) >= 400) {
       throw Exception(

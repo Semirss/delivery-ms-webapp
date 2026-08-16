@@ -117,17 +117,20 @@ class _HomeDeal {
   }
 }
 
+const double _bicycleMaxDistanceKm = 10;
+const int _longDistancePerKm = 15;
+
 const Map<String, _DeliveryPricing> _deliveryPricing = {
   'Bike': _DeliveryPricing(
     title: 'Bicycle',
-    subtitle: '40/km ETB',
+    subtitle: '40 Birr/km',
     baseFare: 30,
     perKm: 40,
     icon: Icons.directions_bike_rounded,
   ),
   'Motor': _DeliveryPricing(
     title: 'Motorbike',
-    subtitle: '50/km ETB',
+    subtitle: '50 Birr/km',
     baseFare: 40,
     perKm: 50,
     icon: Icons.motorcycle_rounded,
@@ -840,8 +843,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Icons.motorcycle_rounded;
   }
 
+  String get _activeVehicleCategory =>
+      _vehicleCategoryForDistance(_selectedVehicleCategory, _distanceKm);
+
   _DeliveryPricing get _selectedPricing =>
-      _deliveryPricing[_selectedVehicleCategory]!;
+      _deliveryPricing[_activeVehicleCategory]!;
 
   int? get _estimatedPrice {
     final distanceKm = _distanceKm;
@@ -860,11 +866,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _selectVehicleCategory(String value) {
     final vehicleCategory = _normalizedVehicleCategory(value);
+    if (_isVehicleDisabledForDistance(vehicleCategory)) {
+      _showBikeDistanceLimitToast();
+      if (_selectedVehicleCategory != 'Motor') {
+        setState(() {
+          _selectedVehicleCategory = 'Motor';
+          _lastPulsedVehicleCategory = 'Motor';
+          _vehicleSelectionPulse++;
+        });
+      }
+      return;
+    }
+
     setState(() {
       _selectedVehicleCategory = vehicleCategory;
       _lastPulsedVehicleCategory = vehicleCategory;
       _vehicleSelectionPulse++;
     });
+  }
+
+  bool _isVehicleDisabledForDistance(String category, {double? distanceKm}) {
+    return _normalizedVehicleCategory(category) == 'Bike' &&
+        (distanceKm ?? _distanceKm ?? 0) > _bicycleMaxDistanceKm;
+  }
+
+  String _vehicleCategoryForDistance(String category, double? distanceKm) {
+    final normalized = _normalizedVehicleCategory(category);
+    if (_isVehicleDisabledForDistance(normalized, distanceKm: distanceKm)) {
+      return 'Motor';
+    }
+    return normalized;
+  }
+
+  void _enforceVehicleAvailabilityForDistance(double? distanceKm) {
+    if (!_isVehicleDisabledForDistance('Bike', distanceKm: distanceKm) ||
+        _selectedVehicleCategory != 'Bike') {
+      return;
+    }
+
+    _selectedVehicleCategory = 'Motor';
+    _lastPulsedVehicleCategory = 'Motor';
+    _vehicleSelectionPulse++;
+  }
+
+  void _showBikeDistanceLimitToast() {
+    AppToast.show(
+      context: context,
+      message:
+          'Bicycle is available up to 10 km. Motorbike is required after 10 km.',
+      type: AppToastType.warning,
+    );
   }
 
   void _maybeAutoOpenDestinationSearch() {
@@ -889,6 +940,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final selectedVehicle = _normalizedVehicleCategory(
       vehicleCategory ?? _selectedVehicleCategory,
     );
+    final effectiveVehicle = _vehicleCategoryForDistance(
+      selectedVehicle,
+      _distanceKm,
+    );
     final selectedService = (service ?? _selectedService).trim().isEmpty
         ? 'parcel'
         : (service ?? _selectedService).trim();
@@ -896,7 +951,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.goNamed(
       AppRoutes.delivery.name,
       queryParameters: {
-        'vehicle': selectedVehicle,
+        'vehicle': effectiveVehicle,
         'service': selectedService,
         'search': openSearchDestination ? '1' : '0',
       },
@@ -904,8 +959,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int _calculateEstimatedPrice(double distanceKm, _DeliveryPricing pricing) {
-    final raw = pricing.baseFare + (distanceKm * pricing.perKm);
+    final firstLegKm = math.min(distanceKm, _bicycleMaxDistanceKm);
+    final extraKm = math.max(0, distanceKm - _bicycleMaxDistanceKm);
+    final raw =
+        pricing.baseFare +
+        (firstLegKm * pricing.perKm) +
+        (extraKm * _longDistancePerKm);
     return (raw / 10).round() * 10;
+  }
+
+  String _pricingBreakdownLabel(_DeliveryPricing pricing) {
+    return '${pricing.baseFare} base + ${pricing.perKm} Birr/km ';
   }
 
   String _distanceLabel() {
@@ -999,7 +1063,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    await _setPickupFromPoint(location, fallbackName: 'Current GPS pickup');
+    await _setPickupFromPoint(
+      location,
+      fallbackName: 'Current GPS pickup',
+      resolveInBackground: true,
+    );
   }
 
   Future<void> _choosePickupNeighborhood() async {
@@ -1062,14 +1130,37 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _setPickupFromPoint(
     LatLng point, {
     required String fallbackName,
+    bool resolveInBackground = false,
   }) async {
     if (!mounted) return;
-    setState(() => _isResolvingPickup = true);
+    final exactPinLabel = fallbackName.toLowerCase().startsWith('pinned');
 
+    if (resolveInBackground) {
+      setState(() {
+        _pickupPlace = _quickLocationPlace(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+        );
+        _deliveryPickup = point;
+        _isResolvingPickup = true;
+      });
+      unawaited(_refreshRouteEstimate());
+      unawaited(
+        _resolvePickupLabel(
+          point,
+          fallbackName: fallbackName,
+          exactPinLabel: exactPinLabel,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isResolvingPickup = true);
     final place = await _mapRepository.describeLocation(
       point,
       fallbackName: fallbackName,
-      exactPinLabel: fallbackName.toLowerCase().startsWith('pinned'),
+      exactPinLabel: exactPinLabel,
     );
     if (!mounted) return;
 
@@ -1079,6 +1170,55 @@ class _HomeScreenState extends State<HomeScreen> {
       _isResolvingPickup = false;
     });
     await _refreshRouteEstimate();
+  }
+
+  MapPlace _quickLocationPlace(
+    LatLng point, {
+    required String fallbackName,
+    bool exactPinLabel = false,
+  }) {
+    final label = exactPinLabel
+        ? '$fallbackName (${point.latitude.toStringAsFixed(5)}, '
+              '${point.longitude.toStringAsFixed(5)})'
+        : fallbackName;
+    return MapPlace(displayName: label, location: point);
+  }
+
+  bool _samePoint(LatLng? left, LatLng right) {
+    if (left == null) return false;
+    return (left.latitude - right.latitude).abs() < 0.000001 &&
+        (left.longitude - right.longitude).abs() < 0.000001;
+  }
+
+  Future<void> _resolvePickupLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+  }) async {
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || !_samePoint(_deliveryPickup, point)) return;
+    setState(() {
+      _pickupPlace = place;
+      _isResolvingPickup = false;
+    });
+  }
+
+  Future<void> _resolveDestinationLabel(
+    LatLng point, {
+    required String fallbackName,
+    required bool exactPinLabel,
+  }) async {
+    final place = await _mapRepository.describeLocation(
+      point,
+      fallbackName: fallbackName,
+      exactPinLabel: exactPinLabel,
+    );
+    if (!mounted || !_samePoint(_destination?.location, point)) return;
+    setState(() => _destination = place);
   }
 
   Future<void> _refreshRouteEstimate() async {
@@ -1102,6 +1242,17 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    final fallbackDistance = _mapRepository.straightLineDistanceKm(
+      pickup,
+      destination.location,
+    );
+    setState(() {
+      _routePoints = [pickup, destination.location];
+      _distanceKm = fallbackDistance;
+      _enforceVehicleAvailabilityForDistance(_distanceKm);
+    });
+    _fitRoute(pickup, destination.location);
+
     final route = await _mapRepository.getRoute(pickup, destination.location);
     if (!mounted) return;
 
@@ -1113,6 +1264,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _distanceKm = route.distanceKm > 0
           ? route.distanceKm
           : _mapRepository.straightLineDistanceKm(pickup, destination.location);
+      _enforceVehicleAvailabilityForDistance(_distanceKm);
     });
     _fitRoute(pickup, destination.location);
   }
@@ -1240,12 +1392,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final location = _currentLocation;
     if (location == null) return;
-    final place = await _mapRepository.describeLocation(
-      location,
-      fallbackName: 'Current GPS delivery destination',
-    );
-    if (!mounted) return;
+    final fallbackName = 'Current GPS delivery destination';
+    final place = _quickLocationPlace(location, fallbackName: fallbackName);
     await _setDeliveryDestination(place);
+    unawaited(
+      _resolveDestinationLabel(
+        location,
+        fallbackName: fallbackName,
+        exactPinLabel: false,
+      ),
+    );
   }
 
   Future<void> _pinDestinationOnMap() async {
@@ -1304,7 +1460,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     if (_hasPickup) {
-      await _refreshRouteEstimate();
+      unawaited(_refreshRouteEstimate());
     } else {
       await _ensurePickupSelected();
     }
@@ -1368,14 +1524,26 @@ class _HomeScreenState extends State<HomeScreen> {
           _distanceKm ??
           _mapRepository.straightLineDistanceKm(pickup, _destination!.location);
       if (_distanceKm == null) {
-        await _refreshRouteEstimate();
+        unawaited(_refreshRouteEstimate());
+      }
+      final pricedDistanceKm = _distanceKm ?? distanceKm;
+      final effectiveVehicleCategory = _vehicleCategoryForDistance(
+        _selectedVehicleCategory,
+        pricedDistanceKm,
+      );
+      if (effectiveVehicleCategory != _selectedVehicleCategory && mounted) {
+        setState(() {
+          _selectedVehicleCategory = effectiveVehicleCategory;
+          _lastPulsedVehicleCategory = effectiveVehicleCategory;
+          _vehicleSelectionPulse++;
+        });
       }
       final pickupLabel = _pickupPlace?.displayName.trim().isNotEmpty == true
           ? _pickupPlace!.displayName.trim()
           : 'Pinned pickup, Addis Ababa, Ethiopia';
       final deliveryFee = _calculateEstimatedPrice(
-        _distanceKm ?? distanceKm,
-        _selectedPricing,
+        pricedDistanceKm,
+        _deliveryPricing[effectiveVehicleCategory]!,
       );
 
       final response = await Supabase.instance.client
@@ -1390,7 +1558,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'dropoff_location': _destination!.displayName,
             'package_type': packageType,
             'service_type': _selectedService,
-            'vehicle_category': _selectedVehicleCategory,
+            'vehicle_category': effectiveVehicleCategory,
             'delivery_fee': deliveryFee,
             'status': 'Pending',
             'pickup_lat': pickup.latitude,
@@ -1652,9 +1820,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return IconButton(
                                   tooltip: '$value star',
                                   onPressed: () {
-                                    setSheetState(
-                                      () => selectedRating = value,
-                                    );
+                                    setSheetState(() => selectedRating = value);
                                   },
                                   icon: Icon(
                                     value <= selectedRating
@@ -1819,6 +1985,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _distanceKm = route.distanceKm > 0
             ? route.distanceKm
             : _mapRepository.straightLineDistanceKm(pickup, dropoff);
+        _enforceVehicleAvailabilityForDistance(_distanceKm);
       });
       if (showMap) _fitActiveDelivery();
     }
@@ -1967,11 +2134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (_currentDriverPosition != null) _currentDriverPosition!,
     ].where(_isValidMapPoint).toList(growable: false);
 
-    _fitMapSafely(
-      points,
-      padding: const EdgeInsets.all(70),
-      fallbackZoom: 15,
-    );
+    _fitMapSafely(points, padding: const EdgeInsets.all(70), fallbackZoom: 15);
   }
 
   Map<String, dynamic>? get _currentDriver {
@@ -3380,7 +3543,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildVehicleShowcaseChoice(String category) {
     final pricing = _deliveryPricing[category]!;
-    final selected = _selectedVehicleCategory == category;
+    final disabled = _isVehicleDisabledForDistance(category);
+    final selected = _activeVehicleCategory == category;
     final isMotor = category == 'Motor';
     final accent = isMotor ? AppColors.secondary : AppColors.primary;
     final backgroundPath = category == 'Bike'
@@ -3398,84 +3562,121 @@ class _HomeScreenState extends State<HomeScreen> {
       Semantics(
         button: true,
         selected: selected,
-        label: '${pricing.title} courier',
+        label: disabled
+            ? '${pricing.title} courier, available up to 10 km'
+            : '${pricing.title} courier',
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
+            if (disabled) {
+              _showBikeDistanceLimitToast();
+              return;
+            }
             if (widget.deliveryPage) {
               _selectVehicleCategory(category);
             } else {
               _openDeliveryRoute(vehicleCategory: category);
             }
           },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Stack(
-              clipBehavior: Clip.hardEdge,
-              children: [
-                Positioned.fill(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    decoration: BoxDecoration(
-                      color: isMotor ? motorCover : Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      image: DecorationImage(
-                        image: AssetImage(backgroundPath),
-                        fit: BoxFit.cover,
-                        alignment: Alignment.bottomCenter,
-                      ),
-                      border: Border.all(
-                        color: borderColor,
-                        width: selected || isMotor ? 1.5 : 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: accent.withValues(
-                            alpha: selected ? 0.18 : 0.09,
-                          ),
-                          blurRadius: selected ? 22 : 15,
-                          offset: const Offset(0, 10),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 180),
+            opacity: disabled ? 0.54 : 1,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                clipBehavior: Clip.hardEdge,
+                children: [
+                  Positioned.fill(
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      decoration: BoxDecoration(
+                        color: isMotor ? motorCover : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        image: DecorationImage(
+                          image: AssetImage(backgroundPath),
+                          fit: BoxFit.cover,
+                          alignment: Alignment.bottomCenter,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: AlignmentDirectional.topStart,
-                        end: AlignmentDirectional.bottomEnd,
-                        colors: [
-                          Colors.white.withValues(alpha: isMotor ? 0.18 : 0.30),
-                          Colors.white.withValues(alpha: isMotor ? 0.04 : 0),
+                        border: Border.all(
+                          color: borderColor,
+                          width: selected || isMotor ? 1.5 : 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: accent.withValues(
+                              alpha: selected ? 0.18 : 0.09,
+                            ),
+                            blurRadius: selected ? 22 : 15,
+                            offset: const Offset(0, 10),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                PositionedDirectional(
-                  top: 15,
-                  start: 14,
-                  end: 14,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AppText(
-                        pricing.title,
-                        variant: AppTextVariant.bodyLarge,
-                        color: titleColor,
-                        fontWeight: FontWeight.w900,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                          colors: [
+                            Colors.white.withValues(
+                              alpha: isMotor ? 0.18 : 0.30,
+                            ),
+                            Colors.white.withValues(alpha: isMotor ? 0.04 : 0),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 2),
-                      _buildVehiclePriceLine(pricing, amountColor: accent),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  PositionedDirectional(
+                    top: 15,
+                    start: 14,
+                    end: 14,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppText(
+                          pricing.title,
+                          variant: AppTextVariant.bodyLarge,
+                          color: titleColor,
+                          fontWeight: FontWeight.w900,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        _buildVehiclePriceLine(pricing, amountColor: accent),
+                      ],
+                    ),
+                  ),
+                  if (disabled)
+                    PositionedDirectional(
+                      start: 12,
+                      end: 12,
+                      bottom: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.92),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const AppText(
+                          'Up to 10 km',
+                          variant: AppTextVariant.labelSmall,
+                          color: Color(0xFF475467),
+                          fontWeight: FontWeight.w800,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -3520,7 +3721,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildVehicleChoice(String category, {required bool compact}) {
     final pricing = _deliveryPricing[category]!;
-    final selected = _selectedVehicleCategory == category;
+    final disabled = _isVehicleDisabledForDistance(category);
+    final selected = _activeVehicleCategory == category;
     final isMotor = category == 'Motor';
     const motorCover = Color(0xFFEAF8FF);
     const motorSelectedCover = Color(0xFFDDF4FF);
@@ -3538,63 +3740,71 @@ class _HomeScreenState extends State<HomeScreen> {
         : selected
         ? Colors.white.withValues(alpha: 0.82)
         : context.appTextSecondary;
+    final optionOpacity = disabled ? 0.48 : 1.0;
+    final subtitle = disabled ? 'Up to 10 km only' : pricing.subtitle;
 
     return _buildVehicleTapPulse(
       category,
       InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () => _selectVehicleCategory(category),
-        child: AnimatedContainer(
+        onTap: disabled
+            ? _showBikeDistanceLimitToast
+            : () => _selectVehicleCategory(category),
+        child: AnimatedOpacity(
           duration: const Duration(milliseconds: 180),
-          padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
-          decoration: BoxDecoration(
-            color: selected
-                ? (isMotor ? motorSelectedCover : accent)
-                : (isMotor ? motorCover : context.appSurfaceAlt),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
+          opacity: optionOpacity,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            padding: EdgeInsets.all(compact ? AppSpacing.sm : AppSpacing.md),
+            decoration: BoxDecoration(
               color: selected
-                  ? accent
-                  : (isMotor ? motorBorder : context.appBorder),
-              width: isMotor ? 1.4 : 1,
-            ),
-            boxShadow: [
-              if (selected || isMotor)
-                BoxShadow(
-                  color: accent.withValues(alpha: selected ? 0.18 : 0.08),
-                  blurRadius: selected ? 16 : 10,
-                  offset: const Offset(0, 8),
-                ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Icon(pricing.icon, color: foreground, size: compact ? 22 : 30),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText(
-                      pricing.title,
-                      variant: AppTextVariant.bodyMedium,
-                      color: foreground,
-                      fontWeight: FontWeight.bold,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    AppText(
-                      pricing.subtitle,
-                      variant: AppTextVariant.bodySmall,
-                      color: subtitleColor,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+                  ? (isMotor ? motorSelectedCover : accent)
+                  : (isMotor ? motorCover : context.appSurfaceAlt),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: selected
+                    ? accent
+                    : (isMotor ? motorBorder : context.appBorder),
+                width: isMotor ? 1.4 : 1,
               ),
-            ],
+              boxShadow: [
+                if (selected || isMotor)
+                  BoxShadow(
+                    color: accent.withValues(alpha: selected ? 0.18 : 0.08),
+                    blurRadius: selected ? 16 : 10,
+                    offset: const Offset(0, 8),
+                  ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(pricing.icon, color: foreground, size: compact ? 22 : 30),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppText(
+                        pricing.title,
+                        variant: AppTextVariant.bodyMedium,
+                        color: foreground,
+                        fontWeight: FontWeight.bold,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      AppText(
+                        subtitle,
+                        variant: AppTextVariant.bodySmall,
+                        color: subtitleColor,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -3726,9 +3936,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.success.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(
-                              AppRadius.full,
-                            ),
+                            borderRadius: BorderRadius.circular(AppRadius.full),
                           ),
                           child: const AppText(
                             'መነሻ',
@@ -3849,7 +4057,7 @@ class _HomeScreenState extends State<HomeScreen> {
             fontWeight: FontWeight.bold,
           ),
           subtitle: AppText(
-            '${_distanceLabel()} - ${pricing.baseFare} base + ${pricing.perKm} Birr/km',
+            '${_distanceLabel()} - ${_pricingBreakdownLabel(pricing)}',
             variant: AppTextVariant.bodySmall,
             color: context.appTextSecondary,
           ),
@@ -4933,8 +5141,9 @@ class _LocationChoiceSheet<T> extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: accentColor.withValues(alpha: 0.12),
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.full),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
                             ),
                             child: AppText(
                               amharicTitle,

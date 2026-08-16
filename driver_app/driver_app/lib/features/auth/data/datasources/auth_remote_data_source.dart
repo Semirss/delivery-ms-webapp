@@ -31,51 +31,33 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
   static const String _googleRedirectUrl = 'motobike-driver://login-callback/';
-  static const String _supportPhone = '+251 931 323 328';
-  static const String _supportEmail = 'support@motobike.app';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
-    final email = params.email.trim().toLowerCase();
-    if (email.isEmpty) throw Exception('Enter your driver email.');
+    final identifier = _loginIdentifier(params.email);
+    if (identifier.isEmpty) {
+      throw Exception('Enter your driver email or phone number.');
+    }
     if (params.password.isEmpty) throw Exception('Please enter your password.');
 
-    try {
-      final apiLogin = await _tryLoginViaWebApi(
-        LoginParams(email: email, password: params.password),
-      );
-      if (apiLogin != null) return apiLogin;
-    } on dio.DioException catch (error) {
-      final statusCode = error.response?.statusCode ?? 0;
-      if (statusCode >= 500 || statusCode == 0) rethrow;
-    }
-
-    final rows = await _supabase
-        .from('drivers')
-        .select()
-        .ilike('email', email)
-        .limit(1);
-    final driverRows = List<Map<String, dynamic>>.from(rows);
-    final data = driverRows.isEmpty ? null : driverRows.first;
+    final data = await _findDriverByLoginIdentifier(identifier);
 
     if (data == null) {
       throw Exception(
-        'No driver account found with this email. Ask admin to add this email to your driver profile.',
+        'No driver account found with this email or phone. Ask admin to add it to your driver profile.',
       );
     }
 
     final driver = Map<String, dynamic>.from(data);
     if (driver['password']?.toString() != params.password) {
-      throw Exception('Invalid email or password.');
-    }
-
-    final approvalStatus = _driverApprovalStatus(driver);
-    if (!_isApprovedStatus(approvalStatus)) {
-      throw Exception(_approvalRequiredMessage(approvalStatus));
+      throw Exception('Invalid email/phone or password.');
     }
 
     return AuthResponseModel(
-      user: _driverUser(driver, fallbackEmail: email),
+      user: _driverUser(
+        driver,
+        fallbackEmail: _isEmailIdentifier(identifier) ? identifier : null,
+      ),
       accessToken: _driverToken(driver),
       refreshToken: _driverToken(driver, refresh: true),
       requiresVerification: false,
@@ -163,11 +145,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final driver = Map<String, dynamic>.from(data);
-    final approvalStatus = _driverApprovalStatus(driver);
-    if (!_isApprovedStatus(approvalStatus)) {
-      await _supabase.auth.signOut();
-      throw Exception(_approvalRequiredMessage(approvalStatus));
-    }
 
     return AuthResponseModel(
       user: _driverUser(driver, fallbackEmail: email),
@@ -177,31 +154,46 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     );
   }
 
-  Future<AuthResponseModel?> _tryLoginViaWebApi(LoginParams params) async {
-    final apiBaseUrl = _apiBaseUrl;
-    if (apiBaseUrl == null) return null;
+  String _loginIdentifier(String value) {
+    final raw = value.trim();
+    if (raw.isEmpty) return '';
+    if (_isEmailIdentifier(raw)) return raw.toLowerCase();
 
-    final response = await _dio.post<Map<String, dynamic>>(
-      '$apiBaseUrl/api/drivers/login',
-      data: {
-        'email': params.email.trim().toLowerCase(),
-        'password': params.password,
-      },
-    );
-    final driver = Map<String, dynamic>.from(response.data ?? {});
-    if (driver.isEmpty) throw Exception('Invalid driver login response.');
+    final digits = raw.replaceAll(RegExp(r'\D'), '');
+    if (!RegExp(r'^09\d{8}$').hasMatch(digits)) {
+      throw Exception(
+        'Use an Ethiopian phone number starting with 09, for example 0912345678',
+      );
+    }
+    return _normalizeEthiopianPhone(raw);
+  }
 
-    final approvalStatus = _driverApprovalStatus(driver);
-    if (!_isApprovedStatus(approvalStatus)) {
-      throw Exception(_approvalRequiredMessage(approvalStatus));
+  bool _isEmailIdentifier(String value) => value.contains('@');
+
+  Future<Map<String, dynamic>?> _findDriverByLoginIdentifier(
+    String identifier,
+  ) async {
+    if (_isEmailIdentifier(identifier)) {
+      final rows = await _supabase
+          .from('drivers')
+          .select()
+          .ilike('email', identifier)
+          .limit(1);
+      final driverRows = List<Map<String, dynamic>>.from(rows);
+      return driverRows.isEmpty ? null : driverRows.first;
     }
 
-    return AuthResponseModel(
-      user: _driverUser(driver),
-      accessToken: _driverToken(driver),
-      refreshToken: _driverToken(driver, refresh: true),
-      requiresVerification: false,
-    );
+    final rows = await _supabase
+        .from('drivers')
+        .select()
+        .not('phone', 'is', null);
+    final driverRows = List<Map<String, dynamic>>.from(rows);
+    for (final driver in driverRows) {
+      if (_normalizeEthiopianPhone(driver['phone']) == identifier) {
+        return driver;
+      }
+    }
+    return null;
   }
 
   Future<AuthResponseModel> _signUpViaWebApi(SignUpParams params) async {
@@ -328,22 +320,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       }
     }
     return fallback;
-  }
-
-  String _driverApprovalStatus(Map<String, dynamic> driver) {
-    final status = driver['approval_status']?.toString().trim();
-    return status?.isNotEmpty == true ? status! : 'Pending';
-  }
-
-  bool _isApprovedStatus(String status) =>
-      status.trim().toLowerCase() == 'approved';
-
-  String _approvalRequiredMessage(String approvalStatus) {
-    final normalizedStatus = approvalStatus.trim();
-    final statusText = normalizedStatus.toLowerCase() == 'pending'
-        ? 'Your driver application is still waiting for admin approval.'
-        : 'Your driver account is $normalizedStatus. Admin approval is required before login.';
-    return 'Approval required first. $statusText If this takes too long, contact admin at $_supportPhone or $_supportEmail.';
   }
 
   String _fullName(SignUpParams params) {
@@ -486,19 +462,15 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final digits = value?.toString().replaceAll(RegExp(r'\D'), '') ?? '';
     if (digits.isEmpty) return '';
 
-    if (digits.length == 12 &&
-        digits.startsWith('251') &&
-        (digits[3] == '7' || digits[3] == '9')) {
+    if (digits.length == 12 && digits.startsWith('251') && digits[3] == '9') {
       return '0${digits.substring(3)}';
     }
 
-    if (digits.length == 9 && (digits[0] == '7' || digits[0] == '9')) {
+    if (digits.length == 9 && digits[0] == '9') {
       return '0$digits';
     }
 
-    if (digits.length == 10 &&
-        digits.startsWith('0') &&
-        (digits[1] == '7' || digits[1] == '9')) {
+    if (digits.length == 10 && digits.startsWith('0') && digits[1] == '9') {
       return digits;
     }
 

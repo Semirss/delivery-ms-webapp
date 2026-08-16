@@ -90,6 +90,69 @@ class DriverProfileRepository {
     await _supabase.from('drivers').update(values).eq('id', driverId);
   }
 
+  Future<DriverEarningsSnapshot> loadEarnings(
+    UserEntity? user, {
+    required DateTime startAt,
+    required DateTime endAt,
+    int limit = 75,
+  }) async {
+    final driver = await resolveDriver(user);
+    if (driver == null) {
+      return const DriverEarningsSnapshot.empty(
+        errorMessage: 'Driver profile was not found for this account.',
+      );
+    }
+
+    final driverIds = _deliveryDriverIds(driver, user);
+    if (driverIds.isEmpty) {
+      return DriverEarningsSnapshot(
+        driver: driver,
+        deliveries: const [],
+        totalEarnings: 0,
+        totalDeliveries: 0,
+        errorMessage: 'Driver profile is missing its identifier.',
+      );
+    }
+
+    final start = startAt.toUtc().toIso8601String();
+    final end = endAt.toUtc().toIso8601String();
+    final listLimit = limit < 1
+        ? 1
+        : limit > 150
+        ? 150
+        : limit;
+
+    try {
+      final deliveries = await _loadEarningsDeliveries(
+        driverIds: driverIds,
+        startAt: start,
+        endAt: end,
+        limit: listLimit,
+      );
+      final summary = await _loadEarningsSummary(
+        driverIds: driverIds,
+        startAt: start,
+        endAt: end,
+      );
+
+      return DriverEarningsSnapshot(
+        driver: driver,
+        deliveries: deliveries,
+        totalEarnings: summary.totalEarnings,
+        totalDeliveries: summary.totalDeliveries,
+        hasMoreDeliveries: summary.totalDeliveries > deliveries.length,
+      );
+    } catch (_) {
+      return DriverEarningsSnapshot(
+        driver: driver,
+        deliveries: const [],
+        totalEarnings: 0,
+        totalDeliveries: 0,
+        errorMessage: 'Could not load earnings right now.',
+      );
+    }
+  }
+
   Future<Map<String, dynamic>?> _maybeDriverBy(
     String column,
     String value,
@@ -112,12 +175,7 @@ class DriverProfileRepository {
     Map<String, dynamic> driver,
     UserEntity? user,
   ) async {
-    final driverIds = <String>{
-      if (_isUuidLike(driver['id']?.toString())) driver['id'].toString(),
-      if (_isUuidLike(user?.id)) user!.id,
-      if (_isUuidLike(_supabase.auth.currentUser?.id))
-        _supabase.auth.currentUser!.id,
-    }.toList(growable: false);
+    final driverIds = _deliveryDriverIds(driver, user);
 
     if (driverIds.isEmpty) return const [];
 
@@ -142,16 +200,121 @@ class DriverProfileRepository {
         }
       }
 
-      final deliveries = byId.values.toList();
-      deliveries.sort((a, b) {
-        final aDate = asDate(a['created_at']) ?? DateTime(0);
-        final bDate = asDate(b['created_at']) ?? DateTime(0);
-        return bDate.compareTo(aDate);
-      });
+      final deliveries = byId.values.toList()
+        ..sort((a, b) {
+          final aDate = asDate(a['created_at']) ?? DateTime(0);
+          final bDate = asDate(b['created_at']) ?? DateTime(0);
+          return bDate.compareTo(aDate);
+        });
       return deliveries;
     } catch (_) {
       return const [];
     }
+  }
+
+  List<String> _deliveryDriverIds(
+    Map<String, dynamic> driver,
+    UserEntity? user,
+  ) {
+    return <String>{
+      if (_isUuidLike(driver['id']?.toString())) driver['id'].toString(),
+      if (_isUuidLike(user?.id)) user!.id,
+      if (_isUuidLike(_supabase.auth.currentUser?.id))
+        _supabase.auth.currentUser!.id,
+    }.toList(growable: false);
+  }
+
+  Future<List<Map<String, dynamic>>> _loadEarningsDeliveries({
+    required List<String> driverIds,
+    required String startAt,
+    required String endAt,
+    required int limit,
+  }) async {
+    final responses = await Future.wait(
+      driverIds.map(
+        (driverId) => _supabase
+            .from('deliveries')
+            .select(
+              'id, created_at, delivery_fee, '
+              'dropoff_location, status, driver_id',
+            )
+            .eq('driver_id', driverId)
+            .eq('status', 'Delivered')
+            .gte('created_at', startAt)
+            .lt('created_at', endAt)
+            .order('created_at', ascending: false)
+            .limit(limit),
+      ),
+    );
+
+    final byId = <String, Map<String, dynamic>>{};
+    for (final response in responses) {
+      for (final delivery in List<Map<String, dynamic>>.from(response)) {
+        final id = delivery['id']?.toString();
+        if (id == null || id.isEmpty) continue;
+        byId[id] = delivery;
+      }
+    }
+
+    final deliveries = byId.values.toList()
+      ..sort((a, b) {
+        final aDate = asDate(a['created_at']) ?? DateTime(0);
+        final bDate = asDate(b['created_at']) ?? DateTime(0);
+        return bDate.compareTo(aDate);
+      });
+
+    if (deliveries.length <= limit) return deliveries;
+    return deliveries.take(limit).toList(growable: false);
+  }
+
+  Future<_DriverEarningsSummary> _loadEarningsSummary({
+    required List<String> driverIds,
+    required String startAt,
+    required String endAt,
+  }) async {
+    return _loadEarningsSummaryPaged(
+      driverIds: driverIds,
+      startAt: startAt,
+      endAt: endAt,
+    );
+  }
+
+  Future<_DriverEarningsSummary> _loadEarningsSummaryPaged({
+    required List<String> driverIds,
+    required String startAt,
+    required String endAt,
+  }) async {
+    const pageSize = 1000;
+    var totalEarnings = 0.0;
+    var totalDeliveries = 0;
+
+    for (final driverId in driverIds) {
+      var from = 0;
+      while (true) {
+        final response = await _supabase
+            .from('deliveries')
+            .select('delivery_fee')
+            .eq('driver_id', driverId)
+            .eq('status', 'Delivered')
+            .gte('created_at', startAt)
+            .lt('created_at', endAt)
+            .range(from, from + pageSize - 1);
+        final page = List<Map<String, dynamic>>.from(response);
+        totalDeliveries += page.length;
+        totalEarnings += page.fold<double>(
+          0,
+          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+        );
+
+        if (page.length < pageSize) break;
+        from += pageSize;
+      }
+    }
+
+    return _DriverEarningsSummary(
+      totalEarnings: totalEarnings,
+      totalDeliveries: totalDeliveries,
+    );
   }
 
   Future<DriverRatingSummary> _loadRatingSummary(String driverId) async {
@@ -188,7 +351,9 @@ class DriverProfileRepository {
           .limit(100);
 
       return List<Map<String, dynamic>>.from(data)
-          .where((notification) => matchesDriverNotification(notification, driver))
+          .where(
+            (notification) => matchesDriverNotification(notification, driver),
+          )
           .where((notification) => notification['read_at'] == null)
           .length;
     } catch (_) {
@@ -252,14 +417,15 @@ class DriverProfileSnapshot {
 
   DateTime? get createdAt => asDate(driver?['created_at']);
 
-  DateTime? get lastLocationUpdate =>
-      asDate(driver?['last_location_update']);
+  DateTime? get lastLocationUpdate => asDate(driver?['last_location_update']);
 
   int get completedDeliveries =>
       deliveries.where((delivery) => delivery['status'] == 'Delivered').length;
 
   int get activeDeliveries => deliveries
-      .where((delivery) => ['Assigned', 'Picked Up'].contains(delivery['status']))
+      .where(
+        (delivery) => ['Assigned', 'Picked Up'].contains(delivery['status']),
+      )
       .length;
 
   int get cancelledDeliveries =>
@@ -267,8 +433,9 @@ class DriverProfileSnapshot {
 
   int get reportedDeliveries => asInt(driver?['total_deliveries']);
 
-  int get displayDeliveries =>
-      completedDeliveries > reportedDeliveries ? completedDeliveries : reportedDeliveries;
+  int get displayDeliveries => completedDeliveries > reportedDeliveries
+      ? completedDeliveries
+      : reportedDeliveries;
 
   double get totalEarnings => deliveries
       .where((delivery) => delivery['status'] == 'Delivered')
@@ -284,17 +451,19 @@ class DriverProfileSnapshot {
 
   double get todayEarnings {
     final now = DateTime.now();
-    return deliveries.where((delivery) {
-      final createdAt = asDate(delivery['created_at']);
-      return delivery['status'] == 'Delivered' &&
-          createdAt != null &&
-          createdAt.year == now.year &&
-          createdAt.month == now.month &&
-          createdAt.day == now.day;
-    }).fold<double>(
-      0,
-      (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
-    );
+    return deliveries
+        .where((delivery) {
+          final createdAt = asDate(delivery['created_at']);
+          return delivery['status'] == 'Delivered' &&
+              createdAt != null &&
+              createdAt.year == now.year &&
+              createdAt.month == now.month &&
+              createdAt.day == now.day;
+        })
+        .fold<double>(
+          0,
+          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+        );
   }
 
   int get todayDeliveries {
@@ -311,15 +480,17 @@ class DriverProfileSnapshot {
 
   double get weekEarnings {
     final cutoff = DateTime.now().subtract(const Duration(days: 7));
-    return deliveries.where((delivery) {
-      final createdAt = asDate(delivery['created_at']);
-      return delivery['status'] == 'Delivered' &&
-          createdAt != null &&
-          createdAt.isAfter(cutoff);
-    }).fold<double>(
-      0,
-      (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
-    );
+    return deliveries
+        .where((delivery) {
+          final createdAt = asDate(delivery['created_at']);
+          return delivery['status'] == 'Delivered' &&
+              createdAt != null &&
+              createdAt.isAfter(cutoff);
+        })
+        .fold<double>(
+          0,
+          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+        );
   }
 
   DateTime? get lastDeliveryAt {
@@ -331,15 +502,47 @@ class DriverProfileSnapshot {
   }
 }
 
-class DriverRatingSummary {
-  const DriverRatingSummary({
-    required this.average,
-    required this.count,
+class DriverEarningsSnapshot {
+  const DriverEarningsSnapshot({
+    required this.driver,
+    required this.deliveries,
+    required this.totalEarnings,
+    required this.totalDeliveries,
+    this.hasMoreDeliveries = false,
+    this.errorMessage,
   });
 
-  const DriverRatingSummary.empty()
-    : average = 0,
-      count = 0;
+  const DriverEarningsSnapshot.empty({this.errorMessage})
+    : driver = null,
+      deliveries = const [],
+      totalEarnings = 0,
+      totalDeliveries = 0,
+      hasMoreDeliveries = false;
+
+  final Map<String, dynamic>? driver;
+  final List<Map<String, dynamic>> deliveries;
+  final double totalEarnings;
+  final int totalDeliveries;
+  final bool hasMoreDeliveries;
+  final String? errorMessage;
+
+  String? get driverId => driver?['id']?.toString();
+}
+
+class _DriverEarningsSummary {
+  const _DriverEarningsSummary({
+    required this.totalEarnings,
+    required this.totalDeliveries,
+  });
+
+  final double totalEarnings;
+  final int totalDeliveries;
+}
+
+class DriverRatingSummary {
+  const DriverRatingSummary({required this.average, required this.count});
+
+  const DriverRatingSummary.empty() : average = 0, count = 0;
 
   final double average;
   final int count;
@@ -400,6 +603,7 @@ bool _isUuidLike(String? value) {
   final text = value?.trim();
   if (text == null || text.isEmpty) return false;
   return RegExp(
-    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+    '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'
+    r'[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
   ).hasMatch(text);
 }

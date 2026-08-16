@@ -4,8 +4,6 @@ import 'package:driver_app/features/profile/data/driver_profile_repository.dart'
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DriverDocumentsScreen extends StatefulWidget {
@@ -17,11 +15,9 @@ class DriverDocumentsScreen extends StatefulWidget {
 
 class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
   final DriverProfileRepository _repository = DriverProfileRepository();
-  final ImagePicker _imagePicker = ImagePicker();
 
   DriverProfileSnapshot? _snapshot;
   bool _isLoading = true;
-  bool _isUploading = false;
 
   @override
   void initState() {
@@ -38,56 +34,6 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
       _snapshot = snapshot;
       _isLoading = false;
     });
-  }
-
-  Future<void> _uploadPersonalId() async {
-    final snapshot = _snapshot;
-    final driverId = snapshot?.driverId;
-    if (driverId == null) return;
-
-    final image = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 88,
-      maxWidth: 1800,
-    );
-    if (image == null) return;
-
-    setState(() => _isUploading = true);
-    try {
-      final bytes = await image.readAsBytes();
-      final extension = image.name.contains('.')
-          ? image.name.split('.').last.toLowerCase()
-          : 'jpg';
-      final path =
-          '$driverId/${DateTime.now().millisecondsSinceEpoch}.$extension';
-      final contentType = image.mimeType ?? 'image/jpeg';
-
-      final storage = Supabase.instance.client.storage.from('driver_ids');
-      await storage.uploadBinary(
-        path,
-        bytes,
-        fileOptions: FileOptions(contentType: contentType, upsert: true),
-      );
-      final publicUrl = storage.getPublicUrl(path);
-      await _repository.updateDriver(driverId, {'personal_id_url': publicUrl});
-
-      await _load();
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'ID document uploaded.',
-        type: AppToastType.success,
-      );
-    } catch (_) {
-      if (!mounted) return;
-      AppToast.show(
-        context: context,
-        message: 'Could not upload document. Check Supabase storage setup.',
-        type: AppToastType.error,
-      );
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
-    }
   }
 
   Future<void> _openDocument(String url) async {
@@ -127,18 +73,8 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
                   _buildDocumentPreview(snapshot),
                   const SizedBox(height: AppSpacing.lg),
                   _buildVehicleCard(snapshot),
-                  const SizedBox(height: AppSpacing.xl),
-                  AppButton.primary(
-                    label: snapshot?.personalIdUrl == null
-                        ? 'UPLOAD ID DOCUMENT'
-                        : 'REPLACE ID DOCUMENT',
-                    icon: Icons.upload_file_rounded,
-                    fullWidth: true,
-                    isLoading: _isUploading,
-                    onPressed: _uploadPersonalId,
-                  ),
                   if (snapshot?.personalIdUrl != null) ...[
-                    const SizedBox(height: AppSpacing.md),
+                    const SizedBox(height: AppSpacing.xl),
                     AppButton.outlinedSecondary(
                       label: 'OPEN DOCUMENT',
                       icon: Icons.open_in_new_rounded,
@@ -188,7 +124,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
           const SizedBox(height: AppSpacing.sm),
           AppText(
             active
-                ? 'Your account is active. Keep documents current for dispatch.'
+                ? 'Your account is active. Admin manages driver documents.'
                 : 'This account is inactive. Contact support before working.',
             variant: AppTextVariant.bodyMedium,
             color: context.appTextSecondary,
@@ -237,7 +173,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   AppText(
-                    'No ID document uploaded',
+                    'No ID document on file',
                     variant: AppTextVariant.bodyMedium,
                     color: context.appTextSecondary,
                   ),
@@ -292,11 +228,7 @@ class _DriverDocumentsScreenState extends State<DriverDocumentsScreen> {
             snapshot?.plateNumber ?? '--',
           ),
           const SizedBox(height: AppSpacing.md),
-          _factRow(
-            Icons.phone_rounded,
-            'Phone',
-            snapshot?.phone ?? '--',
-          ),
+          _factRow(Icons.phone_rounded, 'Phone', snapshot?.phone ?? '--'),
         ],
       ),
     );
