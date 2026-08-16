@@ -35,6 +35,8 @@
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>MotoBike Driver uses your location to show nearby deliveries and update customers while you are on a trip.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>MotoBike Driver uses your location to show nearby deliveries and update delivery progress while you are on a trip.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>MotoBike Driver lets you choose an ID photo when creating or updating your driver profile.</string>
 	<key>UILaunchStoryboardName</key>
