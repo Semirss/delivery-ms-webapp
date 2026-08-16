@@ -84,6 +84,7 @@ Never handleDioException(DioException e) {
       );
 
     case DioExceptionType.receiveTimeout:
+    case DioExceptionType.transformTimeout:
       final data = e.response?.data;
       throw ReceiveTimeoutException(
         data is Map<String, dynamic>
