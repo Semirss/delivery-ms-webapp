@@ -29,30 +29,32 @@ abstract class NetworkExceptions with _$NetworkExceptions {
   static NetworkExceptions getDioException(dynamic error) {
     if (error is Exception) {
       try {
-        NetworkExceptions networkExceptions;
+        NetworkExceptions networkExceptions =
+            const NetworkExceptions.unexpectedError();
         if (error is DioException) {
-          switch (error.type) {
-            case DioExceptionType.cancel:
+          switch (error.type.name) {
+            case 'cancel':
               networkExceptions = const NetworkExceptions.requestCancelled();
               break;
-            case DioExceptionType.badCertificate:
+            case 'badCertificate':
               networkExceptions = const NetworkExceptions.badRequest();
               break;
-            case DioExceptionType.unknown:
+            case 'unknown':
               networkExceptions =
                   const NetworkExceptions.noInternetConnection();
               break;
-            case DioExceptionType.receiveTimeout:
-            case DioExceptionType.connectionTimeout:
+            case 'receiveTimeout':
+            case 'transformTimeout':
+            case 'connectionTimeout':
               networkExceptions = const NetworkExceptions.requestTimeout();
               break;
-            case DioExceptionType.sendTimeout:
+            case 'sendTimeout':
               networkExceptions = const NetworkExceptions.sendTimeout();
               break;
-            case DioExceptionType.connectionError:
+            case 'connectionError':
               networkExceptions = const NetworkExceptions.unexpectedError();
               break;
-            case DioExceptionType.badResponse:
+            case 'badResponse':
               switch (error.response?.statusCode) {
                 case 400:
                   networkExceptions = const NetworkExceptions.badRequest();

@@ -62,22 +62,22 @@ class UnknownException extends ServerException {
 }
 
 Never handleDioException(DioException e) {
-  switch (e.type) {
-    case DioExceptionType.connectionError:
+  switch (e.type.name) {
+    case 'connectionError':
       final data = e.response?.data;
       throw ConnectionErrorException(
         data is Map<String, dynamic>
             ? ErrorModel.fromJson(data)
             : ErrorModel(status: 500, errorMessage: 'Connection error'),
       );
-    case DioExceptionType.badCertificate:
+    case 'badCertificate':
       final data = e.response?.data;
       throw BadCertificateException(
         data is Map<String, dynamic>
             ? ErrorModel.fromJson(data)
             : ErrorModel(status: 500, errorMessage: 'Bad certificate'),
       );
-    case DioExceptionType.connectionTimeout:
+    case 'connectionTimeout':
       final data = e.response?.data;
       throw ConnectionTimeoutException(
         data is Map<String, dynamic>
@@ -85,7 +85,8 @@ Never handleDioException(DioException e) {
             : ErrorModel(status: 408, errorMessage: 'Connection timeout'),
       );
 
-    case DioExceptionType.receiveTimeout:
+    case 'receiveTimeout':
+    case 'transformTimeout':
       final data = e.response?.data;
       throw ReceiveTimeoutException(
         data is Map<String, dynamic>
@@ -93,7 +94,7 @@ Never handleDioException(DioException e) {
             : ErrorModel(status: 408, errorMessage: 'Receive timeout'),
       );
 
-    case DioExceptionType.sendTimeout:
+    case 'sendTimeout':
       final data = e.response?.data;
       throw SendTimeoutException(
         data is Map<String, dynamic>
@@ -101,7 +102,7 @@ Never handleDioException(DioException e) {
             : ErrorModel(status: 408, errorMessage: 'Send timeout'),
       );
 
-    case DioExceptionType.badResponse:
+    case 'badResponse':
       switch (e.response?.statusCode) {
         case 400: // Bad request
           final data = e.response!.data;
@@ -153,14 +154,13 @@ Never handleDioException(DioException e) {
             ),
           );
       }
-      break;
 
-    case DioExceptionType.cancel:
+    case 'cancel':
       throw CancelException(
         ErrorModel(errorMessage: e.toString(), status: 500),
       );
 
-    case DioExceptionType.unknown:
+    case 'unknown':
       throw UnknownException(
         ErrorModel(errorMessage: e.toString(), status: 500),
       );
