@@ -37,6 +37,7 @@ dependencies:
   # Core
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.5.0
+  device_info_plus: 11.2.0
   flutter_local_notifications: ^20.1.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
