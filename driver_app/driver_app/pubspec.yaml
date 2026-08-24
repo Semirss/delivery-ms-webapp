@@ -57,7 +57,7 @@ dependencies:
   dio: ^5.9.0
   retrofit: '>=4.5.0 <4.9.0'
   json_annotation: ^4.9.0
-  connectivity_plus: ^7.0.0
+  connectivity_plus: 7.1.1
   
   # Storage & Cache
   shared_preferences: ^2.5.3
