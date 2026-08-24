@@ -43,7 +43,6 @@ abstract class NetworkExceptions with _$NetworkExceptions {
                   const NetworkExceptions.noInternetConnection();
               break;
             case DioExceptionType.receiveTimeout:
-            case DioExceptionType.transformTimeout:
             case DioExceptionType.connectionTimeout:
               networkExceptions = const NetworkExceptions.requestTimeout();
               break;

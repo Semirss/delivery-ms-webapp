@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'error_model.dart';
+
 //!ServerException
 class ServerException implements Exception {
   final ErrorModel errorModel;
   ServerException(this.errorModel);
 }
+
 //!CacheExeption
 class CacheExeption implements Exception {
   final String errorMessage;
@@ -64,40 +66,39 @@ Never handleDioException(DioException e) {
     case DioExceptionType.connectionError:
       final data = e.response?.data;
       throw ConnectionErrorException(
-        data is Map<String, dynamic> 
-          ? ErrorModel.fromJson(data)
-          : ErrorModel(status: 500, errorMessage: 'Connection error')
+        data is Map<String, dynamic>
+            ? ErrorModel.fromJson(data)
+            : ErrorModel(status: 500, errorMessage: 'Connection error'),
       );
     case DioExceptionType.badCertificate:
       final data = e.response?.data;
       throw BadCertificateException(
         data is Map<String, dynamic>
-          ? ErrorModel.fromJson(data)
-          : ErrorModel(status: 500, errorMessage: 'Bad certificate')
+            ? ErrorModel.fromJson(data)
+            : ErrorModel(status: 500, errorMessage: 'Bad certificate'),
       );
     case DioExceptionType.connectionTimeout:
       final data = e.response?.data;
       throw ConnectionTimeoutException(
         data is Map<String, dynamic>
-          ? ErrorModel.fromJson(data)
-          : ErrorModel(status: 408, errorMessage: 'Connection timeout')
+            ? ErrorModel.fromJson(data)
+            : ErrorModel(status: 408, errorMessage: 'Connection timeout'),
       );
 
     case DioExceptionType.receiveTimeout:
-    case DioExceptionType.transformTimeout:
       final data = e.response?.data;
       throw ReceiveTimeoutException(
         data is Map<String, dynamic>
-          ? ErrorModel.fromJson(data)
-          : ErrorModel(status: 408, errorMessage: 'Receive timeout')
+            ? ErrorModel.fromJson(data)
+            : ErrorModel(status: 408, errorMessage: 'Receive timeout'),
       );
 
     case DioExceptionType.sendTimeout:
       final data = e.response?.data;
       throw SendTimeoutException(
         data is Map<String, dynamic>
-          ? ErrorModel.fromJson(data)
-          : ErrorModel(status: 408, errorMessage: 'Send timeout')
+            ? ErrorModel.fromJson(data)
+            : ErrorModel(status: 408, errorMessage: 'Send timeout'),
       );
 
     case DioExceptionType.badResponse:
@@ -106,63 +107,66 @@ Never handleDioException(DioException e) {
           final data = e.response!.data;
           throw BadResponseException(
             data is Map<String, dynamic>
-              ? ErrorModel.fromJson(data)
-              : ErrorModel(status: 400, errorMessage: 'Bad request')
+                ? ErrorModel.fromJson(data)
+                : ErrorModel(status: 400, errorMessage: 'Bad request'),
           );
 
         case 401: //unauthorized
           final data = e.response!.data;
           throw UnauthorizedException(
             data is Map<String, dynamic>
-              ? ErrorModel.fromJson(data)
-              : ErrorModel(status: 401, errorMessage: 'Unauthorized')
+                ? ErrorModel.fromJson(data)
+                : ErrorModel(status: 401, errorMessage: 'Unauthorized'),
           );
 
         case 403: //forbidden
           final data = e.response!.data;
           throw ForbiddenException(
             data is Map<String, dynamic>
-              ? ErrorModel.fromJson(data)
-              : ErrorModel(status: 403, errorMessage: 'Forbidden')
+                ? ErrorModel.fromJson(data)
+                : ErrorModel(status: 403, errorMessage: 'Forbidden'),
           );
 
         case 404: //not found
           final data = e.response!.data;
           throw NotFoundException(
             data is Map<String, dynamic>
-              ? ErrorModel.fromJson(data)
-              : ErrorModel(status: 404, errorMessage: 'Not found')
+                ? ErrorModel.fromJson(data)
+                : ErrorModel(status: 404, errorMessage: 'Not found'),
           );
 
         case 409: //cofficient
           final data = e.response!.data;
           throw CofficientException(
             data is Map<String, dynamic>
-              ? ErrorModel.fromJson(data)
-              : ErrorModel(status: 409, errorMessage: 'Conflict')
+                ? ErrorModel.fromJson(data)
+                : ErrorModel(status: 409, errorMessage: 'Conflict'),
           );
 
         case 504: // Bad request
           throw BadResponseException(
             ErrorModel(
-              status: 504, 
-              errorMessage: e.response!.data is String 
-                ? e.response!.data as String
-                : 'Gateway timeout'
-            )
+              status: 504,
+              errorMessage: e.response!.data is String
+                  ? e.response!.data as String
+                  : 'Gateway timeout',
+            ),
           );
       }
       break;
 
     case DioExceptionType.cancel:
       throw CancelException(
-        ErrorModel(errorMessage: e.toString(), status: 500)
+        ErrorModel(errorMessage: e.toString(), status: 500),
       );
 
     case DioExceptionType.unknown:
       throw UnknownException(
-          ErrorModel(errorMessage: e.toString(), status: 500));
+        ErrorModel(errorMessage: e.toString(), status: 500),
+      );
   }
   // This should never be reached due to exhaustive switch
-  throw UnknownException(ErrorModel(errorMessage: 'Unknown error', status: 500));
+  throw UnknownException(
+    ErrorModel(errorMessage: 'Unknown error', status: 500),
+  );
 }
