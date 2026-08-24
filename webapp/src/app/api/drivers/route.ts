@@ -69,9 +69,9 @@ export async function POST(request: Request) {
         const normalizedPhone = normalizeEthiopianPhone(phone);
         const normalizedPassword = typeof password === 'string' ? password : '';
 
-        if (!normalizedName || !normalizedEmail || !normalizedPhone || !normalizedPassword) {
+        if (!normalizedName || !normalizedEmail || !normalizedPassword) {
             return NextResponse.json(
-                { error: 'Name, email, phone, and password are required' },
+                { error: 'Name, email, and password are required' },
                 { status: 400, headers: corsHeaders }
             );
         }
@@ -93,20 +93,22 @@ export async function POST(request: Request) {
             );
         }
 
-        const { data: existingPhone, error: existingPhoneError } = await supabase
-            .from('drivers')
-            .select('id, phone')
-            .not('phone', 'is', null);
+        if (normalizedPhone) {
+            const { data: existingPhone, error: existingPhoneError } = await supabase
+                .from('drivers')
+                .select('id, phone')
+                .not('phone', 'is', null);
 
-        if (existingPhoneError) {
-            return NextResponse.json({ error: existingPhoneError.message }, { status: 500, headers: corsHeaders });
-        }
+            if (existingPhoneError) {
+                return NextResponse.json({ error: existingPhoneError.message }, { status: 500, headers: corsHeaders });
+            }
 
-        if ((existingPhone ?? []).some((driver) => normalizeEthiopianPhone(driver.phone) === normalizedPhone)) {
-            return NextResponse.json(
-                { error: 'A driver account already exists for this phone number' },
-                { status: 409, headers: corsHeaders }
-            );
+            if ((existingPhone ?? []).some((driver) => normalizeEthiopianPhone(driver.phone) === normalizedPhone)) {
+                return NextResponse.json(
+                    { error: 'A driver account already exists for this phone number' },
+                    { status: 409, headers: corsHeaders }
+                );
+            }
         }
 
         if (file && file.size > 0) {
@@ -139,7 +141,7 @@ export async function POST(request: Request) {
             .insert([{
                 name: normalizedName,
                 email: normalizedEmail,
-                phone: normalizedPhone,
+                phone: normalizedPhone || null,
                 password: normalizedPassword,
                 telegram_id: telegram_id || null,
                 status: status || 'Offline',

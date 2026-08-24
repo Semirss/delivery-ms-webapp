@@ -131,13 +131,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    final phone = _phoneController.text.trim();
     context.read<AuthBloc>().add(
       SignUpEvent(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        phone: normalizeEthiopianPhone(_phoneController.text),
+        phone: phone.isEmpty ? null : normalizeEthiopianPhone(phone),
         telegramUsername: _telegramController.text.trim(),
         plateNumber: _plateController.text.trim(),
         vehicleType: _selectedVehicleType,
@@ -317,14 +318,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (lastName.isEmpty) return 'Please enter your last name.';
     if (email.isEmpty || !isValidEmail(email))
       return 'Please enter a valid email.';
-    final phoneError = validateEthiopianPhone(phone);
-    if (phoneError != null) return phoneError;
+    if (phone.isNotEmpty) {
+      final phoneError = validateEthiopianPhone(phone);
+      if (phoneError != null) return phoneError;
+    }
     if (telegram.isEmpty) return 'Please enter your Telegram username.';
     if (plate.isEmpty) return 'Please enter your plate number.';
     if (!isValidPassword(password))
       return 'Password must be at least 6 characters.';
     if (password != confirmPassword) return 'Passwords do not match.';
-    if (_personalIdBytes == null) return 'Please upload a personal ID photo.';
     return null;
   }
 
@@ -409,7 +411,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppTextField.outlined(
                     controller: _phoneController,
                     focusNode: _phoneFocusNode,
-                    label: 'Phone Number',
+                    label: 'Phone Number (optional)',
                     hint: '0912345678',
                     errorText: _phoneError,
                     prefixIcon: Icons.phone_outlined,
@@ -419,7 +421,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 6),
                   AppText(
-                    'Start with 09. Do not use +251.',
+                    'Optional. If provided, start with 09. Do not use +251.',
                     variant: AppTextVariant.bodySmall,
                     color: context.appTextSecondary,
                   ),
@@ -670,7 +672,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AppText(
-                        hasImage ? 'Personal ID selected' : 'Personal ID Photo',
+                        hasImage
+                            ? 'Personal ID selected'
+                            : 'Personal ID Photo (optional)',
                         variant: AppTextVariant.bodyMedium,
                         fontWeight: FontWeight.bold,
                         color: hasError ? errorColor : null,
@@ -679,7 +683,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       AppText(
                         hasImage
                             ? (_personalIdFileName ?? 'Ready to upload')
-                            : 'Upload a clear image under 5MB',
+                            : 'Optional. Upload a clear image under 5MB',
                         variant: AppTextVariant.bodySmall,
                         color: context.appTextSecondary,
                         maxLines: 1,

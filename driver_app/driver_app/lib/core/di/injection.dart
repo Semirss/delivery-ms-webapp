@@ -11,6 +11,7 @@ import 'package:driver_app/features/auth/data/datasources/auth_remote_data_sourc
 import 'package:driver_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:driver_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:driver_app/features/auth/domain/usecases/get_current_user_usecase.dart';
+import 'package:driver_app/features/auth/domain/usecases/delete_account_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/login_with_google_usecase.dart';
 import 'package:driver_app/features/auth/domain/usecases/logout_usecase.dart';
@@ -63,6 +64,7 @@ Future<void> configureDependencies() async {
     ..registerFactory(() => ResetPasswordUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => VerifyResetPasswordUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => LogoutUseCase(getIt<AuthRepository>()))
+    ..registerFactory(() => DeleteAccountUseCase(getIt<AuthRepository>()))
     ..registerFactory(() => GetCurrentUserUseCase(getIt<AuthRepository>()))
     ..registerFactory(
       () => AuthBloc(
@@ -74,6 +76,7 @@ Future<void> configureDependencies() async {
         resetPasswordUseCase: getIt<ResetPasswordUseCase>(),
         verifyResetPasswordUseCase: getIt<VerifyResetPasswordUseCase>(),
         logoutUseCase: getIt<LogoutUseCase>(),
+        deleteAccountUseCase: getIt<DeleteAccountUseCase>(),
         getCurrentUserUseCase: getIt<GetCurrentUserUseCase>(),
       ),
     );

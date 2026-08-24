@@ -317,6 +317,33 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, void>> deleteAccount() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final cachedUser = await localDataSource.getCachedUser();
+        if (cachedUser == null || cachedUser.id.trim().isEmpty) {
+          return Left(ServerFailure('No account is signed in.'));
+        }
+
+        await remoteDataSource.deleteAccount(
+          DeleteAccountParams(
+            userId: cachedUser.id,
+            email: cachedUser.email,
+            phone: cachedUser.phone,
+          ),
+        );
+        await localDataSource.clearAll();
+        return const Right(null);
+      } catch (e, stackTrace) {
+        logger.error('Delete account error', e, stackTrace);
+        return Left(ServerFailure(_friendlyError(e)));
+      }
+    } else {
+      return Left(NetworkFailure('No internet connection'));
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> getCurrentUser() async {
     final cachedUser = await localDataSource.getCachedUser();
     final cachedToken = await localDataSource.getCachedAccessToken();

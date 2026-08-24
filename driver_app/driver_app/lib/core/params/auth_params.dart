@@ -98,3 +98,17 @@ class RefreshTokenParams {
 
   Map<String, dynamic> toJson() => {'refresh_token': refreshToken};
 }
+
+class DeleteAccountParams {
+  final String userId;
+  final String email;
+  final String? phone;
+
+  DeleteAccountParams({required this.userId, required this.email, this.phone});
+
+  Map<String, dynamic> toJson() => {
+    'user_id': userId,
+    'email': email,
+    if (phone != null) 'phone': phone,
+  };
+}

@@ -70,13 +70,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
+    final phone = _phoneController.text.trim();
     context.read<AuthBloc>().add(
       SignUpEvent(
         email: _emailController.text.trim(),
         password: _passwordController.text,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        phone: normalizeEthiopianPhone(_phoneController.text),
+        phone: phone.isEmpty ? null : normalizeEthiopianPhone(phone),
       ),
     );
   }
@@ -249,7 +250,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   String? _validatePhone(String? value) {
-    return validateEthiopianPhone(value);
+    final phone = value?.trim() ?? '';
+    if (phone.isEmpty) return null;
+    return validateEthiopianPhone(phone);
   }
 
   String? _validatePassword(String? value) {
@@ -363,7 +366,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   AppTextField.outlined(
                     controller: _phoneController,
                     focusNode: _phoneFocusNode,
-                    label: 'Phone',
+                    label: 'Phone (optional)',
                     hint: '0912345678',
                     errorText: _phoneError,
                     prefixIcon: Icons.phone_outlined,
@@ -374,7 +377,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 6),
                   AppText(
-                    'Start with 09. Do not use +251.',
+                    'Optional. If provided, start with 09. Do not use +251.',
                     variant: AppTextVariant.bodySmall,
                     color: context.appTextSecondary,
                   ),

@@ -9,6 +9,7 @@ import '../../domain/usecases/resend_otp_usecase.dart';
 import '../../domain/usecases/reset_password_usecase.dart';
 import '../../domain/usecases/verify_reset_password_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
+import '../../domain/usecases/delete_account_usecase.dart';
 import '../../domain/usecases/get_current_user_usecase.dart';
 import '../../../../core/base/base_usecase.dart';
 import 'auth_event.dart';
@@ -24,6 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ResetPasswordUseCase resetPasswordUseCase;
   final VerifyResetPasswordUseCase verifyResetPasswordUseCase;
   final LogoutUseCase logoutUseCase;
+  final DeleteAccountUseCase deleteAccountUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
 
   AuthBloc({
@@ -35,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.resetPasswordUseCase,
     required this.verifyResetPasswordUseCase,
     required this.logoutUseCase,
+    required this.deleteAccountUseCase,
     required this.getCurrentUserUseCase,
   }) : super(const AuthInitial()) {
     on<LoginEvent>(_onLogin);
@@ -45,6 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResetPasswordEvent>(_onResetPassword);
     on<VerifyResetPasswordEvent>(_onVerifyResetPassword);
     on<LogoutEvent>(_onLogout);
+    on<DeleteAccountEvent>(_onDeleteAccount);
     on<CheckAuthStatusEvent>(_onCheckAuthStatus);
   }
 
@@ -169,6 +173,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
     emit(const AuthLoading());
     final result = await logoutUseCase(NoParams());
+    result.fold(
+      (failure) => emit(AuthError(message: failure.errMessage)),
+      (_) => emit(const AuthUnauthenticated()),
+    );
+  }
+
+  Future<void> _onDeleteAccount(
+    DeleteAccountEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    final result = await deleteAccountUseCase(NoParams());
     result.fold(
       (failure) => emit(AuthError(message: failure.errMessage)),
       (_) => emit(const AuthUnauthenticated()),

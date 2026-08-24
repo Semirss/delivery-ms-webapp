@@ -21,6 +21,7 @@ abstract class AuthRemoteDataSource {
   Future<void> verifyResetPassword(VerifyResetPasswordParams params);
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params);
   Future<void> logout();
+  Future<void> deleteAccount(DeleteAccountParams params);
   Future<UserModel> getCurrentUser();
 }
 
@@ -126,8 +127,6 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
     if (password.length < 6) {
       throw Exception('Password must be at least 6 characters.');
     }
-    if (phone.isEmpty) throw Exception('Please enter your phone number.');
-
     final data = await _supabase.rpc<List<dynamic>>(
       'register_client',
       params: {
@@ -135,7 +134,7 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
         'p_password': password,
         'p_first_name': firstName,
         'p_last_name': lastName,
-        'p_phone': phone,
+        'p_phone': phone.isEmpty ? null : phone,
       },
     );
 
@@ -309,6 +308,34 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> logout() async {
     await _supabase.auth.signOut();
+  }
+
+  @override
+  Future<void> deleteAccount(DeleteAccountParams params) async {
+    final apiBaseUrl = _apiBaseUrl;
+    if (apiBaseUrl == null) {
+      throw Exception(
+        'Account deletion needs API_BASE_URL so the web app can remove '
+        'your account.',
+      );
+    }
+
+    final userId = params.userId.trim();
+    if (userId.isEmpty) throw Exception('No account is signed in.');
+
+    final email = params.email.trim().toLowerCase();
+    await _dio.delete<Map<String, dynamic>>(
+      '$apiBaseUrl/api/clients/${Uri.encodeComponent(userId)}',
+      options: dio.Options(
+        headers: {
+          if (email.isNotEmpty) 'X-Motobike-Account-Email': email,
+          if (params.phone?.trim().isNotEmpty == true)
+            'X-Motobike-Account-Phone': params.phone!.trim(),
+        },
+      ),
+    );
+
+    await logout();
   }
 
   @override

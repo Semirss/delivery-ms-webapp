@@ -88,6 +88,10 @@ class LogoutEvent extends AuthEvent {
   const LogoutEvent();
 }
 
+class DeleteAccountEvent extends AuthEvent {
+  const DeleteAccountEvent();
+}
+
 class CheckAuthStatusEvent extends AuthEvent {
   const CheckAuthStatusEvent();
 }

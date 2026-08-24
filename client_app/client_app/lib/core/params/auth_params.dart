@@ -1,15 +1,11 @@
 // ignore_for_file: sort_constructors_first
 
 class LoginParams {
-
   LoginParams({required this.email, required this.password});
   final String email;
   final String password;
 
-  Map<String, dynamic> toJson() => {
-        'email': email,
-        'password': password,
-      };
+  Map<String, dynamic> toJson() => {'email': email, 'password': password};
 }
 
 class SignUpParams {
@@ -28,12 +24,12 @@ class SignUpParams {
   });
 
   Map<String, dynamic> toJson() => {
-        'email': email,
-        'password': password,
-        if (firstName != null) 'first_name': firstName,
-        if (lastName != null) 'last_name': lastName,
-        if (phone != null) 'phone': phone,
-      };
+    'email': email,
+    'password': password,
+    if (firstName != null) 'first_name': firstName,
+    if (lastName != null) 'last_name': lastName,
+    if (phone != null) 'phone': phone,
+  };
 }
 
 class OtpVerificationParams {
@@ -43,9 +39,9 @@ class OtpVerificationParams {
   OtpVerificationParams({required this.verificationKey, required this.otp});
 
   Map<String, dynamic> toJson() => {
-        'verification_key': verificationKey,
-        'otp': otp,
-      };
+    'verification_key': verificationKey,
+    'otp': otp,
+  };
 }
 
 class ResetPasswordParams {
@@ -55,9 +51,9 @@ class ResetPasswordParams {
   ResetPasswordParams({required this.phone, this.newPassword});
 
   Map<String, dynamic> toJson() => {
-        'phone': phone,
-        if (newPassword != null) 'new_password': newPassword,
-      };
+    'phone': phone,
+    if (newPassword != null) 'new_password': newPassword,
+  };
 }
 
 class VerifyResetPasswordParams {
@@ -72,10 +68,10 @@ class VerifyResetPasswordParams {
   });
 
   Map<String, dynamic> toJson() => {
-        'user_id': userId,
-        'otp': otp,
-        'new_password': newPassword,
-      };
+    'user_id': userId,
+    'otp': otp,
+    'new_password': newPassword,
+  };
 }
 
 class RefreshTokenParams {
@@ -83,7 +79,19 @@ class RefreshTokenParams {
 
   RefreshTokenParams({required this.refreshToken});
 
+  Map<String, dynamic> toJson() => {'refresh_token': refreshToken};
+}
+
+class DeleteAccountParams {
+  final String userId;
+  final String email;
+  final String? phone;
+
+  DeleteAccountParams({required this.userId, required this.email, this.phone});
+
   Map<String, dynamic> toJson() => {
-        'refresh_token': refreshToken,
-      };
+    'user_id': userId,
+    'email': email,
+    if (phone != null) 'phone': phone,
+  };
 }

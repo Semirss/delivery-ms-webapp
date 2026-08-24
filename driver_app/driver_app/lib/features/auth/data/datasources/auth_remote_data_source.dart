@@ -20,6 +20,7 @@ abstract class AuthRemoteDataSource {
   Future<void> verifyResetPassword(VerifyResetPasswordParams params);
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params);
   Future<void> logout();
+  Future<void> deleteAccount(DeleteAccountParams params);
   Future<UserModel> getCurrentUser();
 }
 
@@ -211,7 +212,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final plate = params.plateNumber?.trim() ?? '';
     if (fullName.isEmpty) throw Exception('Please enter your full name.');
     if (email.isEmpty) throw Exception('Please enter your email.');
-    if (phone.isEmpty) throw Exception('Please enter your phone number.');
     if (telegram.isEmpty)
       throw Exception('Please enter your Telegram username.');
     if (plate.isEmpty) throw Exception('Please enter your plate number.');
@@ -221,24 +221,26 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
 
     final bytes = params.personalIdBytes;
-    if (bytes == null || bytes.isEmpty) {
-      throw Exception('Personal ID photo is required.');
-    }
 
-    final data = dio.FormData.fromMap({
+    final formFields = <String, dynamic>{
       'email': email,
       'name': fullName,
-      'phone': phone,
       'password': params.password,
       'telegram_username': telegram,
       'plate_number': plate,
       'vehicle_type': params.vehicleType ?? 'Bike',
       'status': 'Offline',
-      'personal_id': dio.MultipartFile.fromBytes(
+      if (phone.isNotEmpty) 'phone': phone,
+    };
+
+    if (bytes != null && bytes.isNotEmpty) {
+      formFields['personal_id'] = dio.MultipartFile.fromBytes(
         bytes,
         filename: params.personalIdFileName ?? 'driver_id.jpg',
-      ),
-    });
+      );
+    }
+
+    final data = dio.FormData.fromMap(formFields);
 
     final response = await _dio.post<Map<String, dynamic>>(
       '$apiBaseUrl/api/drivers',
@@ -392,6 +394,34 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> logout() async {
     await _supabase.auth.signOut();
+  }
+
+  @override
+  Future<void> deleteAccount(DeleteAccountParams params) async {
+    final apiBaseUrl = _apiBaseUrl;
+    if (apiBaseUrl == null) {
+      throw Exception(
+        'Account deletion needs API_BASE_URL so the web app can remove '
+        'your account.',
+      );
+    }
+
+    final userId = params.userId.trim();
+    if (userId.isEmpty) throw Exception('No account is signed in.');
+
+    final email = params.email.trim().toLowerCase();
+    await _dio.delete<Map<String, dynamic>>(
+      '$apiBaseUrl/api/drivers/${Uri.encodeComponent(userId)}',
+      options: dio.Options(
+        headers: {
+          if (email.isNotEmpty) 'X-Motobike-Account-Email': email,
+          if (params.phone?.trim().isNotEmpty == true)
+            'X-Motobike-Account-Phone': params.phone!.trim(),
+        },
+      ),
+    );
+
+    await logout();
   }
 
   @override

@@ -131,6 +131,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete account?'),
+        content: const Text(
+          'This permanently deletes your driver account and signs you out. '
+          'Delivery records may be retained for operational history.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete account'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+    context.read<AuthBloc>().add(const DeleteAccountEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,6 +168,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
             context.goNamed(AppRoutes.login.name);
+          } else if (state is AuthError) {
+            AppToast.show(
+              context: context,
+              message: state.message,
+              type: AppToastType.error,
+            );
           }
         },
         child: _isLoading && _snapshot == null
@@ -358,6 +393,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? 'No unread alerts'
                 : '${snapshot.unreadNotifications} unread alerts',
             onTap: context.navigator.pushNotificationScreen,
+          ),
+          _buildTile(
+            context,
+            icon: Icons.delete_outline_rounded,
+            title: 'Delete Account',
+            subtitle: 'Permanently remove your driver account',
+            onTap: _confirmDeleteAccount,
           ),
         ]),
         const SizedBox(height: AppSpacing.lg),

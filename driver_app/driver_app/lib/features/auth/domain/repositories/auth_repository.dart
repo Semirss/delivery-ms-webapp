@@ -15,6 +15,7 @@ abstract class AuthRepository {
   );
   Future<Either<Failure, AuthResult>> refreshToken(RefreshTokenParams params);
   Future<Either<Failure, void>> logout();
+  Future<Either<Failure, void>> deleteAccount();
   Future<Either<Failure, UserEntity>> getCurrentUser();
   Future<Either<Failure, UserEntity?>> getCachedUser();
 }
