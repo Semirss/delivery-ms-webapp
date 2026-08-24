@@ -33,10 +33,10 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    for (final controller in _controllers) {
       controller.dispose();
     }
-    for (var node in _focusNodes) {
+    for (final node in _focusNodes) {
       node.dispose();
     }
     super.dispose();
@@ -80,7 +80,7 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppAppBar(titleText: 'OTP Verification', centerTitle: true),
+      appBar: const AppAppBar(titleText: 'OTP Verification', centerTitle: true),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -98,66 +98,88 @@ class _OtpScreenState extends State<OtpScreen> {
 
           return AppContainer(
             padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                kVerticalGap32,
-                AppText(
-                  'Verify OTP',
-                  variant: AppTextVariant.heading2,
-                  textAlign: TextAlign.center,
-                ),
-                kVerticalGap8,
-                AppText(
-                  'Enter the 6-digit code sent to your email',
-                  variant: AppTextVariant.bodyMedium,
-                  color: AppColors.textSecondary,
-                  textAlign: TextAlign.center,
-                ),
-                kVerticalGap48,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    6,
-                    (index) => SizedBox(
-                      width: 50,
-                      child: AppTextField.outlined(
-                        controller: _controllers[index],
-                        focusNode: _focusNodes[index],
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        maxLength: 1,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        onChanged: (value) => _handleOtpChanged(index, value),
-                      ),
-                    ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  kVerticalGap32,
+                  const AppText(
+                    'Verify OTP',
+                    variant: AppTextVariant.heading2,
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                kVerticalGap32,
-                AppButton.primary(
-                  label: 'Verify',
-                  onPressed: isLoading ? null : _submitOtp,
-                  isLoading: isLoading,
-                  fullWidth: true,
-                ),
-                kVerticalGap16,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AppText(
-                      "Didn't receive the code? ",
-                      variant: AppTextVariant.bodyMedium,
-                    ),
-                    AppButton.ghost(
-                      label: 'Resend',
-                      onPressed: isLoading ? null : _resendOtp,
-                      size: AppButtonSize.small,
-                    ),
-                  ],
-                ),
-              ],
+                  kVerticalGap8,
+                  const AppText(
+                    'Enter the 6-digit code sent to your email',
+                    color: AppColors.textSecondary,
+                    textAlign: TextAlign.center,
+                  ),
+                  kVerticalGap48,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final fieldWidth =
+                          ((constraints.maxWidth - AppSpacing.xs * 5) / 6)
+                              .clamp(36.0, 50.0);
+                      final rowWidth = fieldWidth * 6 + AppSpacing.xs * 5;
+
+                      return FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: SizedBox(
+                          width: rowWidth,
+                          child: Row(
+                            children: List.generate(11, (position) {
+                              if (position.isOdd) {
+                                return const SizedBox(width: AppSpacing.xs);
+                              }
+
+                              final index = position ~/ 2;
+                              return SizedBox(
+                                width: fieldWidth,
+                                child: AppTextField.outlined(
+                                  controller: _controllers[index],
+                                  focusNode: _focusNodes[index],
+                                  textAlign: TextAlign.center,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 1,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  onChanged: (value) =>
+                                      _handleOtpChanged(index, value),
+                                ),
+                              );
+                            }),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  kVerticalGap32,
+                  AppButton.primary(
+                    label: 'Verify',
+                    onPressed: isLoading ? null : _submitOtp,
+                    isLoading: isLoading,
+                    fullWidth: true,
+                  ),
+                  kVerticalGap16,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      const AppText("Didn't receive the code? "),
+                      AppButton.ghost(
+                        label: 'Resend',
+                        onPressed: isLoading ? null : _resendOtp,
+                        size: AppButtonSize.small,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },

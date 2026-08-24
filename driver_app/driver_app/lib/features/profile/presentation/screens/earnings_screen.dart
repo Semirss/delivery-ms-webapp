@@ -206,6 +206,8 @@ class _EarningsScreenState extends State<EarningsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final topInset = MediaQuery.viewPaddingOf(context).top;
+
     return Scaffold(
       backgroundColor: context.appBackground,
       body: _isLoading
@@ -215,7 +217,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
           : CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 224,
+                  expandedHeight: 224 + topInset,
                   backgroundColor: AppColors.primary,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -228,10 +230,10 @@ class _EarningsScreenState extends State<EarningsScreen> {
                         ),
                       ),
                       child: SafeArea(
+                        bottom: false,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 40),
                             AppText(
                               _period.summaryTitle,
                               color: Colors.white70,

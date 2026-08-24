@@ -299,7 +299,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
           final isLoading = state is AuthLoading;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+            ),
             child: Form(
               key: _formKey,
               autovalidateMode: _hasSubmitted

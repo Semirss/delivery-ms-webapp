@@ -270,13 +270,18 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 
           _completePendingGoogleSession(state);
           final isLoading = state is AuthLoading;
+          final topInset = MediaQuery.viewPaddingOf(context).top;
           return SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
+            ),
             child: Column(
               children: [
                 // Hero Header
                 Container(
                   width: double.infinity,
-                  height: 300,
+                  height: 300 + topInset,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -288,74 +293,91 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   child: SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: AppSpacing.xl),
-                        Stack(
-                          alignment: Alignment.center,
+                    bottom: false,
+                    minimum: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.2),
-                                shape: BoxShape.circle,
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.2,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.14),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.22,
+                                      ),
+                                    ),
+                                  ),
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Image.asset(
+                                    ImageConstants.appLogo,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            const Text(
+                              'MOTOBIKE',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                fontStyle: FontStyle.italic,
                               ),
                             ),
+                            const SizedBox(height: 4),
                             Container(
-                              width: 80,
-                              height: 80,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.14),
-                                borderRadius: BorderRadius.circular(24),
+                                color: AppColors.primary.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: Colors.white.withValues(alpha: 0.22),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
-                              clipBehavior: Clip.antiAlias,
-                              child: Image.asset(
-                                ImageConstants.appLogo,
-                                fit: BoxFit.cover,
+                              child: const Text(
+                                'DRIVER PORTAL',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: AppSpacing.lg),
-                        const Text(
-                          'MOTOBIKE',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: -1,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: AppColors.primary.withOpacity(0.5),
-                            ),
-                          ),
-                          child: const Text(
-                            'DRIVER PORTAL',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -380,7 +402,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                         const SizedBox(height: 4),
                         AppText(
                           'Access your driver dashboard',
-                          variant: AppTextVariant.bodyMedium,
                           color: context.appTextSecondary,
                         ),
                         if (_formError != null) ...[
@@ -396,7 +417,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                           hint: 'driver@email.com or 0912345678',
                           errorText: _emailError,
                           prefixIcon: Icons.account_circle_outlined,
-                          keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           onChanged: _handleEmailChanged,
                           validator: (v) {
@@ -447,9 +467,12 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                             () => _obscurePassword = !_obscurePassword,
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty)
+                            if (v == null || v.isEmpty) {
                               return 'Password is required';
-                            if (v.length < 6) return 'Min. 6 characters';
+                            }
+                            if (v.length < 6) {
+                              return 'Min. 6 characters';
+                            }
                             return null;
                           },
                         ),
@@ -479,10 +502,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const AppText(
-                              "New driver? ",
-                              variant: AppTextVariant.bodyMedium,
-                            ),
+                            const AppText('New driver? '),
                             GestureDetector(
                               onTap: () =>
                                   context.pushNamed(AppRoutes.signUp.name),

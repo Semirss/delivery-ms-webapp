@@ -276,9 +276,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
     _handledPendingGoogleSession = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      context.read<AuthBloc>().add(
-        const LoginWithGoogleEvent(),
-      );
+      context.read<AuthBloc>().add(const LoginWithGoogleEvent());
     });
   }
 
@@ -303,13 +301,18 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
 
           _completePendingGoogleSession(state);
           final isLoading = state is AuthLoading;
+          final topInset = MediaQuery.viewPaddingOf(context).top;
           return SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
+            ),
             child: Column(
               children: [
                 // Hero Header
                 Container(
                   width: double.infinity,
-                  height: 280,
+                  height: 280 + topInset,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -321,42 +324,56 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   child: SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: AppSpacing.xl),
-                        Container(
-                          width: 92,
-                          height: 92,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(26),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(
-                              ImageConstants.appLogo,
-                              fit: BoxFit.cover,
+                    bottom: false,
+                    minimum: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 92,
+                              height: 92,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(26),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(24),
+                                child: Image.asset(
+                                  ImageConstants.appLogo,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: AppSpacing.lg),
+                            const Text(
+                              'MotoBike',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            const Text(
+                              'Fast delivery, live tracking',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: AppSpacing.lg),
-                        const Text(
-                          'MotoBike',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w900,
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: -1,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Fast delivery, live tracking',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -381,7 +398,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                         const SizedBox(height: 4),
                         AppText(
                           'Sign in to manage deliveries',
-                          variant: AppTextVariant.bodyMedium,
                           color: context.appTextSecondary,
                         ),
                         if (_formError != null) ...[
@@ -397,7 +413,6 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                           hint: 'your@email.com or 0912345678',
                           errorText: _emailError,
                           prefixIcon: Icons.account_circle_outlined,
-                          keyboardType: TextInputType.text,
                           textInputAction: TextInputAction.next,
                           onChanged: _handleEmailChanged,
                           validator: _validateEmailOrPhone,
@@ -463,10 +478,7 @@ class _LoginScreenState extends State<LoginScreen> with WidgetsBindingObserver {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const AppText(
-                              "Don't have an account? ",
-                              variant: AppTextVariant.bodyMedium,
-                            ),
+                            const AppText("Don't have an account? "),
                             GestureDetector(
                               onTap: () {
                                 _clearAuthFieldErrors();

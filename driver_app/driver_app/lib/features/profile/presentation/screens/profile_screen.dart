@@ -206,9 +206,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final approval = snapshot?.approvalStatus ?? 'Pending';
     final isApproved = approval == 'Approved';
     final isOnline = status == 'Online';
+    final topInset = MediaQuery.viewPaddingOf(context).top;
 
     return SliverAppBar(
-      expandedHeight: 272,
+      expandedHeight: 272 + topInset,
       backgroundColor: AppColors.primary,
       pinned: true,
       automaticallyImplyLeading: false,
@@ -222,6 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           child: SafeArea(
+            bottom: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,

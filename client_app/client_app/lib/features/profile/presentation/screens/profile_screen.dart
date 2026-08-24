@@ -121,11 +121,12 @@ class ProfileScreen extends StatelessWidget {
                 ? '${user!.firstName} ${user.lastName}'
                 : user?.email ?? 'User';
             final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
+            final topInset = MediaQuery.viewPaddingOf(context).top;
 
             return CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 226,
+                  expandedHeight: 226 + topInset,
                   backgroundColor: AppColors.primary,
                   pinned: true,
                   flexibleSpace: FlexibleSpaceBar(
@@ -138,10 +139,13 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       child: SafeArea(
+                        bottom: false,
+                        minimum: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(height: 20),
                             Container(
                               width: 96,
                               height: 96,
@@ -180,6 +184,8 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(height: AppSpacing.md),
                             Text(
                               name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 22,
@@ -189,6 +195,8 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               user?.email ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: Colors.white.withValues(alpha: 0.8),
                                 fontSize: 14,
@@ -218,13 +226,17 @@ class ProfileScreen extends StatelessWidget {
                                       size: 16,
                                     ),
                                     const SizedBox(width: 4),
-                                    Text(
-                                      label,
-                                      style: TextStyle(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.85,
+                                    Flexible(
+                                      child: Text(
+                                        label,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.85,
+                                          ),
+                                          fontSize: 13,
                                         ),
-                                        fontSize: 13,
                                       ),
                                     ),
                                   ],
