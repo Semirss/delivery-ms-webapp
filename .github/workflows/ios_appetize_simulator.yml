@@ -1,0 +1,126 @@
+name: iOS Appetize Simulator Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: App to build for Appetize
+        required: true
+        default: both
+        type: choice
+        options:
+          - both
+          - client
+          - driver
+      build_name:
+        description: Optional version name, for example 1.0.5. Blank uses pubspec.yaml.
+        required: false
+        type: string
+      build_number:
+        description: Optional build number. Blank uses a high GitHub run number.
+        required: false
+        type: string
+
+jobs:
+  build-ios-simulator:
+    name: Build iOS Simulator App
+    runs-on: macos-15-intel
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build selected simulator app
+        shell: bash
+        env:
+          SELECTED_APP: ${{ inputs.app }}
+          INPUT_BUILD_NAME: ${{ inputs.build_name }}
+          INPUT_BUILD_NUMBER: ${{ inputs.build_number }}
+          CLIENT_DOTENV_BASE64: ${{ secrets.CLIENT_DOTENV_BASE64 }}
+          DRIVER_DOTENV_BASE64: ${{ secrets.DRIVER_DOTENV_BASE64 }}
+        run: |
+          set -euo pipefail
+
+          build_app() {
+            local label="$1"
+            local app_dir="$2"
+            local dotenv_secret_name="$3"
+            local dotenv_value="${!dotenv_secret_name:-}"
+
+            if [ -z "$dotenv_value" ]; then
+              echo "::error::Missing GitHub secret: $dotenv_secret_name"
+              exit 1
+            fi
+
+            echo "Building $label iOS Simulator app for Appetize"
+            cd "$GITHUB_WORKSPACE/$app_dir"
+            DOTENV_VALUE="$dotenv_value" python3 -c 'import base64, os; from pathlib import Path; Path(".env").write_bytes(base64.b64decode(os.environ["DOTENV_VALUE"]))'
+
+            pubspec_version="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
+            build_name="${INPUT_BUILD_NAME:-${pubspec_version%%+*}}"
+            build_number="${INPUT_BUILD_NUMBER:-$((100000 + GITHUB_RUN_NUMBER))}"
+
+            flutter pub get
+            flutter build ios \
+              --simulator \
+              --debug \
+              --build-name "$build_name" \
+              --build-number "$build_number"
+
+            app_path="build/ios/iphonesimulator/Runner.app"
+            if [ ! -d "$app_path" ]; then
+              echo "::error::Expected simulator app not found at $app_path"
+              exit 1
+            fi
+
+            mkdir -p "$GITHUB_WORKSPACE/build_artifacts/$label"
+            zip_path="$GITHUB_WORKSPACE/build_artifacts/$label/${label}-appetize-simulator.zip"
+            ditto -c -k --keepParent "$app_path" "$zip_path"
+
+            ZIP_PATH="$zip_path" python3 - <<'PY'
+          import os
+          import sys
+          import zipfile
+
+          zip_path = os.environ["ZIP_PATH"]
+          with zipfile.ZipFile(zip_path) as archive:
+              names = set(archive.namelist())
+
+          if "Runner.app/Info.plist" not in names:
+              print("::error::Appetize zip does not contain Runner.app/Info.plist")
+              sys.exit(1)
+          PY
+
+            echo "Created $zip_path"
+          }
+
+          case "$SELECTED_APP" in
+            client)
+              build_app client client_app/client_app CLIENT_DOTENV_BASE64
+              ;;
+            driver)
+              build_app driver driver_app/driver_app DRIVER_DOTENV_BASE64
+              ;;
+            both)
+              build_app client client_app/client_app CLIENT_DOTENV_BASE64
+              build_app driver driver_app/driver_app DRIVER_DOTENV_BASE64
+              ;;
+            *)
+              echo "::error::Unknown app selection: $SELECTED_APP"
+              exit 1
+              ;;
+          esac
+
+      - name: Upload Appetize simulator artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-appetize-${{ inputs.app }}
+          path: build_artifacts/**/*-appetize-simulator.zip
+          if-no-files-found: error
