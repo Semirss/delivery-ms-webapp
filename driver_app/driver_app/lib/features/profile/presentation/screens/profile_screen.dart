@@ -1,6 +1,7 @@
 import 'package:driver_app/config/router/app_routes.dart';
 import 'package:driver_app/config/router/navigation_helper.dart';
 import 'package:driver_app/core/preferences/app_preferences.dart';
+import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
@@ -201,7 +202,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildHeader(BuildContext context) {
     final snapshot = _snapshot;
     final name = snapshot?.name ?? 'Driver';
-    final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'D';
     final status = snapshot?.status ?? 'Offline';
     final approval = snapshot?.approvalStatus ?? 'Pending';
     final isApproved = approval == 'Approved';
@@ -236,15 +236,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 46,
-                        backgroundColor: Colors.white.withValues(alpha: 0.18),
-                        child: Text(
-                          initial,
-                          style: const TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                      Container(
+                        width: 92,
+                        height: 92,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.92),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.14),
+                              blurRadius: 24,
+                              offset: const Offset(0, 12),
+                            ),
+                          ],
+                        ),
+                        child: ClipOval(
+                          child: Image.asset(
+                            ImageConstants.appLogo,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.motorcycle_rounded,
+                              color: AppColors.primary,
+                              size: 44,
+                            ),
                           ),
                         ),
                       ),

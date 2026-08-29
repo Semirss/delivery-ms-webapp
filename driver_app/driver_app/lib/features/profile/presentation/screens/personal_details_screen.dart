@@ -1,3 +1,4 @@
+import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
@@ -88,8 +89,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
 
   Widget _buildIdentityCard() {
     final snapshot = _snapshot;
-    final name = snapshot?.name.trim() ?? '';
-    final initial = name.isNotEmpty ? name[0].toUpperCase() : 'D';
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -100,15 +99,23 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-            child: Text(
-              initial,
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
+          Container(
+            width: 60,
+            height: 60,
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: ClipOval(
+              child: Image.asset(
+                ImageConstants.appLogo,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
+                  Icons.motorcycle_rounded,
+                  color: AppColors.primary,
+                  size: 30,
+                ),
               ),
             ),
           ),
