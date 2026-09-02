@@ -17,7 +17,17 @@ class PrivacyPolicyScreen extends StatelessWidget {
             icon: Icons.location_on_rounded,
             title: 'Location data',
             body:
-                'When you go online, the app sends your current GPS position so dispatch can assign nearby deliveries and customers can track active orders. Location updates stop when you go offline.',
+                'MotoBike Driver collects your precise or approximate location '
+                'while you use the app, when you turn Online, or when you '
+                'handle an assigned delivery. We use location to show your '
+                'position on the map, send your position to dispatch, assign '
+                'nearby deliveries, update customers and support on delivery '
+                'progress, and help with pickup and drop-off navigation. '
+                'Location updates may be stored with your driver profile and '
+                'delivery records, and route coordinates may be sent to map or '
+                'routing providers to draw trip routes. Location updates stop '
+                'when you go offline. We do not sell location data or use it '
+                'for ads.',
           ),
           _section(
             context,

@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,6 +29,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const _locationDisclosureConsentKey =
+      'driver_location_prominent_disclosure_consent_v1';
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
@@ -62,13 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
     unawaited(
       _localNotifications.initialize(onTap: _handleSystemNotificationTap),
     );
-    _checkLocationPermission();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDriverRecord());
-  }
-
-  Future<void> _checkLocationPermission() async {
-    if (!await _ensureLocationAccess()) return;
-    await _getCurrentLocation(zoom: 16);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_loadDriverRecord());
+    });
   }
 
   Future<bool> _ensureLocationAccess({bool showMessages = false}) async {
@@ -86,6 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
+      final accepted = await _ensureLocationProminentDisclosure(
+        beforePermissionRequest: true,
+        showMessages: showMessages,
+      );
+      if (!accepted) return false;
+
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         if (showMessages && mounted) {
@@ -110,7 +116,111 @@ class _HomeScreenState extends State<HomeScreen> {
       return false;
     }
 
+    return _ensureLocationProminentDisclosure(
+      beforePermissionRequest: false,
+      showMessages: showMessages,
+    );
+  }
+
+  Future<bool> _ensureLocationProminentDisclosure({
+    required bool beforePermissionRequest,
+    required bool showMessages,
+  }) async {
+    if (!beforePermissionRequest) {
+      final prefs = await SharedPreferences.getInstance();
+      final hasConsent = prefs.getBool(_locationDisclosureConsentKey) ?? false;
+      if (hasConsent) return true;
+    }
+
+    final accepted = await _showLocationProminentDisclosure();
+    if (!accepted) {
+      if (showMessages && mounted) {
+        AppToast.show(
+          context: context,
+          message: 'Location consent is needed to use driver GPS features.',
+          type: AppToastType.warning,
+        );
+      }
+      return false;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_locationDisclosureConsentKey, true);
     return true;
+  }
+
+  Future<bool> _showLocationProminentDisclosure() async {
+    if (!mounted) return false;
+
+    final accepted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            backgroundColor: dialogContext.appSurface,
+            icon: const Icon(
+              Icons.my_location_rounded,
+              color: AppColors.primary,
+            ),
+            title: const Text('Location use in MotoBike Driver'),
+            content: const SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'MotoBike Driver collects your precise or approximate '
+                    'location while you use the app and when you turn Online '
+                    'or handle an assigned delivery.',
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  Text(
+                    'We use this location to show your position on the map, '
+                    'send your position to dispatch, assign nearby deliveries, '
+                    'update delivery progress for customers and support, and '
+                    'help with pickup and drop-off navigation.',
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  Text(
+                    'Your location may be stored with your driver profile and '
+                    'delivery records. Route coordinates may be sent to map or '
+                    'routing providers to draw trip routes. We do not sell '
+                    'location data or use it for ads.',
+                  ),
+                  SizedBox(height: AppSpacing.md),
+                  Text(
+                    'If you choose Not now, you can stay offline, but delivery '
+                    'assignment and map location features will not work.',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext, rootNavigator: true).pop(false);
+                },
+                child: const Text('Not now'),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  Navigator.of(dialogContext, rootNavigator: true).pop(true);
+                },
+                child: const Text('Agree'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    return accepted ?? false;
   }
 
   Future<void> _getCurrentLocation({
@@ -274,8 +384,19 @@ class _HomeScreenState extends State<HomeScreen> {
         _subscribeToNotifications();
       }
       if (_isOnline && record != null) {
-        _startLocationStreaming(record['id'].toString());
-        await _subscribeToAssignments(record['id'].toString());
+        final driverId = record['id'].toString();
+        final hasLocationAccess = await _ensureLocationAccess(
+          showMessages: true,
+        );
+        if (!mounted) return record;
+        if (!hasLocationAccess) {
+          await _setDriverOfflineWithoutLocation(driverId);
+          return record;
+        }
+        await _getCurrentLocation();
+        if (!mounted) return record;
+        _startLocationStreaming(driverId);
+        await _subscribeToAssignments(driverId);
       }
       return record;
     } catch (e) {
@@ -376,6 +497,31 @@ class _HomeScreenState extends State<HomeScreen> {
         .subscribe();
   }
 
+  Future<void> _setDriverOfflineWithoutLocation(String driverId) async {
+    await _positionStream?.cancel();
+    await _deliveriesChannel?.unsubscribe();
+
+    try {
+      await _supabase.from('drivers').update({'status': 'Offline'}).eq(
+            'id',
+            driverId,
+          );
+    } catch (e) {
+      debugPrint('Error setting driver offline after location denial: $e');
+    }
+
+    if (!mounted) return;
+    final driver = _driverRecord;
+    setState(() {
+      _isOnline = false;
+      _activeDelivery = null;
+      _routePoints = [];
+      if (driver != null) {
+        _driverRecord = {...driver, 'status': 'Offline'};
+      }
+    });
+  }
+
   Future<void> _toggleOnlineStatus() async {
     if (_isUpdating) return;
 
@@ -391,6 +537,13 @@ class _HomeScreenState extends State<HomeScreen> {
         type: AppToastType.warning,
       );
       return;
+    }
+
+    if (!_isOnline) {
+      final hasLocationAccess = await _ensureLocationAccess(
+        showMessages: true,
+      );
+      if (!mounted || !hasLocationAccess) return;
     }
 
     setState(() => _isUpdating = true);
@@ -418,6 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _driverRecord = {...driver, 'status': 'Offline'};
         });
       } else {
+        await _getCurrentLocation();
         await _updateDriverLocation(driverId, status: 'Online');
         _startLocationStreaming(driverId);
         await _subscribeToAssignments(driverId);

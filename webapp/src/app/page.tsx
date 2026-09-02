@@ -32,6 +32,9 @@ const CONTACT_PHONE = "+251931323328";
 const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";
+const APP_STORE_URL = "https://apps.apple.com/us/app/motobike-delivery/id6801999163";
+const PLAY_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client";
 
 type TelegramWindow = Window & {
   Telegram?: {
@@ -40,6 +43,99 @@ type TelegramWindow = Window & {
     };
   };
 };
+
+function AppStoreMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-11 w-11 shrink-0 fill-white"
+    >
+      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35-4.88-5.03-4.16-12.69 1.38-12.97 1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08ZM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z" />
+    </svg>
+  );
+}
+
+function GooglePlayMark() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 28 31"
+      className="h-10 w-10 shrink-0"
+    >
+      <path
+        fill="#34A853"
+        d="M1.22.65C.76 1.12.5 1.84.5 2.74v25.52c0 .9.26 1.62.72 2.09L15.5 15.5 1.22.65Z"
+      />
+      <path
+        fill="#4285F4"
+        d="M1.22.65c.69-.25 1.66-.06 2.63.49l16.27 9.23-4.62 5.13L1.22.65Z"
+      />
+      <path
+        fill="#FBBC04"
+        d="m20.12 10.37 6.03 3.42c1.8 1.02 1.8 2.4 0 3.42l-6.03 3.42-4.62-5.13 4.62-5.13Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M1.22 30.35c.69.25 1.66.06 2.63-.49l16.27-9.23-4.62-5.13L1.22 30.35Z"
+      />
+    </svg>
+  );
+}
+
+function AppDownloadButtons({
+  className = "",
+  compact = false,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`flex w-full flex-col items-start gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4 ${className}`}
+    >
+      <a
+        href={APP_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Download MotoBike on the App Store"
+        className={`group flex h-[64px] w-full max-w-[225px] items-center gap-3 rounded-[10px] border border-[#9f9f9f] bg-black px-4 text-white shadow-[0_14px_28px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 active:translate-y-0 sm:w-[225px] ${
+          compact ? "h-[56px] max-w-[196px] px-3 sm:w-[196px]" : ""
+        }`}
+      >
+        <AppStoreMark />
+        <span className="min-w-0">
+          <span className="block whitespace-nowrap text-[0.83rem] font-bold leading-none">
+            Download on the
+          </span>
+          <span className="mt-1 block whitespace-nowrap text-[1.72rem] font-bold leading-none">
+            App Store
+          </span>
+        </span>
+      </a>
+
+      <a
+        href={PLAY_STORE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Get MotoBike on Google Play"
+        className={`group flex h-[64px] w-full max-w-[225px] items-center gap-3 rounded-[10px] border border-[#9f9f9f] bg-black px-4 text-white shadow-[0_14px_28px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 active:translate-y-0 sm:w-[225px] ${
+          compact ? "h-[56px] max-w-[196px] px-3 sm:w-[196px]" : ""
+        }`}
+      >
+        <GooglePlayMark />
+        <span className="min-w-0">
+          <span className="block whitespace-nowrap text-[0.78rem] font-bold uppercase leading-none">
+            Get it on
+          </span>
+          <span className="mt-1 block whitespace-nowrap text-[1.48rem] font-normal leading-none">
+            Google Play
+          </span>
+        </span>
+      </a>
+    </div>
+  );
+}
 
 function PriceCalculator() {
   const [km, setKm] = useState(3);
@@ -362,6 +458,9 @@ export default function LandingPage() {
             <a href="#features" className="transition hover:text-[#f26a54]">
               Features
             </a>
+            <a href="#download" className="transition hover:text-[#f26a54]">
+              Download
+            </a>
           </div>
           <Link href="/book">
             <button className="rounded-full bg-[#f26a54] px-6 py-3 text-sm font-black text-white shadow-[0_16px_28px_rgba(242,106,84,0.24)] transition hover:bg-[#e45d48] active:scale-95">
@@ -433,6 +532,42 @@ export default function LandingPage() {
           </div>
         </div>
       </main>
+
+      <section
+        id="download"
+        className="relative z-10 border-y border-[#102137] bg-[#12263d] py-16 text-white"
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(242,106,84,0.22),transparent_36%),linear-gradient(90deg,#12263d,#193550_55%,#0f1f32)]" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-8 px-6 md:px-10 lg:grid-cols-[1fr_auto]">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeIn}
+          >
+            <span className="text-sm font-black uppercase tracking-[0.24em] text-[#7edcff]">
+              Available now
+            </span>
+            <h2 className="mt-3 max-w-3xl text-4xl font-black leading-tight md:text-5xl">
+              Download MotoBike and order delivery from your phone.
+            </h2>
+            <p className="mt-4 max-w-2xl text-lg font-semibold leading-relaxed text-white/72">
+              Open the client app for faster booking, live updates, and simple
+              access whenever you need a courier in Addis Ababa.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeIn}
+            className="flex justify-start lg:justify-end"
+          >
+            <AppDownloadButtons />
+          </motion.div>
+        </div>
+      </section>
 
       <section id="about" className="relative z-10 py-24">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 md:px-10 lg:grid-cols-2">
