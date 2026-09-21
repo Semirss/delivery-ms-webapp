@@ -124,6 +124,7 @@ jobs:
 
             flutter build ipa \
               --release \
+              --no-tree-shake-icons \
               --build-name "$build_name" \
               --build-number "$build_number" \
               --export-options-plist "$HOME/export_options.plist"

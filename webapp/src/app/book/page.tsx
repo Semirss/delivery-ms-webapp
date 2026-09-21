@@ -1,25 +1,64 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, MapPin, CopyCheck, AlertCircle, ArrowRight, Loader2 } from "lucide-react";
 
-const CONTACT_PHONE = "+251931323328";
-const CONTACT_PHONE2 = "+251920202304";
-const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
-const CONTACT_TELEGRAM = "motorbike_et";
-
 // Pricing config
 const PRICING = {
-  Bike:  { base: 30, perKm: 40 },
-  Motor: { base: 40, perKm: 50 },
+  Bike:  { base: 30, perKm: 30 },
+  Motor: { base: 40, perKm: 40 },
 };
 
 const BICYCLE_MAX_KM = 10;
-const LONG_DISTANCE_PER_KM = 15;
+const LONG_DISTANCE_PER_KM = 20;
 
-import { ADDIS_LOCATIONS, ADDIS_NEIGHBORHOODS } from "@/lib/locations";
+type AddisLocation = {
+  name: string;
+  latitude: number;
+  longitude: number;
+  source: string;
+};
+
+async function searchAddisLocations(query: string, signal?: AbortSignal): Promise<AddisLocation[]> {
+  if (!query.trim()) return [];
+  try {
+    const response = await fetch(
+      `/api/locations/search?q=${encodeURIComponent(query)}&limit=12`,
+      { signal, cache: "no-store" },
+    );
+    if (!response.ok) return [];
+    const payload = await response.json();
+    return Array.isArray(payload.locations) ? payload.locations : [];
+  } catch {
+    return [];
+  }
+}
+
+async function geocodeAddisLocation(query: string) {
+  const locations = await searchAddisLocations(query);
+  if (locations.length > 0) {
+    const exact = locations.find(
+      (location) => location.name.toLowerCase() === query.trim().toLowerCase(),
+    );
+    const location = exact ?? locations[0];
+    return { lat: location.latitude, lng: location.longitude };
+  }
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=et&bounded=1&viewbox=38.62,9.12,38.92,8.82&q=${encodeURIComponent(`${query}, Addis Ababa, Ethiopia`)}`,
+    );
+    const rows = await response.json();
+    if (Array.isArray(rows) && rows.length > 0) {
+      return { lat: Number(rows[0].lat), lng: Number(rows[0].lon) };
+    }
+  } catch {
+    // The booking form remains usable; exact coordinates can be pinned later.
+  }
+  return null;
+}
 
 
 // ── LocationInput Component ────────────────────────────────────────────────
@@ -32,7 +71,7 @@ function LocationInput({
   onChange: (v: string) => void;
   icon: React.ReactNode;
 }) {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<AddisLocation[]>([]);
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,23 +86,33 @@ function LocationInput({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    const query = value.trim();
+    if (!query) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      const results = await searchAddisLocations(query, controller.signal);
+      if (controller.signal.aborted) return;
+      setSuggestions(results);
+      setOpen(results.length > 0);
+    }, 220);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [value]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     onChange(v);
-    if (v.trim().length >= 1) {
-      const filtered = ADDIS_NEIGHBORHOODS.filter(n =>
-        n.toLowerCase().includes(v.toLowerCase())
-      ).slice(0, 7);
-      setSuggestions(filtered);
-      setOpen(filtered.length > 0);
-    } else {
+    if (!v.trim()) {
       setSuggestions([]);
       setOpen(false);
     }
   };
 
-  const handleSelect = (neighborhood: string) => {
-    onChange(neighborhood);
+  const handleSelect = (neighborhood: AddisLocation) => {
+    onChange(neighborhood.name);
     setSuggestions([]);
     setOpen(false);
   };
@@ -92,17 +141,20 @@ function LocationInput({
       {/* Suggestions Dropdown */}
       {open && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.10)] border border-neutral-100 z-50 overflow-hidden">
-          {suggestions.map((s, i) => (
+          {suggestions.map((suggestion, i) => (
             <button
-              key={s}
+              key={`${suggestion.name}-${suggestion.latitude}-${suggestion.longitude}`}
               type="button"
-              onMouseDown={() => handleSelect(s)}
+              onMouseDown={() => handleSelect(suggestion)}
               className={`w-full flex items-center space-x-3 px-4 py-3 text-left text-sm font-medium text-neutral-800 hover:bg-neutral-50 transition-colors ${i !== suggestions.length - 1 ? "border-b border-neutral-50" : ""}`}
             >
               <MapPin className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-              <span>{s}</span>
+              <span>{suggestion.name}</span>
             </button>
           ))}
+          <div className="px-4 py-2 text-[10px] font-medium text-neutral-400 bg-neutral-50">
+            Location data © OpenStreetMap contributors
+          </div>
         </div>
       )}
     </div>
@@ -115,37 +167,9 @@ async function getRoadDistanceKm(
   dropoffText: string
 ): Promise<number | null> {
   try {
-    // Smart geocode: try with exact hardcoded Google Coordinates first
-    const geocode = async (q: string) => {
-      // 1. Exact Match from our generated Google Maps dataset
-      if (ADDIS_LOCATIONS[q]) {
-        return ADDIS_LOCATIONS[q];
-      }
-
-      const headers = { "User-Agent": "MotoBikeDelivery/1.0" };
-
-      // 2nd attempt: neighbourhood + city context via Nominatim
-      const r1 = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Addis Ababa, Ethiopia")}`,
-        { headers }
-      );
-      const d1 = await r1.json();
-      if (d1?.length) return { lat: parseFloat(d1[0].lat), lng: parseFloat(d1[0].lon) };
-
-      // 3rd attempt: plain global search (handles custom / unknown areas)
-      const r2 = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Ethiopia")}`,
-        { headers }
-      );
-      const d2 = await r2.json();
-      if (d2?.length) return { lat: parseFloat(d2[0].lat), lng: parseFloat(d2[0].lon) };
-
-      return null;
-    };
-
     const [pickup, dropoff] = await Promise.all([
-      geocode(pickupText),
-      geocode(dropoffText),
+      geocodeAddisLocation(pickupText),
+      geocodeAddisLocation(dropoffText),
     ]);
 
     if (!pickup || !dropoff) return null;
@@ -196,8 +220,11 @@ export default function Book() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).Telegram?.WebApp) {
-      (window as any).Telegram.WebApp.expand();
+    const telegramWindow = window as Window & {
+      Telegram?: { WebApp?: { expand: () => void } };
+    };
+    if (telegramWindow.Telegram?.WebApp) {
+      telegramWindow.Telegram.WebApp.expand();
     }
   }, []);
 
@@ -250,19 +277,12 @@ export default function Book() {
     try {
       let pickupLat = null, pickupLng = null, dropoffLat = null, dropoffLng = null;
       try {
-        const geocode = async (q: string) => {
-          if (ADDIS_LOCATIONS[q]) return { lat: ADDIS_LOCATIONS[q].lat, lon: ADDIS_LOCATIONS[q].lng };
-
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + ", Addis Ababa, Ethiopia")}`,
-            { headers: { "User-Agent": "MotoBikeDelivery/1.0" } }
-          );
-          const data = await res.json();
-          return data?.length ? data[0] : null;
-        };
-        const [pd, dd] = await Promise.all([geocode(pickupValue), geocode(dropoffValue)]);
-        if (pd) { pickupLat = parseFloat(pd.lat); pickupLng = parseFloat(pd.lon); }
-        if (dd) { dropoffLat = parseFloat(dd.lat); dropoffLng = parseFloat(dd.lon); }
+        const [pd, dd] = await Promise.all([
+          geocodeAddisLocation(pickupValue),
+          geocodeAddisLocation(dropoffValue),
+        ]);
+        if (pd) { pickupLat = pd.lat; pickupLng = pd.lng; }
+        if (dd) { dropoffLat = dd.lat; dropoffLng = dd.lng; }
       } catch {}
 
       const res = await fetch("/api/deliveries", {
@@ -296,8 +316,8 @@ export default function Book() {
       setPriceEstimate(null);
       setTimeout(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       setTimeout(() => setSubmitted(false), 5000);
-    } catch (err: any) {
-      setError(err.message || "Unexpected error occurred.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Unexpected error occurred.");
       setTimeout(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     }
     setLoading(false);
@@ -408,7 +428,7 @@ export default function Book() {
                           {priceEstimate} <span className="text-base font-semibold text-neutral-500">Birr</span>
                         </p>
                         <p className="text-xs text-neutral-400 mt-1">
-                          {distanceKm.toFixed(1)} km - {base} base + {perKm} Birr/km + {LONG_DISTANCE_PER_KM} Birr/km after
+                          {distanceKm.toFixed(1)} km - {base} base + {perKm} Birr/km + {LONG_DISTANCE_PER_KM} Birr/km after 10 km
                         </p>
                       </div>
                       <div className="flex flex-col items-end text-right">
@@ -454,7 +474,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🚲</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Bike</span>
-                    <span className="text-xs font-semibold opacity-70">{bikeDisabled ? "Up to 10 km only" : "30 + 40/km"}</span>
+                    <span className="text-xs font-semibold opacity-70">{bikeDisabled ? "Up to 10 km only" : "30 + 30/km"}</span>
                   </div>
                 </div>
 
@@ -469,7 +489,7 @@ export default function Book() {
                   <span className="text-3xl filter drop-shadow-sm">🏍️</span>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold">Motorbike</span>
-                    <span className="text-xs font-semibold opacity-70">40 + 50/km </span>
+                    <span className="text-xs font-semibold opacity-70">40 + 40/km </span>
                   </div>
                 </div>
               </div>
@@ -484,7 +504,7 @@ export default function Book() {
             </button>
 
             <p className="text-center text-xs text-neutral-400 pt-1">
-              Final price confirmed by rider - {base} Birr base + {perKm} Birr/km  + {LONG_DISTANCE_PER_KM} Birr/km after for {activeVehicleCategory}
+              Final price confirmed by rider - {base} Birr base + {perKm} Birr/km + {LONG_DISTANCE_PER_KM} Birr/km after 10 km for {activeVehicleCategory}
             </p>
           </form>
         </div>

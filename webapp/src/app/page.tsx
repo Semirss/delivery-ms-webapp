@@ -21,12 +21,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const PRICING_CALC = {
-  Bike: { base: 30, perKm: 40 },
-  Motor: { base: 40, perKm: 50 },
+  Bike: { base: 30, perKm: 30 },
+  Motor: { base: 40, perKm: 40 },
 };
 
 const BICYCLE_MAX_KM = 10;
-const LONG_DISTANCE_PER_KM = 15;
+const LONG_DISTANCE_PER_KM = 20;
 
 const CONTACT_PHONE = "+251931323328";
 const CONTACT_PHONE2 = "+251920202304";
@@ -147,10 +147,6 @@ function PriceCalculator() {
   const extraKm = Math.max(0, km - BICYCLE_MAX_KM);
   const price = Math.round((base + firstLegKm * perKm + extraKm * LONG_DISTANCE_PER_KM) / 10) * 10;
 
-  useEffect(() => {
-    if (vehicle === "Bike" && bikeDisabled) setVehicle("Motor");
-  }, [bikeDisabled, vehicle]);
-
   return (
     <div className="mx-auto mt-14 max-w-xl rounded-[2rem] border border-[#ffe2dc] bg-white/90 p-8 shadow-[0_24px_60px_rgba(242,106,84,0.12)] backdrop-blur-xl">
       <div className="mb-6 text-center">
@@ -196,7 +192,13 @@ function PriceCalculator() {
           min={1}
           max={30}
           value={km}
-          onChange={(event) => setKm(Number(event.target.value))}
+          onChange={(event) => {
+            const nextKm = Number(event.target.value);
+            setKm(nextKm);
+            if (vehicle === "Bike" && nextKm > BICYCLE_MAX_KM) {
+              setVehicle("Motor");
+            }
+          }}
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[#ffd8cf] accent-[#f26a54]"
         />
         <div className="mt-1.5 flex justify-between text-xs font-bold text-[#9aa6b5]">
@@ -215,7 +217,7 @@ function PriceCalculator() {
             <span className="text-base font-bold text-[#6c7a89]">ETB</span>
           </p>
           <p className="mt-1 text-xs font-bold text-[#8b98a8]">
-            {base} base + {perKm} ETB/km + {LONG_DISTANCE_PER_KM} ETB/km after
+            {base} base + {perKm} ETB/km + {LONG_DISTANCE_PER_KM} ETB/km after 10 km
           </p>
         </div>
         <Link href="/book">
@@ -274,7 +276,7 @@ function PhoneInterface() {
             {[
               {
                 label: "Bicycle",
-                price: "40",
+                price: "30",
                 icon: Bike,
                 border: "#f26a54",
                 bg: "from-[#fff4f0] to-[#ffd8cf]",
@@ -282,7 +284,7 @@ function PhoneInterface() {
               },
               {
                 label: "Motorbike",
-                price: "50",
+                price: "40",
                 icon: Zap,
                 border: "#afe4fa",
                 bg: "from-[#effaff] to-[#e0f5ff]",
@@ -657,7 +659,7 @@ export default function LandingPage() {
                 title: "Bicycle Courier",
                 desc: "Best for light items, documents, and local trips up to 10 km.",
                 base: "30",
-                perKm: "+40",
+                perKm: "+30",
                 accent: "#f26a54",
                 panel: "bg-[#fff8f5]",
                 icon: Bike,
@@ -666,7 +668,7 @@ export default function LandingPage() {
                 title: "Motorbike Courier",
                 desc: "Fastest option for cross-city delivery and trips over 10 km.",
                 base: "40",
-                perKm: "+50",
+                perKm: "+40",
                 accent: "#2aa7d6",
                 panel: "bg-[#effaff]",
                 icon: Zap,

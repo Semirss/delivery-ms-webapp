@@ -26,10 +26,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/router/app_routes.dart';
 import '../../../../core/preferences/app_preferences.dart';
 
-enum _PickupChoice { currentLocation, neighborhood, pinOnMap }
-
-enum _DeliveryDestinationChoice { currentLocation, neighborhood, pinOnMap }
-
 class _DeliveryPricing {
   const _DeliveryPricing({
     required this.title,
@@ -118,21 +114,21 @@ class _HomeDeal {
 }
 
 const double _bicycleMaxDistanceKm = 10;
-const int _longDistancePerKm = 15;
+const int _longDistancePerKm = 20;
 
 const Map<String, _DeliveryPricing> _deliveryPricing = {
   'Bike': _DeliveryPricing(
     title: 'Bicycle',
-    subtitle: '40 Birr/km',
+    subtitle: '30 Birr/km',
     baseFare: 30,
-    perKm: 40,
+    perKm: 30,
     icon: Icons.directions_bike_rounded,
   ),
   'Motor': _DeliveryPricing(
     title: 'Motorbike',
-    subtitle: '50 Birr/km',
+    subtitle: '40 Birr/km',
     baseFare: 40,
-    perKm: 50,
+    perKm: 40,
     icon: Icons.motorcycle_rounded,
   ),
 };
@@ -969,7 +965,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _pricingBreakdownLabel(_DeliveryPricing pricing) {
-    return '${pricing.baseFare} base + ${pricing.perKm} Birr/km ';
+    return '${pricing.baseFare} base + ${pricing.perKm} Birr/km + '
+        '$_longDistancePerKm Birr/km after 10 km';
   }
 
   String _distanceLabel() {
@@ -1000,61 +997,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_hasPickup) return true;
     if (!prompt) return false;
 
-    final choice = await _showPickupChoiceSheet();
-    if (!mounted || choice == null) return _hasPickup;
-
-    switch (choice) {
-      case _PickupChoice.currentLocation:
-        await _useCurrentLocationForPickup();
-      case _PickupChoice.neighborhood:
-        await _choosePickupNeighborhood();
-      case _PickupChoice.pinOnMap:
-        await _pinPickupOnMap();
-    }
-
+    await _choosePickupNeighborhood();
     return _hasPickup;
-  }
-
-  Future<_PickupChoice?> _showPickupChoiceSheet() {
-    return showModalBottomSheet<_PickupChoice>(
-      context: context,
-      useRootNavigator: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.32),
-      builder: (sheetContext) {
-        return _LocationChoiceSheet<_PickupChoice>(
-          accentColor: AppColors.success,
-          heroIcon: Icons.trip_origin_rounded,
-          title: 'Pickup',
-          amharicTitle: 'መነሻ ቦታ',
-          subtitle: 'Set collection point',
-          amharicSubtitle: 'እቃው የሚነሳበትን ቦታ ይምረጡ',
-          options: const [
-            _LocationChoiceOption(
-              value: _PickupChoice.currentLocation,
-              icon: Icons.my_location_rounded,
-              title: 'GPS',
-              caption: 'Here',
-              amharicCaption: 'አሁን ያሉበት',
-            ),
-            _LocationChoiceOption(
-              value: _PickupChoice.neighborhood,
-              icon: Icons.travel_explore_rounded,
-              title: 'Area',
-              caption: 'Search',
-              amharicCaption: 'አካባቢ ይፈልጉ',
-            ),
-            _LocationChoiceOption(
-              value: _PickupChoice.pinOnMap,
-              icon: Icons.add_location_alt_rounded,
-              title: 'Pin',
-              caption: 'Map',
-              amharicCaption: 'በካርታ ይምረጡ',
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _useCurrentLocationForPickup() async {
@@ -1071,8 +1015,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _choosePickupNeighborhood() async {
-    final result = await Navigator.push<Object?>(
-      context,
+    final result = await Navigator.of(context, rootNavigator: true).push<Object?>(
       MaterialPageRoute(
         builder: (context) => const SearchDestinationScreen(
           title: 'Where is pickup?',
@@ -1088,6 +1031,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     if (!mounted || result == null) return;
+    if (result == SearchDestinationAction.currentLocation) {
+      await _useCurrentLocationForPickup();
+      return;
+    }
     if (result == SearchDestinationAction.pinOnMap) {
       await _pinPickupOnMap();
       return;
@@ -1303,79 +1250,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _chooseDeliveryDestination() async {
-    final choice = await _showDestinationChoiceSheet();
+    final result = await Navigator.of(context, rootNavigator: true)
+        .push<Object?>(
+          MaterialPageRoute(
+            builder: (context) => const SearchDestinationScreen(),
+          ),
+        );
     if (!mounted) return;
 
-    if (choice == null) {
+    if (result == null) {
       _handleDestinationSelectionCancelled();
       return;
     }
 
-    switch (choice) {
-      case _DeliveryDestinationChoice.currentLocation:
-        await _useCurrentLocationForDestination();
-      case _DeliveryDestinationChoice.neighborhood:
-        await _chooseDestinationNeighborhood();
-      case _DeliveryDestinationChoice.pinOnMap:
-        await _pinDestinationOnMap();
+    if (result == SearchDestinationAction.currentLocation) {
+      await _useCurrentLocationForDestination();
+      return;
     }
-  }
-
-  Future<_DeliveryDestinationChoice?> _showDestinationChoiceSheet() {
-    return showModalBottomSheet<_DeliveryDestinationChoice>(
-      context: context,
-      useRootNavigator: true,
-      backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.32),
-      builder: (sheetContext) {
-        return _LocationChoiceSheet<_DeliveryDestinationChoice>(
-          accentColor: AppColors.primary,
-          heroIcon: Icons.flag_rounded,
-          title: 'Drop-off',
-          amharicTitle: 'መድረሻ ቦታ',
-          subtitle: 'Set delivery point',
-          amharicSubtitle: 'እቃው የሚደርስበትን ቦታ ይምረጡ',
-          options: const [
-            _LocationChoiceOption(
-              value: _DeliveryDestinationChoice.currentLocation,
-              icon: Icons.my_location_rounded,
-              title: 'GPS',
-              caption: 'Here',
-              amharicCaption: 'አሁን ያሉበት',
-            ),
-            _LocationChoiceOption(
-              value: _DeliveryDestinationChoice.neighborhood,
-              icon: Icons.travel_explore_rounded,
-              title: 'Area',
-              caption: 'Search',
-              amharicCaption: 'አካባቢ ይፈልጉ',
-            ),
-            _LocationChoiceOption(
-              value: _DeliveryDestinationChoice.pinOnMap,
-              icon: Icons.add_location_alt_rounded,
-              title: 'Pin',
-              caption: 'Map',
-              amharicCaption: 'በካርታ ይምረጡ',
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _chooseDestinationNeighborhood() async {
-    final result = await Navigator.push<Object?>(
-      context,
-      MaterialPageRoute(builder: (context) => const SearchDestinationScreen()),
-    );
-    if (!mounted) return;
 
     if (result == SearchDestinationAction.pinOnMap) {
       await _pinDestinationOnMap();
-      return;
-    }
-    if (result == null) {
-      _handleDestinationSelectionCancelled();
       return;
     }
     if (result is! MapPlace) {
@@ -5028,248 +4922,6 @@ class _AnimatedDeliveryMapCardState extends State<_AnimatedDeliveryMapCard>
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LocationChoiceOption<T> {
-  const _LocationChoiceOption({
-    required this.value,
-    required this.icon,
-    required this.title,
-    required this.caption,
-    required this.amharicCaption,
-  });
-
-  final T value;
-  final IconData icon;
-  final String title;
-  final String caption;
-  final String amharicCaption;
-}
-
-class _LocationChoiceSheet<T> extends StatelessWidget {
-  const _LocationChoiceSheet({
-    required this.accentColor,
-    required this.heroIcon,
-    required this.title,
-    required this.amharicTitle,
-    required this.subtitle,
-    required this.amharicSubtitle,
-    required this.options,
-  });
-
-  final Color accentColor;
-  final IconData heroIcon;
-  final String title;
-  final String amharicTitle;
-  final String subtitle;
-  final String amharicSubtitle;
-  final List<_LocationChoiceOption<T>> options;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        margin: const EdgeInsets.all(AppSpacing.md),
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.md,
-          AppSpacing.lg,
-          AppSpacing.lg,
-        ),
-        decoration: BoxDecoration(
-          color: context.appSurface,
-          borderRadius: BorderRadius.circular(28),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
-              blurRadius: 28,
-              offset: const Offset(0, 12),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 44,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: context.appBorder,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Icon(heroIcon, color: accentColor, size: 28),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: AppText(
-                              title,
-                              variant: AppTextVariant.heading3,
-                              fontWeight: FontWeight.w900,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.sm,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: accentColor.withValues(alpha: 0.12),
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.full,
-                              ),
-                            ),
-                            child: AppText(
-                              amharicTitle,
-                              variant: AppTextVariant.labelSmall,
-                              color: accentColor,
-                              fontWeight: FontWeight.w900,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      AppText(
-                        subtitle,
-                        variant: AppTextVariant.bodySmall,
-                        color: context.appTextSecondary,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      AppText(
-                        amharicSubtitle,
-                        variant: AppTextVariant.labelSmall,
-                        color: context.appTextSecondary,
-                        fontWeight: FontWeight.w800,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                for (int index = 0; index < options.length; index++) ...[
-                  if (index > 0) const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: _LocationChoiceTile<T>(
-                      option: options[index],
-                      accentColor: accentColor,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LocationChoiceTile<T> extends StatelessWidget {
-  const _LocationChoiceTile({required this.option, required this.accentColor});
-
-  final _LocationChoiceOption<T> option;
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Color.alphaBlend(
-        accentColor.withValues(alpha: context.isAppDark ? 0.18 : 0.08),
-        context.appSurfaceAlt,
-      ),
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: () => Navigator.of(context).pop(option.value),
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          height: 142,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xs,
-            vertical: AppSpacing.sm,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: accentColor.withValues(alpha: 0.22)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: accentColor,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Icon(option.icon, color: Colors.white, size: 21),
-              ),
-              const SizedBox(height: 6),
-              AppText(
-                option.title,
-                variant: AppTextVariant.bodyMedium,
-                fontWeight: FontWeight.w900,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 2),
-              AppText(
-                option.caption,
-                variant: AppTextVariant.labelSmall,
-                color: context.appTextSecondary,
-                fontWeight: FontWeight.w700,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 2),
-              AppText(
-                option.amharicCaption,
-                variant: AppTextVariant.labelSmall,
-                color: accentColor,
-                fontWeight: FontWeight.w900,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

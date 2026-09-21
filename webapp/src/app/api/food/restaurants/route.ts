@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findAddisNeighborhood } from '@/lib/addis-locations';
+import { findAddisLocation } from '@/lib/server-addis-locations';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { errorMessage, isAdminRequest, slugify, toBoolean, toNullableText, toNumber, toRecord, toText } from '../_utils';
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         const name = toText(input.name, 140);
         if (!name) throw new Error('Restaurant name is required');
         const pickupLocation = toNullableText(input.pickup_location, 500);
-        const resolvedLocation = findAddisNeighborhood(pickupLocation || name);
+        const resolvedLocation = await findAddisLocation(pickupLocation || name);
         const hasPickupLat = input.pickup_lat !== null && input.pickup_lat !== '' && input.pickup_lat !== undefined;
         const hasPickupLng = input.pickup_lng !== null && input.pickup_lng !== '' && input.pickup_lng !== undefined;
 

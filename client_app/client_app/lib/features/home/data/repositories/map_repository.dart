@@ -1,12 +1,22 @@
+import 'dart:convert';
+
+import 'package:client_app/core/config/app_config.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MapPlace {
   final String displayName;
   final LatLng location;
+  final String source;
 
-  MapPlace({required this.displayName, required this.location});
+  const MapPlace({
+    required this.displayName,
+    required this.location,
+    this.source = 'local',
+  });
 }
 
 class MapRoute {
@@ -18,22 +28,28 @@ class MapRoute {
 
 class MapRepository {
   MapRepository()
-      : _dio = Dio(
-          BaseOptions(
-            connectTimeout: const Duration(seconds: 3),
-            receiveTimeout: const Duration(seconds: 4),
-            sendTimeout: const Duration(seconds: 3),
-          ),
-        );
+    : _dio = Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 3),
+          receiveTimeout: const Duration(seconds: 4),
+          sendTimeout: const Duration(seconds: 3),
+        ),
+      );
 
   final Dio _dio;
   static const Distance _distance = Distance();
+  static const String _catalogCacheKey = 'addis_locations.catalog.v1';
+  static const int _catalogLimit = 2000;
+
+  static final List<_AddisPlace> _priorityAddisPlaces = List<_AddisPlace>.of(
+    _fallbackAddisPlaces,
+  );
 
   Options? get _nominatimOptions => kIsWeb
       ? null
       : Options(headers: const {'User-Agent': 'MotoBikeClient/1.0'});
 
-  static const List<_AddisPlace> _priorityAddisPlaces = [
+  static const List<_AddisPlace> _fallbackAddisPlaces = [
     _AddisPlace('Bole', 8.9947, 38.7891, [
       'bole',
       'bole medhanialem',
@@ -45,21 +61,13 @@ class MapRepository {
       'bole atlas',
       'atlas hotel',
     ]),
-    _AddisPlace('CMC', 9.0272, 38.8429, [
-      'cmc',
-      'cmc michael',
-      'cmc square',
-    ]),
+    _AddisPlace('CMC', 9.0272, 38.8429, ['cmc', 'cmc michael', 'cmc square']),
     _AddisPlace('Gurd Shola', 9.0223, 38.8140, [
       'gurd shola',
       'gurdi shola',
       'shola',
     ]),
-    _AddisPlace('Piassa', 9.0369, 38.7524, [
-      'piazza',
-      'piassa',
-      'arada',
-    ]),
+    _AddisPlace('Piassa', 9.0369, 38.7524, ['piazza', 'piassa', 'arada']),
     _AddisPlace('Kazanchis', 9.0133, 38.7652, [
       'kazanchis',
       'kasanchis',
@@ -189,11 +197,7 @@ class MapRepository {
       'jakros',
       'yekatit 12 square',
     ]),
-    _AddisPlace('Figa', 9.0368, 38.8311, [
-      'figa',
-      'figa mebrat',
-      'yeka figa',
-    ]),
+    _AddisPlace('Figa', 9.0368, 38.8311, ['figa', 'figa mebrat', 'yeka figa']),
     _AddisPlace('Kotebe', 9.0336, 38.8175, [
       'kotebe',
       'kotebe college',
@@ -204,11 +208,7 @@ class MapRepository {
       'shola market',
       'shola gebeya',
     ]),
-    _AddisPlace('Urael', 9.0101, 38.7749, [
-      'urael',
-      'ural',
-      'urael church',
-    ]),
+    _AddisPlace('Urael', 9.0101, 38.7749, ['urael', 'ural', 'urael church']),
     _AddisPlace('Wollo Sefer', 8.9989, 38.7732, [
       'wello sefer',
       'wollo sefer',
@@ -219,11 +219,7 @@ class MapRepository {
       'olympia square',
       'olympia area',
     ]),
-    _AddisPlace('Lancha', 8.9964, 38.7466, [
-      'lancha',
-      'lancha area',
-      'lancia',
-    ]),
+    _AddisPlace('Lancha', 8.9964, 38.7466, ['lancha', 'lancha area', 'lancia']),
     _AddisPlace('Kera', 8.9864, 38.7477, [
       'kera',
       'kera area',
@@ -314,29 +310,57 @@ class MapRepository {
       'haya arat',
       '24 mazoria',
     ]),
-    _AddisPlace('Meri', 9.0153, 38.8641, [
-      'meri',
-      'meri luke',
-      'meri area',
-    ]),
-    _AddisPlace('Yerer', 9.0234, 38.8878, [
-      'yerer',
-      'yerer ber',
-      'yerer area',
-    ]),
+    _AddisPlace('Meri', 9.0153, 38.8641, ['meri', 'meri luke', 'meri area']),
+    _AddisPlace('Yerer', 9.0234, 38.8878, ['yerer', 'yerer ber', 'yerer area']),
   ];
 
-  static List<MapPlace> get majorAddisPlaces => _priorityAddisPlaces
-      .map(_placeToMapPlace)
-      .toList(growable: false);
+  static List<MapPlace> get majorAddisPlaces =>
+      _priorityAddisPlaces.map(_placeToMapPlace).toList(growable: false);
 
   static List<MapPlace> localAddisMatches(String query) {
     return _localAddisMatches(query);
   }
 
+  /// Restores the last Supabase catalog immediately, then refreshes it online.
+  /// The bundled Addis list remains available when both cache and network fail.
+  Future<List<MapPlace>> refreshAddisCatalog() async {
+    await _restoreCatalogCache();
+
+    try {
+      final rows = await Supabase.instance.client
+          .from('addis_locations')
+          .select('name,aliases,latitude,longitude,source')
+          .eq('is_active', true)
+          .order('search_priority', ascending: false)
+          .order('name', ascending: true)
+          .limit(_catalogLimit)
+          .timeout(const Duration(seconds: 5));
+      final places = _placesFromRows(rows);
+      if (places.isNotEmpty) {
+        _replaceCatalog(places);
+        await _saveCatalogCache(places);
+      }
+    } catch (e) {
+      debugPrint('Supabase Addis catalog unavailable: $e');
+    }
+
+    return majorAddisPlaces;
+  }
+
   /// Search address using OpenStreetMap Nominatim API
   Future<List<MapPlace>> searchAddress(String query) async {
     final localMatches = _localAddisMatches(query);
+
+    final databaseMatches = await _searchSupabase(query);
+    if (databaseMatches.isNotEmpty) {
+      return _dedupePlaces([...databaseMatches, ...localMatches]);
+    }
+
+    final apiMatches = await _searchWebApi(query);
+    if (apiMatches.isNotEmpty) {
+      return _dedupePlaces([...apiMatches, ...localMatches]);
+    }
+
     try {
       final response = await _dio.get<List<dynamic>>(
         'https://nominatim.openstreetmap.org/search',
@@ -354,15 +378,19 @@ class MapRepository {
 
       if (response.statusCode == 200) {
         final data = response.data ?? <dynamic>[];
-        final onlineMatches = data.map((item) {
-          final place = Map<String, dynamic>.from(item as Map);
-          final location = _latLngFromFields(place['lat'], place['lon']);
-          if (location == null) return null;
-          return MapPlace(
-            displayName: place['display_name']?.toString() ?? '',
-            location: location,
-          );
-        }).whereType<MapPlace>().toList();
+        final onlineMatches = data
+            .map((item) {
+              final place = Map<String, dynamic>.from(item as Map);
+              final location = _latLngFromFields(place['lat'], place['lon']);
+              if (location == null) return null;
+              return MapPlace(
+                displayName: place['display_name']?.toString() ?? '',
+                location: location,
+                source: 'osm_live',
+              );
+            })
+            .whereType<MapPlace>()
+            .toList();
         return _dedupePlaces([...localMatches, ...onlineMatches]);
       }
       return localMatches;
@@ -444,10 +472,13 @@ class MapRepository {
             );
           }
 
-          final points = coordinates.map((coord) {
-            if (coord is! List<dynamic> || coord.length < 2) return null;
-            return _latLngFromFields(coord[1], coord[0]);
-          }).whereType<LatLng>().toList();
+          final points = coordinates
+              .map((coord) {
+                if (coord is! List<dynamic> || coord.length < 2) return null;
+                return _latLngFromFields(coord[1], coord[0]);
+              })
+              .whereType<LatLng>()
+              .toList();
           final meters = route['distance'];
           final routeMeters = meters is num ? meters.toDouble() : null;
           final distanceKm = routeMeters != null && routeMeters.isFinite
@@ -535,16 +566,129 @@ class MapRepository {
           return aStarts.compareTo(bStarts);
         });
 
-    return matches
-        .map(_placeToMapPlace)
-        .toList();
+    return matches.map(_placeToMapPlace).toList();
   }
 
   static MapPlace _placeToMapPlace(_AddisPlace place) {
     return MapPlace(
       displayName: '${place.name}, Addis Ababa, Ethiopia',
       location: LatLng(place.lat, place.lng),
+      source: place.source,
     );
+  }
+
+  Future<List<MapPlace>> _searchSupabase(String query) async {
+    try {
+      final response = await Supabase.instance.client
+          .rpc<List<dynamic>>(
+            'search_addis_locations',
+            params: {'search_query': query, 'result_limit': 12},
+          )
+          .timeout(const Duration(seconds: 3));
+      return _placesFromRows(response).map(_placeToMapPlace).toList();
+    } catch (e) {
+      debugPrint('Supabase Addis search unavailable: $e');
+      return const [];
+    }
+  }
+
+  Future<List<MapPlace>> _searchWebApi(String query) async {
+    final baseUrl = AppConfig().apiBaseUrl.trim().replaceAll(
+      RegExp(r'/+$'),
+      '',
+    );
+    if (baseUrl.isEmpty || baseUrl.contains('your-webapp-domain')) {
+      return const [];
+    }
+
+    try {
+      final response = await _dio.get<dynamic>(
+        '$baseUrl/api/locations/search',
+        queryParameters: {'q': query, 'limit': 12},
+      );
+      return _placesFromRows(response.data).map(_placeToMapPlace).toList();
+    } catch (e) {
+      debugPrint('Web Addis search unavailable: $e');
+      return const [];
+    }
+  }
+
+  static List<_AddisPlace> _placesFromRows(Object? value) {
+    final rawRows = value is Map && value['locations'] is List
+        ? value['locations'] as List<dynamic>
+        : value is List
+        ? value
+        : const <dynamic>[];
+    final places = <_AddisPlace>[];
+
+    for (final raw in rawRows) {
+      if (raw is! Map) continue;
+      final row = Map<String, dynamic>.from(raw);
+      final name = (row['name'] ?? row['display_name'])?.toString().trim();
+      final point = _latLngFromFields(
+        row['latitude'] ?? row['lat'],
+        row['longitude'] ?? row['lng'] ?? row['lon'],
+      );
+      if (name == null || name.isEmpty || point == null) continue;
+      final aliases = row['aliases'] is List
+          ? (row['aliases'] as List)
+                .map((alias) => alias.toString().trim())
+                .where((alias) => alias.isNotEmpty)
+                .toList()
+          : <String>[];
+      places.add(
+        _AddisPlace(
+          name,
+          point.latitude,
+          point.longitude,
+          aliases,
+          source: row['source']?.toString() ?? 'supabase',
+        ),
+      );
+    }
+    return places;
+  }
+
+  static void _replaceCatalog(List<_AddisPlace> places) {
+    final byKey = <String, _AddisPlace>{};
+    for (final place in [...places, ..._fallbackAddisPlaces]) {
+      byKey.putIfAbsent(_normalize(place.name), () => place);
+    }
+    _priorityAddisPlaces
+      ..clear()
+      ..addAll(byKey.values);
+  }
+
+  static Future<void> _restoreCatalogCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_catalogCacheKey);
+      if (raw == null || raw.isEmpty) return;
+      final places = _placesFromRows(jsonDecode(raw));
+      if (places.isNotEmpty) _replaceCatalog(places);
+    } catch (e) {
+      debugPrint('Addis catalog cache restore failed: $e');
+    }
+  }
+
+  static Future<void> _saveCatalogCache(List<_AddisPlace> places) async {
+    try {
+      final rows = places
+          .map(
+            (place) => <String, dynamic>{
+              'name': place.name,
+              'aliases': place.aliases,
+              'latitude': place.lat,
+              'longitude': place.lng,
+              'source': place.source,
+            },
+          )
+          .toList();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_catalogCacheKey, jsonEncode(rows));
+    } catch (e) {
+      debugPrint('Addis catalog cache save failed: $e');
+    }
   }
 
   static List<MapPlace> _dedupePlaces(List<MapPlace> places) {
@@ -613,10 +757,7 @@ class MapRepository {
     return _nearestLocalDisplayName(location, fallbackName);
   }
 
-  static String? _firstTextValue(
-    Map<String, dynamic> data,
-    List<String> keys,
-  ) {
+  static String? _firstTextValue(Map<String, dynamic> data, List<String> keys) {
     for (final key in keys) {
       final value = data[key]?.toString().trim();
       if (value != null && value.isNotEmpty) return value;
@@ -629,10 +770,7 @@ class MapRepository {
     var nearestMeters = double.infinity;
 
     for (final place in _priorityAddisPlaces) {
-      final meters = _distance(
-        location,
-        LatLng(place.lat, place.lng),
-      );
+      final meters = _distance(location, LatLng(place.lat, place.lng));
       if (meters < nearestMeters) {
         nearest = place;
         nearestMeters = meters;
@@ -681,12 +819,19 @@ class MapRepository {
 }
 
 class _AddisPlace {
-  const _AddisPlace(this.name, this.lat, this.lng, this.aliases);
+  const _AddisPlace(
+    this.name,
+    this.lat,
+    this.lng,
+    this.aliases, {
+    this.source = 'local',
+  });
 
   final String name;
   final double lat;
   final double lng;
   final List<String> aliases;
+  final String source;
 
   Iterable<String> get searchTerms => [name, ...aliases];
 }

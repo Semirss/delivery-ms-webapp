@@ -1,7 +1,12 @@
 "use client";
 
-import { findAddisNeighborhood, suggestAddisNeighborhoods } from "@/lib/addis-locations";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
+
+type AddisLocationSuggestion = {
+  name: string;
+  latitude: number;
+  longitude: number;
+};
 
 type FoodCategory = {
   id?: string;
@@ -151,12 +156,11 @@ function copyRestaurant(restaurant: FoodRestaurant = emptyRestaurant): FoodResta
 
 function resolveRestaurantLocationDraft(draft: FoodRestaurant): FoodRestaurant {
   const typedLocation = draft.pickup_location?.trim() || "";
-  const match = findAddisNeighborhood(typedLocation || draft.name);
   return {
     ...draft,
-    pickup_location: typedLocation || match?.name || "",
-    pickup_lat: draft.pickup_lat ?? match?.lat ?? null,
-    pickup_lng: draft.pickup_lng ?? match?.lng ?? null,
+    pickup_location: typedLocation,
+    pickup_lat: draft.pickup_lat ?? null,
+    pickup_lng: draft.pickup_lng ?? null,
   };
 }
 
@@ -801,32 +805,52 @@ function RestaurantForm({
   onSave: () => void;
   onCancel: () => void;
 }) {
-  const suggestions = useMemo(
-    () => suggestAddisNeighborhoods(draft.pickup_location || draft.name, 8),
-    [draft.pickup_location, draft.name]
+  const [suggestions, setSuggestions] = useState<AddisLocationSuggestion[]>([]);
+  const locationQuery = (draft.pickup_location || draft.name).trim();
+  useEffect(() => {
+    if (!locationQuery) return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/locations/search?q=${encodeURIComponent(locationQuery)}&limit=8`,
+          { signal: controller.signal, cache: "no-store" },
+        );
+        const payload = await response.json();
+        if (!controller.signal.aborted) setSuggestions(payload.locations || []);
+      } catch {
+        if (!controller.signal.aborted) setSuggestions([]);
+      }
+    }, 200);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [locationQuery]);
+  const matchedNeighborhood = suggestions.find(
+    (place) => place.name.toLowerCase() === (draft.pickup_location || "").toLowerCase(),
   );
-  const matchedNeighborhood = findAddisNeighborhood(draft.pickup_location || "");
   const coordinateLabel =
     typeof draft.pickup_lat === "number" && typeof draft.pickup_lng === "number"
       ? `Coordinates filled: ${draft.pickup_lat.toFixed(5)}, ${draft.pickup_lng.toFixed(5)}`
       : "";
 
   function setPickupNeighborhood(pickup_location: string) {
-    const match = findAddisNeighborhood(pickup_location);
+    if (!pickup_location.trim()) setSuggestions([]);
     setDraft({
       ...draft,
       pickup_location,
-      pickup_lat: match?.lat ?? null,
-      pickup_lng: match?.lng ?? null,
+      pickup_lat: null,
+      pickup_lng: null,
     });
   }
 
-  function choosePickupNeighborhood(place: { name: string; lat: number; lng: number }) {
+  function choosePickupNeighborhood(place: AddisLocationSuggestion) {
     setDraft({
       ...draft,
       pickup_location: place.name,
-      pickup_lat: place.lat,
-      pickup_lng: place.lng,
+      pickup_lat: place.latitude,
+      pickup_lng: place.longitude,
     });
   }
 

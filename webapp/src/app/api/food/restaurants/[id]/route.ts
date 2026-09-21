@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { findAddisNeighborhood } from '@/lib/addis-locations';
+import { findAddisLocation } from '@/lib/server-addis-locations';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { errorMessage, isAdminRequest, slugify, toBoolean, toNullableText, toNumber, toRecord, toText } from '../../_utils';
 
@@ -14,7 +14,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         const input = toRecord(await request.json());
         const name = toText(input.name, 140);
         const pickupLocation = toNullableText(input.pickup_location, 500);
-        const resolvedLocation = findAddisNeighborhood(pickupLocation || name);
+        const resolvedLocation = await findAddisLocation(pickupLocation || name);
         const hasPickupLat = input.pickup_lat !== null && input.pickup_lat !== '' && input.pickup_lat !== undefined;
         const hasPickupLng = input.pickup_lng !== null && input.pickup_lng !== '' && input.pickup_lng !== undefined;
         const payload: Record<string, unknown> = {

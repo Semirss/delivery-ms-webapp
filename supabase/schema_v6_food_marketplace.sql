@@ -201,6 +201,10 @@ CREATE POLICY "Allow public all on food_item_ratings"
     USING (true)
     WITH CHECK (true);
 
+/*
+Demo food categories, restaurants, and menu items are intentionally disabled.
+The marketplace is populated only with records created by the owner/admin.
+
 INSERT INTO public.food_categories (name, slug, description, icon_name, sort_order)
 VALUES
     ('Breakfast', 'breakfast', 'Morning meals and cafe plates', 'breakfast_dining', 10),
@@ -383,6 +387,7 @@ WHERE NOT EXISTS (
     WHERE lower(existing.title) = lower(seed.title)
         AND existing.seller_phone = seed.seller_phone
 );
+*/
 
 DO $$
 BEGIN

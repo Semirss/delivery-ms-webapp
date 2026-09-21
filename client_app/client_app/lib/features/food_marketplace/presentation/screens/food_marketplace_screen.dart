@@ -40,19 +40,19 @@ const Map<String, _FoodDeliveryPricing> _foodDeliveryPricing = {
   'Bike': _FoodDeliveryPricing(
     title: 'Bicycle',
     baseFare: 30,
-    perKm: 40,
+    perKm: 30,
     icon: Icons.directions_bike_rounded,
   ),
   'Motor': _FoodDeliveryPricing(
     title: 'Motorbike',
     baseFare: 40,
-    perKm: 50,
+    perKm: 40,
     icon: Icons.motorcycle_rounded,
   ),
 };
 
 const double _foodBicycleMaxDistanceKm = 10;
-const int _foodLongDistancePerKm = 15;
+const int _foodLongDistancePerKm = 20;
 
 const double _fallbackFoodPickupLat = 9.0108;
 const double _fallbackFoodPickupLng = 38.7612;
@@ -111,9 +111,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
   final TextEditingController _descriptionController = TextEditingController();
   final GlobalKey<FormState> _sellFormKey = GlobalKey<FormState>();
 
-  List<_FoodCategory> _categories = _sampleCategories;
-  List<_FoodItem> _items = _sampleItems;
-  List<_RestaurantFeature> _restaurants = _featuredRestaurants;
+  List<_FoodCategory> _categories = const [];
+  List<_FoodItem> _items = const [];
+  List<_RestaurantFeature> _restaurants = const [];
   String _tab = 'for_you';
   String? _categoryFilterId;
   String? _restaurantFilterId;
@@ -264,9 +264,9 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
 
       if (!mounted) return;
       setState(() {
-        _categories = categories.isEmpty ? _sampleCategories : categories;
-        _items = ratedItems.isEmpty ? _sampleItems : ratedItems;
-        _restaurants = restaurants.isEmpty ? _featuredRestaurants : restaurants;
+        _categories = categories;
+        _items = ratedItems;
+        _restaurants = restaurants;
         _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
         _isLoading = false;
         _isSyncingMarketplace = false;
@@ -276,11 +276,11 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
       if (!mounted) return;
       setState(() {
         if (!restoredFromCache) {
-          _categories = _sampleCategories;
-          _items = _sampleItems;
-          _restaurants = _featuredRestaurants;
+          _categories = const [];
+          _items = const [];
+          _restaurants = const [];
         }
-        _sellCategoryId ??= _sampleCategories.first.id;
+        _sellCategoryId ??= _categories.isEmpty ? null : _categories.first.id;
         _isLoading = false;
         _isSyncingMarketplace = false;
       });
@@ -440,16 +440,6 @@ class _FoodMarketplaceScreenState extends State<FoodMarketplaceScreen>
     );
     if (rating == null) return;
     if (!mounted) return;
-
-    if (item.id.startsWith('sample-')) {
-      _applyLocalFoodRating(item.id, rating);
-      AppToast.show(
-        context: context,
-        message: 'Rating saved.',
-        type: AppToastType.success,
-      );
-      return;
-    }
 
     try {
       await _supabase.from('food_item_ratings').upsert({
@@ -3534,7 +3524,7 @@ class _FoodDeliveryEstimateCard extends StatelessWidget {
       subtitle =
           '${resolvedDistanceKm.toStringAsFixed(1)} km estimate - '
           '${pricing!.baseFare} base + ${pricing.perKm} Birr/km, '
-          '$_foodLongDistancePerKm Birr/km after';
+          '$_foodLongDistancePerKm Birr/km after 10 km';
     }
 
     return Container(
@@ -4009,114 +3999,3 @@ class _RestaurantFeature {
   final bool isFeatured;
   final int sortOrder;
 }
-
-const List<_FoodCategory> _sampleCategories = [
-  _FoodCategory(id: 'breakfast', name: 'Breakfast'),
-  _FoodCategory(id: 'chicken', name: 'Chicken'),
-  _FoodCategory(id: 'ethiopian', name: 'Ethiopian'),
-  _FoodCategory(id: 'fast_food', name: 'Fast food'),
-];
-
-const List<_RestaurantFeature> _featuredRestaurants = [
-  _RestaurantFeature(
-    id: 'sample-simple-pistro',
-    name: 'Simple pistro',
-    subtitle: 'Burgers, pasta and cafe plates',
-    imageUrl:
-        'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=80',
-    isFeatured: true,
-    sortOrder: 1,
-  ),
-  _RestaurantFeature(
-    id: 'sample-amrogn-chiken',
-    name: 'Amrogn chiken',
-    subtitle: 'Crispy chicken and family meals',
-    imageUrl:
-        'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=900&q=80',
-    isFeatured: true,
-    sortOrder: 2,
-  ),
-];
-
-const List<_FoodItem> _sampleItems = [
-  _FoodItem(
-    id: 'sample-burger',
-    title: 'Simple burger combo',
-    description: 'Burger and fries',
-    price: 420,
-    imageUrl:
-        'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=80',
-    sellerName: 'Simple pistro',
-    sellerPhone: '+251 900 000 001',
-    pickupLocation: 'Simple pistro, Addis Ababa',
-    pickupLat: 9.0116,
-    pickupLng: 38.7850,
-    categoryId: 'fast_food',
-    categoryName: 'Fast food',
-    restaurantId: 'sample-simple-pistro',
-    restaurantName: 'Simple pistro',
-    isFeatured: true,
-    ratingAverage: 4.8,
-    ratingCount: 42,
-  ),
-  _FoodItem(
-    id: 'sample-chicken',
-    title: 'Amrogn crispy chicken',
-    description: 'Crispy chicken plate',
-    price: 520,
-    imageUrl:
-        'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=900&q=80',
-    sellerName: 'Amrogn chiken',
-    sellerPhone: '+251 900 000 002',
-    pickupLocation: 'Amrogn chiken, Addis Ababa',
-    pickupLat: 9.0069,
-    pickupLng: 38.7852,
-    categoryId: 'chicken',
-    categoryName: 'Chicken',
-    restaurantId: 'sample-amrogn-chiken',
-    restaurantName: 'Amrogn chiken',
-    isFeatured: true,
-    ratingAverage: 4.6,
-    ratingCount: 31,
-  ),
-  _FoodItem(
-    id: 'sample-doro',
-    title: 'Doro wat family plate',
-    description: 'Spicy chicken stew with injera',
-    price: 680,
-    imageUrl:
-        'https://images.unsplash.com/photo-1548940740-204726a19be3?auto=format&fit=crop&w=900&q=80',
-    sellerName: 'Home kitchen',
-    sellerPhone: '+251 900 000 003',
-    pickupLocation: 'Bole, Addis Ababa',
-    pickupLat: 8.9950,
-    pickupLng: 38.7894,
-    categoryId: 'ethiopian',
-    categoryName: 'Ethiopian',
-    restaurantId: null,
-    restaurantName: '',
-    isFeatured: false,
-    ratingAverage: 4.9,
-    ratingCount: 18,
-  ),
-  _FoodItem(
-    id: 'sample-bowl',
-    title: 'Fresh lunch bowl',
-    description: 'Rice, vegetables and sauce',
-    price: 350,
-    imageUrl:
-        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80',
-    sellerName: 'Mimi kitchen',
-    sellerPhone: '+251 900 000 004',
-    pickupLocation: 'Kazanchis, Addis Ababa',
-    pickupLat: 9.0133,
-    pickupLng: 38.7652,
-    categoryId: 'breakfast',
-    categoryName: 'Breakfast',
-    restaurantId: null,
-    restaurantName: '',
-    isFeatured: false,
-    ratingAverage: 4.5,
-    ratingCount: 15,
-  ),
-];
