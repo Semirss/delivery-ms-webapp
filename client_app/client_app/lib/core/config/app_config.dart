@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:injectable/injectable.dart';
 
 @singleton
@@ -13,9 +12,7 @@ class AppConfig {
   static const String _enableLogging = 'ENABLE_LOGGING';
   static const String _enableChuckInterceptor = 'ENABLE_CHUCK_INTERCEPTOR';
 
-  static const String _environmentDefine = String.fromEnvironment(
-    _environment,
-  );
+  static const String _environmentDefine = String.fromEnvironment(_environment);
   static const String _appNameDefine = String.fromEnvironment(_appName);
   static const String _apiBaseUrlDefine = String.fromEnvironment(_apiBaseUrl);
   static const String _apiTimeoutDefine = String.fromEnvironment(_apiTimeout);
@@ -63,8 +60,8 @@ class AppConfig {
     fallback: _enableChuckInterceptorDefine.isNotEmpty
         ? _enableChuckInterceptorDefine
         : kIsWeb
-            ? 'false'
-            : 'true',
+        ? 'false'
+        : 'true',
   );
 
   bool get isDevelopment => environment == 'development';
@@ -72,11 +69,19 @@ class AppConfig {
   bool get isStaging => environment == 'staging';
 
   String _env(String key, {required String fallback}) {
-    try {
-      return dotenv.get(key, fallback: fallback).trim();
-    } catch (_) {
-      return fallback.trim();
-    }
+    final defined = switch (key) {
+      _environment => _environmentDefine,
+      _appName => _appNameDefine,
+      _apiBaseUrl => _apiBaseUrlDefine,
+      _apiTimeout => _apiTimeoutDefine,
+      _sentryDsn => _sentryDsnDefine,
+      _sentryEnvironment => _sentryEnvironmentDefine,
+      _enableLogging => _enableLoggingDefine,
+      _enableChuckInterceptor => _enableChuckInterceptorDefine,
+      _ => '',
+    };
+    if (defined.isNotEmpty) return defined.trim();
+    return fallback.trim();
   }
 
   bool _boolEnv(String key, {required String fallback}) {

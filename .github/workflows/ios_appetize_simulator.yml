@@ -24,6 +24,7 @@ on:
 jobs:
   build-ios-simulator:
     name: Build iOS Simulator App
+    if: github.ref_name == 'master'
     runs-on: macos-15-intel
     timeout-minutes: 60
 
@@ -62,6 +63,7 @@ jobs:
             echo "Building $label iOS Simulator app for Appetize"
             cd "$GITHUB_WORKSPACE/$app_dir"
             DOTENV_VALUE="$dotenv_value" python3 -c 'import base64, os; from pathlib import Path; Path(".env").write_bytes(base64.b64decode(os.environ["DOTENV_VALUE"]))'
+            python3 "$GITHUB_WORKSPACE/scripts/verify_mobile_env.py" .env --expected production
 
             pubspec_version="$(awk '/^version:/ {print $2; exit}' pubspec.yaml)"
             build_name="${INPUT_BUILD_NAME:-${pubspec_version%%+*}}"
@@ -71,6 +73,7 @@ jobs:
             flutter build ios \
               --simulator \
               --debug \
+              --dart-define-from-file=.env \
               --build-name "$build_name" \
               --build-number "$build_number"
 

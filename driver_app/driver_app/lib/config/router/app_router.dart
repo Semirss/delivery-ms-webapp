@@ -120,7 +120,8 @@ class AppRouter {
     final uriText = uri.toString().toLowerCase();
     return host == 'login-callback' ||
         path == AppRoutes.loginCallback.path ||
-        uriText.startsWith('motobike-driver://login-callback');
+        uriText.startsWith('motobike-driver://login-callback') ||
+        uriText.startsWith('motobike-driver-test://login-callback');
   }
 
   bool _isAuthenticated(BuildContext context) {

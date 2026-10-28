@@ -134,7 +134,6 @@ flutter:
     - assets/images/bike_pic.png
     - assets/icons/
     - assets/fonts/
-    - .env
 
 flutter_launcher_icons:
   android: true

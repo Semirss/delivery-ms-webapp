@@ -121,7 +121,8 @@ class AppRouter {
         path == AppRoutes.loginCallback.path ||
         path.endsWith(AppRoutes.loginCallback.path) ||
         uriText.contains('/motobikeiphoneapp/login-callback') ||
-        uriText.startsWith('motobike-client://login-callback');
+        uriText.startsWith('motobike-client://login-callback') ||
+        uriText.startsWith('motobike-client-test://login-callback');
   }
 
   bool _isAuthenticated(BuildContext context) {

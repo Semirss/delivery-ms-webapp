@@ -32,7 +32,9 @@ class ClientTableAuthDataSourceImpl implements AuthRemoteDataSource {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
-  static const String _googleRedirectUrl = 'motobike-client://login-callback/';
+  String get _googleRedirectUrl => _config.environment == 'test'
+      ? 'motobike-client-test://login-callback/'
+      : 'motobike-client://login-callback/';
   static const String _webGoogleCallbackPath =
       '/motobikeiphoneapp/login-callback';
 

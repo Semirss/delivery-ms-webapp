@@ -1,6 +1,5 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 
 class SupabaseRuntimeConfig {
   const SupabaseRuntimeConfig({
@@ -20,87 +19,7 @@ class SupabaseRuntimeConfigResolver {
   const SupabaseRuntimeConfigResolver();
 
   Future<SupabaseRuntimeConfig> resolve() async {
-    if (kIsWeb) {
-      final webConfig = await _webRuntimeConfig();
-      if (webConfig != null) return webConfig;
-    }
-
-    final masterUrl = _env('MASTER_SUPABASE_URL');
-    final masterAnonKey = _env('MASTER_SUPABASE_ANON_KEY');
-
-    if (masterUrl.isEmpty || masterAnonKey.isEmpty) {
-      return _fallbackConfig();
-    }
-
-    try {
-      final configView = _env(
-        'MASTER_BACKEND_CONFIG_VIEW',
-        fallback: 'public_backend_runtime_config',
-      );
-      final normalizedMasterUrl = _withoutTrailingSlash(masterUrl);
-      final response = await Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 4),
-          receiveTimeout: const Duration(seconds: 4),
-          sendTimeout: const Duration(seconds: 4),
-          headers: {
-            'apikey': masterAnonKey,
-            'Authorization': 'Bearer $masterAnonKey',
-            'Accept': 'application/json',
-          },
-        ),
-      ).get<List<dynamic>>(
-        '$normalizedMasterUrl/rest/v1/$configView'
-        '?select=supabase_url,supabase_anon_key,updated_at'
-        '&limit=1',
-      );
-
-      final rows = response.data ?? const [];
-      if (rows.isEmpty || rows.first is! Map) return _fallbackConfig();
-
-      final row = Map<String, dynamic>.from(rows.first as Map);
-      final url = row['supabase_url']?.toString().trim() ?? '';
-      final anonKey = row['supabase_anon_key']?.toString().trim() ?? '';
-      if (!_looksLikeSupabaseConfig(url, anonKey)) return _fallbackConfig();
-
-      return SupabaseRuntimeConfig(
-        url: url,
-        anonKey: anonKey,
-        source: 'master',
-        updatedAt: DateTime.tryParse(row['updated_at']?.toString() ?? ''),
-      );
-    } catch (_) {
-      return _fallbackConfig();
-    }
-  }
-
-  Future<SupabaseRuntimeConfig?> _webRuntimeConfig() async {
-    try {
-      final response = await Dio(
-        BaseOptions(
-          connectTimeout: const Duration(seconds: 8),
-          receiveTimeout: const Duration(seconds: 8),
-          sendTimeout: const Duration(seconds: 8),
-        ),
-      ).get<dynamic>('/api/public/backend-config');
-
-      final data = response.data;
-      if (data is! Map) return null;
-
-      final url = data['supabaseUrl']?.toString().trim() ?? '';
-      final anonKey = data['supabaseAnonKey']?.toString().trim() ?? '';
-      if (!_looksLikeSupabaseConfig(url, anonKey)) return null;
-      final source = data['source']?.toString().trim();
-
-      return SupabaseRuntimeConfig(
-        url: url,
-        anonKey: anonKey,
-        source: (source?.isNotEmpty ?? false) ? 'web-$source' : 'web',
-        updatedAt: DateTime.tryParse(data['updatedAt']?.toString() ?? ''),
-      );
-    } catch (_) {
-      return null;
-    }
+    return _fallbackConfig();
   }
 
   SupabaseRuntimeConfig _fallbackConfig() {
@@ -112,22 +31,14 @@ class SupabaseRuntimeConfigResolver {
         '.env.example and use the same Supabase project as the webapp.',
       );
     }
+    _assertEnvironment(url, _env('API_BASE_URL'), _env('ENVIRONMENT'));
 
-    return SupabaseRuntimeConfig(
-      url: url,
-      anonKey: anonKey,
-      source: 'env',
-    );
+    return SupabaseRuntimeConfig(url: url, anonKey: anonKey, source: 'env');
   }
 
   String _env(String key, {String fallback = ''}) {
     final dartDefine = _dartDefine(key);
-    final effectiveFallback = dartDefine.isNotEmpty ? dartDefine : fallback;
-    try {
-      return (dotenv.env[key] ?? effectiveFallback).trim();
-    } catch (_) {
-      return effectiveFallback.trim();
-    }
+    return dartDefine.isNotEmpty ? dartDefine.trim() : fallback.trim();
   }
 
   String _dartDefine(String key) {
@@ -136,18 +47,42 @@ class SupabaseRuntimeConfigResolver {
         return const String.fromEnvironment('SUPABASE_URL');
       case 'SUPABASE_ANON_KEY':
         return const String.fromEnvironment('SUPABASE_ANON_KEY');
-      case 'MASTER_SUPABASE_URL':
-        return const String.fromEnvironment('MASTER_SUPABASE_URL');
-      case 'MASTER_SUPABASE_ANON_KEY':
-        return const String.fromEnvironment('MASTER_SUPABASE_ANON_KEY');
-      case 'MASTER_BACKEND_CONFIG_VIEW':
-        return const String.fromEnvironment('MASTER_BACKEND_CONFIG_VIEW');
+      case 'API_BASE_URL':
+        return const String.fromEnvironment('API_BASE_URL');
+      case 'ENVIRONMENT':
+        return const String.fromEnvironment('ENVIRONMENT');
     }
     return '';
   }
 
-  String _withoutTrailingSlash(String value) {
-    return value.replaceFirst(RegExp(r'/+$'), '');
+  void _assertEnvironment(
+    String supabaseUrl,
+    String apiUrl,
+    String environment,
+  ) {
+    if (!kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        appFlavor != (environment == 'test' ? 'staging' : environment)) {
+      throw StateError('Android flavor and ENVIRONMENT must match.');
+    }
+    const productionSupabaseHost = 'smkfvvblyudecimcfman.supabase.co';
+    const productionApiHost = 'motobikedeliveryservice.com';
+    final supabaseHost = Uri.parse(supabaseUrl).host.toLowerCase();
+    final apiHost = Uri.tryParse(apiUrl)?.host.toLowerCase() ?? '';
+    final isProductionSupabase = supabaseHost == productionSupabaseHost;
+    final isProductionApi =
+        apiHost == productionApiHost || apiHost == 'www.$productionApiHost';
+    if (environment == 'production') {
+      if (!isProductionSupabase || !isProductionApi) {
+        throw StateError('Production app endpoints do not match production.');
+      }
+    } else if (environment == 'test') {
+      if (isProductionSupabase || isProductionApi || apiHost.isEmpty) {
+        throw StateError('Test app cannot use production endpoints.');
+      }
+    } else {
+      throw StateError('Set ENVIRONMENT to production or test.');
+    }
   }
 
   bool _looksLikeSupabaseConfig(String url, String anonKey) {

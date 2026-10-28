@@ -1,0 +1,18 @@
+name: Production promotion gate
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  require-tested-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require test as the source branch
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+        run: |
+          if [ "$SOURCE_BRANCH" != "test" ]; then
+            echo "Open production pull requests from the test branch."
+            exit 1
+          fi

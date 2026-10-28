@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:driver_app/core/config/app_config.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -44,13 +44,7 @@ class DebugService {
   //   }
   // }
 
-  String get baseUrl => dotenv.env[isProduction
-      ? 'PROD_BASE_URL'
-      : const bool.fromEnvironment('dart.vm.product')
-          ? 'DEV_BASE_URL'
-          : 'DEV_BASE_URL']!;
-
-
+  String get baseUrl => AppConfig().apiBaseUrl;
 
   List<String> _errorStack = [];
   List<String> get errorStack => _errorStack;

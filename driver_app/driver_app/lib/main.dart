@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -33,13 +32,6 @@ void main() {
 }
 
 Future<AppPreferences> _initializeApp() async {
-  // Load environment variables
-  try {
-    await dotenv.load(fileName: '.env');
-  } catch (e) {
-    // Flutter builds should provide .env as an asset; validation below gives a clear setup error.
-  }
-
   final supabaseConfig = await const SupabaseRuntimeConfigResolver().resolve();
 
   // Initialize Supabase
@@ -142,10 +134,7 @@ class _BootstrapSplashApp extends StatelessWidget {
 }
 
 class _BootstrapSplashScreen extends StatefulWidget {
-  const _BootstrapSplashScreen({
-    required this.appName,
-    required this.tagline,
-  });
+  const _BootstrapSplashScreen({required this.appName, required this.tagline});
 
   final String appName;
   final String tagline;
@@ -197,11 +186,7 @@ class _BootstrapSplashScreenState extends State<_BootstrapSplashScreen>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFFF7F3),
-                  Colors.white,
-                  Color(0xFFFFE7DF),
-                ],
+                colors: [Color(0xFFFFF7F3), Colors.white, Color(0xFFFFE7DF)],
               ),
             ),
             child: Center(

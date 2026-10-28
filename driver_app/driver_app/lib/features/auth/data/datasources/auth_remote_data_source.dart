@@ -31,7 +31,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   final SupabaseClient _supabase = Supabase.instance.client;
   final AppConfig _config;
-  static const String _googleRedirectUrl = 'motobike-driver://login-callback/';
+  String get _googleRedirectUrl => _config.environment == 'test'
+      ? 'motobike-driver-test://login-callback/'
+      : 'motobike-driver://login-callback/';
 
   @override
   Future<AuthResponseModel> login(LoginParams params) async {
