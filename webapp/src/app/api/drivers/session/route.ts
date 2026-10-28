@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (!token) throw new OperationsError('Google sign-in required.',401);
     const db = await getSupabaseAdmin();
     const { data: { user }, error: authError } = await db.auth.getUser(token);
-    if (authError || !user?.email || !user.email_confirmed_at) throw new OperationsError('Google session could not be verified.',401);
+    if (authError || !user?.email || !user.email_confirmed_at) throw new OperationsError('Please sign in with Google again.',401);
     const { data: driver, error } = await db.from('drivers').select('*').ilike('email',user.email).maybeSingle();
     if (error) throw error;
     if (!driver || driver.approval_status !== 'Approved' || driver.is_active === false) throw new OperationsError('An approved, active driver account is required.',403);

@@ -8,7 +8,9 @@ Implemented locally for the Flutter driver app and the Next.js admin/API. Produc
 2. Set a random server-only `JWT_SECRET` of at least 32 characters. Optionally use a separate `DRIVER_SESSION_SECRET`, also at least 32 characters. Keep service-role keys on the server. Fallback admin/default-secret logins are disabled. Replace the seeded admin password before using finance.
 3. Deploy the matching web API/admin and release the Flutter app together. The driver's existing `API_BASE_URL` must point to that API. Existing drivers must sign out and sign in again: old locally invented tokens cannot access operations.
 
-If sign-in reports an incompatible response, the driver app reached an API that did not return a signed `access_token`. Confirm the configured `API_BASE_URL` points at the matching deployment, apply migration v15, configure the session secret, and deploy the web API before retrying. Do not restore the old locally generated driver token.
+If the driver app receives a successful response without a signed `access_token`, it shows a plain temporary-unavailability message. For diagnosis, confirm `API_BASE_URL` points at the matching deployment, apply migration v15, configure the session secret, and deploy the web API before retrying. Do not restore the old locally generated driver token.
+
+Driver-facing sign-in errors must not mention secrets, JWTs, migrations, Supabase, or deployment steps. The API logs the missing signing-key configuration for operators and returns a plain temporary-unavailability message to drivers. If that message appears after release, check the server logs and set `DRIVER_SESSION_SECRET` or `JWT_SECRET` in the deployed web app environment.
 4. In **Admin → Wallet & Commission**, review the provisional percentage, price pending deliveries and choose who collects the delivery fee. Driver-collected cash is the default. Price a delivery before sending its offer.
 5. Reconcile an actual credit top-up before a driver accepts a cash job. For business-collected jobs, reconcile receipt of the fee before completion.
 

@@ -64,8 +64,8 @@ async function findDriverByIdentifier(supabase: SupabaseAdmin, identifier: strin
 }
 
 export async function POST(request: Request) {
-    const supabase = await getSupabaseAdmin();
     try {
+        const supabase = await getSupabaseAdmin();
         const body = await request.json();
         const rawIdentifier =
             typeof body.identifier === 'string'
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         const { data: rows, error } = await findDriverByIdentifier(supabase, identifier);
 
         if (error) {
-            return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
+            throw error;
         }
 
         const data = rows?.[0] || null;

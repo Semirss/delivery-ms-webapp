@@ -45,7 +45,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final base = _apiBaseUrl;
     if (base == null)
       throw Exception(
-        'Driver sign-in needs the driver service URL. Contact dispatch.',
+        'Sign-in is temporarily unavailable. Please try again later or contact support.',
       );
     final response = await _dio.post<Map<String, dynamic>>(
       '$base/api/drivers/login',
@@ -133,7 +133,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final base = _apiBaseUrl;
     final googleToken = _supabase.auth.currentSession?.accessToken;
     if (base == null || googleToken == null)
-      throw Exception('Sign in again to connect to the driver service.');
+      throw Exception('Please sign in with Google again.');
     final response = await _dio.post<Map<String, dynamic>>(
       '$base/api/drivers/session',
       options: dio.Options(headers: {'Authorization': 'Bearer $googleToken'}),
@@ -143,7 +143,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     if (data == null) {
       await _supabase.auth.signOut();
       throw Exception(
-        'No driver account exists for this Google email. Please submit a driver application first.',
+        'No driver account was found for this Google email. Please register first or contact support.',
       );
     }
 
@@ -179,8 +179,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final parts = token.split('.');
     if (id.isEmpty || parts.length != 3 || parts.any((part) => part.isEmpty)) {
       throw Exception(
-        'Driver service returned an incompatible sign-in response. '
-        'Deploy the matching web API and try again.',
+        'Driver API response is missing a signed access token or driver ID.',
       );
     }
     return token;
@@ -190,7 +189,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final apiBaseUrl = _apiBaseUrl;
     if (apiBaseUrl == null) {
       throw Exception(
-        'Driver signup needs API_BASE_URL so the ID photo can be uploaded through the web app.',
+        'Registration is temporarily unavailable. Please try again later or contact support.',
       );
     }
 
@@ -236,7 +235,11 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       data: data,
     );
     final driver = Map<String, dynamic>.from(response.data ?? {});
-    if (driver.isEmpty) throw Exception('Invalid driver signup response.');
+    if (driver.isEmpty) {
+      throw Exception(
+        'Registration is temporarily unavailable. Please try again later or contact support.',
+      );
+    }
 
     return AuthResponseModel(
       user: _driverUser(driver, fallbackEmail: params.email),
@@ -303,10 +306,10 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
         }
       } catch (_) {
         if (trimmed.toLowerCase().contains('<!doctype')) {
-          return 'Password recovery API was not found. Deploy the latest web app API changes.';
+          return 'This service is temporarily unavailable. Please try again later or contact support.';
         }
         return trimmed.length > 240
-            ? 'Driver API request failed. Check the deployed web app logs.'
+            ? 'This service is temporarily unavailable. Please try again later or contact support.'
             : trimmed;
       }
     }
@@ -341,16 +344,12 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> verifyResetPassword(VerifyResetPasswordParams params) async {
-    throw Exception(
-      'Password reset is not configured for driver table accounts.',
-    );
+    throw Exception('Password reset is unavailable. Please contact support.');
   }
 
   @override
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params) async {
-    throw Exception(
-      'Driver table accounts do not use Supabase Auth refresh tokens.',
-    );
+    throw Exception('Please sign in again to continue.');
   }
 
   @override
@@ -363,8 +362,7 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final apiBaseUrl = _apiBaseUrl;
     if (apiBaseUrl == null) {
       throw Exception(
-        'Account deletion needs API_BASE_URL so the web app can remove '
-        'your account.',
+        'Account deletion is temporarily unavailable. Please try again later or contact support.',
       );
     }
 
@@ -381,7 +379,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> getCurrentUser() async {
-    throw Exception('Driver table accounts use the cached local session.');
+    throw Exception(
+      'Your account is temporarily unavailable. Please sign in again.',
+    );
   }
 
   UserModel _driverUser(Map<String, dynamic> driver, {String? fallbackEmail}) {

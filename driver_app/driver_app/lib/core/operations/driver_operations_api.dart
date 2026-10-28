@@ -14,13 +14,13 @@ class DriverOperationsApi {
   }) async {
     final base = AppConfig().apiBaseUrl.trim().replaceAll(RegExp(r'/+$'), '');
     if (base.isEmpty)
-      throw Exception('Driver service is not configured. Contact dispatch.');
+      throw Exception(
+        'This service is temporarily unavailable. Please try again later or contact support.',
+      );
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString(StorageKeys.accessToken.name);
     if (token == null || token.split('.').length != 3) {
-      throw Exception(
-        'Please sign out and sign in again to activate your secure driver session.',
-      );
+      throw Exception('Please sign out and sign in again to continue.');
     }
     try {
       final response = await _dio.request<Map<String, dynamic>>(
