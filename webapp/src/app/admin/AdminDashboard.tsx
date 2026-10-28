@@ -11,6 +11,8 @@ import BackendManager from "./BackendManager";
 import DealsManager from "./DealsManager";
 import FoodMarketplaceManager from "./FoodMarketplaceManager";
 import LocationManager from "./LocationManager";
+import FinanceManager from "./FinanceManager";
+import { gpsQuality } from '@/lib/driver-operations';
 import {
   BadgePercent,
   BarChart3,
@@ -22,6 +24,7 @@ import {
   Smartphone,
   Store,
   Users,
+  Wallet,
 } from "lucide-react";
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
@@ -43,6 +46,11 @@ type Delivery = {
   driver_id: string | null;
   created_at: string;
   assigned_at?: string | null;
+  accepted_at?: string | null;
+  fee_collection_method?: string;
+  payment_confirmed_at?: string | null;
+  owner_commission?: number | null;
+  driver_earnings?: number | null;
   cancelled_by?: string | null;
   cancellation_reason?: string | null;
   driver?: { name: string; phone: string; telegram_id: string; vehicle_type?: string; current_lat?: number; current_lng?: number; };
@@ -73,6 +81,9 @@ type Driver = {
   is_active?: boolean;
   current_lat?: number | null;
   current_lng?: number | null;
+  last_location_update?: string | null;
+  location_accuracy_m?: number | null;
+  working_radius_km?: number | null;
   created_at?: string | null;
 };
 
@@ -202,7 +213,7 @@ export default function AdminDashboard() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "locations" | "analytics" | "deals" | "versions" | "food" | "backend">("deliveries");
+  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "locations" | "analytics" | "deals" | "versions" | "food" | "backend" | "finance">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [dateRange, setDateRange] = useState<DateRange>('today');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -216,7 +227,7 @@ export default function AdminDashboard() {
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean; type: 'confirm' | 'alert' | 'prompt' | 'map'; title: string; message: string;
     fields?: { name: string; label: string; value: string }[];
-    mapData?: { driverLat?: number; driverLng?: number; pickupLat?: number; pickupLng?: number; dropoffLat?: number; dropoffLng?: number; };
+    mapData?: { deliveryId?: string; driverLat?: number; driverLng?: number; pickupLat?: number; pickupLng?: number; dropoffLat?: number; dropoffLng?: number; };
     onConfirm?: (data?: ModalPromptData) => void;
     onCancel?: () => void;
   }>({ isOpen: false, type: 'alert', title: '', message: '' });
@@ -474,6 +485,8 @@ export default function AdminDashboard() {
 
   const pendingDrivers = drivers.filter(d => d.approval_status === 'Pending');
   const activeDrivers = drivers.filter(d => d.approval_status === 'Approved');
+  const trackedDelivery = deliveries.find(d => d.id === modalConfig.mapData?.deliveryId);
+  const trackedDriver = drivers.find(d => d.id === trackedDelivery?.driver_id);
   const assignableDrivers = activeDrivers.filter(d => d.is_active !== false);
 
   const handleLogout = async () => {
@@ -588,11 +601,16 @@ export default function AdminDashboard() {
 
   // ── Delivery assignment ───────────────────────────────────────────────────
   const assignDriver = async (deliveryId: string, driverId: string) => {
-    await fetch(`/api/deliveries/${deliveryId}/assign`, {
+    const response = await fetch(`/api/deliveries/${deliveryId}/assign`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ driver_id: driverId })
     });
+    if (!response.ok) {
+      const result = await response.json();
+      setModalConfig({isOpen:true,type:'alert',title:'Could not assign delivery',message:result.error || 'Please refresh and retry.',onConfirm:() => setModalConfig(prev => ({...prev,isOpen:false}))});
+      return;
+    }
     setAssigningDelivery(null);
     fetchData();
   };
@@ -673,6 +691,7 @@ export default function AdminDashboard() {
             { key: 'deliveries', label: 'Deliveries', icon: <Package className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'map', label: 'Live Map', icon: <MapPinned className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'locations', label: 'Locations', icon: <MapPinned className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'finance', label: 'Wallet & Commission', icon: <Wallet className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'drivers', label: 'Drivers', icon: <Users className="h-5 w-5 shrink-0" strokeWidth={2.25} />, badge: activeDrivers.length },
             { key: 'analytics', label: 'Analytics', icon: <BarChart3 className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'deals', label: 'Deals', icon: <BadgePercent className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
@@ -789,6 +808,7 @@ export default function AdminDashboard() {
                       <option value="All">All Statuses</option>
                       <option value="Pending">Pending</option>
                       <option value="Assigned">Assigned</option>
+                      <option value="Accepted">Accepted</option>
                       <option value="Picked Up">Picked Up</option>
                       <option value="Delivered">Delivered</option>
                       <option value="Cancelled">Cancelled/Rejected</option>
@@ -856,6 +876,7 @@ export default function AdminDashboard() {
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap
                               ${d.status === 'Pending' ? 'bg-amber-100 text-amber-800' : ''}
                               ${d.status === 'Assigned' ? 'bg-blue-100 text-blue-800' : ''}
+                              ${d.status === 'Accepted' ? 'bg-teal-100 text-teal-800' : ''}
                               ${d.status === 'Picked Up' ? 'bg-indigo-100 text-indigo-800' : ''}
                               ${d.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : ''}
                               ${d.status === 'Cancelled' ? 'bg-red-100 text-red-800' : ''}
@@ -941,6 +962,7 @@ export default function AdminDashboard() {
                           <div className="mt-auto pt-3 border-t border-neutral-100">
                             {d.status === 'Pending' ? (
                               <div className="space-y-2">
+                                <button onClick={() => setActiveTab('finance')} className="w-full rounded-lg bg-emerald-50 py-2 text-xs font-bold text-emerald-700">Set delivery fee & payment collection</button>
                                 <select
                                   className="block w-full text-sm rounded-xl border-neutral-200 bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 font-medium py-2.5 border"
                                   onChange={(e) => {
@@ -953,11 +975,11 @@ export default function AdminDashboard() {
                                   defaultValue=""
                                 >
                                   <option value="" disabled>Assign Driver...</option>
-                                  {assignableDrivers.filter(drv => drv.status === 'Online').map(drv => (
+                                  {assignableDrivers.filter(drv => gpsQuality(drv) === 'live').map(drv => (
                                     <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online 🟢)</option>
                                   ))}
-                                  {assignableDrivers.filter(drv => drv.status === 'Offline').map(drv => (
-                                    <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Offline)</option>
+                                  {assignableDrivers.filter(drv => gpsQuality(drv) !== 'live').map(drv => (
+                                    <option key={drv.id} value={drv.id} disabled>{drv.name} (GPS {gpsQuality(drv)})</option>
                                   ))}
                                 </select>
                                 <button
@@ -977,12 +999,12 @@ export default function AdminDashboard() {
                               </div>
                             )}
 
-                            {['Assigned', 'Picked Up'].includes(d.status) && (
+                            {['Assigned', 'Accepted', 'Picked Up'].includes(d.status) && (
                               <button
                                 className="w-full mt-2.5 flex items-center justify-center space-x-2 bg-neutral-900 text-white py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-black transition-colors"
                                 onClick={() => setModalConfig({
                                   isOpen: true, type: 'map', title: `Track: ${d.customer_name}`, message: '',
-                                  mapData: { driverLat: d.driver?.current_lat, driverLng: d.driver?.current_lng, pickupLat: d.pickup_lat, pickupLng: d.pickup_lng, dropoffLat: d.dropoff_lat, dropoffLng: d.dropoff_lng },
+                                  mapData: { deliveryId: d.id, driverLat: d.driver?.current_lat, driverLng: d.driver?.current_lng, pickupLat: d.pickup_lat, pickupLng: d.pickup_lng, dropoffLat: d.dropoff_lat, dropoffLng: d.dropoff_lng },
                                   onConfirm: () => setModalConfig(prev => ({ ...prev, isOpen: false }))
                                 })}
                               >
@@ -1291,6 +1313,7 @@ export default function AdminDashboard() {
               {activeTab === 'locations' && (
                 <LocationManager />
               )}
+              {activeTab === 'finance' && <FinanceManager deliveries={deliveries} onUpdated={fetchData} />}
 
               {activeTab === 'deals' && (
                 <DealsManager />
@@ -1382,8 +1405,11 @@ export default function AdminDashboard() {
                   <div className="rounded-xl overflow-hidden border border-neutral-200 shadow-inner">
                     {modalConfig.mapData ? (
                       <LiveMap
-                        driverLat={modalConfig.mapData.driverLat}
-                        driverLng={modalConfig.mapData.driverLng}
+                        driverLat={trackedDriver?.current_lat}
+                        driverLng={trackedDriver?.current_lng}
+                        driverStatus={trackedDriver?.status}
+                        observedAt={trackedDriver?.last_location_update}
+                        accuracy={trackedDriver?.location_accuracy_m}
                         pickupLat={modalConfig.mapData.pickupLat}
                         pickupLng={modalConfig.mapData.pickupLng}
                         dropoffLat={modalConfig.mapData.dropoffLat}

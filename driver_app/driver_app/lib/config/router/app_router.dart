@@ -18,6 +18,7 @@ import 'package:driver_app/features/notifications/presentation/screens/notificat
 import 'package:driver_app/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/driver_documents_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/driver_statistics_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/driver_settings_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/earnings_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/personal_details_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/privacy_policy_screen.dart';
@@ -376,13 +377,8 @@ class AppRouter {
       GoRoute(
         name: AppRoutes.setting.name,
         path: AppRoutes.setting.path,
-        pageBuilder: (context, state) => getPage(
-          child: Scaffold(
-            appBar: AppAppBar(titleText: 'Settings'),
-            body: const Center(child: AppText('Settings screen')),
-          ),
-          state: state,
-        ),
+        pageBuilder: (context, state) =>
+            getPage(child: const DriverSettingsScreen(), state: state),
       ),
 
       GoRoute(

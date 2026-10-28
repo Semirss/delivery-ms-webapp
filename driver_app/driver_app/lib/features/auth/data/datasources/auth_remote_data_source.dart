@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:driver_app/core/config/app_config.dart';
+import 'package:driver_app/core/operations/driver_operations_api.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:driver_app/core/params/auth_params.dart';
 import '../models/auth_response_model.dart';
@@ -41,26 +42,25 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     }
     if (params.password.isEmpty) throw Exception('Please enter your password.');
 
-    final data = await _findDriverByLoginIdentifier(identifier);
-
-    if (data == null) {
+    final base = _apiBaseUrl;
+    if (base == null)
       throw Exception(
-        'No driver account found with this email or phone. Ask admin to add it to your driver profile.',
+        'Driver sign-in needs the driver service URL. Contact dispatch.',
       );
-    }
-
-    final driver = Map<String, dynamic>.from(data);
-    if (driver['password']?.toString() != params.password) {
-      throw Exception('Invalid email/phone or password.');
-    }
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$base/api/drivers/login',
+      data: {'identifier': identifier, 'password': params.password},
+    );
+    final driver = Map<String, dynamic>.from(response.data ?? {});
+    final token = _secureDriverToken(driver);
 
     return AuthResponseModel(
       user: _driverUser(
         driver,
         fallbackEmail: _isEmailIdentifier(identifier) ? identifier : null,
       ),
-      accessToken: _driverToken(driver),
-      refreshToken: _driverToken(driver, refresh: true),
+      accessToken: token,
+      refreshToken: '',
       requiresVerification: false,
     );
   }
@@ -130,13 +130,15 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Google did not return an email address.');
     }
 
-    final rows = await _supabase
-        .from('drivers')
-        .select()
-        .ilike('email', email)
-        .limit(1);
-    final driverRows = List<Map<String, dynamic>>.from(rows);
-    final data = driverRows.isEmpty ? null : driverRows.first;
+    final base = _apiBaseUrl;
+    final googleToken = _supabase.auth.currentSession?.accessToken;
+    if (base == null || googleToken == null)
+      throw Exception('Sign in again to connect to the driver service.');
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$base/api/drivers/session',
+      options: dio.Options(headers: {'Authorization': 'Bearer $googleToken'}),
+    );
+    final data = response.data;
 
     if (data == null) {
       await _supabase.auth.signOut();
@@ -149,8 +151,8 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
     return AuthResponseModel(
       user: _driverUser(driver, fallbackEmail: email),
-      accessToken: _driverToken(driver),
-      refreshToken: _driverToken(driver, refresh: true),
+      accessToken: _secureDriverToken(driver),
+      refreshToken: '',
       requiresVerification: false,
     );
   }
@@ -171,30 +173,17 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   bool _isEmailIdentifier(String value) => value.contains('@');
 
-  Future<Map<String, dynamic>?> _findDriverByLoginIdentifier(
-    String identifier,
-  ) async {
-    if (_isEmailIdentifier(identifier)) {
-      final rows = await _supabase
-          .from('drivers')
-          .select()
-          .ilike('email', identifier)
-          .limit(1);
-      final driverRows = List<Map<String, dynamic>>.from(rows);
-      return driverRows.isEmpty ? null : driverRows.first;
+  String _secureDriverToken(Map<String, dynamic> driver) {
+    final id = driver['id']?.toString().trim() ?? '';
+    final token = driver['access_token']?.toString().trim() ?? '';
+    final parts = token.split('.');
+    if (id.isEmpty || parts.length != 3 || parts.any((part) => part.isEmpty)) {
+      throw Exception(
+        'Driver service returned an incompatible sign-in response. '
+        'Deploy the matching web API and try again.',
+      );
     }
-
-    final rows = await _supabase
-        .from('drivers')
-        .select()
-        .not('phone', 'is', null);
-    final driverRows = List<Map<String, dynamic>>.from(rows);
-    for (final driver in driverRows) {
-      if (_normalizeEthiopianPhone(driver['phone']) == identifier) {
-        return driver;
-      }
-    }
-    return null;
+    return token;
   }
 
   Future<AuthResponseModel> _signUpViaWebApi(SignUpParams params) async {
@@ -345,36 +334,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> resetPassword(ResetPasswordParams params) async {
-    final phone = params.phone.trim();
-    if (phone.isEmpty) throw Exception('Enter your phone number.');
-
-    final apiBaseUrl = _apiBaseUrl;
-    if (apiBaseUrl == null) {
-      await _resetPasswordDirectly(params);
-      return;
-    }
-
-    try {
-      final response = await _dio.post<Map<String, dynamic>>(
-        '$apiBaseUrl/api/drivers/forgot-password',
-        data: {
-          'phone': phone,
-          if (params.newPassword?.isNotEmpty == true)
-            'newPassword': params.newPassword,
-        },
-      );
-      final next = response.data?['next']?.toString();
-      if (params.newPassword?.isNotEmpty == true && next != 'login') {
-        await _resetPasswordDirectly(params);
-      }
-    } on dio.DioException catch (error) {
-      final message = error.message ?? '';
-      if (message.contains('No driver account found')) {
-        await _resetPasswordDirectly(params);
-        return;
-      }
-      rethrow;
-    }
+    throw Exception(
+      'Password reset is handled by support after account ownership is verified.',
+    );
   }
 
   @override
@@ -409,16 +371,9 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     final userId = params.userId.trim();
     if (userId.isEmpty) throw Exception('No account is signed in.');
 
-    final email = params.email.trim().toLowerCase();
-    await _dio.delete<Map<String, dynamic>>(
-      '$apiBaseUrl/api/drivers/${Uri.encodeComponent(userId)}',
-      options: dio.Options(
-        headers: {
-          if (email.isNotEmpty) 'X-Motobike-Account-Email': email,
-          if (params.phone?.trim().isNotEmpty == true)
-            'X-Motobike-Account-Phone': params.phone!.trim(),
-        },
-      ),
+    await DriverOperationsApi().request(
+      '/api/drivers/${Uri.encodeComponent(userId)}',
+      method: 'DELETE',
     );
 
     await logout();
@@ -444,48 +399,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       lastName: nameParts.length > 1 ? nameParts.skip(1).join(' ') : null,
       phone: driver['phone']?.toString(),
     );
-  }
-
-  String _driverToken(Map<String, dynamic> driver, {bool refresh = false}) {
-    final prefix = refresh ? 'driver_table_refresh' : 'driver_table_access';
-    return '${prefix}_${driver['id']}_${DateTime.now().millisecondsSinceEpoch}';
-  }
-
-  Future<void> _resetPasswordDirectly(ResetPasswordParams params) async {
-    final normalizedPhone = _normalizeEthiopianPhone(params.phone);
-    if (normalizedPhone.isEmpty) throw Exception('Enter your phone number.');
-
-    final data = await _supabase
-        .from('drivers')
-        .select('id, phone')
-        .not('phone', 'is', null);
-
-    final drivers = (data as List)
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .toList();
-    Map<String, dynamic>? matched;
-
-    for (final driver in drivers) {
-      if (_normalizeEthiopianPhone(driver['phone']) == normalizedPhone) {
-        matched = driver;
-        break;
-      }
-    }
-
-    if (matched == null) {
-      throw Exception('No driver account found for this phone number.');
-    }
-
-    final newPassword = params.newPassword ?? '';
-    if (newPassword.isEmpty) return;
-    if (newPassword.length < 6) {
-      throw Exception('Password must be at least 6 characters.');
-    }
-
-    await _supabase
-        .from('drivers')
-        .update({'password': newPassword})
-        .eq('id', matched['id'].toString());
   }
 
   String _normalizeEthiopianPhone(Object? value) {

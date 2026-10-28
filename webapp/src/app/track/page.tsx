@@ -22,6 +22,9 @@ type TrackedDelivery = {
      vehicle_type: string;
      current_lat: number | null;
      current_lng: number | null;
+     status?: string;
+     last_location_update?: string | null;
+     location_accuracy_m?: number | null;
   };
 };
 
@@ -150,11 +153,12 @@ export default function TrackPage() {
                           <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-white/10 border border-white/20">
                              {activeDelivery.status === 'Pending' ? '⏳ Finding Driver...' : 
                               activeDelivery.status === 'Assigned' ? '⚡ Driver Assigned' :
+                              activeDelivery.status === 'Accepted' ? 'Driver heading to pickup' :
                               activeDelivery.status === 'Picked Up' ? '🚲 On the Way' : '🏁 Delivered'}
                           </div>
                       </div>
                       
-                      {activeDelivery.driver && (['Assigned', 'Picked Up'].includes(activeDelivery.status)) && (
+                      {activeDelivery.driver && (['Assigned', 'Accepted', 'Picked Up'].includes(activeDelivery.status)) && (
                           <div className="bg-white/10 p-4 rounded-2xl border border-white/10 md:text-right w-full md:w-auto">
                               <p className="text-xs uppercase font-bold text-neutral-400 tracking-wider">Your Driver</p>
                               <p className="font-extrabold text-lg mt-0.5 flex items-center md:justify-end">
@@ -173,6 +177,9 @@ export default function TrackPage() {
                      <LiveMap 
                          driverLat={activeDelivery.driver?.current_lat}
                          driverLng={activeDelivery.driver?.current_lng}
+                         driverStatus={activeDelivery.driver?.status}
+                         observedAt={activeDelivery.driver?.last_location_update}
+                         accuracy={activeDelivery.driver?.location_accuracy_m}
                          pickupLat={activeDelivery.pickup_lat}
                          pickupLng={activeDelivery.pickup_lng}
                          dropoffLat={activeDelivery.dropoff_lat}

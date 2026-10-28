@@ -18,8 +18,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
             title: 'Location data',
             body:
                 'MotoBike Driver collects your precise or approximate location '
-                'while you use the app, when you turn Online, or when you '
-                'handle an assigned delivery. We use location to show your '
+                'while you use the app and while you are Online, including '
+                'in the background and with the screen locked. We use location to show your '
                 'position on the map, send your position to dispatch, assign '
                 'nearby deliveries, update customers and support on delivery '
                 'progress, and help with pickup and drop-off navigation. '
@@ -56,6 +56,13 @@ class PrivacyPolicyScreen extends StatelessWidget {
             title: 'Account protection',
             body:
                 'Only keep your own account signed in. Contact support immediately if your phone, account, or verification document is no longer under your control.',
+          ),
+          _section(
+            context,
+            icon: Icons.account_balance_wallet_outlined,
+            title: 'Wallet and account closure',
+            body:
+                'We keep wallet entries and transaction references for reconciliation and support. Settle balances and pending requests before closing your account. Closing removes your login credentials and active driver profile details; transaction history remains available for financial reconciliation.',
           ),
         ],
       ),

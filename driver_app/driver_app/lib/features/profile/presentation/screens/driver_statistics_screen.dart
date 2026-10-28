@@ -361,7 +361,7 @@ class _DriverStatisticsScreenState extends State<DriverStatisticsScreen> {
                           ),
                         ),
                         AppText(
-                          moneyText(delivery['delivery_fee']),
+                          moneyText(netDeliveryEarnings(delivery)),
                           variant: AppTextVariant.bodySmall,
                           color: context.appTextPrimary,
                           fontWeight: FontWeight.bold,

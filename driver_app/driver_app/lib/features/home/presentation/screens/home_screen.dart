@@ -4,7 +4,10 @@ import 'dart:math' as math;
 import 'package:driver_app/config/router/navigation_helper.dart';
 import 'package:driver_app/core/map/addis_ababa_base_map.dart';
 import 'package:driver_app/core/notifications/local_notification_service.dart';
-import 'package:driver_app/core/preferences/app_preferences.dart';
+import 'package:driver_app/core/operations/driver_operations_api.dart';
+import 'package:driver_app/core/widgets/slide_to_accept.dart';
+import 'package:driver_app/features/profile/presentation/screens/driver_settings_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/wallet_screen.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -13,6 +16,7 @@ import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/home/data/repositories/map_repository.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -28,7 +32,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   static const _locationDisclosureConsentKey =
       'driver_location_prominent_disclosure_consent_v1';
 
@@ -36,6 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final MapController _mapController = MapController();
   final MapRepository _mapRepository = MapRepository();
   final SupabaseClient _supabase = Supabase.instance.client;
+  final DriverOperationsApi _operations = DriverOperationsApi();
+  Position? _gpsFix;
+  Timer? _offerTimer;
+  Timer? _refreshTimer;
+  String? _expiringDeliveryId;
+  bool _refreshingGps = false;
 
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
@@ -63,12 +73,70 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _offerTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || _activeDelivery?['status'] != 'Assigned') return;
+      setState(() {});
+      if (_offerSecondsLeft == 0) unawaited(_expireOffer());
+    });
+    _refreshTimer = Timer.periodic(const Duration(seconds: 20), (_) {
+      if (!_isOnline || !mounted) return;
+      unawaited(_refreshOnlineState());
+    });
     unawaited(
       _localNotifications.initialize(onTap: _handleSystemNotificationTap),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(_loadDriverRecord());
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && _isOnline)
+      unawaited(_refreshOnlineState());
+  }
+
+  Future<void> _refreshOnlineState() async {
+    if (_refreshingGps) return;
+    _refreshingGps = true;
+    try {
+      await _getCurrentLocation(updateRemote: true, moveMap: false);
+      final id = _driverRecord?['id']?.toString();
+      if (id != null && mounted && _isOnline) await _loadAssignedDelivery(id);
+    } finally {
+      _refreshingGps = false;
+    }
+  }
+
+  int get _offerSecondsLeft {
+    final delivery = _activeDelivery;
+    if (delivery == null) return 0;
+    final expiry =
+        DateTime.tryParse(delivery['offer_expires_at']?.toString() ?? '') ??
+        DateTime.tryParse(
+          delivery['assigned_at']?.toString() ?? '',
+        )?.add(const Duration(minutes: 2));
+    if (expiry == null) return 0;
+    return math.max(
+      0,
+      (expiry.difference(DateTime.now()).inMilliseconds / 1000).ceil(),
+    );
+  }
+
+  Future<void> _expireOffer() async {
+    final id = _activeDelivery?['id']?.toString();
+    if (id == null || _expiringDeliveryId == id || _isUpdating) return;
+    _expiringDeliveryId = id;
+    try {
+      await _operations.deliveryAction(id, 'expire');
+      final driverId = _driverRecord?['id']?.toString();
+      if (driverId != null && mounted) await _loadAssignedDelivery(driverId);
+    } catch (error) {
+      debugPrint('Offer expiry will retry: $error');
+    } finally {
+      _expiringDeliveryId = null;
+    }
   }
 
   Future<bool> _ensureLocationAccess({bool showMessages = false}) async {
@@ -172,8 +240,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     'MotoBike Driver collects your precise or approximate '
-                    'location while you use the app and when you turn Online '
-                    'or handle an assigned delivery.',
+                    'location while you use the app and while you are Online, '
+                    'including in the background or with the screen locked. '
+                    'Sharing stops when you go Offline.',
                   ),
                   SizedBox(height: AppSpacing.md),
                   Text(
@@ -226,22 +295,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _getCurrentLocation({
     double zoom = 16,
     bool updateRemote = false,
+    bool moveMap = true,
   }) async {
     try {
       final lastKnown = await Geolocator.getLastKnownPosition();
       if (lastKnown != null && mounted) {
-        _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: true);
-        if (updateRemote) {
-          final driverId = _driverRecord?['id']?.toString();
-          if (driverId != null) {
-            unawaited(
-              _updateDriverLocation(
-                driverId,
-                status: _isOnline ? 'Online' : 'Offline',
-              ),
-            );
-          }
-        }
+        _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: moveMap);
       }
     } catch (e) {
       debugPrint('Last known GPS skipped: $e');
@@ -249,12 +308,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 4),
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
+        timeLimit: const Duration(seconds: 15),
       );
       if (!mounted) return;
-      _applyCurrentPosition(position, zoom: zoom, moveMap: true);
-      if (updateRemote) {
+      _applyCurrentPosition(position, zoom: zoom, moveMap: moveMap);
+      if (updateRemote && _isOnline) {
         final driverId = _driverRecord?['id']?.toString();
         if (driverId != null) {
           await _updateDriverLocation(
@@ -286,8 +345,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     final next = LatLng(position.latitude, position.longitude);
     if (!_isValidMapPoint(next)) return;
+    final age = DateTime.now().difference(position.timestamp);
+    if (age > const Duration(seconds: 90) ||
+        age < const Duration(seconds: -10) ||
+        !position.accuracy.isFinite ||
+        position.accuracy < 0 ||
+        position.accuracy > 100)
+      return;
+    if (_gpsFix != null && position.timestamp.isBefore(_gpsFix!.timestamp))
+      return;
     setState(() {
       _currentPosition = next;
+      _gpsFix = position;
     });
     if (moveMap) _moveMapSafely(next, zoom);
   }
@@ -376,7 +445,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return record;
       setState(() {
         _driverRecord = record;
-        _isOnline = record?['status'] == 'Online';
+        _isOnline =
+            record?['status'] == 'Online' &&
+            record?['is_active'] != false &&
+            record?['approval_status'] == 'Approved';
       });
       if (record != null) {
         _subscribeToDriverRecord(record['id'].toString());
@@ -490,8 +562,11 @@ class _HomeScreenState extends State<HomeScreen> {
             if (!mounted) return;
             setState(() {
               _driverRecord = nextRecord;
-              _isOnline = nextRecord['status'] == 'Online';
+              _isOnline =
+                  nextRecord['status'] == 'Online' &&
+                  nextRecord['is_active'] != false;
             });
+            if (!_isOnline) unawaited(_positionStream?.cancel());
           },
         )
         .subscribe();
@@ -502,10 +577,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await _deliveriesChannel?.unsubscribe();
 
     try {
-      await _supabase.from('drivers').update({'status': 'Offline'}).eq(
-            'id',
-            driverId,
-          );
+      await _operations.update({'action': 'offline'});
     } catch (e) {
       debugPrint('Error setting driver offline after location denial: $e');
     }
@@ -540,9 +612,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (!_isOnline) {
-      final hasLocationAccess = await _ensureLocationAccess(
-        showMessages: true,
-      );
+      final hasLocationAccess = await _ensureLocationAccess(showMessages: true);
       if (!mounted || !hasLocationAccess) return;
     }
 
@@ -551,17 +621,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       if (_isOnline) {
+        await _operations.update({'action': 'offline'});
         await _positionStream?.cancel();
         await _deliveriesChannel?.unsubscribe();
-        await _supabase
-            .from('drivers')
-            .update({
-              'status': 'Offline',
-              'current_lat': _currentPosition.latitude,
-              'current_lng': _currentPosition.longitude,
-              'last_location_update': DateTime.now().toIso8601String(),
-            })
-            .eq('id', driverId);
 
         if (!mounted) return;
         setState(() {
@@ -587,7 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         AppToast.show(
           context: context,
-          message: 'Could not update online status.',
+          message: e.toString().replaceFirst('Exception: ', ''),
           type: AppToastType.error,
         );
       }
@@ -598,40 +660,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _startLocationStreaming(String driverId) {
     _positionStream?.cancel();
-    _positionStream =
-        Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 10,
-          ),
-        ).listen((position) async {
-          if (!mounted) return;
-          setState(() {
-            _currentPosition = LatLng(position.latitude, position.longitude);
-          });
-          await _updateDriverLocation(
-            driverId,
-            status: _activeDelivery == null ? 'Online' : 'Online',
+    final LocationSettings settings =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+        ? AndroidSettings(
+            accuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 0,
+            intervalDuration: const Duration(seconds: 5),
+            foregroundNotificationConfig: const ForegroundNotificationConfig(
+              notificationTitle: 'MotoBike Driver is online',
+              notificationText:
+                  'Sharing your GPS with dispatch. Go offline to stop.',
+              enableWakeLock: true,
+            ),
+          )
+        : !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+        ? AppleSettings(
+            accuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 5,
+            activityType: ActivityType.automotiveNavigation,
+            pauseLocationUpdatesAutomatically: false,
+            showBackgroundLocationIndicator: true,
+            allowBackgroundLocationUpdates: true,
+          )
+        : const LocationSettings(
+            accuracy: LocationAccuracy.bestForNavigation,
+            distanceFilter: 5,
           );
-          if (_activeDelivery != null) {
-            unawaited(_refreshActiveRoute());
-          }
-        });
+    _positionStream = Geolocator.getPositionStream(locationSettings: settings)
+        .listen(
+          (position) async {
+            if (!mounted) return;
+            _applyCurrentPosition(position, zoom: 16, moveMap: false);
+            if (_gpsFix != position || !_isOnline) return;
+            try {
+              await _updateDriverLocation(driverId, status: 'Online');
+            } catch (error) {
+              debugPrint(
+                'GPS upload failed; retaining original fix time: $error',
+              );
+            }
+            if (_activeDelivery != null) {
+              unawaited(_refreshActiveRoute());
+            }
+          },
+          onError: (Object error) {
+            debugPrint('GPS stream failed: $error');
+          },
+        );
   }
 
   Future<void> _updateDriverLocation(
     String driverId, {
     required String status,
   }) async {
-    await _supabase
-        .from('drivers')
-        .update({
-          'status': status,
-          'current_lat': _currentPosition.latitude,
-          'current_lng': _currentPosition.longitude,
-          'last_location_update': DateTime.now().toIso8601String(),
-        })
-        .eq('id', driverId);
+    final fix = _gpsFix;
+    if (fix == null ||
+        DateTime.now().difference(fix.timestamp) >
+            const Duration(seconds: 90)) {
+      throw Exception(
+        'Waiting for a fresh GPS fix. Enable precise location and try again.',
+      );
+    }
+    await _operations.update({
+      'action': 'location',
+      'status': status,
+      'lat': fix.latitude,
+      'lng': fix.longitude,
+      'accuracy': fix.accuracy,
+      'heading': fix.heading,
+      'speed': fix.speed,
+      'observed_at': fix.timestamp.toUtc().toIso8601String(),
+    });
   }
 
   Future<void> _subscribeToAssignments(String driverId) async {
@@ -705,7 +804,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final id = notification['id']?.toString();
-    if (notification['read_at'] == null &&
+    if (_driverRecord?['notifications_enabled'] != false &&
+        notification['read_at'] == null &&
         id != null &&
         _shownSystemNotificationIds.add(id)) {
       unawaited(
@@ -756,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final active = deliveries.cast<Map<String, dynamic>?>().firstWhere(
         (delivery) =>
             delivery != null &&
-            ['Assigned', 'Picked Up'].contains(delivery['status']),
+            ['Assigned', 'Accepted', 'Picked Up'].contains(delivery['status']),
         orElse: () => null,
       );
 
@@ -795,6 +895,16 @@ class _HomeScreenState extends State<HomeScreen> {
         delivery['status'] == 'Assigned' &&
         mounted) {
       _lastNotifiedDeliveryId = deliveryId;
+      if (_driverRecord?['notifications_enabled'] != false) {
+        unawaited(
+          _localNotifications.showDriverAlert(
+            id: deliveryId,
+            title: 'New delivery offer',
+            body: 'Review the trip and slide to accept before it expires.',
+            payload: deliveryId,
+          ),
+        );
+      }
       AppToast.show(
         context: context,
         message: 'New delivery assigned. Check pickup details.',
@@ -816,6 +926,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<LatLng> _visibleRoutePoints(Map<String, dynamic>? delivery) {
+    if (_gpsFix == null) return const [];
     final routePoints = _routePoints
         .where(_isValidMapPoint)
         .toList(growable: false);
@@ -857,7 +968,7 @@ class _HomeScreenState extends State<HomeScreen> {
     bool fit = false,
     bool force = false,
   }) async {
-    if (_isRefreshingRoute) return;
+    if (_isRefreshingRoute || _gpsFix == null) return;
 
     final destination = _activeDestination();
     if (destination == null) return;
@@ -900,7 +1011,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
-      final route = await _mapRepository.getRoute(_currentPosition, destination);
+      final route = await _mapRepository.getRoute(
+        _currentPosition,
+        destination,
+      );
       if (!mounted) return;
       setState(() {
         _routePoints = route.isEmpty ? fallback : route;
@@ -918,6 +1032,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _rejectDelivery() async {
+    if (_isUpdating) return;
     final delivery = _activeDelivery;
     if (delivery == null) return;
     final deliveryId = delivery['id']?.toString();
@@ -925,16 +1040,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isUpdating = true);
     try {
-      await _supabase
-          .from('deliveries')
-          .update({
-            'status': 'Pending',
-            'driver_id': null,
-            'assigned_at': null,
-            'cancelled_by': 'driver_reject',
-            'cancellation_reason': 'Rejected from driver app',
-          })
-          .eq('id', deliveryId);
+      await _operations.deliveryAction(deliveryId, 'reject');
 
       if (!mounted) return;
       setState(() {
@@ -951,7 +1057,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         AppToast.show(
           context: context,
-          message: 'Could not reject delivery.',
+          message: e.toString().replaceFirst('Exception: ', ''),
           type: AppToastType.error,
         );
       }
@@ -961,6 +1067,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _updateDeliveryStatus(String status) async {
+    if (_isUpdating) return;
     final delivery = _activeDelivery;
     final driver = _driverRecord;
     if (delivery == null || driver == null) return;
@@ -970,33 +1077,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() => _isUpdating = true);
     try {
-      final updateValues = <String, dynamic>{
-        'status': status,
-        'driver_id': driverId,
-      };
-      if (status == 'Picked Up' || status == 'Delivered') {
-        updateValues['cancelled_by'] = null;
-        updateValues['cancellation_reason'] = null;
-      }
-      final updated = await _supabase
-          .from('deliveries')
-          .update(updateValues)
-          .eq('id', deliveryId)
-          .select()
-          .single();
-
-      if (status == 'Delivered') {
-        final total = _asInt(driver['total_deliveries']) + 1;
-        await _supabase
-            .from('drivers')
-            .update({'total_deliveries': total})
-            .eq('id', driverId);
-        if (mounted) {
-          setState(() {
-            _driverRecord = {...driver, 'total_deliveries': total};
-          });
-        }
-      }
+      final action = status == 'Accepted'
+          ? 'accept'
+          : status == 'Picked Up'
+          ? 'pickup'
+          : 'complete';
+      final updated = await _operations.deliveryAction(deliveryId, action);
 
       if (!mounted) return;
       if (status == 'Delivered') {
@@ -1030,7 +1116,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         AppToast.show(
           context: context,
-          message: 'Could not update delivery.',
+          message: e.toString().replaceFirst('Exception: ', ''),
           type: AppToastType.error,
         );
       }
@@ -1180,9 +1266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return IconButton(
                                   tooltip: '$value star',
                                   onPressed: () {
-                                    setSheetState(
-                                      () => selectedRating = value,
-                                    );
+                                    setSheetState(() => selectedRating = value);
                                   },
                                   icon: Icon(
                                     value <= selectedRating
@@ -1234,13 +1318,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return parsed;
   }
 
-  int _asInt(Object? value) {
-    if (value is num) return value.toInt();
-    return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _offerTimer?.cancel();
+    _refreshTimer?.cancel();
     _positionStream?.cancel();
     _driverChannel?.unsubscribe();
     _deliveriesChannel?.unsubscribe();
@@ -1311,40 +1393,41 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               MarkerLayer(
                 markers: [
-                  Marker(
-                    point: _currentPosition,
-                    width: 60,
-                    height: 60,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 3),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.motorcycle_rounded,
-                            color: Colors.white,
-                            size: 14,
+                  if (_gpsFix != null)
+                    Marker(
+                      point: _currentPosition,
+                      width: 60,
+                      height: 60,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.motorcycle_rounded,
+                              color: Colors.white,
+                              size: 14,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   if (pickupPoint != null)
                     Marker(
                       point: pickupPoint,
@@ -1574,7 +1657,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               textAlign: TextAlign.center,
                             ),
                           ] else if (delivery['status'] == 'Assigned') ...[
-                            _buildDeliveryHeader('Assigned Delivery', delivery),
+                            _buildDeliveryHeader(
+                              'New offer · ${_offerSecondsLeft}s',
+                              delivery,
+                            ),
                             Divider(color: context.appBorder),
                             _buildDeliveryLocation(
                               Icons.storefront_rounded,
@@ -1590,25 +1676,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             _buildDeliveryDetails(delivery),
                             const SizedBox(height: AppSpacing.lg),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: AppButton.outlinedSecondary(
-                                    label: 'REJECT',
-                                    isLoading: _isUpdating,
-                                    onPressed: _rejectDelivery,
-                                  ),
-                                ),
-                                const SizedBox(width: AppSpacing.md),
-                                Expanded(
-                                  child: AppButton.primary(
-                                    label: 'PICKED UP',
-                                    isLoading: _isUpdating,
-                                    onPressed: () =>
-                                        _updateDeliveryStatus('Picked Up'),
-                                  ),
-                                ),
-                              ],
+                            SlideToAccept(
+                              key: ValueKey(delivery['id']),
+                              enabled: !_isUpdating && _offerSecondsLeft > 0,
+                              label: _offerSecondsLeft > 0
+                                  ? 'Slide to accept'
+                                  : 'Offer expired',
+                              onAccept: () => _updateDeliveryStatus('Accepted'),
+                            ),
+                            TextButton(
+                              onPressed: _isUpdating ? null : _rejectDelivery,
+                              child: const Text('Decline offer'),
+                            ),
+                          ] else if (delivery['status'] == 'Accepted') ...[
+                            _buildDeliveryHeader('Head to pickup', delivery),
+                            _buildDeliveryLocation(
+                              Icons.storefront_rounded,
+                              'Pickup',
+                              delivery['pickup_location']?.toString() ??
+                                  'Pickup',
+                            ),
+                            _buildDeliveryDetails(delivery),
+                            const SizedBox(height: AppSpacing.lg),
+                            AppButton.primary(
+                              label: 'CONFIRM PICKUP',
+                              fullWidth: true,
+                              isLoading: _isUpdating,
+                              onPressed: () =>
+                                  _updateDeliveryStatus('Picked Up'),
                             ),
                           ] else ...[
                             _buildDeliveryHeader('Deliver Package', delivery),
@@ -1648,127 +1743,6 @@ class _HomeScreenState extends State<HomeScreen> {
       if (!mounted) return;
       action();
     });
-  }
-
-  void _showSettingsSheet() {
-    final preferences = AppPreferencesScope.of(context);
-
-    showModalBottomSheet<void>(
-      context: context,
-      useRootNavigator: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        return AnimatedBuilder(
-          animation: preferences,
-          builder: (context, _) {
-            return SafeArea(
-              top: false,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.appSurface,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(26),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.18),
-                      blurRadius: 28,
-                      offset: const Offset(0, -10),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 42,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: context.appBorder,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    AppText(
-                      'Settings',
-                      variant: AppTextVariant.heading2,
-                      color: context.appTextPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    _buildSettingsTile(
-                      context,
-                      icon: Icons.dark_mode_outlined,
-                      title: 'Theme',
-                      subtitle: 'Light, dark, or system',
-                      trailing: DropdownButton<ThemeMode>(
-                        value: preferences.themeMode,
-                        dropdownColor: context.appSurface,
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        style: TextStyle(color: context.appTextPrimary),
-                        underline: const SizedBox.shrink(),
-                        items: const [
-                          DropdownMenuItem(
-                            value: ThemeMode.light,
-                            child: Text('Light'),
-                          ),
-                          DropdownMenuItem(
-                            value: ThemeMode.dark,
-                            child: Text('Dark'),
-                          ),
-                          DropdownMenuItem(
-                            value: ThemeMode.system,
-                            child: Text('System'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          if (value != null) preferences.setThemeMode(value);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildSettingsTile(
-    BuildContext tileContext, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Widget trailing,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: tileContext.appSurfaceAlt,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: tileContext.appBorder),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: AppColors.primary),
-        title: AppText(
-          title,
-          variant: AppTextVariant.bodyMedium,
-          fontWeight: FontWeight.bold,
-        ),
-        subtitle: AppText(
-          subtitle,
-          variant: AppTextVariant.bodySmall,
-          color: tileContext.appTextSecondary,
-        ),
-        trailing: trailing,
-      ),
-    );
   }
 
   Widget _buildHomeDrawer() {
@@ -1892,9 +1866,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Divider(color: context.appBorder),
                     ),
                     _drawerTile(
+                      icon: Icons.account_balance_wallet_rounded,
+                      title: 'Wallet',
+                      onTap: () => _closeDrawerThen(
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const WalletScreen(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    _drawerTile(
                       icon: Icons.settings_rounded,
                       title: 'Settings',
-                      onTap: () => _closeDrawerThen(_showSettingsSheet),
+                      onTap: () => _closeDrawerThen(
+                        () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const DriverSettingsScreen(),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -2127,7 +2118,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _deliveryCustomerName(Map<String, dynamic> delivery) {
-    for (final key in const ['customer_name', 'recipient_name', 'seller_name']) {
+    for (final key in const [
+      'customer_name',
+      'recipient_name',
+      'seller_name',
+    ]) {
       final value = delivery[key]?.toString().trim();
       if (value != null && value.isNotEmpty) return value;
     }
@@ -2148,7 +2143,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         AppText(
-          _feeLabel(delivery['delivery_fee']),
+          _feeLabel(delivery['driver_earnings'] ?? delivery['delivery_fee']),
           variant: AppTextVariant.heading2,
           color: AppColors.primary,
           fontWeight: FontWeight.bold,
@@ -2161,6 +2156,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final phone = _deliveryPhone(delivery);
     final packageType = delivery['package_type']?.toString().trim();
     final vehicle = delivery['vehicle_category']?.toString().trim();
+    final pickup = _deliveryPoint(delivery, 'pickup_lat', 'pickup_lng');
+    final dropoff = _deliveryPoint(delivery, 'dropoff_lat', 'dropoff_lng');
+    final freshGps =
+        _gpsFix != null &&
+        DateTime.now().difference(_gpsFix!.timestamp) <
+            const Duration(seconds: 90);
+    final pickupKm = pickup == null || !freshGps
+        ? null
+        : const Distance().as(LengthUnit.Kilometer, _currentPosition, pickup);
+    final tripKm = pickup == null || dropoff == null
+        ? null
+        : const Distance().as(LengthUnit.Kilometer, pickup, dropoff);
+    final radius = _asNullableDouble(_driverRecord?['working_radius_km']) ?? 5;
 
     return Container(
       width: double.infinity,
@@ -2172,6 +2180,59 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Column(
         children: [
+          _buildCompactDetailRow(
+            Icons.payments_outlined,
+            'Your net',
+            _feeLabel(delivery['driver_earnings'] ?? delivery['delivery_fee']),
+          ),
+          _buildCompactDetailRow(
+            Icons.receipt_long_outlined,
+            'Fare',
+            _feeLabel(delivery['delivery_fee']),
+          ),
+          _buildCompactDetailRow(
+            Icons.percent,
+            'Owner fee',
+            '${delivery['commission_percent'] ?? '--'}% · ${_feeLabel(delivery['owner_commission'])}',
+          ),
+          _buildCompactDetailRow(
+            Icons.account_balance_wallet_outlined,
+            'Collect',
+            delivery['fee_collection_method'] == 'platform'
+                ? 'Business collects · net paid to wallet'
+                : 'Collect cash · fee deducted from credit',
+          ),
+          _buildCompactDetailRow(
+            Icons.near_me_outlined,
+            'Pickup',
+            pickupKm == null
+                ? 'Distance unavailable · waiting for GPS'
+                : '${pickupKm.toStringAsFixed(1)} km away (straight line)',
+          ),
+          _buildCompactDetailRow(
+            Icons.route_outlined,
+            'Trip',
+            tripKm == null
+                ? 'Distance unavailable'
+                : '${tripKm.toStringAsFixed(1)} km (straight-line estimate)',
+          ),
+          if (pickupKm != null && pickupKm > radius)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'Outside your ${radius.toStringAsFixed(0)} km working radius. Review the pickup before accepting.',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           _buildCompactDetailRow(
             Icons.person_rounded,
             'Customer',
@@ -2306,6 +2367,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ? value.toDouble()
         : double.tryParse(value?.toString() ?? '');
     if (amount == null) return '-- ETB';
-    return '${amount.toStringAsFixed(0)} ETB';
+    return '${amount.toStringAsFixed(2)} ETB';
   }
 }

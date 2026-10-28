@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { signDriverSession } from '@/lib/driver-session';
+import { operationsFailure } from '@/lib/operations-response';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -99,13 +101,20 @@ export async function POST(request: Request) {
             );
         }
 
-        if (data.password !== password) {
+        const { data: valid, error: verifyError } = await supabase.rpc('verify_driver_password', {
+            p_driver_id: data.id, p_password: password,
+        });
+        if (verifyError) throw verifyError;
+        if (valid !== true) {
             return NextResponse.json({ error: 'Invalid email/phone or password' }, { status: 401, headers: corsHeaders });
         }
 
-        return NextResponse.json(data, { headers: corsHeaders });
+        if (data.approval_status !== 'Approved' || data.is_active === false) {
+            return NextResponse.json({ error: 'Your driver account must be approved and active before signing in.' }, { status: 403, headers: corsHeaders });
+        }
+        delete data.password;
+        return NextResponse.json({ ...data, access_token: signDriverSession(data) }, { headers: { ...corsHeaders, 'Cache-Control': 'no-store' } });
     } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
-        return NextResponse.json({ error: message }, { status: 500, headers: corsHeaders });
+        return operationsFailure(err);
     }
 }

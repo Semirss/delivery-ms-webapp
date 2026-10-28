@@ -1,29 +1,21 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { isAdminRequest } from '@/lib/admin-auth';
+import { OperationsError, uuid } from '@/lib/driver-operations';
+import { operationsFailure } from '@/lib/operations-response';
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
     const supabase = await getSupabaseAdmin();
     try {
+        if (!await isAdminRequest()) throw new OperationsError('Admin sign-in required.', 401);
         const { id } = await context.params;
         const { driver_id } = await request.json();
 
-        const now = new Date().toISOString();
+        const { data, error } = await supabase.rpc('assign_delivery_offer', {
+            p_delivery_id: uuid(id), p_driver_id: uuid(driver_id),
+        });
 
-        const { data, error } = await supabase
-            .from('deliveries')
-            .update({ 
-                driver_id, 
-                status: 'Assigned',
-                assigned_at: now,
-                // Clear any previous cancellation record
-                cancelled_by: null,
-                cancellation_reason: null,
-            })
-            .eq('id', id)
-            .select('*, driver:drivers(*)')
-            .single();
-
-        if (error) throw error;
+        if (error) throw new OperationsError(error.message, 409);
 
         // Webhook call to notify the Telegram Bot
         const TELEGRAM_BOT_URL = process.env.TELEGRAM_BOT_URL;
@@ -54,7 +46,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         }
 
         return NextResponse.json({ success: true, data });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        return operationsFailure(err);
     }
 }

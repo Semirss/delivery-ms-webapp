@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
+import 'package:driver_app/features/profile/presentation/screens/wallet_screen.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -290,6 +291,18 @@ class _EarningsScreenState extends State<EarningsScreen> {
                       : null,
                   actions: [
                     IconButton(
+                      tooltip: 'Driver wallet',
+                      icon: const Icon(
+                        Icons.account_balance_wallet_outlined,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const WalletScreen(),
+                        ),
+                      ),
+                    ),
+                    IconButton(
                       icon: const Icon(
                         Icons.refresh_rounded,
                         color: Colors.white,
@@ -340,13 +353,15 @@ class _EarningsScreenState extends State<EarningsScreen> {
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final delivery = _deliveries[index];
-                        final fee = asMoney(
-                          delivery['delivery_fee'],
-                        ).toStringAsFixed(0);
-                        final createdAt = delivery['created_at'] != null
+                        final fee = netDeliveryEarnings(
+                          delivery,
+                        ).toStringAsFixed(2);
+                        final completedAt =
+                            delivery['completed_at'] ?? delivery['created_at'];
+                        final createdAt = completedAt != null
                             ? DateFormat('dd MMM, hh:mm a').format(
                                 DateTime.parse(
-                                  delivery['created_at'].toString(),
+                                  completedAt.toString(),
                                 ).toLocal(),
                               )
                             : '';
@@ -384,7 +399,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             subtitle: AppText(
-                              createdAt,
+                              '$createdAt\nOwner fee ${moneyText(delivery['owner_commission'])} · ${delivery['fee_collection_method'] == 'platform' ? 'Wallet earnings' : 'Cash collected'}',
                               variant: AppTextVariant.bodySmall,
                               color: context.appTextSecondary,
                             ),

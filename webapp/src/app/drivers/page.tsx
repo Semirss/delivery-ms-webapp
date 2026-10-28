@@ -16,6 +16,8 @@ type Delivery = {
   delivery_fee: string | null;
   package_type: string;
   customer_phone: string;
+  driver_earnings?: number | null;
+  owner_commission?: number | null;
 };
 
 type Driver = {
@@ -25,6 +27,7 @@ type Driver = {
   status: string;
   approval_status: string;
   vehicle_type?: string;
+  access_token?: string;
 };
 
 type DriverNotification = {
@@ -317,8 +320,9 @@ export default function DriverPortal() {
           try {
             await fetch(`/api/drivers/${driver.id}/location`, {
               method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ lat: latitude, lng: longitude })
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${driver.access_token || ''}` },
+              body: JSON.stringify({ lat: latitude, lng: longitude, accuracy:position.coords.accuracy,
+                observed_at:new Date(position.timestamp).toISOString(),heading:position.coords.heading,speed:position.coords.speed })
             });
           } catch (err) {
             console.error('Failed to update location', err);
@@ -328,7 +332,7 @@ export default function DriverPortal() {
           console.error('GPS Error:', error);
           setLocationEnabled(false);
         },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
       );
     } else {
       setLocationEnabled(false);
@@ -402,14 +406,15 @@ export default function DriverPortal() {
       'Delivered':  { title: '🏁 Delivered!', message: "Great work! The delivery has been completed successfully." },
       'Pending':    { title: '↩️ Rejected', message: "Delivery returned to pending and saved in admin cancelled/rejected history." },
     };
-    // Optimistically update local state so the UI changes instantly
-    setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status } : d));
     try {
-      await fetch(`/api/deliveries/${id}/status`, {
+      const response = await fetch(`/api/deliveries/${id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${driver?.access_token || ''}` },
         body: JSON.stringify({ status, ...extraData })
       });
+      const updated = await response.json();
+      if (!response.ok) throw new Error(updated.error || 'Could not update delivery.');
+      setDeliveries(prev => prev.map(d => d.id === id ? {...d,...updated} : d));
       const msg = successMessages[status] || { title: 'Updated!', message: `Status changed to ${status}.` };
       setModalConfig({
         isOpen: true, type: 'alert', title: msg.title, message: msg.message,
@@ -417,7 +422,7 @@ export default function DriverPortal() {
       });
     } catch (err) {
       console.error(err);
-      setDeliveries(prev => prev.map(d => d.id === id ? { ...d, status: 'Assigned' } : d));
+      setModalConfig({isOpen:true,type:'alert',title:'Could not update delivery',message:err instanceof Error ? err.message : 'Please retry.',onConfirm:() => setModalConfig(prev => ({...prev,isOpen:false}))});
     }
   };
 
@@ -425,16 +430,26 @@ export default function DriverPortal() {
      if (!driver) return;
      // Optimistically update local state for instant feedback
      const newStatus = driver.status === "Online" ? "Offline" : "Online";
-     setDriver({ ...driver, status: newStatus });
      
      try {
-       await fetch(`/api/drivers/${driver.id}`, {
+       if (newStatus === 'Online') {
+         const position = await new Promise<GeolocationPosition>((resolve,reject) => navigator.geolocation.getCurrentPosition(resolve,reject,{enableHighAccuracy:true,maximumAge:0,timeout:15000}));
+         const response = await fetch('/api/driver/operations',{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':`Bearer ${driver.access_token || ''}`},
+           body:JSON.stringify({action:'location',status:'Online',lat:position.coords.latitude,lng:position.coords.longitude,
+             accuracy:position.coords.accuracy,observed_at:new Date(position.timestamp).toISOString()})});
+         const result = await response.json(); if (!response.ok) throw new Error(result.error);
+       } else {
+       const response = await fetch(`/api/drivers/${driver.id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json",'Authorization':`Bearer ${driver.access_token || ''}` },
           body: JSON.stringify({ status: newStatus })
        });
+       const result = await response.json(); if (!response.ok) throw new Error(result.error);
+       }
+       setDriver({ ...driver, status: newStatus });
      } catch (err) {
         console.error("Failed to toggle status", err);
+        setModalConfig({isOpen:true,type:'alert',title:'Could not change availability',message:err instanceof Error ? err.message : 'Enable GPS and retry.',onConfirm:() => setModalConfig(prev => ({...prev,isOpen:false}))});
         // Revert local state on failure
         setDriver({ ...driver, status: driver.status });
      }
@@ -448,7 +463,7 @@ export default function DriverPortal() {
      try {
        await fetch(`/api/drivers/${driver.id}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json",'Authorization':`Bearer ${driver.access_token || ''}` },
           body: JSON.stringify({ vehicle_type: newType })
        });
      } catch (err) {
@@ -579,7 +594,7 @@ export default function DriverPortal() {
   }
 
   // --- DASHBOARD VIEW (Mobile First) ---
-  const activeJobs = deliveries.filter(d => ['Assigned', 'Picked Up'].includes(d.status));
+  const activeJobs = deliveries.filter(d => ['Assigned', 'Accepted', 'Picked Up'].includes(d.status));
   const pastJobs = deliveries.filter(d => ['Delivered', 'Cancelled'].includes(d.status));
 
   return (
@@ -755,11 +770,12 @@ export default function DriverPortal() {
                          >
                           Reject
                         </button>
-                        <button onClick={() => updateDeliveryStatus(job.id, 'Picked Up')} className="w-2/3 py-4 bg-blue-600 shadow-lg shadow-blue-500/20 text-white font-extrabold rounded-xl hover:bg-blue-700 text-sm transition-all focus:ring-4 focus:ring-blue-500/30">
-                          Confirm Pickup
+                        <button onClick={() => updateDeliveryStatus(job.id, 'Accepted')} className="w-2/3 py-4 bg-blue-600 shadow-lg shadow-blue-500/20 text-white font-extrabold rounded-xl hover:bg-blue-700 text-sm transition-all focus:ring-4 focus:ring-blue-500/30">
+                          Accept delivery
                         </button>
                       </div>
                     )}
+                    {job.status === 'Accepted' && <button onClick={() => updateDeliveryStatus(job.id,'Picked Up')} className="w-full py-4 bg-blue-600 text-white font-extrabold rounded-xl">Confirm pickup</button>}
                     {job.status === 'Picked Up' && (
                       <button onClick={() => updateDeliveryStatus(job.id, 'Delivered')} className="w-full py-4 bg-emerald-500 shadow-lg shadow-emerald-500/20 text-white font-extrabold rounded-xl hover:bg-emerald-600 text-sm transition-all flex items-center justify-center space-x-2">
                         <span>🏁 Mark as Delivered</span>

@@ -241,6 +241,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         return AppColors.error;
       case 'Picked Up':
         return AppColors.info;
+      case 'Accepted':
       case 'Assigned':
         return AppColors.warning;
       default:
@@ -256,6 +257,7 @@ class _RideHistoryScreenState extends State<RideHistoryScreen> {
         return Icons.cancel_rounded;
       case 'Picked Up':
         return Icons.delivery_dining_rounded;
+      case 'Accepted':
       case 'Assigned':
         return Icons.motorcycle_rounded;
       default:

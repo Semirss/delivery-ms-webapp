@@ -222,7 +222,10 @@ class _TrackingScreenState extends State<TrackingScreen> {
   }
 
   bool _isActiveStatus(String? status) {
-    return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
+    return status == 'Pending' ||
+        status == 'Assigned' ||
+        status == 'Accepted' ||
+        status == 'Picked Up';
   }
 
   bool _canCancelDelivery(Map<String, dynamic> delivery) {
@@ -703,7 +706,9 @@ class _TrackingScreenState extends State<TrackingScreen> {
     if (status == 'Picked Up' && driverPoint != null && dropoff != null) {
       return [driverPoint, dropoff];
     }
-    if (status == 'Assigned' && driverPoint != null && pickup != null) {
+    if ((status == 'Assigned' || status == 'Accepted') &&
+        driverPoint != null &&
+        pickup != null) {
       return [driverPoint, pickup];
     }
     if (pickup != null && dropoff != null) return [pickup, dropoff];
@@ -755,7 +760,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
 
   Widget _buildTimelineCard(Map<String, dynamic> delivery) {
     final status = delivery['status']?.toString() ?? 'Pending';
-    const steps = ['Pending', 'Assigned', 'Picked Up', 'Delivered'];
+    const steps = ['Pending', 'Assigned', 'Accepted', 'Picked Up', 'Delivered'];
     final currentIndex = steps.indexOf(status);
     final isCancelled = status == 'Cancelled';
 
@@ -1039,6 +1044,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     switch (status) {
       case 'Pending':
         return 'Waiting for dispatch';
+      case 'Accepted':
       case 'Assigned':
         return 'Courier assigned';
       case 'Picked Up':
@@ -1053,6 +1059,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     switch (status) {
       case 'Pending':
         return 'Your request is waiting for admin dispatch.';
+      case 'Accepted':
       case 'Assigned':
         return driver == null
             ? 'A courier has been assigned.'
@@ -1068,6 +1075,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
     switch (status) {
       case 'Pending':
         return 'Request received and waiting for dispatch.';
+      case 'Accepted':
       case 'Assigned':
         return 'Courier assigned and pickup is next.';
       case 'Picked Up':
@@ -1089,6 +1097,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         return AppColors.error;
       case 'Picked Up':
         return AppColors.info;
+      case 'Accepted':
       case 'Assigned':
         return AppColors.warning;
       case 'Pending':
@@ -1106,6 +1115,7 @@ class _TrackingScreenState extends State<TrackingScreen> {
         return Icons.cancel_rounded;
       case 'Picked Up':
         return Icons.delivery_dining_rounded;
+      case 'Accepted':
       case 'Assigned':
         return Icons.motorcycle_rounded;
       default:
