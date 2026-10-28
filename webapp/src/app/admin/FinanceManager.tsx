@@ -1,10 +1,12 @@
 "use client";
 import { useCallback, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { BUSINESS_TELEBIRR_PHONE } from '@/lib/business-contact';
 
 type Delivery = { id: string; status: string; customer_name: string; delivery_fee: string | null;
   fee_collection_method?: string; commission_percent?: number | null; payment_confirmed_at?: string | null; pickup_location: string; dropoff_location: string };
 type RequestRow = { id: string; kind: string; amount: number; method: string; status: string; account_name?: string;
-  account_number?: string; bank_name?: string; external_reference?: string; review_note?: string; driver?: { name: string; phone: string } };
+  account_number?: string; bank_name?: string; external_reference?: string; review_note?: string; proof_path?: string | null; driver?: { name: string; phone: string } };
 type FinanceData = {
   settings: { commission_percent: number; rate_note: string };
   totals: { owner_commission: number; driver_earnings_balance: number; commission_credit: number; reserved_cashout: number };
@@ -35,6 +37,7 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   const load = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/finance',{ cache:'no-store' });
+      if (response.status === 401) { window.location.assign('/admin/login'); return; }
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error);
       setData(payload); setRate(String(payload.settings.commission_percent)); setRateNote(payload.settings.rate_note); setError('');
@@ -46,6 +49,7 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
     setBusy(true); setError(''); setNotice('');
     try {
       const response = await fetch('/api/admin/finance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      if (response.status === 401) { window.location.assign('/admin/login'); return false; }
       const result = await response.json();
       if (!response.ok) throw new Error(result.error);
       setNotice(message); await load(); onUpdated(); return true;
@@ -56,8 +60,8 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   const pending = data?.requests.filter(r => r.status === 'pending') ?? [];
   return <div className="space-y-6">
     <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 text-sm text-amber-900">
-      <p className="font-extrabold">Payments use manual reconciliation</p>
-      <p className="mt-1">No payment provider is connected. Send payouts through your business Telebirr or bank account, then reconcile the actual transaction here. A request alone never credits money or confirms a transfer.</p>
+      <p className="font-extrabold">Review payments before updating wallets</p>
+      <p className="mt-1">For top-ups, compare the screenshot with the payment received at {BUSINESS_TELEBIRR_PHONE}. For cash-outs, send the payment first. Enter the real transaction reference when you approve.</p>
     </div>
     {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>}
     {notice && <p role="status" className="rounded-xl bg-emerald-50 p-4 text-emerald-700">{notice}</p>}
@@ -108,11 +112,12 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
         {pending.map(r => <div key={r.id} className="rounded-xl border p-4 flex flex-wrap gap-4 justify-between items-center"><div><p className="font-bold">{r.driver?.name} · {r.kind === 'cashout' ? 'Cash out' : 'Credit top-up'} · {money(r.amount)}</p><p className="text-sm text-neutral-500">{r.method} · {r.driver?.phone}{r.account_number ? ` · ${r.bank_name || 'Telebirr'} / ${r.account_name} / ${r.account_number}` : ''}</p></div><button disabled={busy} onClick={() => {setReview(r);setReference('');setNote('');setConfirmed(false);}} className="rounded-xl border px-4 py-2 text-sm font-bold">Review</button></div>)}
         {review && <form className="rounded-xl bg-neutral-50 p-4 space-y-3" onSubmit={async e => {e.preventDefault();if(await mutate({action:'review',request_id:review.id,approve:true,external_reference:reference,review_note:note},'Payment reconciled and wallet updated.'))setReview(null);}}>
           <p className="font-bold">{review.driver?.name} · {review.kind} · {money(review.amount)}</p>
+          {review.kind === 'topup' && (review.proof_path ? <div className="space-y-2"><p className="text-sm font-bold">Driver payment screenshot</p><a href={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 underline">Open full screenshot</a><Image src={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} alt="Driver submitted Telebirr payment screenshot" width={960} height={720} unoptimized className="max-h-96 w-auto rounded-xl border object-contain" /></div> : <p className="text-sm text-red-700">No screenshot attached. Ask the driver to add one in the wallet, or reject this old request so they can submit a new Telebirr top-up.</p>)}
           <p className="text-sm">{review.kind === 'cashout' ? 'Send the payout first, verify its final success, then enter the transaction reference.' : 'Verify that the driver’s top-up payment has reached the business account before adding credit.'}</p>
           <label className="block text-sm">Actual transaction reference<input className={field} minLength={5} maxLength={150} required value={reference} onChange={e => setReference(e.target.value)}/></label>
           <label className="block text-sm">Review note<textarea className={field} required minLength={3} maxLength={500} value={note} onChange={e => setNote(e.target.value)}/></label>
           <label className="flex gap-2 text-sm"><input type="checkbox" required checked={confirmed} onChange={e => setConfirmed(e.target.checked)}/>I independently verified the account, amount and completed transaction.</label>
-          <div className="flex flex-wrap gap-2"><button disabled={busy || !confirmed} className="rounded-xl bg-emerald-700 px-4 py-2 text-white font-bold disabled:opacity-50">Reconcile completed payment</button>
+          <div className="flex flex-wrap gap-2"><button disabled={busy || !confirmed || (review.kind === 'topup' && !review.proof_path)} className="rounded-xl bg-emerald-700 px-4 py-2 text-white font-bold disabled:opacity-50">Reconcile completed payment</button>
             <button type="button" disabled={busy || note.trim().length < 3} onClick={async () => {if(await mutate({action:'review',request_id:review.id,approve:false,review_note:note},'Request rejected. Any reserved cash-out amount was released.'))setReview(null);}} className="rounded-xl border px-4 py-2 font-bold disabled:opacity-50">Reject with note</button>
             <button type="button" disabled={busy} onClick={() => setReview(null)} className="px-4 py-2">Close</button></div>
         </form>}

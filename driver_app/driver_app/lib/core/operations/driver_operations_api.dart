@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:driver_app/core/config/app_config.dart';
 import 'package:driver_app/core/storage/storage_key_constants.dart';
@@ -10,7 +11,7 @@ class DriverOperationsApi {
   Future<Map<String, dynamic>> request(
     String path, {
     String method = 'GET',
-    Map<String, dynamic>? data,
+    Object? data,
   }) async {
     final base = AppConfig().apiBaseUrl.trim().replaceAll(RegExp(r'/+$'), '');
     if (base.isEmpty)
@@ -55,4 +56,16 @@ class DriverOperationsApi {
       );
   Future<Map<String, dynamic>> walletRequest(Map<String, dynamic> data) =>
       request('/api/driver/wallet', method: 'POST', data: data);
+  Future<Map<String, dynamic>> walletTopupRequest(
+    Map<String, dynamic> data,
+    Uint8List screenshot,
+    String fileName,
+  ) => request(
+    '/api/driver/wallet',
+    method: 'POST',
+    data: FormData.fromMap({
+      ...data,
+      'proof': MultipartFile.fromBytes(screenshot, filename: fileName),
+    }),
+  );
 }

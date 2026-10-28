@@ -3,12 +3,13 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { adminSessionSecret } from '@/lib/admin-session-secret';
 
 export async function POST(request: Request) {
-    if (!JWT_SECRET || JWT_SECRET.length < 32) {
-        return NextResponse.json({ error: 'Configure a JWT_SECRET of at least 32 characters before enabling admin.' }, { status: 503 });
+    const secret = adminSessionSecret();
+    if (!secret) {
+        console.error('[admin login] Set JWT_SECRET or DRIVER_SESSION_SECRET to at least 32 characters.');
+        return NextResponse.json({ error: 'Admin sign-in is temporarily unavailable. Please contact support.' }, { status: 503 });
     }
     const supabaseAdmin = await getSupabaseAdmin();
     try {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
-        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: admin.id, username: admin.username }, secret, { expiresIn: '1d' });
 
         const cookie = serialize('admin_token', token, {
             httpOnly: true,

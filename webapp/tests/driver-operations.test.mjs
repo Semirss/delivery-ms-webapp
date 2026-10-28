@@ -17,8 +17,10 @@ async function delivery(fee=200,method='cash') {
 }
 async function assign(id) { return row('SELECT * FROM assign_delivery_offer($1,$2)',[id,driver]); }
 async function action(id,kind,driverId=driver) { return row('SELECT * FROM driver_delivery_action($1,$2,$3)',[id,driverId,kind]); }
-async function request(kind,amount,key=randomUUID(),method=kind==='convert'?'earnings':'telebirr') {
-  return row('SELECT * FROM request_driver_wallet($1,$2,$3,$4,$5,$6,$7,$8)',[driver,kind,amount,method,'Driver name','0912345678','',key]);
+async function request(kind,amount,key=randomUUID(),method=kind==='convert'?'earnings':'telebirr',withProof=true) {
+  const result = await row('SELECT * FROM request_driver_wallet($1,$2,$3,$4,$5,$6,$7,$8)',[driver,kind,amount,method,'Driver name','0912345678','',key]);
+  if (kind === 'topup' && withProof) await db.query("UPDATE driver_wallet_requests SET proof_path=$1,proof_mime_type='image/png' WHERE id=$2 AND proof_path IS NULL", [`${driver}/${key}.png`,result.id]);
+  return result;
 }
 async function review(id,approve=true,reference=randomUUID()) {
   return row('SELECT * FROM review_driver_wallet_request($1,$2,$3,$4)',[id,approve,reference,'Independently reconciled in business account']);
@@ -32,15 +34,25 @@ async function platformTrip(fee=200) {
 
 before(async () => {
   db = new PGlite({extensions:{pgcrypto}});
-  await db.exec('CREATE SCHEMA extensions; CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE PUBLICATION supabase_realtime;');
-  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql']) {
+  await db.exec("CREATE SCHEMA extensions; CREATE SCHEMA storage; CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit integer,allowed_mime_types text[]); CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE PUBLICATION supabase_realtime; CREATE TABLE public.app_notifications(id uuid DEFAULT gen_random_uuid(),app text,recipient_id uuid,title text,body text,type text);");
+  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql','schema_v16_driver_topup_proofs.sql','schema_v17_browser_gps_accuracy.sql']) {
     await db.exec(await readFile(new URL(`../../supabase/${name}`,import.meta.url),'utf8'));
   }
 });
 after(async () => { await db?.close(); });
 beforeEach(async () => {
-  await db.exec('TRUNCATE driver_wallet_requests,driver_wallet_ledger,driver_wallets,driver_credentials,deliveries,drivers CASCADE; UPDATE driver_operations_settings SET commission_percent=12;');
+  await db.exec('TRUNCATE app_notifications,driver_wallet_requests,driver_wallet_ledger,driver_wallets,driver_credentials,deliveries,drivers CASCADE; UPDATE driver_operations_settings SET commission_percent=12;');
   await db.query("INSERT INTO drivers(id,name,phone,password,approval_status,status,current_lat,current_lng,last_location_update,location_accuracy_m) VALUES ($1,'Driver','0912345678','secret123','Approved','Online',9,38,now(),12),($2,'Other','0998765432','otherpass','Approved','Online',9,38,now(),12)",[driver,other]);
+});
+
+test('top-up approval requires proof and notifies the driver once after review',async () => {
+  const pending = await request('topup',100,randomUUID(),'telebirr',false);
+  await assert.rejects(review(pending.id,true,'PAYMENT-PROOF-001'),/payment screenshot/);
+  await db.query("UPDATE driver_wallet_requests SET proof_path='driver/proof.png',proof_mime_type='image/png' WHERE id=$1",[pending.id]);
+  await review(pending.id,true,'PAYMENT-PROOF-001');
+  await review(pending.id,true,'PAYMENT-PROOF-001');
+  assert.equal((await row('SELECT count(*)::int AS count FROM app_notifications WHERE recipient_id=$1',[driver])).count,1);
+  assert.equal(Number((await wallet()).commission_credit),100);
 });
 
 test('cash completion deducts commission credit once and never creates withdrawable cash earnings',async () => {
@@ -167,6 +179,23 @@ test('dispatch rejects stale, inaccurate, inactive and unapproved drivers',async
   await assert.rejects(assign(id),/approved, active/);
 });
 
+test('Chrome-size 150 m fixes can receive and accept offers, but 201 m cannot',async () => {
+  await db.query('UPDATE drivers SET location_accuracy_m=150 WHERE id=$1',[driver]);
+  const id=await delivery(); await assign(id); await topup();
+  await db.query('UPDATE drivers SET location_accuracy_m=201 WHERE id=$1',[driver]);
+  await assert.rejects(action(id,'accept'),/fresh, accurate GPS/);
+  await db.query('UPDATE drivers SET location_accuracy_m=150 WHERE id=$1',[driver]);
+  assert.equal((await action(id,'accept')).status,'Accepted');
+});
+
+test('going offline records an explicit driver pause',async () => {
+  assert.equal((await row('SELECT availability_paused FROM drivers WHERE id=$1',[driver])).availability_paused,false);
+  await row('SELECT * FROM driver_set_offline($1)',[driver]);
+  const paused=await row('SELECT status,availability_paused FROM drivers WHERE id=$1',[driver]);
+  assert.equal(paused.status,'Offline');
+  assert.equal(paused.availability_paused,true);
+});
+
 test('account closure protects balances and anonymizes the driver after final cashout',async () => {
   await platformTrip();
   await assert.rejects(row('SELECT close_driver_account($1)',[driver]),/Settle wallet balances/);
@@ -183,11 +212,14 @@ test('GPS validation preserves sensor time and rejects stale, future, inaccurate
   const now=Date.parse('2026-10-26T10:00:00Z');
   const fix={lat:0,lng:0,accuracy:12,observed_at:'2026-10-26T09:59:40Z'};
   assert.equal(validatedLocation(fix,now).last_location_update,'2026-10-26T09:59:40.000Z');
-  for(const invalid of [{...fix,lat:NaN},{...fix,lng:181},{...fix,accuracy:101},{...fix,accuracy:-1},
+  assert.equal(validatedLocation({...fix,accuracy:150},now).location_accuracy_m,150);
+  for(const invalid of [{...fix,lat:NaN},{...fix,lng:181},{...fix,accuracy:201},{...fix,accuracy:-1},
     {...fix,observed_at:'2026-10-26T09:58:00Z'},{...fix,observed_at:'2026-10-26T10:00:20Z'}]) {
     assert.throws(() => validatedLocation(invalid,now));
   }
   assert.equal(gpsQuality({status:'Online',current_lat:0,current_lng:0,last_location_update:fix.observed_at,location_accuracy_m:12},now),'live');
+  assert.equal(gpsQuality({status:'Online',current_lat:0,current_lng:0,last_location_update:fix.observed_at,location_accuracy_m:150},now),'live');
+  assert.equal(gpsQuality({status:'Online',current_lat:0,current_lng:0,last_location_update:fix.observed_at,location_accuracy_m:201},now),'inaccurate');
   assert.equal(gpsQuality({status:'Online',current_lat:9,current_lng:38,last_location_update:'2026-10-26T09:58:00Z',location_accuracy_m:12},now),'stale');
   for(const amount of [NaN,Infinity,0,-1,1.001,1000001,'100']) assert.throws(() => moneyAmount(amount));
 });

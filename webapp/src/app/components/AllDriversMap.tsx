@@ -108,7 +108,7 @@ export default function AllDriversMap({ drivers, pickupLat, pickupLng, pickupLab
 
   return (
     <div style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <p className="pb-2 text-xs font-medium text-neutral-600">Green = fresh GPS within 100 m. Gray markers show last known positions. Accuracy circles show reported GPS uncertainty. {drivers.length - driversWithLocation.length} drivers have no GPS fix.</p>
+      <p className="pb-2 text-xs font-medium text-neutral-600">Green = fresh location within 200 m. Gray markers show last known positions. Accuracy circles show reported uncertainty. {drivers.length - driversWithLocation.length} drivers have no location fix.</p>
       {/* Map */}
       <div style={{ flex: 1, minHeight: 0 }} className="rounded-xl overflow-hidden">
         <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }} zoomControl={true}>

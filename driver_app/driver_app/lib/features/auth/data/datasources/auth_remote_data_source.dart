@@ -22,7 +22,6 @@ abstract class AuthRemoteDataSource {
   Future<AuthResponseModel> refreshToken(RefreshTokenParams params);
   Future<void> logout();
   Future<void> deleteAccount(DeleteAccountParams params);
-  Future<UserModel> getCurrentUser();
 }
 
 @Injectable(as: AuthRemoteDataSource)
@@ -375,13 +374,6 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
     );
 
     await logout();
-  }
-
-  @override
-  Future<UserModel> getCurrentUser() async {
-    throw Exception(
-      'Your account is temporarily unavailable. Please sign in again.',
-    );
   }
 
   UserModel _driverUser(Map<String, dynamic> driver, {String? fallbackEmail}) {

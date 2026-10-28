@@ -356,25 +356,8 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   Future<Either<Failure, UserEntity>> getCurrentUser() async {
     final cachedUser = await localDataSource.getCachedUser();
     final hasToken = (await localDataSource.getCachedAccessToken()) != null;
-
-    if (await networkInfo.isConnected) {
-      try {
-        final user = await remoteDataSource.getCurrentUser();
-        await localDataSource.cacheUser(user);
-        return Right(user);
-      } catch (e, stackTrace) {
-        logger.error('Failed to get remote user, trying cache', e, stackTrace);
-        if (cachedUser != null && hasToken) {
-          return Right(cachedUser);
-        }
-        return Left(ServerFailure(e.toString()));
-      }
-    } else {
-      if (cachedUser != null && hasToken) {
-        return Right(cachedUser);
-      }
-      return Left(NetworkFailure('No internet connection'));
-    }
+    if (cachedUser != null && hasToken) return Right(cachedUser);
+    return Left(CacheFailure('No saved sign-in was found.'));
   }
 
   @override

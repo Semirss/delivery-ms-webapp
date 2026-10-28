@@ -35,6 +35,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   static const _locationDisclosureConsentKey =
       'driver_location_prominent_disclosure_consent_v1';
+  static const _maxGpsAccuracyM = kIsWeb ? 200 : 100;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
@@ -42,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final SupabaseClient _supabase = Supabase.instance.client;
   final DriverOperationsApi _operations = DriverOperationsApi();
   Position? _gpsFix;
+  bool _gpsUploadedForCurrentFix = false;
   Timer? _offerTimer;
   Timer? _refreshTimer;
   String? _expiringDeliveryId;
@@ -297,13 +299,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     bool updateRemote = false,
     bool moveMap = true,
   }) async {
-    try {
-      final lastKnown = await Geolocator.getLastKnownPosition();
-      if (lastKnown != null && mounted) {
-        _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: moveMap);
+    if (!kIsWeb) {
+      try {
+        final lastKnown = await Geolocator.getLastKnownPosition();
+        if (lastKnown != null && mounted) {
+          _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: moveMap);
+        }
+      } catch (e) {
+        debugPrint('Last known GPS skipped: $e');
       }
-    } catch (e) {
-      debugPrint('Last known GPS skipped: $e');
     }
 
     try {
@@ -350,13 +354,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         age < const Duration(seconds: -10) ||
         !position.accuracy.isFinite ||
         position.accuracy < 0 ||
-        position.accuracy > 100)
+        position.accuracy > _maxGpsAccuracyM)
       return;
     if (_gpsFix != null && position.timestamp.isBefore(_gpsFix!.timestamp))
       return;
     setState(() {
       _currentPosition = next;
       _gpsFix = position;
+      _gpsUploadedForCurrentFix = false;
     });
     if (moveMap) _moveMapSafely(next, zoom);
   }
@@ -436,7 +441,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<Map<String, dynamic>?> _loadDriverRecord() async {
     if (_isResolvingDriver) return _driverRecord;
 
-    final authState = context.read<AuthBloc>().state;
+    final authBloc = context.read<AuthBloc>();
+    final authState = authBloc.state;
     if (authState is! AuthAuthenticated) return null;
 
     setState(() => _isResolvingDriver = true);
@@ -455,19 +461,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await _loadUnreadNotificationCount();
         _subscribeToNotifications();
       }
+      final autoOnline = record != null && authBloc.takeAutoOnlineOnNextHome();
+      if (!_isOnline &&
+          record != null &&
+          (autoOnline || record['availability_paused'] != true)) {
+        await _toggleOnlineStatus();
+        return record;
+      }
       if (_isOnline && record != null) {
         final driverId = record['id'].toString();
-        final hasLocationAccess = await _ensureLocationAccess(
-          showMessages: true,
-        );
+        final hasLocationAccess = await _ensureLocationAccess();
         if (!mounted) return record;
-        if (!hasLocationAccess) {
-          await _setDriverOfflineWithoutLocation(driverId);
-          return record;
+        if (hasLocationAccess) {
+          await _getCurrentLocation(updateRemote: true);
+          if (!mounted) return record;
+          _startLocationStreaming(driverId);
         }
-        await _getCurrentLocation();
-        if (!mounted) return record;
-        _startLocationStreaming(driverId);
         await _subscribeToAssignments(driverId);
       }
       return record;
@@ -572,28 +581,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         .subscribe();
   }
 
-  Future<void> _setDriverOfflineWithoutLocation(String driverId) async {
-    await _positionStream?.cancel();
-    await _deliveriesChannel?.unsubscribe();
-
-    try {
-      await _operations.update({'action': 'offline'});
-    } catch (e) {
-      debugPrint('Error setting driver offline after location denial: $e');
-    }
-
-    if (!mounted) return;
-    final driver = _driverRecord;
-    setState(() {
-      _isOnline = false;
-      _activeDelivery = null;
-      _routePoints = [];
-      if (driver != null) {
-        _driverRecord = {...driver, 'status': 'Offline'};
-      }
-    });
-  }
-
   Future<void> _toggleOnlineStatus() async {
     if (_isUpdating) return;
 
@@ -609,11 +596,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         type: AppToastType.warning,
       );
       return;
-    }
-
-    if (!_isOnline) {
-      final hasLocationAccess = await _ensureLocationAccess(showMessages: true);
-      if (!mounted || !hasLocationAccess) return;
     }
 
     setState(() => _isUpdating = true);
@@ -633,16 +615,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _driverRecord = {...driver, 'status': 'Offline'};
         });
       } else {
-        await _getCurrentLocation();
-        await _updateDriverLocation(driverId, status: 'Online');
-        _startLocationStreaming(driverId);
-        await _subscribeToAssignments(driverId);
-
+        await _operations.update({'action': 'online'});
         if (!mounted) return;
         setState(() {
           _isOnline = true;
           _driverRecord = {...driver, 'status': 'Online'};
         });
+        await _subscribeToAssignments(driverId);
+        final hasLocationAccess = await _ensureLocationAccess();
+        if (!mounted) return;
+        if (hasLocationAccess) {
+          await _getCurrentLocation(updateRemote: true);
+          if (!mounted) return;
+          _startLocationStreaming(driverId);
+        }
       }
     } catch (e) {
       debugPrint('Error toggling online status: $e');
@@ -714,9 +700,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     required String status,
   }) async {
     final fix = _gpsFix;
-    if (fix == null ||
-        DateTime.now().difference(fix.timestamp) >
-            const Duration(seconds: 90)) {
+    if (!_hasFreshGpsFix || fix == null) {
       throw Exception(
         'Waiting for a fresh GPS fix. Enable precise location and try again.',
       );
@@ -731,6 +715,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       'speed': fix.speed,
       'observed_at': fix.timestamp.toUtc().toIso8601String(),
     });
+    if (mounted && _gpsFix == fix) {
+      setState(() => _gpsUploadedForCurrentFix = true);
+    }
+  }
+
+  bool get _hasFreshGpsFix {
+    final fix = _gpsFix;
+    if (fix == null) return false;
+    final age = DateTime.now().difference(fix.timestamp);
+    return age >= const Duration(seconds: -10) &&
+        age <= const Duration(seconds: 90) &&
+        fix.accuracy.isFinite &&
+        fix.accuracy >= 0 &&
+        fix.accuracy <= _maxGpsAccuracyM;
   }
 
   Future<void> _subscribeToAssignments(String driverId) async {
@@ -1486,7 +1484,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                   ),
                   GestureDetector(
-                    onTap: _toggleOnlineStatus,
+                    onTap: _isUpdating ? null : _toggleOnlineStatus,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
@@ -1530,6 +1528,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ? Colors.white
                                 : context.appTextPrimary,
                             fontWeight: FontWeight.bold,
+                          ),
+                          const SizedBox(width: AppSpacing.xs),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                            color: _isOnline
+                                ? Colors.white
+                                : context.appTextPrimary,
                           ),
                         ],
                       ),
@@ -1613,49 +1619,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               variant: AppTextVariant.heading3,
                               fontWeight: FontWeight.bold,
                             ),
-                          ] else if (!_isOnline) ...[
-                            Icon(
-                              Icons.power_settings_new_rounded,
-                              size: 48,
-                              color: context.appTextSecondary,
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-                            const AppText(
-                              'You are offline',
-                              variant: AppTextVariant.heading3,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            AppText(
-                              'Go online to receive admin-assigned deliveries.',
-                              variant: AppTextVariant.bodyMedium,
-                              color: context.appTextSecondary,
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: AppSpacing.xl),
-                            AppButton.primary(
-                              label: 'GO ONLINE',
-                              fullWidth: true,
-                              isLoading: _isUpdating,
-                              onPressed: _toggleOnlineStatus,
-                            ),
-                          ] else if (delivery == null) ...[
-                            const CircularProgressIndicator(
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-                            const AppText(
-                              'Waiting for assignments...',
-                              variant: AppTextVariant.heading3,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            AppText(
-                              'Keep GPS enabled so dispatch can assign nearby deliveries.',
-                              variant: AppTextVariant.bodyMedium,
-                              color: context.appTextSecondary,
-                              textAlign: TextAlign.center,
-                            ),
+                          ] else if (!_isOnline || delivery == null) ...[
+                            _buildAvailabilityCard(),
                           ] else if (delivery['status'] == 'Assigned') ...[
                             _buildDeliveryHeader(
                               'New offer · ${_offerSecondsLeft}s',
@@ -1732,6 +1697,129 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvailabilityCard() {
+    final ready = _isOnline && _hasFreshGpsFix && _gpsUploadedForCurrentFix;
+    final title = !_isOnline
+        ? 'Taking a break'
+        : ready
+        ? 'Ready for your next delivery'
+        : 'Online, waiting for location';
+    final subtitle = !_isOnline
+        ? 'You paused new offers. Tap OFFLINE above when you are ready again.'
+        : ready
+        ? 'We will let you know as soon as a new offer arrives.'
+        : 'Allow precise location to receive nearby offers.';
+    final paused = !_isOnline;
+    final foreground = paused ? context.appTextPrimary : Colors.white;
+    final secondary = paused
+        ? context.isAppDark
+              ? Colors.white70
+              : AppColors.gray1
+        : Colors.white.withValues(alpha: 0.82);
+    final accent = paused ? AppColors.primary : Colors.white;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: paused
+              ? context.isAppDark
+                    ? [const Color(0xFF382925), const Color(0xFF48302A)]
+                    : [const Color(0xFFFFF5F2), const Color(0xFFFFEBE6)]
+              : [AppColors.primaryDark, AppColors.primary],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: paused
+              ? AppColors.primary.withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: paused ? 0.08 : 0.20),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: paused ? 0.10 : 0.16),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  !_isOnline
+                      ? Icons.pause_rounded
+                      : ready
+                      ? Icons.route_rounded
+                      : Icons.location_searching_rounded,
+                  color: accent,
+                  size: 24,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: paused ? 0.10 : 0.16),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  !_isOnline
+                      ? 'PAUSED'
+                      : ready
+                      ? 'AVAILABLE'
+                      : 'LOCATION NEEDED',
+                  style: TextStyle(
+                    color: accent,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: TextStyle(
+              color: foreground,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            subtitle,
+            style: TextStyle(color: secondary, fontSize: 13, height: 1.45),
+          ),
+          if (_isOnline && !ready) ...[
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: _focusOnCurrentLocation,
+              icon: Icon(Icons.my_location_rounded, size: 18, color: accent),
+              label: Text('Check location', style: TextStyle(color: accent)),
+              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+            ),
+          ],
         ],
       ),
     );
@@ -1880,11 +1968,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       icon: Icons.settings_rounded,
                       title: 'Settings',
                       onTap: () => _closeDrawerThen(
-                        () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => const DriverSettingsScreen(),
-                          ),
-                        ),
+                        () => Navigator.of(context)
+                            .push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const DriverSettingsScreen(),
+                              ),
+                            )
+                            .then((_) {
+                              if (mounted) unawaited(_loadDriverRecord());
+                            }),
                       ),
                     ),
                   ],

@@ -4,8 +4,8 @@ Implemented locally for the Flutter driver app and the Next.js admin/API. Produc
 
 ## Release setup
 
-1. Back up the active Supabase database. Apply `supabase/schema_v15_driver_operations.sql` after v14. Each database selected through the admin backend switcher needs the migration.
-2. Set a random server-only `JWT_SECRET` of at least 32 characters. Optionally use a separate `DRIVER_SESSION_SECRET`, also at least 32 characters. Keep service-role keys on the server. Fallback admin/default-secret logins are disabled. Replace the seeded admin password before using finance.
+1. Back up the active Supabase database. Apply `supabase/schema_v15_driver_operations.sql` after v14, then `supabase/schema_v16_driver_topup_proofs.sql`. Each database selected through the admin backend switcher needs both migrations. V16 uses Supabase Storage and the app notifications table from v4.
+2. Set a random server-only `DRIVER_SESSION_SECRET` or `JWT_SECRET` of at least 32 characters in Vercel. Admin login uses `JWT_SECRET` when present, otherwise the driver secret. Keep service-role keys on the server. Fallback admin/default-secret logins are disabled. Replace the seeded admin password before using finance.
 3. Deploy the matching web API/admin and release the Flutter app together. The driver's existing `API_BASE_URL` must point to that API. Existing drivers must sign out and sign in again: old locally invented tokens cannot access operations.
 
 If the driver app receives a successful response without a signed `access_token`, it shows a plain temporary-unavailability message. For diagnosis, confirm `API_BASE_URL` points at the matching deployment, apply migration v15, configure the session secret, and deploy the web API before retrying. Do not restore the old locally generated driver token.
@@ -28,7 +28,11 @@ Radius and notification preferences are saved per driver on the server. Theme re
 
 ## Location
 
-Navigation-accuracy updates include the sensor timestamp, reported accuracy, heading, speed and server receipt time. Cached fixes are never re-labelled as newly observed. Invalid fixes, fixes older than 90 seconds and accuracy worse than 100 m are rejected. Conditional writes prevent delayed fixes from replacing newer ones.
+After a successful driver sign-in, Home marks the driver online automatically. Older Offline records left by GPS failures also come online when Home opens. A manual Go Offline action stores an explicit pause that survives refresh; a new sign-in starts online again. Drivers can pause or resume availability from the Home status pill or the Settings switch. Online availability does not by itself make the driver eligible for dispatch: a fresh, accurate GPS fix is still required.
+
+In a browser preview, the app skips `getLastKnownPosition`, which the web geolocator does not support. The driver can explore the app while online even when the browser provides no accurate fix. Chrome location readings up to 200 m are accepted for dispatch, including the browser's usual 150 m simulated accuracy. Grant location access and tap Check location in Home. Use a physical device to test real GPS behavior.
+
+Navigation-accuracy updates include the sensor timestamp, reported accuracy, heading, speed and server receipt time. Cached fixes are never re-labelled as newly observed. Invalid fixes and fixes older than 90 seconds are rejected. The phone app requires accuracy within 100 m; Chrome and the server accept up to 200 m. Conditional writes prevent delayed fixes from replacing newer ones. Deploy `schema_v17_browser_gps_accuracy.sql` after v16 so offer assignment and acceptance use the same 200 m limit.
 
 Android uses a location foreground service with a persistent online notification. iOS declares background location and shows its background indicator. Going offline/signing out stops tracking. The app refreshes on resume and periodically while online. Operating-system restrictions and force-stopping can interrupt tracking, so admin shows stale/unknown status rather than promising perfect, uninterrupted GPS.
 
@@ -49,7 +53,7 @@ At a 200 ETB fee and 12%, owner commission is 24 ETB and driver net is 176 ETB:
 
 Commission credit, earnings and reservations are separate. Unused top-ups are not owner revenue. Cancellation releases reserved commission. Cancelling an already reconciled business payment is blocked pending support/refund handling.
 
-No payment provider is connected. Telebirr/bank top-ups and cash-outs are **manual reconciliation workflows**, not automatic provider integrations. Drivers request a top-up/cash-out; admin verifies an actual incoming payment or completed outgoing payout, records a unique reference and adds a review note. A submitted request never proves payment. Pending cash-outs reserve earnings; rejection releases them. Earnings can be converted into non-withdrawable commission credit.
+No payment provider is connected. Drivers pay top-ups by Telebirr to **+251 931 323 328**, the confirmed business number, and attach a payment screenshot. Supabase stores the screenshot in a private bucket. Admin opens it from the Finance review panel, checks the completed payment in the business account, and approves or rejects with a note. Approval adds credit and creates a driver app notification; rejection also creates a notification. The wallet shows the request status and refreshes pending requests while open. A screenshot or submitted request alone never proves payment. Cash-outs remain manual: admin sends the payout, verifies it, and records the unique transaction reference. Pending cash-outs reserve earnings; rejection releases them. Earnings can be converted into non-withdrawable commission credit. Notifications appear in the app's existing realtime/local alert flow while it is running and remain in its notifications list; force-closed push delivery is not configured.
 
 Balance changes run in PostgreSQL transactions behind verified driver/admin sessions. Idempotency keys, reference uniqueness and locks prevent duplicate credit/settlement. Clients cannot read credentials or edit financial tables directly. Account closure requires settled balances and no active jobs/pending requests; active identity and login details are removed while transaction history is retained.
 

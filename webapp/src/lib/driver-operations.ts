@@ -3,6 +3,8 @@ export class OperationsError extends Error {
   constructor(message: string, status = 400) { super(message); this.status = status; }
 }
 
+export const MAX_DRIVER_GPS_ACCURACY_M = 200;
+
 export function moneyAmount(value: unknown): number {
   const amount = typeof value === 'number' ? value : Number.NaN;
   if (!Number.isFinite(amount) || amount <= 0 || amount > 1_000_000 ||
@@ -28,9 +30,9 @@ export function validatedLocation(body: Record<string, unknown>, now = Date.now(
   const observed = typeof observed_at === 'string' ? Date.parse(observed_at) : Number.NaN;
   if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng) ||
       lat < -90 || lat > 90 || lng < -180 || lng > 180 ||
-      typeof accuracy !== 'number' || !Number.isFinite(accuracy) || accuracy < 0 || accuracy > 100 ||
+      typeof accuracy !== 'number' || !Number.isFinite(accuracy) || accuracy < 0 || accuracy > MAX_DRIVER_GPS_ACCURACY_M ||
       !Number.isFinite(observed) || observed > now + 10_000 || now - observed > 90_000) {
-    throw new OperationsError('A fresh GPS reading with accuracy within 100 m is required.');
+    throw new OperationsError(`A fresh location reading within ${MAX_DRIVER_GPS_ACCURACY_M} m is required.`);
   }
   const heading = typeof body.heading === 'number' && Number.isFinite(body.heading) && body.heading >= 0 && body.heading < 360 ? body.heading : null;
   const speed = typeof body.speed === 'number' && Number.isFinite(body.speed) && body.speed >= 0 && body.speed <= 100 ? body.speed : null;
@@ -52,6 +54,6 @@ export function gpsQuality(driver: {
       !Number.isFinite(driver.current_lng) || Math.abs(driver.current_lat) > 90 || Math.abs(driver.current_lng) > 180 ||
       !Number.isFinite(observed) || driver.location_accuracy_m == null || !Number.isFinite(driver.location_accuracy_m)) return 'unknown';
   if (now - observed > 90_000 || observed > now + 10_000) return 'stale';
-  if (driver.location_accuracy_m < 0 || driver.location_accuracy_m > 100) return 'inaccurate';
+  if (driver.location_accuracy_m < 0 || driver.location_accuracy_m > MAX_DRIVER_GPS_ACCURACY_M) return 'inaccurate';
   return 'live';
 }

@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { BUSINESS_TELEBIRR_PHONE } from '@/lib/business-contact';
 
 const PRICING_CALC = {
   Bike: { base: 30, perKm: 30 },
@@ -28,7 +29,7 @@ const PRICING_CALC = {
 const BICYCLE_MAX_KM = 10;
 const LONG_DISTANCE_PER_KM = 20;
 
-const CONTACT_PHONE = "+251931323328";
+const CONTACT_PHONE = BUSINESS_TELEBIRR_PHONE;
 const CONTACT_PHONE2 = "+251920202304";
 const CONTACT_EMAIL = "Natnaeltegestuu@gmail.com";
 const CONTACT_TELEGRAM = "motorbike_et";

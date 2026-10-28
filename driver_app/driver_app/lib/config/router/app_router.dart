@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:driver_app/config/router/app_routes.dart';
-import 'package:driver_app/config/router/navigation_service.dart';
 import 'package:driver_app/core/storage/storage_adapter.dart';
 import 'package:driver_app/core/storage/storage_key_constants.dart';
 import 'package:driver_app/core/utils/functions/base_functions/data_functions.dart';
@@ -148,8 +147,6 @@ class AppRouter {
       StatefulShellRoute.indexedStack(
         parentNavigatorKey: parentNavigatorKey,
         builder: (context, state, navigationShell) {
-          // Set navigation shell in NavigationService
-          NavigationService().setNavigationShell(navigationShell);
           return MainScreen(navigationShell: navigationShell);
         },
         branches: [
@@ -648,10 +645,10 @@ class MainScreen extends StatelessWidget {
               bottom: bottomGap,
               child: _DriverBottomNavBar(
                 currentIndex: navigationShell.currentIndex,
-                onHomeTap: () => NavigationService().navigateToTab(0),
-                onAlertsTap: () => NavigationService().navigateToTab(1),
-                onEarningsTap: () => NavigationService().navigateToTab(2),
-                onProfileTap: () => NavigationService().navigateToTab(3),
+                onHomeTap: () => navigationShell.goBranch(0),
+                onAlertsTap: () => navigationShell.goBranch(1),
+                onEarningsTap: () => navigationShell.goBranch(2),
+                onProfileTap: () => navigationShell.goBranch(3),
               ),
             ),
           ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:driver_app/config/router/navigation_service.dart';
 import 'package:driver_app/core/storage/storage_adapter.dart';
 import 'package:driver_app/core/storage/storage_key_constants.dart';
 
@@ -56,22 +55,22 @@ class AppNavigatorImpl implements AppNavigator {
   // Tab navigation
   @override
   void navigateToHomeTab() {
-    NavigationService().navigateToTab(0);
+    context.goNamed(AppRoutes.home.name);
   }
 
   @override
   void navigateToNotificationsTab() {
-    NavigationService().navigateToTab(1);
+    context.goNamed(AppRoutes.notification.name);
   }
 
   @override
   void navigateToEarningsTab() {
-    NavigationService().navigateToTab(2);
+    context.goNamed(AppRoutes.earnings.name);
   }
 
   @override
   void navigateToProfileTab() {
-    NavigationService().navigateToTab(3);
+    context.goNamed(AppRoutes.profile.name);
   }
 
   @override
@@ -155,7 +154,7 @@ class AppNavigatorImpl implements AppNavigator {
   // User profile and settings
   @override
   void pushProfileScreen() {
-    NavigationService().navigateToTab(3);
+    context.goNamed(AppRoutes.profile.name);
   }
 
   @override
@@ -175,7 +174,7 @@ class AppNavigatorImpl implements AppNavigator {
 
   @override
   void pushNotificationScreen() {
-    NavigationService().navigateToTab(1);
+    context.goNamed(AppRoutes.notification.name);
   }
 
   @override

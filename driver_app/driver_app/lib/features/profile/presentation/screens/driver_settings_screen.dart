@@ -13,6 +13,7 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
   final _api = DriverOperationsApi();
   double _radius = 5;
   bool _notifications = true;
+  bool _available = false;
   bool _loading = true;
   bool _saving = false;
   String? _error;
@@ -34,6 +35,7 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
       setState(() {
         _radius = double.tryParse('${driver['working_radius_km']}') ?? 5;
         _notifications = driver['notifications_enabled'] != false;
+        _available = driver['status'] == 'Online';
         _loading = false;
       });
     } catch (error) {
@@ -63,6 +65,22 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$error'.replaceFirst('Exception: ', ''))),
         );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _changeAvailability(bool available) async {
+    setState(() => _saving = true);
+    try {
+      await _api.update({'action': available ? 'online' : 'offline'});
+      if (mounted) setState(() => _available = available);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$error'.replaceFirst('Exception: ', ''))),
+        );
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -102,6 +120,17 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
             Text(_error!),
             TextButton(onPressed: _load, child: const Text('Try again')),
           ] else ...[
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(Icons.online_prediction_rounded),
+              title: const Text('Available for deliveries'),
+              subtitle: const Text(
+                'You start online after sign-in. Turn this off when you need a break.',
+              ),
+              value: _available,
+              onChanged: _saving ? null : _changeAvailability,
+            ),
+            const SizedBox(height: 16),
             Text(
               'Pickup working radius: ${_radius.toStringAsFixed(0)} km',
               style: Theme.of(context).textTheme.titleMedium,
