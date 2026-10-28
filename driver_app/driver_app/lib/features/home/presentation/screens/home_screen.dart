@@ -3,7 +3,9 @@ import 'dart:math' as math;
 
 import 'package:driver_app/config/router/navigation_helper.dart';
 import 'package:driver_app/core/map/addis_ababa_base_map.dart';
+import 'package:driver_app/core/notifications/driver_notification_visibility.dart';
 import 'package:driver_app/core/notifications/local_notification_service.dart';
+import 'package:driver_app/core/operations/driver_availability.dart';
 import 'package:driver_app/core/operations/driver_operations_api.dart';
 import 'package:driver_app/core/widgets/slide_to_accept.dart';
 import 'package:driver_app/features/profile/presentation/screens/driver_settings_screen.dart';
@@ -63,6 +65,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   bool _isOnline = false;
   bool _autoOnlineOnEntry = false;
+  bool _availabilityInitialized = false;
+  Future<void>? _availabilityReady;
+  bool _syncingAvailability = false;
   bool _isResolvingDriver = false;
   bool _isUpdating = false;
   Map<String, dynamic>? _driverRecord;
@@ -75,12 +80,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isRefreshingRoute = false;
   final Set<String> _ratingPromptedDeliveries = <String>{};
   final Set<String> _shownSystemNotificationIds = <String>{};
+  List<Map<String, dynamic>> _badgeNotifications = [];
+  Set<String> _clearedNotificationIds = <String>{};
   int _unreadNotificationCount = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    DriverNotificationVisibility.hiddenFromBadge.addListener(
+      _onNotificationVisibilityChanged,
+    );
+    DriverAvailability.changes.addListener(_onAvailabilityChanged);
     _offerTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _activeDelivery?['status'] != 'Assigned') return;
       setState(() {});
@@ -103,14 +114,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         final record = authState.user.driverRecord!;
         setState(() {
           _driverRecord = record;
-          _isOnline =
-              (_autoOnlineOnEntry || record['availability_paused'] != true) &&
-              record['is_active'] != false &&
-              record['approval_status'] == 'Approved';
+          _isOnline = true;
           _lastLocationUploadAt = DateTime.tryParse(
             record['last_location_update']?.toString() ?? '',
           );
         });
+        _availabilityReady = _initializeAvailability(record['id'].toString());
         if (_isOnline && record['id'] != null) {
           unawaited(_resumeLocationTracking(record['id'].toString()));
         }
@@ -130,32 +139,80 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _refreshOnlineState() async {
     if (_refreshingGps) return;
-    if (kIsWeb &&
-        _browserGpsRetryAfter != null &&
-        DateTime.now().isBefore(_browserGpsRetryAfter!)) {
-      return;
-    }
     _refreshingGps = true;
     try {
       final id = _driverRecord?['id']?.toString();
       if (id != null && mounted && _isOnline) {
-        if (_driverRecord?['availability_paused'] == true) {
-          try {
-            final updated = await _operations.update({'action': 'online'});
-            if (mounted) setState(() => _driverRecord = updated);
-          } catch (error) {
-            debugPrint('Online status sync will retry: $error');
-          }
+        await _syncOnlineAvailability(id);
+        if (!kIsWeb ||
+            _browserGpsRetryAfter == null ||
+            !DateTime.now().isBefore(_browserGpsRetryAfter!)) {
+          await _resumeLocationTracking(
+            id,
+            promptIfNeeded: false,
+            moveMap: false,
+          );
         }
-        await _resumeLocationTracking(
-          id,
-          promptIfNeeded: false,
-          moveMap: false,
-        );
       }
       if (id != null && mounted && _isOnline) await _loadAssignedDelivery(id);
     } finally {
       _refreshingGps = false;
+    }
+  }
+
+  Future<void> _initializeAvailability(String driverId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted || _availabilityInitialized) return;
+    final online = _autoOnlineOnEntry
+        ? true
+        : DriverAvailability.choiceFor(driverId) ??
+              !(prefs.getBool(
+                    DriverOperationsApi.availabilityPauseKey(driverId),
+                  ) ??
+                  false);
+    _availabilityInitialized = true;
+    DriverAvailability.choose(driverId, online);
+    if (_autoOnlineOnEntry) {
+      unawaited(_rememberAvailability(driverId, paused: false));
+    }
+  }
+
+  void _onAvailabilityChanged() {
+    final change = DriverAvailability.changes.value;
+    final driverId = _driverRecord?['id']?.toString();
+    if (!mounted || change == null || change.$1 != driverId) return;
+    final wasOnline = _isOnline;
+    setState(() => _isOnline = change.$2);
+    if (!change.$2) {
+      final stream = _positionStream;
+      _positionStream = null;
+      if (stream != null) unawaited(stream.cancel());
+    } else if (!wasOnline) {
+      unawaited(_refreshOnlineState());
+    }
+  }
+
+  Future<void> _syncOnlineAvailability(String driverId) async {
+    if (_syncingAvailability ||
+        !_isOnline ||
+        DriverAvailability.choiceFor(driverId) != true ||
+        (_driverRecord?['status'] == 'Online' &&
+            _driverRecord?['availability_paused'] != true))
+      return;
+    _syncingAvailability = true;
+    try {
+      final updated = await DriverAvailability.writeIfChosen(
+        driverId,
+        true,
+        () => _operations.update({'action': 'online'}),
+      );
+      if (mounted && _isOnline && updated != null) {
+        setState(() => _driverRecord = {...?_driverRecord, ...updated});
+      }
+    } catch (error) {
+      debugPrint('Online status sync will retry: $error');
+    } finally {
+      _syncingAvailability = false;
     }
   }
 
@@ -417,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               final driverId = _driverRecord?['id']?.toString();
               if (driverId != null) {
                 unawaited(
-                  _updateDriverLocation(driverId, status: 'Online').catchError(
+                  _updateDriverLocation(driverId).catchError(
                     (Object error) =>
                         debugPrint('Last known GPS upload skipped: $error'),
                   ),
@@ -447,10 +504,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         if (accepted && updateRemote && _isOnline) {
           final driverId = _driverRecord?['id']?.toString();
           if (driverId != null) {
-            await _updateDriverLocation(
-              driverId,
-              status: _isOnline ? 'Online' : 'Offline',
-            );
+            await _updateDriverLocation(driverId);
           }
         }
       } catch (e) {
@@ -618,56 +672,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       final record = await _findOrCreateDriver(authState.user);
       if (!mounted) return record;
-      final autoOnline = _autoOnlineOnEntry;
+      if (record == null) return null;
+      if (!_availabilityInitialized) {
+        _availabilityReady ??= _initializeAvailability(record['id'].toString());
+        await _availabilityReady;
+      }
       _autoOnlineOnEntry = false;
       setState(() {
         _driverRecord = record;
         _isOnline =
-            (autoOnline || record?['availability_paused'] != true) &&
-            record?['is_active'] != false &&
-            record?['approval_status'] == 'Approved';
+            DriverAvailability.choiceFor(record['id'].toString()) ?? _isOnline;
         _lastLocationUploadAt ??= DateTime.tryParse(
-          record?['last_location_update']?.toString() ?? '',
+          record['last_location_update']?.toString() ?? '',
         );
       });
-      if (record != null) {
-        _subscribeToDriverRecord(record['id'].toString());
-        unawaited(_loadUnreadNotificationCount());
-        _subscribeToNotifications();
-      }
-      final driverId = record?['id']?.toString();
-      final hasServerPause =
-          record?.containsKey('availability_paused') ?? false;
-      final localPaused = driverId != null && !hasServerPause
-          ? (await SharedPreferences.getInstance()).getBool(
-                  DriverOperationsApi.availabilityPauseKey(driverId),
-                ) ??
-                false
-          : false;
-      if ((record?['status'] != 'Online' ||
-              record?['availability_paused'] == true) &&
-          record != null &&
-          (autoOnline ||
-              (hasServerPause
-                  ? record['availability_paused'] != true
-                  : !localPaused))) {
-        unawaited(
-          _operations
-              .update({'action': 'online'})
-              .then((updated) {
-                if (!mounted) return;
-                setState(() => _driverRecord = {...record, ...updated});
-                unawaited(_subscribeToAssignments(driverId!));
-                unawaited(_resumeLocationTracking(driverId));
-              })
-              .catchError((Object error) {
-                debugPrint('Online status sync will retry: $error');
-              }),
-        );
-        return record;
-      }
-      if (_isOnline && record != null) {
+      _subscribeToDriverRecord(record['id'].toString());
+      unawaited(_loadUnreadNotificationCount());
+      _subscribeToNotifications();
+      if (_isOnline) {
         final driverId = record['id'].toString();
+        unawaited(_syncOnlineAvailability(driverId));
         unawaited(_resumeLocationTracking(driverId));
         unawaited(_subscribeToAssignments(driverId));
       }
@@ -780,20 +804,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ...Map<String, dynamic>.from(payload.newRecord),
             };
             if (!mounted) return;
-            final wasOnline = _isOnline;
-            setState(() {
-              _driverRecord = nextRecord;
-              _isOnline =
-                  nextRecord['availability_paused'] != true &&
-                  nextRecord['is_active'] != false &&
-                  nextRecord['approval_status'] == 'Approved';
-            });
-            if (!_isOnline) {
-              final stoppedStream = _positionStream;
-              _positionStream = null;
-              if (stoppedStream != null) unawaited(stoppedStream.cancel());
-            } else if (!wasOnline) {
-              unawaited(_refreshOnlineState());
+            setState(() => _driverRecord = nextRecord);
+            if (_isOnline &&
+                (nextRecord['availability_paused'] == true ||
+                    nextRecord['status'] != 'Online')) {
+              unawaited(_syncOnlineAvailability(driverId));
             }
           },
         )
@@ -817,36 +832,45 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return;
     }
 
-    setState(() => _isUpdating = true);
     final driverId = driver['id'].toString();
+    final goingOnline = !_isOnline;
+    setState(() => _isUpdating = true);
+    DriverAvailability.choose(driverId, goingOnline);
 
     try {
-      if (_isOnline) {
-        await _operations.update({'action': 'offline'});
+      if (!goingOnline) {
+        final updated = await DriverAvailability.writeIfChosen(
+          driverId,
+          false,
+          () => _operations.update({'action': 'offline'}),
+        );
+        if (updated == null) return;
         await _rememberAvailability(driverId, paused: true);
-        await _positionStream?.cancel();
-        _positionStream = null;
         await _deliveriesChannel?.unsubscribe();
 
         if (!mounted) return;
         setState(() {
-          _isOnline = false;
           _activeDelivery = null;
           _routePoints = [];
-          _driverRecord = {...driver, 'status': 'Offline'};
+          _driverRecord = {...?_driverRecord, ...updated};
         });
       } else {
-        await _operations.update({'action': 'online'});
+        final updated = await DriverAvailability.writeIfChosen(
+          driverId,
+          true,
+          () => _operations.update({'action': 'online'}),
+        );
+        if (updated == null) return;
         await _rememberAvailability(driverId, paused: false);
         if (!mounted) return;
-        setState(() {
-          _isOnline = true;
-          _driverRecord = {...driver, 'status': 'Online'};
-        });
+        setState(() => _driverRecord = {...?_driverRecord, ...updated});
         await _subscribeToAssignments(driverId);
         await _resumeLocationTracking(driverId);
       }
     } catch (e) {
+      if (DriverAvailability.choiceFor(driverId) == goingOnline) {
+        DriverAvailability.choose(driverId, !goingOnline);
+      }
       debugPrint('Error toggling online status: $e');
       if (mounted) {
         AppToast.show(
@@ -897,7 +921,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _applyCurrentPosition(position, zoom: 16, moveMap: false);
             if (_gpsFix != position || !_isOnline) return;
             try {
-              await _updateDriverLocation(driverId, status: 'Online');
+              await _updateDriverLocation(driverId);
             } catch (error) {
               debugPrint(
                 'GPS upload failed; retaining original fix time: $error',
@@ -916,10 +940,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
   }
 
-  Future<void> _updateDriverLocation(
-    String driverId, {
-    required String status,
-  }) async {
+  Future<void> _updateDriverLocation(String driverId) async {
     final fix = _gpsFix;
     if (!_hasFreshGpsFix || fix == null) {
       throw Exception(
@@ -928,7 +949,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
     final updated = await _operations.update({
       'action': 'location',
-      'status': status,
       'lat': fix.latitude,
       'lng': fix.longitude,
       'accuracy': fix.accuracy,
@@ -994,16 +1014,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           .order('created_at', ascending: false)
           .limit(100);
 
-      final count = List<Map<String, dynamic>>.from(data)
-          .where(_matchesDriverNotification)
-          .where((notification) => notification['read_at'] == null)
-          .length;
+      final clearedIds = await DriverNotificationVisibility.loadClearedIds();
+      final notifications = List<Map<String, dynamic>>.from(
+        data,
+      ).where(_matchesDriverNotification).toList();
 
       if (!mounted) return;
-      setState(() => _unreadNotificationCount = count);
+      setState(() {
+        _badgeNotifications = notifications;
+        _clearedNotificationIds = clearedIds;
+        _updateUnreadNotificationCount();
+      });
     } catch (e) {
       debugPrint('Error loading driver notifications: $e');
     }
+  }
+
+  void _onNotificationVisibilityChanged() {
+    if (!mounted) return;
+    setState(_updateUnreadNotificationCount);
+  }
+
+  void _updateUnreadNotificationCount() {
+    _unreadNotificationCount = DriverNotificationVisibility.unreadCount(
+      _badgeNotifications,
+      clearedIds: _clearedNotificationIds,
+      hiddenIds: DriverNotificationVisibility.hiddenFromBadge.value,
+    );
   }
 
   void _subscribeToNotifications() {
@@ -1314,7 +1351,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           : 'complete';
       if (status == 'Accepted' && _hasFreshGpsFix) {
         try {
-          await _updateDriverLocation(driverId, status: 'Online');
+          await _updateDriverLocation(driverId);
         } catch (error) {
           debugPrint('Latest GPS upload before acceptance skipped: $error');
         }
@@ -1622,6 +1659,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    DriverAvailability.changes.removeListener(_onAvailabilityChanged);
+    DriverNotificationVisibility.hiddenFromBadge.removeListener(
+      _onNotificationVisibilityChanged,
+    );
     _offerTimer?.cancel();
     _refreshTimer?.cancel();
     _positionStream?.cancel();
@@ -2200,7 +2241,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Widget _buildHomeDrawer() {
     final name = _driverRecord?['name']?.toString() ?? 'Driver';
-    final status = _driverRecord?['status']?.toString() ?? 'Offline';
+    final status = _isOnline ? 'Online' : 'Offline';
     final vehicle = _driverRecord?['vehicle_type']?.toString() ?? 'Driver';
 
     return Drawer(
@@ -2440,9 +2481,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             onPressed: () {
               context.navigator.pushNotificationScreen();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) _loadUnreadNotificationCount();
-              });
             },
           ),
           if (_unreadNotificationCount > 0)

@@ -1,5 +1,5 @@
 import { requireDriver } from '@/lib/driver-session';
-import { gpsQuality, OperationsError, textValue, validatedLocation } from '@/lib/driver-operations';
+import { OperationsError, textValue, validatedLocation } from '@/lib/driver-operations';
 import { operationsFailure, operationsJson, operationsOptions } from '@/lib/operations-response';
 
 export const dynamic = 'force-dynamic';
@@ -34,17 +34,8 @@ export async function PATCH(request: Request) {
       if (driver.availability_paused === true) return operationsJson(driver);
       Object.assign(updates, validatedLocation(body));
       if (driver.last_location_update && Date.parse(String(driver.last_location_update)) >= Date.parse(String(updates.last_location_update))) {
-        if (body.status === 'Online' && driver.status !== 'Online' && gpsQuality({...driver,status:'Online'}) === 'live') {
-          let query = db.from('drivers').update({status:'Online'}).eq('id',driver.id);
-          if (hasPauseColumn) query = query.eq('availability_paused',false);
-          const { data, error } = await query.select().maybeSingle();
-          if (error) throw error;
-          if (data) delete data.password;
-          return operationsJson(data ?? driver);
-        }
         return operationsJson(driver); // An older delayed GPS fix must never overwrite a newer one.
       }
-      if (body.status === 'Online') updates.status = 'Online';
     } else if (body.action === 'online') {
       // Availability is a driver preference. Dispatch still checks a fresh GPS fix.
       updates.status = 'Online';
@@ -71,7 +62,7 @@ export async function PATCH(request: Request) {
     let query = db.from('drivers').update(updates).eq('id', driver.id);
     if (body.action === 'location') {
       query = query.or(`last_location_update.is.null,last_location_update.lt.${updates.last_location_update}`);
-      if (body.status === 'Online' && hasPauseColumn) query = query.eq('availability_paused', false);
+      if (hasPauseColumn) query = query.eq('availability_paused', false);
     }
     const { data, error } = await query.select('*').maybeSingle();
     if (error) throw error;

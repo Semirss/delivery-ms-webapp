@@ -1,4 +1,5 @@
 import 'package:driver_app/core/notifications/local_notification_service.dart';
+import 'package:driver_app/core/operations/driver_availability.dart';
 import 'package:driver_app/core/operations/driver_operations_api.dart';
 import 'package:driver_app/core/preferences/app_preferences.dart';
 import 'package:flutter/material.dart';
@@ -33,12 +34,20 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
     try {
       final data = await _api.load();
       final driver = data['driver'] as Map;
+      final driverId = driver['id']?.toString();
+      final prefs = await SharedPreferences.getInstance();
       if (!mounted) return;
       setState(() {
-        _driverId = driver['id']?.toString();
+        _driverId = driverId;
         _radius = double.tryParse('${driver['working_radius_km']}') ?? 5;
         _notifications = driver['notifications_enabled'] != false;
-        _available = driver['status'] == 'Online';
+        _available = driverId == null
+            ? false
+            : DriverAvailability.choiceFor(driverId) ??
+                  !(prefs.getBool(
+                        DriverOperationsApi.availabilityPauseKey(driverId),
+                      ) ??
+                      false);
         _loading = false;
       });
     } catch (error) {
@@ -74,23 +83,33 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
   }
 
   Future<void> _changeAvailability(bool available) async {
+    final driverId = _driverId;
+    if (driverId == null) return;
+    final before = _available;
     setState(() => _saving = true);
+    DriverAvailability.choose(driverId, available);
+    setState(() => _available = available);
     try {
-      await _api.update({'action': available ? 'online' : 'offline'});
-      final driverId = _driverId;
-      if (driverId != null) {
-        try {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool(
-            DriverOperationsApi.availabilityPauseKey(driverId),
-            !available,
-          );
-        } catch (error) {
-          debugPrint('Could not save driver availability preference: $error');
-        }
+      final updated = await DriverAvailability.writeIfChosen(
+        driverId,
+        available,
+        () => _api.update({'action': available ? 'online' : 'offline'}),
+      );
+      if (updated == null) return;
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(
+          DriverOperationsApi.availabilityPauseKey(driverId),
+          !available,
+        );
+      } catch (error) {
+        debugPrint('Could not save driver availability preference: $error');
       }
-      if (mounted) setState(() => _available = available);
     } catch (error) {
+      if (DriverAvailability.choiceFor(driverId) == available) {
+        DriverAvailability.choose(driverId, before);
+      }
+      if (mounted) setState(() => _available = before);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('$error'.replaceFirst('Exception: ', ''))),
