@@ -390,6 +390,22 @@ class SupabaseAuthDataSourceImpl implements AuthRemoteDataSource {
       firstName: nameParts.isEmpty ? name : nameParts.first,
       lastName: nameParts.length > 1 ? nameParts.skip(1).join(' ') : null,
       phone: driver['phone']?.toString(),
+      driverRecord: {
+        for (final key in [
+          'id',
+          'name',
+          'phone',
+          'status',
+          'availability_paused',
+          'is_active',
+          'approval_status',
+          'last_location_update',
+          'working_radius_km',
+          'notifications_enabled',
+          'vehicle_type',
+        ])
+          if (driver.containsKey(key)) key: driver[key],
+      },
     );
   }
 

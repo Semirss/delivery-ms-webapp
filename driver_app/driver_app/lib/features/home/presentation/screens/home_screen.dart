@@ -43,11 +43,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final SupabaseClient _supabase = Supabase.instance.client;
   final DriverOperationsApi _operations = DriverOperationsApi();
   Position? _gpsFix;
-  bool _gpsUploadedForCurrentFix = false;
+  DateTime? _lastLocationUploadAt;
+  String? _locationIssue;
+  DateTime? _browserGpsRetryAfter;
   Timer? _offerTimer;
   Timer? _refreshTimer;
   String? _expiringDeliveryId;
   bool _refreshingGps = false;
+  bool _startingLocationTracking = false;
+  bool _requestingCurrentLocation = false;
 
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
@@ -58,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       LocalNotificationService();
 
   bool _isOnline = false;
+  bool _autoOnlineOnEntry = false;
   bool _isResolvingDriver = false;
   bool _isUpdating = false;
   Map<String, dynamic>? _driverRecord;
@@ -82,32 +87,101 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       if (_offerSecondsLeft == 0) unawaited(_expireOffer());
     });
     _refreshTimer = Timer.periodic(const Duration(seconds: 20), (_) {
-      if (!_isOnline || !mounted) return;
+      if (!_isOnline || !mounted || _isUpdating) return;
       unawaited(_refreshOnlineState());
     });
     unawaited(
       _localNotifications.initialize(onTap: _handleSystemNotificationTap),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authBloc = context.read<AuthBloc>();
+      final authState = authBloc.state;
+      _autoOnlineOnEntry = authBloc.takeAutoOnlineOnNextHome();
+      if (authState is AuthAuthenticated &&
+          authState.user.driverRecord != null &&
+          mounted) {
+        final record = authState.user.driverRecord!;
+        setState(() {
+          _driverRecord = record;
+          _isOnline =
+              (_autoOnlineOnEntry || record['availability_paused'] != true) &&
+              record['is_active'] != false &&
+              record['approval_status'] == 'Approved';
+          _lastLocationUploadAt = DateTime.tryParse(
+            record['last_location_update']?.toString() ?? '',
+          );
+        });
+        if (_isOnline && record['id'] != null) {
+          unawaited(_resumeLocationTracking(record['id'].toString()));
+        }
+      }
       unawaited(_loadDriverRecord());
     });
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && _isOnline)
+    if (state == AppLifecycleState.resumed && _isOnline) {
+      unawaited(_positionStream?.cancel());
+      _positionStream = null;
       unawaited(_refreshOnlineState());
+    }
   }
 
   Future<void> _refreshOnlineState() async {
     if (_refreshingGps) return;
+    if (kIsWeb &&
+        _browserGpsRetryAfter != null &&
+        DateTime.now().isBefore(_browserGpsRetryAfter!)) {
+      return;
+    }
     _refreshingGps = true;
     try {
-      await _getCurrentLocation(updateRemote: true, moveMap: false);
       final id = _driverRecord?['id']?.toString();
+      if (id != null && mounted && _isOnline) {
+        if (_driverRecord?['availability_paused'] == true) {
+          try {
+            final updated = await _operations.update({'action': 'online'});
+            if (mounted) setState(() => _driverRecord = updated);
+          } catch (error) {
+            debugPrint('Online status sync will retry: $error');
+          }
+        }
+        await _resumeLocationTracking(
+          id,
+          promptIfNeeded: false,
+          moveMap: false,
+        );
+      }
       if (id != null && mounted && _isOnline) await _loadAssignedDelivery(id);
     } finally {
       _refreshingGps = false;
+    }
+  }
+
+  Future<void> _resumeLocationTracking(
+    String driverId, {
+    bool promptIfNeeded = true,
+    bool moveMap = true,
+  }) async {
+    if (_startingLocationTracking || !_isOnline || !mounted) return;
+    _startingLocationTracking = true;
+    try {
+      if (!await _ensureLocationAccess(promptIfNeeded: promptIfNeeded)) {
+        await _positionStream?.cancel();
+        _positionStream = null;
+        return;
+      }
+      if (!mounted || !_isOnline) return;
+      if (_positionStream == null) _startLocationStreaming(driverId);
+      unawaited(_getCurrentLocation(updateRemote: true, moveMap: moveMap));
+    } catch (error) {
+      debugPrint('Location tracking will retry: $error');
+      _setLocationIssue(
+        'Finding your location. Tracking will retry automatically.',
+      );
+    } finally {
+      _startingLocationTracking = false;
     }
   }
 
@@ -141,9 +215,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<bool> _ensureLocationAccess({bool showMessages = false}) async {
+  Future<bool> _ensureLocationAccess({
+    bool showMessages = false,
+    bool promptIfNeeded = true,
+  }) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      _setLocationIssue(
+        'Turn on device location. Tracking will resume automatically.',
+      );
       if (showMessages && mounted) {
         AppToast.show(
           context: context,
@@ -156,14 +236,28 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     var permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
+      if (!promptIfNeeded) {
+        _setLocationIssue(
+          'Allow location access for MotoBike Driver to receive offers.',
+        );
+        return false;
+      }
       final accepted = await _ensureLocationProminentDisclosure(
-        beforePermissionRequest: true,
         showMessages: showMessages,
+        promptIfNeeded: promptIfNeeded,
       );
-      if (!accepted) return false;
+      if (!accepted) {
+        _setLocationIssue(
+          'Allow location use for MotoBike Driver to receive offers.',
+        );
+        return false;
+      }
 
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
+        _setLocationIssue(
+          'Allow location access for MotoBike Driver to receive offers.',
+        );
         if (showMessages && mounted) {
           AppToast.show(
             context: context,
@@ -176,6 +270,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     if (permission == LocationPermission.deniedForever) {
+      _setLocationIssue(
+        'Allow location for MotoBike Driver in device settings.',
+      );
       if (showMessages && mounted) {
         AppToast.show(
           context: context,
@@ -186,21 +283,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return false;
     }
 
-    return _ensureLocationProminentDisclosure(
-      beforePermissionRequest: false,
+    final consent = await _ensureLocationProminentDisclosure(
       showMessages: showMessages,
+      promptIfNeeded: promptIfNeeded,
     );
+    if (!consent) {
+      _setLocationIssue(
+        'Allow location use for MotoBike Driver to receive offers.',
+      );
+    } else if (_locationIssue != null && mounted) {
+      setState(() => _locationIssue = null);
+    }
+    return consent;
   }
 
   Future<bool> _ensureLocationProminentDisclosure({
-    required bool beforePermissionRequest,
     required bool showMessages,
+    required bool promptIfNeeded,
   }) async {
-    if (!beforePermissionRequest) {
-      final prefs = await SharedPreferences.getInstance();
-      final hasConsent = prefs.getBool(_locationDisclosureConsentKey) ?? false;
-      if (hasConsent) return true;
-    }
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_locationDisclosureConsentKey) == true) return true;
+    if (!promptIfNeeded) return false;
 
     final accepted = await _showLocationProminentDisclosure();
     if (!accepted) {
@@ -214,7 +317,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return false;
     }
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_locationDisclosureConsentKey, true);
     return true;
   }
@@ -299,36 +401,82 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     bool updateRemote = false,
     bool moveMap = true,
   }) async {
-    if (!kIsWeb) {
+    if (_requestingCurrentLocation) return;
+    _requestingCurrentLocation = true;
+    try {
+      if (!kIsWeb) {
+        try {
+          final lastKnown = await Geolocator.getLastKnownPosition();
+          if (lastKnown != null && mounted) {
+            final accepted = _applyCurrentPosition(
+              lastKnown,
+              zoom: zoom,
+              moveMap: moveMap,
+            );
+            if (accepted && updateRemote && _isOnline) {
+              final driverId = _driverRecord?['id']?.toString();
+              if (driverId != null) {
+                unawaited(
+                  _updateDriverLocation(driverId, status: 'Online').catchError(
+                    (Object error) =>
+                        debugPrint('Last known GPS upload skipped: $error'),
+                  ),
+                );
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('Last known GPS skipped: $e');
+        }
+      }
+
       try {
-        final lastKnown = await Geolocator.getLastKnownPosition();
-        if (lastKnown != null && mounted) {
-          _applyCurrentPosition(lastKnown, zoom: zoom, moveMap: moveMap);
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: kIsWeb
+              ? LocationAccuracy.medium
+              : LocationAccuracy.bestForNavigation,
+          timeLimit: const Duration(seconds: kIsWeb ? 30 : 8),
+        );
+        if (!mounted) return;
+        _browserGpsRetryAfter = null;
+        final accepted = _applyCurrentPosition(
+          position,
+          zoom: zoom,
+          moveMap: moveMap,
+        );
+        if (accepted && updateRemote && _isOnline) {
+          final driverId = _driverRecord?['id']?.toString();
+          if (driverId != null) {
+            await _updateDriverLocation(
+              driverId,
+              status: _isOnline ? 'Online' : 'Offline',
+            );
+          }
         }
       } catch (e) {
-        debugPrint('Last known GPS skipped: $e');
-      }
-    }
-
-    try {
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-        timeLimit: const Duration(seconds: 15),
-      );
-      if (!mounted) return;
-      _applyCurrentPosition(position, zoom: zoom, moveMap: moveMap);
-      if (updateRemote && _isOnline) {
-        final driverId = _driverRecord?['id']?.toString();
-        if (driverId != null) {
-          await _updateDriverLocation(
-            driverId,
-            status: _isOnline ? 'Online' : 'Offline',
+        debugPrint('GPS refresh skipped: $e');
+        if (kIsWeb && e is TimeoutException) {
+          _browserGpsRetryAfter = DateTime.now().add(
+            const Duration(minutes: 1),
+          );
+          _setLocationIssue(
+            'Chrome could not find your location. Enable device location and '
+            'Wi-Fi and allow this site in Chrome. Tracking will retry automatically.',
+          );
+        } else if (!kIsWeb && e is TimeoutException) {
+          _setLocationIssue(
+            'Still finding your location. Tracking will retry automatically.',
           );
         }
       }
-    } catch (e) {
-      debugPrint('GPS refresh skipped: $e');
+    } finally {
+      _requestingCurrentLocation = false;
     }
+  }
+
+  void _setLocationIssue(String message) {
+    if (!mounted || _locationIssue == message) return;
+    setState(() => _locationIssue = message);
   }
 
   Future<void> _focusOnCurrentLocation() async {
@@ -342,28 +490,49 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  void _applyCurrentPosition(
+  bool _applyCurrentPosition(
     Position position, {
     required double zoom,
     required bool moveMap,
   }) {
     final next = LatLng(position.latitude, position.longitude);
-    if (!_isValidMapPoint(next)) return;
+    if (!_isValidMapPoint(next)) return false;
     final age = DateTime.now().difference(position.timestamp);
     if (age > const Duration(seconds: 90) ||
         age < const Duration(seconds: -10) ||
         !position.accuracy.isFinite ||
         position.accuracy < 0 ||
-        position.accuracy > _maxGpsAccuracyM)
-      return;
-    if (_gpsFix != null && position.timestamp.isBefore(_gpsFix!.timestamp))
-      return;
+        position.accuracy > _maxGpsAccuracyM) {
+      if (kIsWeb &&
+          position.accuracy.isFinite &&
+          position.accuracy > _maxGpsAccuracyM) {
+        _setLocationIssue(
+          'Chrome located you only within ${position.accuracy.round()} m. '
+          'Connect to Wi-Fi or use phone GPS to receive offers.',
+        );
+      } else if (!kIsWeb &&
+          position.accuracy.isFinite &&
+          position.accuracy > _maxGpsAccuracyM) {
+        _setLocationIssue(
+          'GPS is improving its accuracy. Tracking will start automatically.',
+        );
+      }
+      return false;
+    }
+    final previous = _gpsFix;
+    if (previous != null &&
+        (position.timestamp.isBefore(previous.timestamp) ||
+            (position.timestamp.isAtSameMomentAs(previous.timestamp) &&
+                position.accuracy >= previous.accuracy))) {
+      return false;
+    }
     setState(() {
       _currentPosition = next;
       _gpsFix = position;
-      _gpsUploadedForCurrentFix = false;
+      _locationIssue = null;
     });
     if (moveMap) _moveMapSafely(next, zoom);
+    return true;
   }
 
   bool _isValidMapPoint(LatLng point) {
@@ -449,19 +618,23 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       final record = await _findOrCreateDriver(authState.user);
       if (!mounted) return record;
+      final autoOnline = _autoOnlineOnEntry;
+      _autoOnlineOnEntry = false;
       setState(() {
         _driverRecord = record;
         _isOnline =
-            record?['status'] == 'Online' &&
+            (autoOnline || record?['availability_paused'] != true) &&
             record?['is_active'] != false &&
             record?['approval_status'] == 'Approved';
+        _lastLocationUploadAt ??= DateTime.tryParse(
+          record?['last_location_update']?.toString() ?? '',
+        );
       });
       if (record != null) {
         _subscribeToDriverRecord(record['id'].toString());
-        await _loadUnreadNotificationCount();
+        unawaited(_loadUnreadNotificationCount());
         _subscribeToNotifications();
       }
-      final autoOnline = record != null && authBloc.takeAutoOnlineOnNextHome();
       final driverId = record?['id']?.toString();
       final hasServerPause =
           record?.containsKey('availability_paused') ?? false;
@@ -471,29 +644,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ) ??
                 false
           : false;
-      if (!_isOnline &&
+      if ((record?['status'] != 'Online' ||
+              record?['availability_paused'] == true) &&
           record != null &&
           (autoOnline ||
               (hasServerPause
                   ? record['availability_paused'] != true
                   : !localPaused))) {
-        await _toggleOnlineStatus();
+        unawaited(
+          _operations
+              .update({'action': 'online'})
+              .then((updated) {
+                if (!mounted) return;
+                setState(() => _driverRecord = {...record, ...updated});
+                unawaited(_subscribeToAssignments(driverId!));
+                unawaited(_resumeLocationTracking(driverId));
+              })
+              .catchError((Object error) {
+                debugPrint('Online status sync will retry: $error');
+              }),
+        );
         return record;
       }
       if (_isOnline && record != null) {
         final driverId = record['id'].toString();
-        final hasLocationAccess = await _ensureLocationAccess();
-        if (!mounted) return record;
-        if (hasLocationAccess) {
-          await _getCurrentLocation(updateRemote: true);
-          if (!mounted) return record;
-          _startLocationStreaming(driverId);
-        }
-        await _subscribeToAssignments(driverId);
+        unawaited(_resumeLocationTracking(driverId));
+        unawaited(_subscribeToAssignments(driverId));
       }
       return record;
     } catch (e) {
-      debugPrint('Error loading driver record: $e');
+      debugPrint('Error refreshing driver record: $e');
+      if (_driverRecord != null) return _driverRecord;
       if (mounted) {
         AppToast.show(
           context: context,
@@ -594,15 +775,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             value: driverId,
           ),
           callback: (payload) {
-            final nextRecord = Map<String, dynamic>.from(payload.newRecord);
+            final nextRecord = {
+              ...?_driverRecord,
+              ...Map<String, dynamic>.from(payload.newRecord),
+            };
             if (!mounted) return;
+            final wasOnline = _isOnline;
             setState(() {
               _driverRecord = nextRecord;
               _isOnline =
-                  nextRecord['status'] == 'Online' &&
-                  nextRecord['is_active'] != false;
+                  nextRecord['availability_paused'] != true &&
+                  nextRecord['is_active'] != false &&
+                  nextRecord['approval_status'] == 'Approved';
             });
-            if (!_isOnline) unawaited(_positionStream?.cancel());
+            if (!_isOnline) {
+              final stoppedStream = _positionStream;
+              _positionStream = null;
+              if (stoppedStream != null) unawaited(stoppedStream.cancel());
+            } else if (!wasOnline) {
+              unawaited(_refreshOnlineState());
+            }
           },
         )
         .subscribe();
@@ -633,6 +825,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         await _operations.update({'action': 'offline'});
         await _rememberAvailability(driverId, paused: true);
         await _positionStream?.cancel();
+        _positionStream = null;
         await _deliveriesChannel?.unsubscribe();
 
         if (!mounted) return;
@@ -651,13 +844,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           _driverRecord = {...driver, 'status': 'Online'};
         });
         await _subscribeToAssignments(driverId);
-        final hasLocationAccess = await _ensureLocationAccess();
-        if (!mounted) return;
-        if (hasLocationAccess) {
-          await _getCurrentLocation(updateRemote: true);
-          if (!mounted) return;
-          _startLocationStreaming(driverId);
-        }
+        await _resumeLocationTracking(driverId);
       }
     } catch (e) {
       debugPrint('Error toggling online status: $e');
@@ -698,7 +885,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             allowBackgroundLocationUpdates: true,
           )
         : const LocationSettings(
-            accuracy: LocationAccuracy.bestForNavigation,
+            accuracy: kIsWeb
+                ? LocationAccuracy.medium
+                : LocationAccuracy.bestForNavigation,
             distanceFilter: 5,
           );
     _positionStream = Geolocator.getPositionStream(locationSettings: settings)
@@ -720,6 +909,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           },
           onError: (Object error) {
             debugPrint('GPS stream failed: $error');
+            final failedStream = _positionStream;
+            _positionStream = null;
+            if (failedStream != null) unawaited(failedStream.cancel());
           },
         );
   }
@@ -734,7 +926,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         'Waiting for a fresh GPS fix. Enable precise location and try again.',
       );
     }
-    await _operations.update({
+    final updated = await _operations.update({
       'action': 'location',
       'status': status,
       'lat': fix.latitude,
@@ -744,8 +936,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       'speed': fix.speed,
       'observed_at': fix.timestamp.toUtc().toIso8601String(),
     });
-    if (mounted && _gpsFix == fix) {
-      setState(() => _gpsUploadedForCurrentFix = true);
+    final serverFixTime = DateTime.tryParse(
+      updated['last_location_update']?.toString() ?? '',
+    );
+    if (mounted &&
+        updated['status'] == 'Online' &&
+        updated['availability_paused'] != true &&
+        serverFixTime != null) {
+      setState(() {
+        if (_lastLocationUploadAt == null ||
+            serverFixTime.isAfter(_lastLocationUploadAt!)) {
+          _lastLocationUploadAt = serverFixTime;
+        }
+      });
     }
   }
 
@@ -1109,6 +1312,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           : status == 'Picked Up'
           ? 'pickup'
           : 'complete';
+      if (status == 'Accepted' && _hasFreshGpsFix) {
+        try {
+          await _updateDriverLocation(driverId, status: 'Online');
+        } catch (error) {
+          debugPrint('Latest GPS upload before acceptance skipped: $error');
+        }
+      }
       final updated = await _operations.deliveryAction(deliveryId, action);
 
       if (!mounted) return;
@@ -1144,6 +1354,70 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         AppToast.show(
           context: context,
           message: e.toString().replaceFirst('Exception: ', ''),
+          type: AppToastType.error,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
+    }
+  }
+
+  Future<void> _editOfferFee(Map<String, dynamic> delivery) async {
+    var fareText =
+        _asNullableDouble(delivery['delivery_fee'])?.toStringAsFixed(2) ?? '';
+    final fee = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Set delivery fare'),
+        content: TextFormField(
+          initialValue: fareText,
+          onChanged: (value) => fareText = value,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(
+            labelText: 'Fare in ETB',
+            helperText: 'Your earnings and commission will update.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              final amount = double.tryParse(fareText.trim());
+              if (amount == null ||
+                  amount <= 0 ||
+                  amount > 1000000 ||
+                  (amount * 100 - (amount * 100).round()).abs() > 0.000001) {
+                AppToast.show(
+                  context: dialogContext,
+                  message: 'Enter a valid fare with up to two decimal places.',
+                  type: AppToastType.error,
+                );
+                return;
+              }
+              Navigator.pop(dialogContext, amount);
+            },
+            child: const Text('Update fare'),
+          ),
+        ],
+      ),
+    );
+    if (fee == null || !mounted || _isUpdating) return;
+    final deliveryId = delivery['id']?.toString();
+    if (deliveryId == null) return;
+    setState(() => _isUpdating = true);
+    try {
+      final updated = await _operations.quoteOffer(deliveryId, fee);
+      if (!mounted) return;
+      await _setActiveDelivery(Map<String, dynamic>.from(updated));
+    } catch (error) {
+      if (mounted) {
+        AppToast.show(
+          context: context,
+          message: error.toString().replaceFirst('Exception: ', ''),
           type: AppToastType.error,
         );
       }
@@ -1372,7 +1646,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: context.appBackground,
-      endDrawer: _buildHomeDrawer(),
+      drawer: _buildHomeDrawer(),
       body: Stack(
         children: [
           FlutterMap(
@@ -1508,8 +1782,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         Icons.menu_rounded,
                         color: context.appTextPrimary,
                       ),
-                      onPressed: () =>
-                          _scaffoldKey.currentState?.openEndDrawer(),
+                      onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                     ),
                   ),
                   GestureDetector(
@@ -1625,102 +1898,80 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     constraints: BoxConstraints(
                       maxHeight: MediaQuery.sizeOf(context).height * 0.58,
                     ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: context.appBorder,
-                              borderRadius: BorderRadius.circular(2),
+                    child: _isOnline && delivery?['status'] == 'Assigned'
+                        ? _buildAssignedOfferPanel(delivery!)
+                        : SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 4,
+                                  decoration: BoxDecoration(
+                                    color: context.appBorder,
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                                const SizedBox(height: AppSpacing.lg),
+                                if (_isResolvingDriver &&
+                                    _driverRecord == null) ...[
+                                  const CircularProgressIndicator(
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(height: AppSpacing.lg),
+                                  const AppText(
+                                    'Loading driver profile...',
+                                    variant: AppTextVariant.heading3,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ] else if (!_isOnline || delivery == null) ...[
+                                  _buildAvailabilityCard(),
+                                ] else if (delivery['status'] ==
+                                    'Accepted') ...[
+                                  _buildDeliveryHeader(
+                                    'Head to pickup',
+                                    delivery,
+                                  ),
+                                  _buildDeliveryLocation(
+                                    Icons.storefront_rounded,
+                                    'Pickup',
+                                    delivery['pickup_location']?.toString() ??
+                                        'Pickup',
+                                  ),
+                                  _buildDeliveryDetails(delivery),
+                                  const SizedBox(height: AppSpacing.lg),
+                                  AppButton.primary(
+                                    label: 'CONFIRM PICKUP',
+                                    fullWidth: true,
+                                    isLoading: _isUpdating,
+                                    onPressed: () =>
+                                        _updateDeliveryStatus('Picked Up'),
+                                  ),
+                                ] else ...[
+                                  _buildDeliveryHeader(
+                                    'Deliver Package',
+                                    delivery,
+                                  ),
+                                  Divider(color: context.appBorder),
+                                  _buildDeliveryLocation(
+                                    Icons.flag_rounded,
+                                    'Dropoff',
+                                    delivery['dropoff_location']?.toString() ??
+                                        'Dropoff location',
+                                  ),
+                                  _buildDeliveryDetails(delivery),
+                                  const SizedBox(height: AppSpacing.xl),
+                                  AppButton.primary(
+                                    label: 'MARK DELIVERED',
+                                    fullWidth: true,
+                                    isLoading: _isUpdating,
+                                    onPressed: () =>
+                                        _updateDeliveryStatus('Delivered'),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.lg),
-                          if (_isResolvingDriver) ...[
-                            const CircularProgressIndicator(
-                              color: AppColors.primary,
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-                            const AppText(
-                              'Loading driver profile...',
-                              variant: AppTextVariant.heading3,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ] else if (!_isOnline || delivery == null) ...[
-                            _buildAvailabilityCard(),
-                          ] else if (delivery['status'] == 'Assigned') ...[
-                            _buildDeliveryHeader(
-                              'New offer · ${_offerSecondsLeft}s',
-                              delivery,
-                            ),
-                            Divider(color: context.appBorder),
-                            _buildDeliveryLocation(
-                              Icons.storefront_rounded,
-                              'Pickup',
-                              delivery['pickup_location']?.toString() ??
-                                  'Pickup location',
-                            ),
-                            _buildDeliveryLocation(
-                              Icons.flag_rounded,
-                              'Dropoff',
-                              delivery['dropoff_location']?.toString() ??
-                                  'Dropoff location',
-                            ),
-                            _buildDeliveryDetails(delivery),
-                            const SizedBox(height: AppSpacing.lg),
-                            SlideToAccept(
-                              key: ValueKey(delivery['id']),
-                              enabled: !_isUpdating && _offerSecondsLeft > 0,
-                              label: _offerSecondsLeft > 0
-                                  ? 'Slide to accept'
-                                  : 'Offer expired',
-                              onAccept: () => _updateDeliveryStatus('Accepted'),
-                            ),
-                            TextButton(
-                              onPressed: _isUpdating ? null : _rejectDelivery,
-                              child: const Text('Decline offer'),
-                            ),
-                          ] else if (delivery['status'] == 'Accepted') ...[
-                            _buildDeliveryHeader('Head to pickup', delivery),
-                            _buildDeliveryLocation(
-                              Icons.storefront_rounded,
-                              'Pickup',
-                              delivery['pickup_location']?.toString() ??
-                                  'Pickup',
-                            ),
-                            _buildDeliveryDetails(delivery),
-                            const SizedBox(height: AppSpacing.lg),
-                            AppButton.primary(
-                              label: 'CONFIRM PICKUP',
-                              fullWidth: true,
-                              isLoading: _isUpdating,
-                              onPressed: () =>
-                                  _updateDeliveryStatus('Picked Up'),
-                            ),
-                          ] else ...[
-                            _buildDeliveryHeader('Deliver Package', delivery),
-                            Divider(color: context.appBorder),
-                            _buildDeliveryLocation(
-                              Icons.flag_rounded,
-                              'Dropoff',
-                              delivery['dropoff_location']?.toString() ??
-                                  'Dropoff location',
-                            ),
-                            _buildDeliveryDetails(delivery),
-                            const SizedBox(height: AppSpacing.xl),
-                            AppButton.primary(
-                              label: 'MARK DELIVERED',
-                              fullWidth: true,
-                              isLoading: _isUpdating,
-                              onPressed: () =>
-                                  _updateDeliveryStatus('Delivered'),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -1731,18 +1982,110 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
+  Widget _buildAssignedOfferPanel(Map<String, dynamic> delivery) {
+    final height = math.min(MediaQuery.sizeOf(context).height * 0.55, 420.0);
+    return SizedBox(
+      height: height,
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: context.appBorder,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildDeliveryHeader(
+                    'New offer · ${_offerSecondsLeft}s',
+                    delivery,
+                  ),
+                  Divider(color: context.appBorder),
+                  _buildDeliveryLocation(
+                    Icons.storefront_rounded,
+                    'Pickup',
+                    delivery['pickup_location']?.toString() ??
+                        'Pickup location',
+                  ),
+                  _buildDeliveryLocation(
+                    Icons.flag_rounded,
+                    'Dropoff',
+                    delivery['dropoff_location']?.toString() ??
+                        'Dropoff location',
+                  ),
+                  _buildCompactDetailRow(
+                    Icons.payments_outlined,
+                    'Fare',
+                    _feeLabel(delivery['delivery_fee']),
+                  ),
+                  _buildCompactDetailRow(
+                    Icons.account_balance_wallet_outlined,
+                    'Payment',
+                    delivery['fee_collection_method'] == 'platform'
+                        ? 'Paid to your wallet after delivery'
+                        : 'Collect cash; commission uses your credit',
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          SlideToAccept(
+            key: ValueKey(delivery['id']),
+            enabled: !_isUpdating && _offerSecondsLeft > 0,
+            label: _offerSecondsLeft > 0 ? 'Slide to accept' : 'Offer expired',
+            onAccept: () => _updateDeliveryStatus('Accepted'),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: _isUpdating || _offerSecondsLeft == 0
+                    ? null
+                    : () => _editOfferFee(delivery),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: const Text('Set fare'),
+              ),
+              TextButton(
+                onPressed: _isUpdating ? null : _rejectDelivery,
+                child: const Text('Decline offer'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildAvailabilityCard() {
-    final ready = _isOnline && _hasFreshGpsFix && _gpsUploadedForCurrentFix;
+    final lastUpload = _lastLocationUploadAt;
+    final hasSharedLocation = lastUpload != null;
+    final ready =
+        _isOnline &&
+        lastUpload != null &&
+        DateTime.now().difference(lastUpload) < const Duration(minutes: 2);
     final title = !_isOnline
         ? 'Taking a break'
         : ready
         ? 'Ready for your next delivery'
-        : 'Online, waiting for location';
+        : hasSharedLocation
+        ? 'Online · updating location'
+        : 'Finding your location';
     final subtitle = !_isOnline
         ? 'You paused new offers. Tap OFFLINE above when you are ready again.'
         : ready
         ? 'We will let you know as soon as a new offer arrives.'
-        : 'Allow precise location to receive nearby offers.';
+        : hasSharedLocation
+        ? 'Location refresh is running in the background. Offers resume when GPS updates.'
+        : _locationIssue ??
+              (_hasFreshGpsFix
+                  ? 'Sharing your location with dispatch automatically.'
+                  : 'Finding your location automatically. Keep device location on.');
     final paused = !_isOnline;
     final foreground = paused ? context.appTextPrimary : Colors.white;
     final secondary = paused
@@ -1814,7 +2157,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       ? 'PAUSED'
                       : ready
                       ? 'AVAILABLE'
-                      : 'LOCATION NEEDED',
+                      : hasSharedLocation
+                      ? 'UPDATING GPS'
+                      : 'LOCATING',
                   style: TextStyle(
                     color: accent,
                     fontSize: 10,
@@ -1840,15 +2185,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             subtitle,
             style: TextStyle(color: secondary, fontSize: 13, height: 1.45),
           ),
-          if (_isOnline && !ready) ...[
-            const SizedBox(height: 12),
-            TextButton.icon(
-              onPressed: _focusOnCurrentLocation,
-              icon: Icon(Icons.my_location_rounded, size: 18, color: accent),
-              label: Text('Check location', style: TextStyle(color: accent)),
-              style: TextButton.styleFrom(padding: EdgeInsets.zero),
-            ),
-          ],
         ],
       ),
     );
@@ -1874,12 +2210,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           margin: const EdgeInsetsDirectional.only(
             top: AppSpacing.sm,
             bottom: AppSpacing.sm,
-            end: AppSpacing.sm,
+            start: AppSpacing.sm,
           ),
           decoration: BoxDecoration(
             color: context.appSurface,
             borderRadius: const BorderRadiusDirectional.horizontal(
-              start: Radius.circular(30),
+              end: Radius.circular(30),
             ),
             border: Border.all(color: context.appBorder),
             boxShadow: [

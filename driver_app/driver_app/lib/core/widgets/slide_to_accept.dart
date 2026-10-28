@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -19,21 +21,24 @@ class SlideToAccept extends StatefulWidget {
 class _SlideToAcceptState extends State<SlideToAccept> {
   double _progress = 0;
   bool _submitting = false;
+  bool _dragging = false;
   Future<void> _accept() async {
     if (!widget.enabled || _submitting) return;
     setState(() {
       _submitting = true;
       _progress = 1;
+      _dragging = false;
     });
     HapticFeedback.mediumImpact();
     try {
       await widget.onAccept();
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _submitting = false;
           _progress = 0;
         });
+      }
     }
   }
 
@@ -55,49 +60,66 @@ class _SlideToAcceptState extends State<SlideToAccept> {
             double.infinity,
           );
           final rtl = Directionality.of(context) == TextDirection.rtl;
-          return Container(
-            height: 64,
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: active ? 0.16 : 0.06),
-              borderRadius: BorderRadius.circular(36),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 60),
-                  child: Text(
-                    _submitting ? 'Accepting…' : widget.label,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: color, fontWeight: FontWeight.w800),
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragStart: active
+                ? (_) => setState(() => _dragging = true)
+                : null,
+            onHorizontalDragUpdate: active
+                ? (details) => setState(() {
+                    _progress =
+                        (_progress + details.delta.dx * (rtl ? -1 : 1) / travel)
+                            .clamp(0.0, 1.0);
+                  })
+                : null,
+            onHorizontalDragEnd: active
+                ? (details) {
+                    final forwardVelocity =
+                        (details.primaryVelocity ?? 0) * (rtl ? -1 : 1);
+                    if (_progress >= 0.78 ||
+                        (_progress >= 0.45 && forwardVelocity > 700)) {
+                      unawaited(_accept());
+                    } else {
+                      setState(() {
+                        _dragging = false;
+                        _progress = 0;
+                      });
+                    }
+                  }
+                : null,
+            onHorizontalDragCancel: () => setState(() {
+              _dragging = false;
+              _progress = 0;
+            }),
+            child: Container(
+              height: 64,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: active ? 0.16 : 0.06),
+                borderRadius: BorderRadius.circular(36),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 60),
+                    child: Text(
+                      _submitting ? 'Accepting…' : widget.label,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
-                PositionedDirectional(
-                  start: _progress * travel,
-                  top: 0,
-                  bottom: 0,
-                  child: GestureDetector(
-                    onHorizontalDragUpdate: active
-                        ? (details) => setState(() {
-                            _progress =
-                                (_progress +
-                                        details.delta.dx *
-                                            (rtl ? -1 : 1) /
-                                            travel)
-                                    .clamp(0.0, 1.0);
-                          })
-                        : null,
-                    onHorizontalDragEnd: active
-                        ? (_) {
-                            if (_progress >= 0.94) {
-                              _accept();
-                            } else {
-                              setState(() => _progress = 0);
-                            }
-                          }
-                        : null,
-                    onHorizontalDragCancel: () => setState(() => _progress = 0),
+                  AnimatedPositionedDirectional(
+                    duration: _dragging
+                        ? Duration.zero
+                        : const Duration(milliseconds: 180),
+                    curve: Curves.easeOutCubic,
+                    start: _progress * travel,
+                    top: 0,
+                    bottom: 0,
                     child: Container(
                       width: 54,
                       decoration: BoxDecoration(
@@ -120,8 +142,8 @@ class _SlideToAcceptState extends State<SlideToAccept> {
                             ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -57,6 +57,11 @@ class DriverOperationsApi {
         method: 'POST',
         data: {'action': action},
       );
+  Future<Map<String, dynamic>> quoteOffer(String id, double fare) => request(
+    '/api/driver/deliveries/${Uri.encodeComponent(id)}',
+    method: 'POST',
+    data: {'action': 'quote', 'fare': fare},
+  );
   Future<Map<String, dynamic>> walletRequest(Map<String, dynamic> data) =>
       request('/api/driver/wallet', method: 'POST', data: data);
   Future<Map<String, dynamic>> walletTopupRequest(

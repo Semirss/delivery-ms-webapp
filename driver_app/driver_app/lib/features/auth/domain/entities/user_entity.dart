@@ -8,6 +8,7 @@ class UserEntity {
   final bool isEmailVerified;
   final bool isPhoneVerified;
   final DateTime? createdAt;
+  final Map<String, dynamic>? driverRecord;
 
   UserEntity({
     required this.id,
@@ -19,6 +20,6 @@ class UserEntity {
     this.isEmailVerified = false,
     this.isPhoneVerified = false,
     this.createdAt,
+    this.driverRecord,
   });
 }
-

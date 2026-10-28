@@ -35,7 +35,7 @@ async function platformTrip(fee=200) {
 before(async () => {
   db = new PGlite({extensions:{pgcrypto}});
   await db.exec("CREATE SCHEMA extensions; CREATE SCHEMA storage; CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit integer,allowed_mime_types text[]); CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE PUBLICATION supabase_realtime; CREATE TABLE public.app_notifications(id uuid DEFAULT gen_random_uuid(),app text,recipient_id uuid,title text,body text,type text);");
-  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql','schema_v16_driver_topup_proofs.sql','schema_v17_browser_gps_accuracy.sql']) {
+  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql','schema_v16_driver_topup_proofs.sql','schema_v17_browser_gps_accuracy.sql','schema_v18_driver_offer_fare.sql']) {
     await db.exec(await readFile(new URL(`../../supabase/${name}`,import.meta.url),'utf8'));
   }
 });
@@ -73,6 +73,19 @@ test('offers freeze commission, round to cents, and preserve net plus owner equa
   await topup(); await action(id,'accept');
   assert.equal(Number(offer.owner_commission),12.01); assert.equal(Number(offer.driver_earnings),88.04);
   assert.equal(Number((await row('SELECT commission_percent FROM deliveries WHERE id=$1',[id])).commission_percent),12);
+});
+
+test('driver fare edit updates the offer and settlement amounts only before acceptance',async () => {
+  const id = await delivery(200); await assign(id);
+  await assert.rejects(row('SELECT * FROM driver_set_offer_fare($1,$2,$3)',[id,other,250.05]),/no longer assigned/);
+  const quoted = await row('SELECT * FROM driver_set_offer_fare($1,$2,$3)',[id,driver,250.05]);
+  assert.equal(Number(quoted.delivery_fee),250.05);
+  assert.equal(Number(quoted.dispatch_fare_before_driver),200);
+  assert.equal(Number(quoted.owner_commission),30.01);
+  assert.equal(Number(quoted.driver_earnings),220.04);
+  await topup(); await action(id,'accept');
+  await assert.rejects(row('SELECT * FROM driver_set_offer_fare($1,$2,$3)',[id,driver,300]),/no longer assigned/);
+  assert.equal(Number((await wallet()).reserved_credit),30.01);
 });
 
 test('cash acceptance without enough credit fails with no reservation or accepted status',async () => {
