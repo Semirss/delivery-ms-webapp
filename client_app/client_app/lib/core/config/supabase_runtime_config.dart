@@ -66,10 +66,12 @@ class SupabaseRuntimeConfigResolver {
       throw StateError('Android flavor and ENVIRONMENT must match.');
     }
     const productionSupabaseHost = 'smkfvvblyudecimcfman.supabase.co';
+    const testSupabaseHost = 'mtbqqharhxijulpaqdrm.supabase.co';
     const productionApiHost = 'motobikedeliveryservice.com';
     final supabaseHost = Uri.parse(supabaseUrl).host.toLowerCase();
     final apiHost = Uri.tryParse(apiUrl)?.host.toLowerCase() ?? '';
     final isProductionSupabase = supabaseHost == productionSupabaseHost;
+    final isTestSupabase = supabaseHost == testSupabaseHost;
     final isProductionApi =
         apiHost == productionApiHost || apiHost == 'www.$productionApiHost';
     if (environment == 'production') {
@@ -77,8 +79,8 @@ class SupabaseRuntimeConfigResolver {
         throw StateError('Production app endpoints do not match production.');
       }
     } else if (environment == 'test') {
-      if (isProductionSupabase || isProductionApi || apiHost.isEmpty) {
-        throw StateError('Test app cannot use production endpoints.');
+      if (!isTestSupabase || isProductionApi || apiHost.isEmpty) {
+        throw StateError('Test app endpoints do not match test.');
       }
     } else {
       throw StateError('Set ENVIRONMENT to production or test.');
@@ -88,7 +90,7 @@ class SupabaseRuntimeConfigResolver {
   bool _looksLikeSupabaseConfig(String url, String anonKey) {
     final uri = Uri.tryParse(url);
     return uri != null &&
-        uri.hasScheme &&
+        uri.scheme == 'https' &&
         uri.host.isNotEmpty &&
         anonKey.length > 20;
   }
