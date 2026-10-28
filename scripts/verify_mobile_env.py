@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 PRODUCTION_SUPABASE_HOST = "smkfvvblyudecimcfman.supabase.co"
 TEST_SUPABASE_HOST = "mtbqqharhxijulpaqdrm.supabase.co"
 PRODUCTION_API_HOSTS = {"motobikedeliveryservice.com", "www.motobikedeliveryservice.com"}
+TEST_API_HOST = "moto-bike-test.vercel.app"
 
 
 def values(path: Path) -> dict[str, str]:
@@ -49,7 +50,7 @@ def main() -> None:
     if args.expected == "production":
         if supabase_host != PRODUCTION_SUPABASE_HOST or api_host not in PRODUCTION_API_HOSTS:
             raise ValueError("Production build has non-production endpoints.")
-    elif supabase_host != TEST_SUPABASE_HOST or api_host in PRODUCTION_API_HOSTS:
+    elif supabase_host != TEST_SUPABASE_HOST or api_host != TEST_API_HOST:
         raise ValueError("Test build has non-test endpoints.")
 
     print(f"Verified {args.expected} mobile build endpoints.")

@@ -68,8 +68,13 @@ class SupabaseRuntimeConfigResolver {
     const productionSupabaseHost = 'smkfvvblyudecimcfman.supabase.co';
     const testSupabaseHost = 'mtbqqharhxijulpaqdrm.supabase.co';
     const productionApiHost = 'motobikedeliveryservice.com';
+    const testApiHost = 'moto-bike-test.vercel.app';
     final supabaseHost = Uri.parse(supabaseUrl).host.toLowerCase();
-    final apiHost = Uri.tryParse(apiUrl)?.host.toLowerCase() ?? '';
+    final apiUri = Uri.tryParse(apiUrl);
+    final apiHost = apiUri?.host.toLowerCase() ?? '';
+    if (apiUri?.scheme != 'https') {
+      throw StateError('API endpoint must use HTTPS.');
+    }
     final isProductionSupabase = supabaseHost == productionSupabaseHost;
     final isTestSupabase = supabaseHost == testSupabaseHost;
     final isProductionApi =
@@ -79,7 +84,7 @@ class SupabaseRuntimeConfigResolver {
         throw StateError('Production app endpoints do not match production.');
       }
     } else if (environment == 'test') {
-      if (!isTestSupabase || isProductionApi || apiHost.isEmpty) {
+      if (!isTestSupabase || apiHost != testApiHost) {
         throw StateError('Test app endpoints do not match test.');
       }
     } else {
