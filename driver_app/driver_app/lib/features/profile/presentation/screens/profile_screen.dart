@@ -6,6 +6,8 @@ import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
+import 'package:driver_app/features/profile/presentation/screens/wallet_screen.dart';
+import 'package:driver_app/features/profile/presentation/screens/driver_settings_screen.dart';
 import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -119,8 +121,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (dialogContext) => AlertDialog(
         title: const Text('Delete account?'),
         content: const Text(
-          'This permanently deletes your driver account and signs you out. '
-          'Delivery records may be retained for operational history.',
+          'This closes your driver account, removes your active profile details and signs you out. '
+          'Settle wallet balances and pending requests first. Financial history is retained for reconciliation.',
         ),
         actions: [
           TextButton(
@@ -352,6 +354,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _buildSection(context, 'Performance', [
           _buildTile(
             context,
+            icon: Icons.account_balance_wallet_outlined,
+            title: 'Wallet',
+            subtitle: 'Commission credit, Telebirr and bank cash out',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
+            ),
+          ),
+          _buildTile(
+            context,
             icon: Icons.payments_outlined,
             title: 'Earnings',
             subtitle: 'Total ${snapshot.totalEarnings.toStringAsFixed(0)} ETB',
@@ -396,12 +407,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             icon: Icons.delete_outline_rounded,
             title: 'Delete Account',
-            subtitle: 'Permanently remove your driver account',
+            subtitle: 'Close your account after settling wallet balances',
             onTap: _confirmDeleteAccount,
           ),
         ]),
         const SizedBox(height: AppSpacing.lg),
         _buildSection(context, 'App Preferences', [
+          _buildTile(
+            context,
+            icon: Icons.tune_rounded,
+            title: 'Driver settings',
+            subtitle: 'Working radius and delivery notifications',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const DriverSettingsScreen(),
+              ),
+            ),
+          ),
           _buildPreferenceTile(
             context,
             icon: Icons.dark_mode_outlined,

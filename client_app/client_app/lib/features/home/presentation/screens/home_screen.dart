@@ -1820,7 +1820,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   bool _isActiveDeliveryStatus(String? status) {
-    return status == 'Pending' || status == 'Assigned' || status == 'Picked Up';
+    return status == 'Pending' ||
+        status == 'Assigned' ||
+        status == 'Accepted' ||
+        status == 'Picked Up';
   }
 
   bool get _hasActiveDelivery =>
@@ -2993,10 +2996,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ] else if ([
                 'Assigned',
+                'Accepted',
                 'Picked Up',
               ].contains(_deliveryStatus)) ...[
                 Icon(
-                  _deliveryStatus == 'Assigned'
+                  (_deliveryStatus == 'Assigned' ||
+                          _deliveryStatus == 'Accepted')
                       ? Icons.assignment_turned_in_rounded
                       : Icons.delivery_dining_rounded,
                   color: AppColors.success,
@@ -3004,7 +3009,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AppText(
-                  _deliveryStatus == 'Assigned'
+                  (_deliveryStatus == 'Assigned' ||
+                          _deliveryStatus == 'Accepted')
                       ? 'Courier assigned'
                       : 'Package on the way',
                   variant: AppTextVariant.heading2,

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { isAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -9,10 +10,14 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const driver_id = searchParams.get('driver_id');
     const customer_phone = searchParams.get('customer_phone');
+    if (await isAdminRequest()) {
+        const { error } = await supabase.rpc('expire_driver_offers', { p_driver_id: null });
+        if (error) return NextResponse.json({ error: 'Driver operations migration v15 is required on the active backend.' }, { status: 503 });
+    }
 
     let query = supabase
         .from('deliveries')
-        .select('*, driver:drivers(name, phone, telegram_id, vehicle_type, current_lat, current_lng)')
+        .select('*, driver:drivers(name, phone, telegram_id, vehicle_type, status, current_lat, current_lng, last_location_update, location_accuracy_m)')
         .order('created_at', { ascending: false });
 
     if (driver_id) query = query.eq('driver_id', driver_id);

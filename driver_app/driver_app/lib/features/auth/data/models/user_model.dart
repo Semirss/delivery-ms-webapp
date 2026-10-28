@@ -11,6 +11,7 @@ class UserModel extends UserEntity {
     super.isEmailVerified,
     super.isPhoneVerified,
     super.createdAt,
+    super.driverRecord,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -18,16 +19,27 @@ class UserModel extends UserEntity {
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       phone: json['phone']?.toString(),
-      firstName: json['first_name']?.toString() ?? json['firstName']?.toString(),
+      firstName:
+          json['first_name']?.toString() ?? json['firstName']?.toString(),
       lastName: json['last_name']?.toString() ?? json['lastName']?.toString(),
-      profileImage: json['profile_image']?.toString() ?? json['profileImage']?.toString(),
-      isEmailVerified: json['is_email_verified'] as bool? ?? json['isEmailVerified'] as bool? ?? false,
-      isPhoneVerified: json['is_phone_verified'] as bool? ?? json['isPhoneVerified'] as bool? ?? false,
+      profileImage:
+          json['profile_image']?.toString() ?? json['profileImage']?.toString(),
+      isEmailVerified:
+          json['is_email_verified'] as bool? ??
+          json['isEmailVerified'] as bool? ??
+          false,
+      isPhoneVerified:
+          json['is_phone_verified'] as bool? ??
+          json['isPhoneVerified'] as bool? ??
+          false,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : json['createdAt'] != null
-              ? DateTime.tryParse(json['createdAt'].toString())
-              : null,
+          ? DateTime.tryParse(json['createdAt'].toString())
+          : null,
+      driverRecord: json['driver_record'] is Map
+          ? Map<String, dynamic>.from(json['driver_record'] as Map)
+          : null,
     );
   }
 
@@ -42,7 +54,7 @@ class UserModel extends UserEntity {
       'is_email_verified': isEmailVerified,
       'is_phone_verified': isPhoneVerified,
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
+      if (driverRecord != null) 'driver_record': driverRecord,
     };
   }
 }
-

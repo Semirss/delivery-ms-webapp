@@ -1,4 +1,5 @@
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
+import 'package:driver_app/core/operations/driver_operations_api.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DriverProfileRepository {
@@ -87,7 +88,7 @@ class DriverProfileRepository {
     String driverId,
     Map<String, dynamic> values,
   ) async {
-    await _supabase.from('drivers').update(values).eq('id', driverId);
+    await DriverOperationsApi().update({'action': 'profile', ...values});
   }
 
   Future<DriverEarningsSnapshot> loadEarnings(
@@ -235,13 +236,15 @@ class DriverProfileRepository {
         (driverId) => _supabase
             .from('deliveries')
             .select(
-              'id, created_at, delivery_fee, '
+              'id, created_at, completed_at, delivery_fee, driver_earnings, owner_commission, fee_collection_method, '
               'dropoff_location, status, driver_id',
             )
             .eq('driver_id', driverId)
             .eq('status', 'Delivered')
-            .gte('created_at', startAt)
-            .lt('created_at', endAt)
+            .or(
+              'and(completed_at.gte.$startAt,completed_at.lt.$endAt),and(completed_at.is.null,created_at.gte.$startAt,created_at.lt.$endAt)',
+            )
+            .order('completed_at', ascending: false, nullsFirst: false)
             .order('created_at', ascending: false)
             .limit(limit),
       ),
@@ -258,8 +261,10 @@ class DriverProfileRepository {
 
     final deliveries = byId.values.toList()
       ..sort((a, b) {
-        final aDate = asDate(a['created_at']) ?? DateTime(0);
-        final bDate = asDate(b['created_at']) ?? DateTime(0);
+        final aDate =
+            asDate(a['completed_at'] ?? a['created_at']) ?? DateTime(0);
+        final bDate =
+            asDate(b['completed_at'] ?? b['created_at']) ?? DateTime(0);
         return bDate.compareTo(aDate);
       });
 
@@ -293,17 +298,18 @@ class DriverProfileRepository {
       while (true) {
         final response = await _supabase
             .from('deliveries')
-            .select('delivery_fee')
+            .select('delivery_fee,driver_earnings')
             .eq('driver_id', driverId)
             .eq('status', 'Delivered')
-            .gte('created_at', startAt)
-            .lt('created_at', endAt)
+            .or(
+              'and(completed_at.gte.$startAt,completed_at.lt.$endAt),and(completed_at.is.null,created_at.gte.$startAt,created_at.lt.$endAt)',
+            )
             .range(from, from + pageSize - 1);
         final page = List<Map<String, dynamic>>.from(response);
         totalDeliveries += page.length;
         totalEarnings += page.fold<double>(
           0,
-          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+          (sum, delivery) => sum + netDeliveryEarnings(delivery),
         );
 
         if (page.length < pageSize) break;
@@ -424,7 +430,8 @@ class DriverProfileSnapshot {
 
   int get activeDeliveries => deliveries
       .where(
-        (delivery) => ['Assigned', 'Picked Up'].contains(delivery['status']),
+        (delivery) =>
+            ['Assigned', 'Accepted', 'Picked Up'].contains(delivery['status']),
       )
       .length;
 
@@ -439,10 +446,7 @@ class DriverProfileSnapshot {
 
   double get totalEarnings => deliveries
       .where((delivery) => delivery['status'] == 'Delivered')
-      .fold<double>(
-        0,
-        (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
-      );
+      .fold<double>(0, (sum, delivery) => sum + netDeliveryEarnings(delivery));
 
   double get averageDeliveryFee {
     if (completedDeliveries == 0) return 0;
@@ -453,7 +457,9 @@ class DriverProfileSnapshot {
     final now = DateTime.now();
     return deliveries
         .where((delivery) {
-          final createdAt = asDate(delivery['created_at']);
+          final createdAt = asDate(
+            delivery['completed_at'] ?? delivery['created_at'],
+          );
           return delivery['status'] == 'Delivered' &&
               createdAt != null &&
               createdAt.year == now.year &&
@@ -462,14 +468,16 @@ class DriverProfileSnapshot {
         })
         .fold<double>(
           0,
-          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+          (sum, delivery) => sum + netDeliveryEarnings(delivery),
         );
   }
 
   int get todayDeliveries {
     final now = DateTime.now();
     return deliveries.where((delivery) {
-      final createdAt = asDate(delivery['created_at']);
+      final createdAt = asDate(
+        delivery['completed_at'] ?? delivery['created_at'],
+      );
       return delivery['status'] == 'Delivered' &&
           createdAt != null &&
           createdAt.year == now.year &&
@@ -482,14 +490,16 @@ class DriverProfileSnapshot {
     final cutoff = DateTime.now().subtract(const Duration(days: 7));
     return deliveries
         .where((delivery) {
-          final createdAt = asDate(delivery['created_at']);
+          final createdAt = asDate(
+            delivery['completed_at'] ?? delivery['created_at'],
+          );
           return delivery['status'] == 'Delivered' &&
               createdAt != null &&
               createdAt.isAfter(cutoff);
         })
         .fold<double>(
           0,
-          (sum, delivery) => sum + asMoney(delivery['delivery_fee']),
+          (sum, delivery) => sum + netDeliveryEarnings(delivery),
         );
   }
 
@@ -576,6 +586,10 @@ String moneyText(Object? value) {
   final amount = asMoney(value);
   return '${amount.toStringAsFixed(0)} ETB';
 }
+
+// Historical trips retain their original earnings; new trips use the frozen net.
+double netDeliveryEarnings(Map<String, dynamic> delivery) =>
+    asMoney(delivery['driver_earnings'] ?? delivery['delivery_fee']);
 
 double asMoney(Object? value) {
   if (value is num) return value.toDouble();

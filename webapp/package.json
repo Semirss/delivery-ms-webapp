@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:driver-operations": "node --experimental-strip-types --test tests/driver-operations.test.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.98.0",
@@ -24,6 +25,7 @@
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie": "^0.6.0",

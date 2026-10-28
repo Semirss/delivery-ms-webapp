@@ -43,7 +43,7 @@ class StorageService implements IStorageService {
   Future<void> saveData(StorageKeys key, value) async {
     try {
       await _storage.put(key.name, value);
-      outlog('Saved $value to $key');
+      outlog('Saved storage key: ${key.name}');
     } catch (e, stackTrace) {
       if (_logger != null) {
         _logger!.error(

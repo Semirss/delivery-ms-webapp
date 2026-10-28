@@ -32,11 +32,6 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // Redirect away from login if already logged in
-    if (isLoginPage && adminToken) {
-        return NextResponse.redirect(new URL('/admin', request.url));
-    }
-
     return NextResponse.next();
 }
 

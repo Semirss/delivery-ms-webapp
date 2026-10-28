@@ -1,4 +1,5 @@
 import 'package:driver_app/config/router/navigation_helper.dart';
+import 'package:driver_app/core/notifications/driver_notification_visibility.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:driver_app/features/profile/data/driver_profile_repository.dart';
@@ -6,7 +7,6 @@ import 'package:driver_ui/app_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 
 enum _NotificationFilter { all, unread }
@@ -19,9 +19,6 @@ class NotificationsScreen extends StatefulWidget {
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-  static const String _clearedNotificationIdsKey =
-      'driver_cleared_notification_ids';
-
   final SupabaseClient _supabase = Supabase.instance.client;
   final DriverProfileRepository _profileRepository = DriverProfileRepository();
 
@@ -62,10 +59,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _loadClearedNotificationIds() async {
-    final prefs = await SharedPreferences.getInstance();
-    _clearedNotificationIds = Set<String>.from(
-      prefs.getStringList(_clearedNotificationIdsKey) ?? const <String>[],
-    );
+    _clearedNotificationIds =
+        await DriverNotificationVisibility.loadClearedIds();
   }
 
   Future<void> _resolveDriver() async {
@@ -146,6 +141,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         .update({'read_at': DateTime.now().toUtc().toIso8601String()})
         .eq('id', id);
 
+    DriverNotificationVisibility.hideFromBadge([id]);
     await _fetchNotifications();
     if (mounted) _showNotificationDetails(notification);
   }
@@ -169,6 +165,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               .eq('id', id),
         ),
       );
+      DriverNotificationVisibility.hideFromBadge(unreadIds);
       await _fetchNotifications();
       if (!mounted) return;
       AppToast.show(
@@ -192,9 +189,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final id = notification['id']?.toString();
     if (id == null || id.isEmpty) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    final nextIds = {..._clearedNotificationIds, id};
-    await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+    final nextIds = await DriverNotificationVisibility.clearIds([id]);
     if (!mounted) return;
     setState(() {
       _clearedNotificationIds = nextIds;
@@ -214,9 +209,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     setState(() => _isClearing = true);
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final nextIds = {..._clearedNotificationIds, ...ids};
-      await prefs.setStringList(_clearedNotificationIdsKey, nextIds.toList());
+      final nextIds = await DriverNotificationVisibility.clearIds(ids);
       if (!mounted) return;
       setState(() {
         _clearedNotificationIds = nextIds;

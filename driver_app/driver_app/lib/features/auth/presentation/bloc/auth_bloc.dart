@@ -20,6 +20,14 @@ const _approvalRequiredMessage =
 
 @injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  bool _autoOnlineOnNextHome = false;
+
+  bool takeAutoOnlineOnNextHome() {
+    final requested = _autoOnlineOnNextHome;
+    _autoOnlineOnNextHome = false;
+    return requested;
+  }
+
   final LoginUseCase loginUseCase;
   final LoginWithGoogleUseCase loginWithGoogleUseCase;
   final SignUpUseCase signUpUseCase;
@@ -56,6 +64,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogin(LoginEvent event, Emitter<AuthState> emit) async {
+    _autoOnlineOnNextHome = false;
     emit(const AuthLoading());
     final result = await loginUseCase(
       LoginParams(email: event.email, password: event.password),
@@ -66,6 +75,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (authResult.requiresVerification) {
         emit(const AuthError(message: _approvalRequiredMessage));
       } else {
+        _autoOnlineOnNextHome = true;
         emit(AuthAuthenticated(user: authResult.user));
       }
     });
@@ -75,12 +85,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginWithGoogleEvent event,
     Emitter<AuthState> emit,
   ) async {
+    _autoOnlineOnNextHome = false;
     emit(const AuthLoading());
     final result = await loginWithGoogleUseCase(NoParams());
-    result.fold(
-      (failure) => emit(AuthError(message: failure.errMessage)),
-      (authResult) => emit(AuthAuthenticated(user: authResult.user)),
-    );
+    result.fold((failure) => emit(AuthError(message: failure.errMessage)), (
+      authResult,
+    ) {
+      _autoOnlineOnNextHome = true;
+      emit(AuthAuthenticated(user: authResult.user));
+    });
   }
 
   Future<void> _onSignUp(SignUpEvent event, Emitter<AuthState> emit) async {
@@ -177,6 +190,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogout(LogoutEvent event, Emitter<AuthState> emit) async {
+    _autoOnlineOnNextHome = false;
     emit(const AuthLoading());
     final result = await logoutUseCase(NoParams());
     result.fold(
@@ -189,6 +203,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     DeleteAccountEvent event,
     Emitter<AuthState> emit,
   ) async {
+    _autoOnlineOnNextHome = false;
     emit(const AuthLoading());
     final result = await deleteAccountUseCase(NoParams());
     result.fold(

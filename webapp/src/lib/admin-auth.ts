@@ -1,14 +1,14 @@
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_in_production_123';
+import { adminSessionSecret } from './admin-session-secret';
 
 export async function isAdminRequest() {
   const token = (await cookies()).get('admin_token')?.value;
-  if (!token) return false;
+  const secret = adminSessionSecret();
+  if (!token || !secret) return false;
   try {
-    jwt.verify(token, JWT_SECRET);
-    return true;
+    const claims = jwt.verify(token, secret, { algorithms: ['HS256'] });
+    return typeof claims !== 'string' && Boolean(claims.id) && claims.id !== 'fallback-admin';
   } catch {
     return false;
   }

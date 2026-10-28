@@ -60,7 +60,7 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
         );
       } on ServerException catch (e) {
         logger.error('Login failed', e, StackTrace.current);
-        return Left(ServerFailure(e.errorModel.errorMessage));
+        return Left(ServerFailure(_friendlyError(e)));
       } catch (e, stackTrace) {
         logger.error('Login error', e, stackTrace);
         return Left(ServerFailure(_friendlyError(e)));
@@ -356,25 +356,8 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
   Future<Either<Failure, UserEntity>> getCurrentUser() async {
     final cachedUser = await localDataSource.getCachedUser();
     final hasToken = (await localDataSource.getCachedAccessToken()) != null;
-
-    if (await networkInfo.isConnected) {
-      try {
-        final user = await remoteDataSource.getCurrentUser();
-        await localDataSource.cacheUser(user);
-        return Right(user);
-      } catch (e, stackTrace) {
-        logger.error('Failed to get remote user, trying cache', e, stackTrace);
-        if (cachedUser != null && hasToken) {
-          return Right(cachedUser);
-        }
-        return Left(ServerFailure(e.toString()));
-      }
-    } else {
-      if (cachedUser != null && hasToken) {
-        return Right(cachedUser);
-      }
-      return Left(NetworkFailure('No internet connection'));
-    }
+    if (cachedUser != null && hasToken) return Right(cachedUser);
+    return Left(CacheFailure('No saved sign-in was found.'));
   }
 
   @override
@@ -416,6 +399,12 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
       } else if (error.message?.trim().isNotEmpty == true) {
         message = error.message!.trim();
       }
+      if ((error.response?.statusCode ?? 0) >= 500) {
+        return 'This service is temporarily unavailable. Please try again later or contact support.';
+      }
+      if (error.response == null) {
+        return 'Could not connect. Check your internet connection and try again.';
+      }
     }
     if (message.contains('duplicate key') ||
         message.contains('already exists')) {
@@ -442,33 +431,63 @@ class AuthRepositoryImpl extends BaseRepository implements AuthRepository {
     if (lower.contains('phone') && lower.contains('required')) {
       return 'Please enter your phone number.';
     }
-    if (lower.contains('approval required') ||
+    if (lower.contains('must be approved and active') ||
+        lower.contains('approved, active driver account') ||
+        lower.contains('approval required') ||
         lower.contains('waiting for approval') ||
         lower.contains('not approved')) {
-      return 'Approval required first. Your driver application is still waiting for admin approval. If this takes too long, contact admin at +251 931 323 328 or support@motobike.app.';
+      return 'Your driver account is awaiting approval or is inactive. Please contact support.';
     }
     if (lower.contains('oauth') ||
         lower.contains('redirect') ||
         lower.contains('callback') ||
         lower.contains('page not found')) {
-      return 'Google sign-in is not configured yet. Add the driver app redirect URL in Supabase and try again.';
+      return 'Google sign-in is unavailable right now. Please try again later or contact support.';
     }
     if (lower.contains('no driver account') ||
         lower.contains('email not found')) {
-      return 'No driver account was found for this email. Ask admin to add this email to your driver profile.';
+      return 'No driver account was found for this email or phone number. Please check your details or contact support.';
     }
     if (lower.contains('postgrestexception') ||
         lower.contains('p0001') ||
         lower.contains('bad request')) {
-      return 'Please check the form and try again.';
+      return 'This service is temporarily unavailable. Please try again later or contact support.';
     }
     if (message.contains('driver_ids')) {
-      return 'Could not upload the ID photo. Check the driver_ids storage bucket.';
+      return 'Could not upload your ID photo. Please try again later or contact support.';
     }
     if (message.contains('permission denied') ||
         message.contains('row-level security')) {
-      return 'Driver database permissions are not ready. Check Supabase policies for the drivers table and driver_ids bucket.';
+      return 'This service is temporarily unavailable. Please try again later or contact support.';
     }
-    return message;
+    if (lower.contains('server secret') ||
+        lower.contains('incompatible sign-in response') ||
+        lower.contains('signed access token') ||
+        lower.contains('api_base_url') ||
+        lower.contains('supabase') ||
+        lower.contains('migration') ||
+        lower.contains('database')) {
+      return 'This service is temporarily unavailable. Please try again later or contact support.';
+    }
+    if (lower.contains('password reset is handled')) {
+      return 'Please contact support to reset your password.';
+    }
+    if (lower.contains('password reset is unavailable')) {
+      return 'Please contact support to reset your password.';
+    }
+    if (lower.contains('driver accounts are approved')) {
+      return 'Your account is awaiting approval. Please contact support for an update.';
+    }
+    if (lower.contains('sign in again') ||
+        lower.contains('sign out and sign in')) {
+      return 'Please sign in again to continue.';
+    }
+    if (lower.startsWith('please enter ') ||
+        lower.startsWith('enter a ') ||
+        lower.startsWith('use an ethiopian phone') ||
+        lower.startsWith('password must be at least')) {
+      return message;
+    }
+    return 'Something went wrong. Please try again or contact support.';
   }
 }

@@ -20,13 +20,14 @@ export async function GET() {
     const { data, error } = await supabase
         .from('drivers')
         .select('*')
+        .neq('approval_status','Closed')
         .order('name', { ascending: true });
 
     if (error) {
         console.error('[GET /api/drivers] Supabase error:', error);
         return NextResponse.json({ error: error.message, details: error.details, hint: error.hint }, { status: 500, headers: corsHeaders });
     }
-    return NextResponse.json(data, { headers: corsHeaders });
+    return NextResponse.json(data?.map(({ password: _password, ...driver }) => driver), { headers: corsHeaders });
 }
 
 export async function POST(request: Request) {
@@ -144,7 +145,7 @@ export async function POST(request: Request) {
                 phone: normalizedPhone || null,
                 password: normalizedPassword,
                 telegram_id: telegram_id || null,
-                status: status || 'Offline',
+                status: 'Offline',
                 telegram_username: typeof telegram_username === 'string' ? telegram_username.trim() || null : null,
                 plate_number: typeof plate_number === 'string' ? plate_number.trim() || null : null,
                 vehicle_type: typeof vehicle_type === 'string' ? vehicle_type.trim() || 'Bike' : 'Bike',
@@ -176,6 +177,7 @@ export async function POST(request: Request) {
             console.error('Broadcast failed', e);
         }
 
+        delete data.password;
         return NextResponse.json(data, { status: 201, headers: corsHeaders });
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Unknown error';

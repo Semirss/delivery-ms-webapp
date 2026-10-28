@@ -3,10 +3,14 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { serialize } from 'cookie';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_in_production_123';
+import { adminSessionSecret } from '@/lib/admin-session-secret';
 
 export async function POST(request: Request) {
+    const secret = adminSessionSecret();
+    if (!secret) {
+        console.error('[admin login] Set JWT_SECRET or DRIVER_SESSION_SECRET to at least 32 characters.');
+        return NextResponse.json({ error: 'Admin sign-in is temporarily unavailable. Please contact support.' }, { status: 503 });
+    }
     const supabaseAdmin = await getSupabaseAdmin();
     try {
         const { username, password } = await request.json();
@@ -18,23 +22,12 @@ export async function POST(request: Request) {
             .single();
 
         if (error || !admin) {
-            // Fallback login check just in case the DB isn't seeded yet
-            if (username === 'admin' && password === 'admin123') {
-                const token = jwt.sign({ id: 'fallback-admin', username: 'admin' }, JWT_SECRET, { expiresIn: '1d' });
-                const cookie = serialize('admin_token', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: 60 * 60 * 24, // 1 day
-                    path: '/',
-                });
-
-                const res = NextResponse.json({ success: true });
-                res.headers.set('Set-Cookie', cookie);
-                return res;
-            }
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
+        if (admin.password === 'admin123') {
+            return NextResponse.json({ error: 'Replace the seeded admin password before enabling financial operations.' }, { status: 403 });
+        }
         // Usually we bcrypt compare, but for the raw seeded insert we'll check direct equality first, 
         // then bcrypt if it fails (to support future hashed passwords or the seeded plaintext one).
         const passwordMatch = password === admin.password || await bcrypt.compare(password, admin.password);
@@ -43,7 +36,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
-        const token = jwt.sign({ id: admin.id, username: admin.username }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: admin.id, username: admin.username }, secret, { expiresIn: '1d' });
 
         const cookie = serialize('admin_token', token, {
             httpOnly: true,
