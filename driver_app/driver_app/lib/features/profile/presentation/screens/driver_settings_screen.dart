@@ -2,6 +2,7 @@ import 'package:driver_app/core/notifications/local_notification_service.dart';
 import 'package:driver_app/core/operations/driver_operations_api.dart';
 import 'package:driver_app/core/preferences/app_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverSettingsScreen extends StatefulWidget {
   const DriverSettingsScreen({super.key});
@@ -16,6 +17,7 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
   bool _available = false;
   bool _loading = true;
   bool _saving = false;
+  String? _driverId;
   String? _error;
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
       final driver = data['driver'] as Map;
       if (!mounted) return;
       setState(() {
+        _driverId = driver['id']?.toString();
         _radius = double.tryParse('${driver['working_radius_km']}') ?? 5;
         _notifications = driver['notifications_enabled'] != false;
         _available = driver['status'] == 'Online';
@@ -74,6 +77,18 @@ class _DriverSettingsScreenState extends State<DriverSettingsScreen> {
     setState(() => _saving = true);
     try {
       await _api.update({'action': available ? 'online' : 'offline'});
+      final driverId = _driverId;
+      if (driverId != null) {
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool(
+            DriverOperationsApi.availabilityPauseKey(driverId),
+            !available,
+          );
+        } catch (error) {
+          debugPrint('Could not save driver availability preference: $error');
+        }
+      }
       if (mounted) setState(() => _available = available);
     } catch (error) {
       if (mounted) {

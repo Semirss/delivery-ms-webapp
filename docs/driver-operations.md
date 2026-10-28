@@ -4,7 +4,7 @@ Implemented locally for the Flutter driver app and the Next.js admin/API. Produc
 
 ## Release setup
 
-1. Back up the active Supabase database. Apply `supabase/schema_v15_driver_operations.sql` after v14, then `supabase/schema_v16_driver_topup_proofs.sql`. Each database selected through the admin backend switcher needs both migrations. V16 uses Supabase Storage and the app notifications table from v4.
+1. Back up the active Supabase database. Apply `supabase/schema_v15_driver_operations.sql` after v14, then `supabase/schema_v16_driver_topup_proofs.sql`, then `supabase/schema_v17_browser_gps_accuracy.sql`. Each database selected through the admin backend switcher needs all three migrations. V16 uses Supabase Storage and the app notifications table from v4. V17 records explicit Offline pauses and raises the server dispatch accuracy limit to 200 m.
 2. Set a random server-only `DRIVER_SESSION_SECRET` or `JWT_SECRET` of at least 32 characters in Vercel. Admin login uses `JWT_SECRET` when present, otherwise the driver secret. Keep service-role keys on the server. Fallback admin/default-secret logins are disabled. Replace the seeded admin password before using finance.
 3. Deploy the matching web API/admin and release the Flutter app together. The driver's existing `API_BASE_URL` must point to that API. Existing drivers must sign out and sign in again: old locally invented tokens cannot access operations.
 

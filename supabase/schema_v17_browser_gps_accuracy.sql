@@ -3,6 +3,8 @@
 BEGIN;
 ALTER TABLE public.drivers
   ADD COLUMN IF NOT EXISTS availability_paused boolean NOT NULL DEFAULT false;
+-- Preserve an existing Offline choice when this migration is applied.
+UPDATE public.drivers SET availability_paused = true WHERE status = 'Offline';
 
 CREATE OR REPLACE FUNCTION public.assign_delivery_offer(p_delivery_id uuid, p_driver_id uuid)
 RETURNS public.deliveries LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$

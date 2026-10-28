@@ -10,18 +10,33 @@ export async function GET() {
     const db = await getSupabaseAdmin();
     const results = await Promise.all([
       db.from('driver_operations_settings').select('*').eq('id', true).single(),
-      db.from('driver_wallets').select('*,driver:drivers(name,phone)').order('updated_at', { ascending: false }).limit(200),
-      db.from('driver_wallet_requests').select('*,driver:drivers(name,phone)').eq('status','pending').order('created_at', { ascending: true }).limit(200),
-      db.from('driver_wallet_ledger').select('*,driver:drivers(name)').order('created_at', { ascending: false }).limit(100),
-      db.from('driver_wallet_requests').select('*,driver:drivers(name,phone)').neq('status','pending').order('created_at', { ascending: false }).limit(100),
+      db.from('driver_wallets').select('*').order('updated_at', { ascending: false }).limit(200),
+      db.from('driver_wallet_requests').select('*').eq('status','pending').order('created_at', { ascending: true }).limit(200),
+      db.from('driver_wallet_ledger').select('*').order('created_at', { ascending: false }).limit(100),
+      db.from('driver_wallet_requests').select('*').neq('status','pending').order('created_at', { ascending: false }).limit(100),
     ]);
     for (const result of results) if (result.error) throw result.error;
+    // Requests and ledger entries reference driver_wallets, not drivers directly.
+    const driverIds = [...new Set(results.slice(1).flatMap(result =>
+      (result.data ?? []).map((row: { driver_id: string }) => String(row.driver_id))))];
+    const driverById = new Map<string, { name: string; phone: string | null }>();
+    for (let start = 0; start < driverIds.length; start += 100) {
+      const { data: drivers, error } = await db.from('drivers')
+        .select('id,name,phone').in('id', driverIds.slice(start, start + 100));
+      if (error) throw error;
+      for (const driver of drivers ?? []) {
+        driverById.set(driver.id, { name: driver.name, phone: driver.phone });
+      }
+    }
+    const withDriver = <T extends { driver_id: string }>(rows: T[] | null) =>
+      (rows ?? []).map(row => ({ ...row, driver: driverById.get(row.driver_id) ?? null }));
     // Aggregate in SQL to avoid a truncated ledger silently understating revenue.
     const { data: totals, error } = await db.rpc('driver_finance_totals');
     if (error) throw error;
-    return operationsJson({ settings: results[0].data, wallets: results[1].data, requests: [...(results[2].data ?? []),...(results[4].data ?? [])],
-      ledger: results[3].data, totals, automatic_transfers_enabled: false });
-  } catch (error) { return operationsFailure(error); }
+    return operationsJson({ settings: results[0].data, wallets: withDriver(results[1].data),
+      requests: [...withDriver(results[2].data), ...withDriver(results[4].data)],
+      ledger: withDriver(results[3].data), totals, automatic_transfers_enabled: false });
+  } catch (error) { return operationsFailure(error, 'Finance is temporarily unavailable. Please try again.'); }
 }
 export async function POST(request: Request) {
   try {
@@ -72,5 +87,5 @@ export async function POST(request: Request) {
       return operationsJson(data);
     }
     throw new OperationsError('Unknown finance action.');
-  } catch (error) { return operationsFailure(error); }
+  } catch (error) { return operationsFailure(error, 'Finance is temporarily unavailable. Please try again.'); }
 }

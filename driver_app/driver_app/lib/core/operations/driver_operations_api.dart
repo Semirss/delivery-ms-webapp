@@ -8,6 +8,9 @@ class DriverOperationsApi {
   DriverOperationsApi({Dio? dio}) : _dio = dio ?? Dio();
   final Dio _dio;
 
+  static String availabilityPauseKey(String driverId) =>
+      'driver_availability_paused_$driverId';
+
   Future<Map<String, dynamic>> request(
     String path, {
     String method = 'GET',

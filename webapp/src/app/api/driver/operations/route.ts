@@ -29,13 +29,15 @@ export async function PATCH(request: Request) {
     const { db, driver } = await requireDriver(request);
     const body = await request.json();
     const updates: Record<string, unknown> = {};
+    const hasPauseColumn = Object.prototype.hasOwnProperty.call(driver, 'availability_paused');
     if (body.action === 'location') {
       if (driver.availability_paused === true) return operationsJson(driver);
       Object.assign(updates, validatedLocation(body));
       if (driver.last_location_update && Date.parse(String(driver.last_location_update)) >= Date.parse(String(updates.last_location_update))) {
         if (body.status === 'Online' && driver.status !== 'Online' && gpsQuality({...driver,status:'Online'}) === 'live') {
-          const { data, error } = await db.from('drivers').update({status:'Online'})
-            .eq('id',driver.id).eq('availability_paused',false).select().maybeSingle();
+          let query = db.from('drivers').update({status:'Online'}).eq('id',driver.id);
+          if (hasPauseColumn) query = query.eq('availability_paused',false);
+          const { data, error } = await query.select().maybeSingle();
           if (error) throw error;
           if (data) delete data.password;
           return operationsJson(data ?? driver);
@@ -46,7 +48,7 @@ export async function PATCH(request: Request) {
     } else if (body.action === 'online') {
       // Availability is a driver preference. Dispatch still checks a fresh GPS fix.
       updates.status = 'Online';
-      updates.availability_paused = false;
+      if (hasPauseColumn) updates.availability_paused = false;
     } else if (body.action === 'offline') {
       const { data, error } = await db.rpc('driver_set_offline', { p_driver_id: driver.id });
       if (error) throw error;
@@ -69,7 +71,7 @@ export async function PATCH(request: Request) {
     let query = db.from('drivers').update(updates).eq('id', driver.id);
     if (body.action === 'location') {
       query = query.or(`last_location_update.is.null,last_location_update.lt.${updates.last_location_update}`);
-      if (body.status === 'Online') query = query.eq('availability_paused', false);
+      if (body.status === 'Online' && hasPauseColumn) query = query.eq('availability_paused', false);
     }
     const { data, error } = await query.select('*').maybeSingle();
     if (error) throw error;

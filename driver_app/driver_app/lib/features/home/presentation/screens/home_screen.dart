@@ -462,9 +462,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _subscribeToNotifications();
       }
       final autoOnline = record != null && authBloc.takeAutoOnlineOnNextHome();
+      final driverId = record?['id']?.toString();
+      final hasServerPause =
+          record?.containsKey('availability_paused') ?? false;
+      final localPaused = driverId != null && !hasServerPause
+          ? (await SharedPreferences.getInstance()).getBool(
+                  DriverOperationsApi.availabilityPauseKey(driverId),
+                ) ??
+                false
+          : false;
       if (!_isOnline &&
           record != null &&
-          (autoOnline || record['availability_paused'] != true)) {
+          (autoOnline ||
+              (hasServerPause
+                  ? record['availability_paused'] != true
+                  : !localPaused))) {
         await _toggleOnlineStatus();
         return record;
       }
@@ -553,6 +565,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     return true;
   }
 
+  Future<void> _rememberAvailability(
+    String driverId, {
+    required bool paused,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(
+        DriverOperationsApi.availabilityPauseKey(driverId),
+        paused,
+      );
+    } catch (error) {
+      debugPrint('Could not save driver availability preference: $error');
+    }
+  }
+
   void _subscribeToDriverRecord(String driverId) {
     _driverChannel?.unsubscribe();
     _driverChannel = _supabase
@@ -604,6 +631,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       if (_isOnline) {
         await _operations.update({'action': 'offline'});
+        await _rememberAvailability(driverId, paused: true);
         await _positionStream?.cancel();
         await _deliveriesChannel?.unsubscribe();
 
@@ -616,6 +644,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         });
       } else {
         await _operations.update({'action': 'online'});
+        await _rememberAvailability(driverId, paused: false);
         if (!mounted) return;
         setState(() {
           _isOnline = true;
