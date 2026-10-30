@@ -29,7 +29,7 @@ on:
 jobs:
   build-ios:
     name: Build iOS IPA
-    if: github.ref_name == 'master'
+    if: github.ref_name == 'master' || github.ref_name == 'test'
     runs-on: macos-latest
     timeout-minutes: 90
 
