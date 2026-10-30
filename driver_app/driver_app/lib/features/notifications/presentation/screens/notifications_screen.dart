@@ -80,6 +80,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
       final driver = _driver;
       final notifications = List<Map<String, dynamic>>.from(data)
+          .where(DriverNotificationVisibility.isRelevant)
           .where(
             (notification) =>
                 driver == null ||

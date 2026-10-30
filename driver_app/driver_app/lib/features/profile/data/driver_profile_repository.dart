@@ -1,5 +1,6 @@
 import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
 import 'package:driver_app/core/operations/driver_operations_api.dart';
+import 'package:driver_app/core/notifications/driver_notification_visibility.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DriverProfileRepository {
@@ -351,12 +352,13 @@ class DriverProfileRepository {
     try {
       final data = await _supabase
           .from('app_notifications')
-          .select('id, recipient_id, recipient_phone, read_at')
+          .select('id, recipient_id, recipient_phone, read_at, type, title')
           .eq('app', 'driver')
           .order('created_at', ascending: false)
           .limit(100);
 
       return List<Map<String, dynamic>>.from(data)
+          .where(DriverNotificationVisibility.isRelevant)
           .where(
             (notification) => matchesDriverNotification(notification, driver),
           )

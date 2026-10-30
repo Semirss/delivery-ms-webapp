@@ -64,6 +64,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           .limit(100);
 
       final notifications = List<Map<String, dynamic>>.from(data)
+          .where((notification) {
+            final type = notification['type'];
+            if (type == 'delivery_created') return false;
+            if (type != 'delivery_status') return true;
+            final title = notification['title']?.toString().toLowerCase() ?? '';
+            return title.contains('delivered') || title.contains('completed');
+          })
           .where(_matchesCurrentUser)
           .where((notification) {
             final id = notification['id']?.toString();

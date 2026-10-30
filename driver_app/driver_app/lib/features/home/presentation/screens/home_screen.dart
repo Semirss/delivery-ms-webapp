@@ -88,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isRefreshingRoute = false;
   final Set<String> _ratingPromptedDeliveries = <String>{};
   final Set<String> _shownSystemNotificationIds = <String>{};
+  final Set<String> _pendingSystemNotificationIds = <String>{};
   List<Map<String, dynamic>> _badgeNotifications = [];
   Set<String> _clearedNotificationIds = <String>{};
   int _unreadNotificationCount = 0;
@@ -114,7 +115,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       unawaited(_refreshOnlineState());
     });
     unawaited(
-      _localNotifications.initialize(onTap: _handleSystemNotificationTap),
+      _localNotifications.initialize(onTap: _handleSystemNotificationTap)
+          .catchError((Object error) {
+        debugPrint('Notification initialization will retry: $error');
+      }),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authBloc = context.read<AuthBloc>();
@@ -1089,7 +1093,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     try {
       final data = await _supabase
           .from('app_notifications')
-          .select('id, recipient_id, recipient_phone, read_at')
+          .select('id, recipient_id, recipient_phone, read_at, type, title')
           .eq('app', 'driver')
           .order('created_at', ascending: false)
           .limit(100);
@@ -1128,7 +1132,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _notificationsChannel = _supabase
         .channel('public:app_notifications:driver-home')
         .onPostgresChanges(
-          event: PostgresChangeEvent.all,
+          event: PostgresChangeEvent.insert,
           schema: 'public',
           table: 'app_notifications',
           filter: PostgresChangeFilter(
@@ -1140,12 +1144,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _handleNotificationChange(payload.newRecord);
           },
         )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'app_notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'app',
+            value: 'driver',
+          ),
+          callback: (_) => unawaited(_loadUnreadNotificationCount()),
+        )
         .subscribe();
   }
 
   void _handleNotificationChange(Map<String, dynamic> record) {
     final notification = Map<String, dynamic>.from(record);
-    if (!_matchesDriverNotification(notification)) {
+    if (!_matchesDriverNotification(notification) ||
+        !DriverNotificationVisibility.isRelevant(notification)) {
       unawaited(_loadUnreadNotificationCount());
       return;
     }
@@ -1155,10 +1171,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final offerId = notification['delivery_id']?.toString();
     if (_driverRecord?['notifications_enabled'] != false &&
         notification['read_at'] == null &&
-        id != null &&
-        _shownSystemNotificationIds.add(isOffer && offerId != null ? 'offer:$offerId' : id)) {
+        id != null) {
       unawaited(
-        _localNotifications.showDriverAlert(
+        _showSystemNotificationOnce(
+          key: isOffer && offerId != null ? 'offer:$offerId' : id,
           id: id,
           title: notification['title']?.toString() ?? 'Driver alert',
           body: notification['body']?.toString() ?? '',
@@ -1169,6 +1185,42 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     unawaited(_loadUnreadNotificationCount());
+  }
+
+  Future<void> _showSystemNotificationOnce({
+    required String key,
+    required String id,
+    required String title,
+    required String body,
+    required String payload,
+    required bool deliveryOffer,
+  }) async {
+    if (_shownSystemNotificationIds.contains(key) ||
+        !_pendingSystemNotificationIds.add(key)) return;
+    try {
+      for (var attempt = 0; attempt < 3; attempt++) {
+        try {
+          await _localNotifications.showDriverAlert(
+            id: id,
+            title: title,
+            body: body,
+            payload: payload,
+            deliveryOffer: deliveryOffer,
+          );
+          _shownSystemNotificationIds.add(key);
+          return;
+        } catch (error) {
+          debugPrint('Driver notification attempt ${attempt + 1} failed: $error');
+          if (attempt < 2) {
+            await Future<void>.delayed(
+              Duration(milliseconds: 400 * (attempt + 1)),
+            );
+          }
+        }
+      }
+    } finally {
+      _pendingSystemNotificationIds.remove(key);
+    }
   }
 
   bool _matchesDriverNotification(Map<String, dynamic> notification) {
@@ -1245,29 +1297,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
 
     final deliveryId = delivery['id']?.toString();
-    if (deliveryId != null &&
-        deliveryId != _lastNotifiedDeliveryId &&
-        delivery['status'] == 'Assigned' &&
-        mounted) {
-      _lastNotifiedDeliveryId = deliveryId;
-      if (_driverRecord?['notifications_enabled'] != false) {
-        if (_shownSystemNotificationIds.add('offer:$deliveryId')) {
-        unawaited(
-          _localNotifications.showDriverAlert(
-            id: deliveryId,
-            title: 'New delivery offer',
-            body: 'Review the trip and slide to accept before it expires.',
-            payload: deliveryId,
-            deliveryOffer: true,
-          ),
-        );
-        }
+    if (deliveryId != null && delivery['status'] == 'Assigned' && mounted) {
+      if (_driverRecord?['notifications_enabled'] != false &&
+          _offerSecondsLeft > 0) {
+        unawaited(_showSystemNotificationOnce(
+          key: 'offer:$deliveryId',
+          id: deliveryId,
+          title: 'New delivery offer',
+          body: 'Review the trip and slide to accept before it expires.',
+          payload: deliveryId,
+          deliveryOffer: true,
+        ));
       }
-      AppToast.show(
-        context: context,
-        message: 'New delivery assigned. Check pickup details.',
-        type: AppToastType.info,
-      );
+      if (deliveryId != _lastNotifiedDeliveryId) {
+        _lastNotifiedDeliveryId = deliveryId;
+        AppToast.show(
+          context: context,
+          message: 'New delivery assigned. Check pickup details.',
+          type: AppToastType.info,
+        );
+      }
     }
 
     if (destination == null) return;

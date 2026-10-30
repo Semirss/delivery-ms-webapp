@@ -4,6 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DriverNotificationVisibility {
   static const clearedIdsKey = 'driver_cleared_notification_ids';
 
+  static bool isRelevant(Map<String, dynamic> notification) {
+    if (notification['type'] != 'delivery_status') return true;
+    final title = notification['title']?.toString().toLowerCase() ?? '';
+    return title.contains('delivered') || title.contains('completed');
+  }
+
   // The home tab stays mounted while the alerts tab is open.
   static final ValueNotifier<Set<String>> hiddenFromBadge =
       ValueNotifier<Set<String>>(<String>{});
@@ -42,7 +48,7 @@ class DriverNotificationVisibility {
     required Set<String> hiddenIds,
   }) => notifications.where((notification) {
     final id = notification['id']?.toString();
-    return notification['read_at'] == null &&
+    return isRelevant(notification) && notification['read_at'] == null &&
         (id == null || (!clearedIds.contains(id) && !hiddenIds.contains(id)));
   }).length;
 }

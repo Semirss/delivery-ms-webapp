@@ -6,10 +6,27 @@ class LocalNotificationService {
 
   final FlutterLocalNotificationsPlugin _plugin;
   bool _initialized = false;
+  Future<void>? _initializing;
+  void Function(String? payload)? _onTap;
 
   Future<void> initialize({void Function(String? payload)? onTap}) async {
+    if (onTap != null) _onTap = onTap;
     if (_initialized) return;
+    final pending = _initializing;
+    if (pending != null) {
+      await pending;
+      return;
+    }
+    final initialization = _initializePlugin();
+    _initializing = initialization;
+    try {
+      await initialization;
+    } finally {
+      _initializing = null;
+    }
+  }
 
+  Future<void> _initializePlugin() async {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const ios = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -21,7 +38,7 @@ class LocalNotificationService {
     await _plugin.initialize(
       settings: settings,
       onDidReceiveNotificationResponse: (response) {
-        onTap?.call(response.payload);
+        _onTap?.call(response.payload);
       },
     );
 
@@ -61,15 +78,15 @@ class LocalNotificationService {
       category: AndroidNotificationCategory.message,
     );
     const offerAndroid = AndroidNotificationDetails(
-      'driver_offer_loud_v1',
+      'driver_offer_chime_v3',
       'New delivery offers',
-      channelDescription: 'Loud alerts when a delivery is assigned',
-      importance: Importance.max,
-      priority: Priority.max,
+      channelDescription: 'Admin-style chime when a delivery is assigned',
+      importance: Importance.high,
+      priority: Priority.high,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('driver_offer'),
-      enableVibration: true,
-      category: AndroidNotificationCategory.alarm,
+      enableVibration: false,
+      category: AndroidNotificationCategory.message,
     );
     final ios = DarwinNotificationDetails(
       presentAlert: true,
