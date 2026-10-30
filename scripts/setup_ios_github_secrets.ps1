@@ -45,11 +45,11 @@ param(
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$ClientEnvFile = "client_app\client_app\.env",
+    [string]$ClientEnvFile = "client_app\client_app\.env.production",
 
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string]$DriverEnvFile = "driver_app\driver_app\.env",
+    [string]$DriverEnvFile = "driver_app\driver_app\.env.production",
 
     [Parameter(Mandatory = $false)]
     [switch]$Force,
@@ -309,6 +309,14 @@ $keyPath = Resolve-RequiredFile -RepoRoot $repoRoot -Path $KeyFile -Label "App S
 $certKeyPath = Resolve-RequiredFile -RepoRoot $repoRoot -Path $CertificatePrivateKeyFile -Label "Apple distribution certificate private key"
 $clientEnvPath = Resolve-RequiredFile -RepoRoot $repoRoot -Path $ClientEnvFile -Label "Client .env"
 $driverEnvPath = Resolve-RequiredFile -RepoRoot $repoRoot -Path $DriverEnvFile -Label "Driver .env"
+$verifyEnvPath = Resolve-RequiredFile -RepoRoot $repoRoot -Path "scripts\verify_mobile_env.py" -Label "Mobile environment validator"
+
+foreach ($envPath in @($clientEnvPath, $driverEnvPath)) {
+    & python $verifyEnvPath $envPath --expected production
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Refusing to upload a non-production mobile environment: $envPath"
+    }
+}
 
 $keyId = Get-KeyIdFromFileName -Path $keyPath
 Test-TextFileContains -Path $keyPath -Pattern 'BEGIN PRIVATE KEY' -Label "App Store Connect API key"
