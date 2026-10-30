@@ -11,6 +11,7 @@ import '../models/user_model.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> cacheUser(UserModel user);
+  Future<void> cacheDriverRecord(String userId, Map<String, dynamic> driver);
   Future<void> cacheAccessToken(String token);
   Future<void> cacheRefreshToken(String token);
   Future<void> cacheVerificationKey(String key);
@@ -62,6 +63,20 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     } catch (e) {
       throw CacheFailure('Failed to cache user: $e');
     }
+  }
+
+  @override
+  Future<void> cacheDriverRecord(
+    String userId,
+    Map<String, dynamic> driver,
+  ) async {
+    if (driver['id']?.toString() != userId) return;
+    final cachedUser = await getCachedUser();
+    if (cachedUser == null || cachedUser.id != userId) return;
+    await cacheUser(UserModel.fromJson({
+      ...cachedUser.toJson(),
+      'driver_record': UserModel.cacheableDriverRecord(driver),
+    }));
   }
 
   @override

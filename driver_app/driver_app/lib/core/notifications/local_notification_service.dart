@@ -44,12 +44,13 @@ class LocalNotificationService {
     required String title,
     required String body,
     String? payload,
+    bool deliveryOffer = false,
   }) async {
     if (!_initialized) {
       await initialize();
     }
 
-    const android = AndroidNotificationDetails(
+    const standardAndroid = AndroidNotificationDetails(
       'driver_delivery_alerts',
       'Driver delivery alerts',
       channelDescription: 'Delivery assignments and driver status updates',
@@ -59,17 +60,32 @@ class LocalNotificationService {
       enableVibration: true,
       category: AndroidNotificationCategory.message,
     );
-    const ios = DarwinNotificationDetails(
+    const offerAndroid = AndroidNotificationDetails(
+      'driver_offer_loud_v1',
+      'New delivery offers',
+      channelDescription: 'Loud alerts when a delivery is assigned',
+      importance: Importance.max,
+      priority: Priority.max,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('driver_offer'),
+      enableVibration: true,
+      category: AndroidNotificationCategory.alarm,
+    );
+    final ios = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: deliveryOffer ? 'driver_offer.wav' : null,
     );
 
     await _plugin.show(
       id: id.hashCode & 0x7fffffff,
       title: title,
       body: body,
-      notificationDetails: const NotificationDetails(android: android, iOS: ios),
+      notificationDetails: NotificationDetails(
+        android: deliveryOffer ? offerAndroid : standardAndroid,
+        iOS: ios,
+      ),
       payload: payload,
     );
   }

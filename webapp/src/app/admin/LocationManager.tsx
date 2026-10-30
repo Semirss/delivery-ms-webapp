@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { MapPin, Plus, RefreshCw, Search } from "lucide-react";
+import { MapPin, Plus, RefreshCw, Search, Upload } from "lucide-react";
 
 type LocationRow = {
   id: string;
@@ -23,6 +23,8 @@ export default function LocationManager() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
 
   const load = useCallback(async () => {
@@ -91,6 +93,34 @@ export default function LocationManager() {
     }
   }
 
+  async function importLocations(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!importFile) return;
+    setImporting(true);
+    setMessage("");
+    try {
+      if (!importFile.name.toLowerCase().endsWith(".txt")) {
+        throw new Error("Choose a .txt file.");
+      }
+      if (importFile.size > 256 * 1024) {
+        throw new Error("TXT file must be 256 KB or smaller.");
+      }
+      const response = await fetch("/api/admin/locations/import", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+        body: await importFile.text(),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Could not import locations.");
+      setMessage(`${payload.imported} locations imported. Reuploading the same rows updates them.`);
+      await load();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not import locations.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
   async function toggle(location: LocationRow) {
     const response = await fetch(`/api/admin/locations/${location.id}`, {
       method: "PATCH",
@@ -133,6 +163,18 @@ export default function LocationManager() {
         <button disabled={saving} className="mt-4 px-5 py-3 rounded-xl bg-blue-600 text-white font-extrabold disabled:opacity-50">
           {saving ? "Saving…" : "Save neighborhood"}
         </button>
+      </form>
+
+      <form onSubmit={importLocations} className="rounded-3xl bg-white border border-neutral-200 p-6 shadow-sm">
+        <h3 className="font-extrabold text-neutral-900 flex items-center gap-2"><Upload className="h-5 w-5" /> Import locations from TXT</h3>
+        <p className="mt-2 text-sm text-neutral-600">Put one location per line. Use <code className="font-semibold">Name | Latitude | Longitude | Alias 1, Alias 2</code>. Tabs or commas also work as separators. Blank lines, lines starting with #, and a header row are ignored.</p>
+        <p className="mt-2 text-sm text-neutral-500">Example: <code>Bole | 8.9936 | 38.7874 | Bole Sub City</code>. Coordinates must be within Addis Ababa. Maximum 1,000 locations and 256 KB per file.</p>
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <input type="file" accept=".txt,text/plain" required onChange={(event) => setImportFile(event.target.files?.[0] ?? null)} className="block w-full sm:max-w-md text-sm text-neutral-700 file:mr-4 file:rounded-xl file:border-0 file:bg-neutral-100 file:px-4 file:py-2.5 file:font-bold file:text-neutral-800" />
+          <button disabled={importing || !importFile} className="px-5 py-3 rounded-xl bg-blue-600 text-white font-extrabold disabled:opacity-50">
+            {importing ? "Importing…" : "Import TXT"}
+          </button>
+        </div>
       </form>
 
       <div className="rounded-3xl bg-white border border-neutral-200 shadow-sm overflow-hidden">

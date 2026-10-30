@@ -1,6 +1,25 @@
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
+  static Map<String, dynamic> cacheableDriverRecord(
+    Map<String, dynamic> driver,
+  ) => {
+    for (final key in [
+      'id',
+      'name',
+      'phone',
+      'status',
+      'availability_paused',
+      'is_active',
+      'approval_status',
+      'last_location_update',
+      'working_radius_km',
+      'notifications_enabled',
+      'vehicle_type',
+    ])
+      if (driver.containsKey(key)) key: driver[key],
+  };
+
   UserModel({
     required super.id,
     required super.email,

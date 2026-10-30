@@ -7,11 +7,12 @@ import 'package:driver_app/core/notifications/driver_notification_visibility.dar
 import 'package:driver_app/core/notifications/local_notification_service.dart';
 import 'package:driver_app/core/operations/driver_availability.dart';
 import 'package:driver_app/core/operations/driver_operations_api.dart';
+import 'package:driver_app/core/di/injection.dart';
 import 'package:driver_app/core/widgets/slide_to_accept.dart';
 import 'package:driver_app/features/profile/presentation/screens/driver_settings_screen.dart';
 import 'package:driver_app/features/profile/presentation/screens/wallet_screen.dart';
 import 'package:driver_app/core/utils/constants/asset_constants/image_constants.dart';
-import 'package:driver_app/features/auth/domain/entities/user_entity.dart';
+import 'package:driver_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:driver_app/features/auth/presentation/bloc/auth_state.dart';
@@ -37,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   static const _locationDisclosureConsentKey =
       'driver_location_prominent_disclosure_consent_v1';
-  static const _maxGpsAccuracyM = kIsWeb ? 200 : 100;
+  static const _maxGpsAccuracyM = 200;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final MapController _mapController = MapController();
@@ -50,10 +51,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   DateTime? _browserGpsRetryAfter;
   Timer? _offerTimer;
   Timer? _refreshTimer;
+  Timer? _locationRetryTimer;
+  Timer? _availabilityStartupTimer;
+  Timer? _driverLoadRetryTimer;
   String? _expiringDeliveryId;
   bool _refreshingGps = false;
   bool _startingLocationTracking = false;
   bool _requestingCurrentLocation = false;
+  bool _uploadingLocation = false;
 
   LatLng _currentPosition = const LatLng(8.9806, 38.7578);
   StreamSubscription<Position>? _positionStream;
@@ -66,12 +71,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   bool _isOnline = false;
   bool _autoOnlineOnEntry = false;
   bool _availabilityInitialized = false;
+  bool _startupOnlineFallback = false;
   Future<void>? _availabilityReady;
+  Future<Map<String, dynamic>?>? _initialDriverLoad;
   bool _syncingAvailability = false;
   bool _isResolvingDriver = false;
   bool _isUpdating = false;
   Map<String, dynamic>? _driverRecord;
   Map<String, dynamic>? _activeDelivery;
+  double _deliverySheetExtent = 0.32;
   List<LatLng> _routePoints = [];
   String? _lastNotifiedDeliveryId;
   DateTime? _lastRouteRefreshAt;
@@ -92,6 +100,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       _onNotificationVisibilityChanged,
     );
     DriverAvailability.changes.addListener(_onAvailabilityChanged);
+    _availabilityStartupTimer = Timer(
+      const Duration(seconds: 5),
+      _finishCheckingOnline,
+    );
     _offerTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted || _activeDelivery?['status'] != 'Assigned') return;
       setState(() {});
@@ -114,17 +126,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         final record = authState.user.driverRecord!;
         setState(() {
           _driverRecord = record;
-          _isOnline = true;
           _lastLocationUploadAt = DateTime.tryParse(
             record['last_location_update']?.toString() ?? '',
           );
         });
         _availabilityReady = _initializeAvailability(record['id'].toString());
-        if (_isOnline && record['id'] != null) {
-          unawaited(_resumeLocationTracking(record['id'].toString()));
-        }
       }
-      unawaited(_loadDriverRecord());
+      _initialDriverLoad ??= _loadDriverRecord();
     });
   }
 
@@ -137,24 +145,29 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _refreshOnlineState() async {
+  Future<void> _refreshOnlineState({bool promptIfNeeded = false}) async {
     if (_refreshingGps) return;
     _refreshingGps = true;
     try {
       final id = _driverRecord?['id']?.toString();
       if (id != null && mounted && _isOnline) {
-        await _syncOnlineAvailability(id);
+        final sync = _syncOnlineAvailability(id);
+        Future<void>? tracking;
         if (!kIsWeb ||
             _browserGpsRetryAfter == null ||
             !DateTime.now().isBefore(_browserGpsRetryAfter!)) {
-          await _resumeLocationTracking(
+          tracking = _resumeLocationTracking(
             id,
-            promptIfNeeded: false,
+            promptIfNeeded: promptIfNeeded,
             moveMap: false,
           );
         }
+        await sync;
+        if (tracking != null) await tracking;
       }
-      if (id != null && mounted && _isOnline) await _loadAssignedDelivery(id);
+      if (id != null && mounted && _isOnline) {
+        unawaited(_loadAssignedDelivery(id));
+      }
     } finally {
       _refreshingGps = false;
     }
@@ -177,6 +190,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  void _finishCheckingOnline() {
+    if (!mounted || (_availabilityInitialized && _driverRecord != null)) return;
+    _startupOnlineFallback = true;
+    setState(() {
+      _availabilityInitialized = true;
+      _isOnline = true;
+    });
+    final driverId = _driverRecord?['id']?.toString();
+    if (driverId == null) {
+      _driverLoadRetryTimer ??= Timer.periodic(
+        const Duration(seconds: 5),
+        (timer) {
+          if (!mounted || !_startupOnlineFallback) {
+            timer.cancel();
+            _driverLoadRetryTimer = null;
+          } else if (!_isResolvingDriver) {
+            _initialDriverLoad = _loadDriverRecord();
+          }
+        },
+      );
+      if (!_isResolvingDriver) _initialDriverLoad = _loadDriverRecord();
+      return;
+    }
+    DriverAvailability.choose(driverId, true);
+    _startupOnlineFallback = false;
+    unawaited(_rememberAvailability(driverId, paused: false));
+    unawaited(_refreshOnlineState(promptIfNeeded: true));
+    unawaited(_subscribeToAssignments(driverId));
+  }
+
   void _onAvailabilityChanged() {
     final change = DriverAvailability.changes.value;
     final driverId = _driverRecord?['id']?.toString();
@@ -184,11 +227,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     final wasOnline = _isOnline;
     setState(() => _isOnline = change.$2);
     if (!change.$2) {
+      _locationRetryTimer?.cancel();
       final stream = _positionStream;
       _positionStream = null;
       if (stream != null) unawaited(stream.cancel());
-    } else if (!wasOnline) {
-      unawaited(_refreshOnlineState());
+    } else if (!wasOnline && !_isUpdating) {
+      unawaited(_refreshOnlineState(promptIfNeeded: true));
     }
   }
 
@@ -219,19 +263,37 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Future<void> _resumeLocationTracking(
     String driverId, {
     bool promptIfNeeded = true,
-    bool moveMap = true,
+    bool moveMap = false,
   }) async {
     if (_startingLocationTracking || !_isOnline || !mounted) return;
     _startingLocationTracking = true;
     try {
+      if (_positionStream != null) {
+        if (!_hasFreshGpsFix) {
+          unawaited(_getCurrentLocation(updateRemote: true, moveMap: moveMap));
+        } else if (_lastLocationUploadAt == null ||
+            _gpsFix!.timestamp.isAfter(_lastLocationUploadAt!)) {
+          unawaited(_updateDriverLocation(driverId).catchError(
+            (Object error) => debugPrint('GPS upload will retry: $error'),
+          ));
+        }
+        return;
+      }
       if (!await _ensureLocationAccess(promptIfNeeded: promptIfNeeded)) {
         await _positionStream?.cancel();
         _positionStream = null;
         return;
       }
       if (!mounted || !_isOnline) return;
-      if (_positionStream == null) _startLocationStreaming(driverId);
-      unawaited(_getCurrentLocation(updateRemote: true, moveMap: moveMap));
+      _startLocationStreaming(driverId);
+      if (!_hasFreshGpsFix) {
+        unawaited(_getCurrentLocation(updateRemote: true, moveMap: moveMap));
+      } else if (_lastLocationUploadAt == null ||
+          _gpsFix!.timestamp.isAfter(_lastLocationUploadAt!)) {
+        unawaited(_updateDriverLocation(driverId).catchError(
+          (Object error) => debugPrint('GPS upload will retry: $error'),
+        ));
+      }
     } catch (error) {
       debugPrint('Location tracking will retry: $error');
       _setLocationIssue(
@@ -487,13 +549,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }
       }
 
+      if (_hasFreshGpsFix && !moveMap) return;
+
       try {
-        final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: kIsWeb
-              ? LocationAccuracy.medium
-              : LocationAccuracy.bestForNavigation,
-          timeLimit: const Duration(seconds: kIsWeb ? 30 : 8),
-        );
+        Position position;
+        try {
+          position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: kIsWeb ? LocationAccuracy.medium : LocationAccuracy.high,
+            timeLimit: const Duration(seconds: kIsWeb ? 30 : 8),
+          );
+        } on TimeoutException {
+          if (kIsWeb) rethrow;
+          position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.medium,
+            timeLimit: const Duration(seconds: 8),
+          );
+        }
         if (!mounted) return;
         _browserGpsRetryAfter = null;
         final accepted = _applyCurrentPosition(
@@ -670,12 +741,22 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
     setState(() => _isResolvingDriver = true);
     try {
-      final record = await _findOrCreateDriver(authState.user);
+      final record = await _operations.profile();
+      if (record['id']?.toString() != authState.user.id) {
+        throw Exception('Driver profile does not match this sign-in.');
+      }
       if (!mounted) return record;
-      if (record == null) return null;
+      unawaited(_cacheDriverRecord(authState.user.id, record));
       if (!_availabilityInitialized) {
         _availabilityReady ??= _initializeAvailability(record['id'].toString());
         await _availabilityReady;
+      }
+      if (_startupOnlineFallback) {
+        DriverAvailability.choose(record['id'].toString(), true);
+        _startupOnlineFallback = false;
+        _driverLoadRetryTimer?.cancel();
+        _driverLoadRetryTimer = null;
+        unawaited(_rememberAvailability(record['id'].toString(), paused: false));
       }
       _autoOnlineOnEntry = false;
       setState(() {
@@ -699,7 +780,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     } catch (e) {
       debugPrint('Error refreshing driver record: $e');
       if (_driverRecord != null) return _driverRecord;
-      if (mounted) {
+      if (mounted && !_startupOnlineFallback) {
         AppToast.show(
           context: context,
           message: 'Could not load driver profile.',
@@ -712,50 +793,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<Map<String, dynamic>?> _findOrCreateDriver(UserEntity user) async {
-    final byId = await _maybeDriverBy('id', user.id);
-    if (byId != null) return byId;
-
-    final phone = _driverPhone(user);
-    final byPhone = await _maybeDriverBy('phone', phone);
-    if (byPhone != null) return byPhone;
-
-    final name = _driverName(user);
-    final byName = await _maybeDriverBy('name', name);
-    if (byName != null) return byName;
-
-    throw Exception('Driver profile not found. Please sign in again.');
-  }
-
-  Future<Map<String, dynamic>?> _maybeDriverBy(
-    String column,
-    String value,
+  Future<void> _cacheDriverRecord(
+    String userId,
+    Map<String, dynamic> record,
   ) async {
-    if (value.trim().isEmpty) return null;
     try {
-      final data = await _supabase
-          .from('drivers')
-          .select()
-          .eq(column, value)
-          .maybeSingle();
-      if (data == null) return null;
-      return Map<String, dynamic>.from(data);
-    } catch (_) {
-      return null;
+      await getIt<AuthLocalDataSource>().cacheDriverRecord(userId, record);
+    } catch (error) {
+      debugPrint('Could not save driver profile for next launch: $error');
     }
-  }
-
-  String _driverName(UserEntity user) {
-    final name = [
-      user.firstName,
-      user.lastName,
-    ].where((part) => part != null && part.trim().isNotEmpty).join(' ').trim();
-    return name.isEmpty ? user.email : name;
-  }
-
-  String _driverPhone(UserEntity user) {
-    final phone = user.phone?.trim() ?? '';
-    return phone.isEmpty ? user.email : phone;
   }
 
   bool _canGoOnline(Map<String, dynamic> driver) {
@@ -817,67 +863,86 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _toggleOnlineStatus() async {
     if (_isUpdating) return;
-
-    final driver = _driverRecord ?? await _loadDriverRecord();
-    if (driver == null) return;
-    if (!mounted) return;
-
-    if (!_isOnline && !_canGoOnline(driver)) return;
-    if (_isOnline && _activeDelivery != null) {
-      AppToast.show(
-        context: context,
-        message: 'Finish the active delivery before going offline.',
-        type: AppToastType.warning,
-      );
+    if (!_availabilityInitialized || _driverRecord == null) {
+      _finishCheckingOnline();
       return;
     }
-
-    final driverId = driver['id'].toString();
-    final goingOnline = !_isOnline;
+    // A tap during startup always means "go online". Preserve that intent while
+    // the saved choice and driver profile finish loading.
+    final goingOnline = !_availabilityInitialized || !_isOnline;
     setState(() => _isUpdating = true);
-    DriverAvailability.choose(driverId, goingOnline);
-
     try {
-      if (!goingOnline) {
-        final updated = await DriverAvailability.writeIfChosen(
-          driverId,
-          false,
-          () => _operations.update({'action': 'offline'}),
-        );
-        if (updated == null) return;
-        await _rememberAvailability(driverId, paused: true);
-        await _deliveriesChannel?.unsubscribe();
-
-        if (!mounted) return;
-        setState(() {
-          _activeDelivery = null;
-          _routePoints = [];
-          _driverRecord = {...?_driverRecord, ...updated};
-        });
-      } else {
-        final updated = await DriverAvailability.writeIfChosen(
-          driverId,
-          true,
-          () => _operations.update({'action': 'online'}),
-        );
-        if (updated == null) return;
-        await _rememberAvailability(driverId, paused: false);
-        if (!mounted) return;
-        setState(() => _driverRecord = {...?_driverRecord, ...updated});
-        await _subscribeToAssignments(driverId);
-        await _resumeLocationTracking(driverId);
-      }
-    } catch (e) {
-      if (DriverAvailability.choiceFor(driverId) == goingOnline) {
-        DriverAvailability.choose(driverId, !goingOnline);
-      }
-      debugPrint('Error toggling online status: $e');
-      if (mounted) {
+      if (_availabilityReady != null) await _availabilityReady;
+      final driver =
+          _driverRecord ?? await (_initialDriverLoad ??= _loadDriverRecord());
+      if (!mounted || driver == null || goingOnline == _isOnline) return;
+      if (goingOnline && !_canGoOnline(driver)) return;
+      if (!goingOnline && _activeDelivery != null) {
         AppToast.show(
           context: context,
-          message: e.toString().replaceFirst('Exception: ', ''),
-          type: AppToastType.error,
+          message: 'Finish the active delivery before going offline.',
+          type: AppToastType.warning,
         );
+        return;
+      }
+
+      final driverId = driver['id'].toString();
+      DriverAvailability.choose(driverId, goingOnline);
+      try {
+        if (!goingOnline) {
+          final updated = await DriverAvailability.writeIfChosen(
+            driverId,
+            false,
+            () => _operations.update({'action': 'offline'}),
+          );
+          if (updated == null) return;
+          await _rememberAvailability(driverId, paused: true);
+          await _deliveriesChannel?.unsubscribe();
+
+          if (!mounted) return;
+          setState(() {
+            _activeDelivery = null;
+            _routePoints = [];
+            _driverRecord = {...?_driverRecord, ...updated};
+          });
+        } else {
+          final updated = await DriverAvailability.writeIfChosen(
+            driverId,
+            true,
+            () => _operations.update({'action': 'online'}),
+          );
+          if (updated == null) return;
+          await _rememberAvailability(driverId, paused: false);
+          if (!mounted) return;
+          setState(() => _driverRecord = {...?_driverRecord, ...updated});
+          unawaited(_subscribeToAssignments(driverId));
+          unawaited(_resumeLocationTracking(driverId));
+        }
+      } catch (e) {
+        if (goingOnline) {
+          debugPrint('Online sync will retry while GPS tracking continues: $e');
+          unawaited(_rememberAvailability(driverId, paused: false));
+          unawaited(_refreshOnlineState(promptIfNeeded: true));
+          if (mounted) {
+            AppToast.show(
+              context: context,
+              message: 'Connecting to dispatch. The app will retry while you stay online.',
+              type: AppToastType.info,
+            );
+          }
+          return;
+        }
+        if (DriverAvailability.choiceFor(driverId) == goingOnline) {
+          DriverAvailability.choose(driverId, !goingOnline);
+        }
+        debugPrint('Error toggling online status: $e');
+        if (mounted) {
+          AppToast.show(
+            context: context,
+            message: e.toString().replaceFirst('Exception: ', ''),
+            type: AppToastType.error,
+          );
+        }
       }
     } finally {
       if (mounted) setState(() => _isUpdating = false);
@@ -885,11 +950,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _startLocationStreaming(String driverId) {
+    _locationRetryTimer?.cancel();
     _positionStream?.cancel();
     final LocationSettings settings =
         !kIsWeb && defaultTargetPlatform == TargetPlatform.android
         ? AndroidSettings(
-            accuracy: LocationAccuracy.bestForNavigation,
+            accuracy: LocationAccuracy.high,
             distanceFilter: 0,
             intervalDuration: const Duration(seconds: 5),
             foregroundNotificationConfig: const ForegroundNotificationConfig(
@@ -901,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           )
         : !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
         ? AppleSettings(
-            accuracy: LocationAccuracy.bestForNavigation,
+            accuracy: LocationAccuracy.high,
             distanceFilter: 5,
             activityType: ActivityType.automotiveNavigation,
             pauseLocationUpdatesAutomatically: false,
@@ -911,7 +977,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         : const LocationSettings(
             accuracy: kIsWeb
                 ? LocationAccuracy.medium
-                : LocationAccuracy.bestForNavigation,
+                : LocationAccuracy.high,
             distanceFilter: 5,
           );
     _positionStream = Geolocator.getPositionStream(locationSettings: settings)
@@ -933,42 +999,56 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           },
           onError: (Object error) {
             debugPrint('GPS stream failed: $error');
+            _setLocationIssue('Finding your location. Tracking will retry automatically.');
             final failedStream = _positionStream;
             _positionStream = null;
             if (failedStream != null) unawaited(failedStream.cancel());
+            _locationRetryTimer?.cancel();
+            _locationRetryTimer = Timer(const Duration(seconds: 4), () {
+              if (!mounted || !_isOnline) return;
+              unawaited(_resumeLocationTracking(
+                driverId, promptIfNeeded: false, moveMap: false,
+              ));
+            });
           },
         );
   }
 
   Future<void> _updateDriverLocation(String driverId) async {
+    if (_uploadingLocation) return;
     final fix = _gpsFix;
     if (!_hasFreshGpsFix || fix == null) {
       throw Exception(
         'Waiting for a fresh GPS fix. Enable precise location and try again.',
       );
     }
-    final updated = await _operations.update({
-      'action': 'location',
-      'lat': fix.latitude,
-      'lng': fix.longitude,
-      'accuracy': fix.accuracy,
-      'heading': fix.heading,
-      'speed': fix.speed,
-      'observed_at': fix.timestamp.toUtc().toIso8601String(),
-    });
-    final serverFixTime = DateTime.tryParse(
-      updated['last_location_update']?.toString() ?? '',
-    );
-    if (mounted &&
-        updated['status'] == 'Online' &&
-        updated['availability_paused'] != true &&
-        serverFixTime != null) {
-      setState(() {
-        if (_lastLocationUploadAt == null ||
-            serverFixTime.isAfter(_lastLocationUploadAt!)) {
-          _lastLocationUploadAt = serverFixTime;
-        }
+    _uploadingLocation = true;
+    try {
+      final updated = await _operations.update({
+        'action': 'location',
+        'lat': fix.latitude,
+        'lng': fix.longitude,
+        'accuracy': fix.accuracy,
+        'heading': fix.heading,
+        'speed': fix.speed,
+        'observed_at': fix.timestamp.toUtc().toIso8601String(),
       });
+      final serverFixTime = DateTime.tryParse(
+        updated['last_location_update']?.toString() ?? '',
+      );
+      if (mounted &&
+          updated['status'] == 'Online' &&
+          updated['availability_paused'] != true &&
+          serverFixTime != null) {
+        setState(() {
+          if (_lastLocationUploadAt == null ||
+              serverFixTime.isAfter(_lastLocationUploadAt!)) {
+            _lastLocationUploadAt = serverFixTime;
+          }
+        });
+      }
+    } finally {
+      _uploadingLocation = false;
     }
   }
 
@@ -1071,16 +1151,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     final id = notification['id']?.toString();
+    final isOffer = notification['type'] == 'delivery_assigned';
+    final offerId = notification['delivery_id']?.toString();
     if (_driverRecord?['notifications_enabled'] != false &&
         notification['read_at'] == null &&
         id != null &&
-        _shownSystemNotificationIds.add(id)) {
+        _shownSystemNotificationIds.add(isOffer && offerId != null ? 'offer:$offerId' : id)) {
       unawaited(
         _localNotifications.showDriverAlert(
           id: id,
           title: notification['title']?.toString() ?? 'Driver alert',
           body: notification['body']?.toString() ?? '',
           payload: notification['delivery_id']?.toString() ?? id,
+          deliveryOffer: isOffer,
         ),
       );
     }
@@ -1136,6 +1219,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _setActiveDelivery(Map<String, dynamic>? delivery) async {
     if (delivery == null) {
+      _deliverySheetExtent = 0.32;
       setState(() {
         _activeDelivery = null;
         _routePoints = [];
@@ -1146,6 +1230,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       return;
     }
 
+    if (_activeDelivery?['id'] != delivery['id'] ||
+        _activeDelivery?['status'] != delivery['status']) {
+      _deliverySheetExtent = delivery['status'] == 'Assigned' ? 0.55 : 0.32;
+    }
     final destination = _activeDestination(delivery);
     setState(() {
       _activeDelivery = delivery;
@@ -1163,14 +1251,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         mounted) {
       _lastNotifiedDeliveryId = deliveryId;
       if (_driverRecord?['notifications_enabled'] != false) {
+        if (_shownSystemNotificationIds.add('offer:$deliveryId')) {
         unawaited(
           _localNotifications.showDriverAlert(
             id: deliveryId,
             title: 'New delivery offer',
             body: 'Review the trip and slide to accept before it expires.',
             payload: deliveryId,
+            deliveryOffer: true,
           ),
         );
+        }
       }
       AppToast.show(
         context: context,
@@ -1276,6 +1367,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (mounted && (_routePoints.isEmpty || force)) {
       setState(() => _routePoints = fallback);
     }
+    if (fit) {
+      _fitMapSafely(
+        [_currentPosition, destination],
+        padding: _activeRouteMapPadding(),
+        fallbackZoom: 15,
+      );
+    }
 
     try {
       final route = await _mapRepository.getRoute(
@@ -1286,16 +1384,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       setState(() {
         _routePoints = route.isEmpty ? fallback : route;
       });
-      if (fit) {
-        _fitMapSafely(
-          [_currentPosition, destination],
-          padding: const EdgeInsets.all(50),
-          fallbackZoom: 15,
-        );
-      }
+    } catch (error) {
+      debugPrint('Route request failed; keeping the direct route: $error');
     } finally {
       _isRefreshingRoute = false;
     }
+  }
+
+  EdgeInsets _activeRouteMapPadding() {
+    final height = MediaQuery.sizeOf(context).height;
+    final top = MediaQuery.viewPaddingOf(context).top + 100;
+    final bottom = math.min(
+      height * _deliverySheetExtent + 24,
+      math.max(60, height - top - 80),
+    ).toDouble();
+    return EdgeInsets.fromLTRB(40, top, 40, bottom);
   }
 
   Future<void> _rejectDelivery() async {
@@ -1391,70 +1494,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         AppToast.show(
           context: context,
           message: e.toString().replaceFirst('Exception: ', ''),
-          type: AppToastType.error,
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isUpdating = false);
-    }
-  }
-
-  Future<void> _editOfferFee(Map<String, dynamic> delivery) async {
-    var fareText =
-        _asNullableDouble(delivery['delivery_fee'])?.toStringAsFixed(2) ?? '';
-    final fee = await showDialog<double>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Set delivery fare'),
-        content: TextFormField(
-          initialValue: fareText,
-          onChanged: (value) => fareText = value,
-          autofocus: true,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Fare in ETB',
-            helperText: 'Your earnings and commission will update.',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final amount = double.tryParse(fareText.trim());
-              if (amount == null ||
-                  amount <= 0 ||
-                  amount > 1000000 ||
-                  (amount * 100 - (amount * 100).round()).abs() > 0.000001) {
-                AppToast.show(
-                  context: dialogContext,
-                  message: 'Enter a valid fare with up to two decimal places.',
-                  type: AppToastType.error,
-                );
-                return;
-              }
-              Navigator.pop(dialogContext, amount);
-            },
-            child: const Text('Update fare'),
-          ),
-        ],
-      ),
-    );
-    if (fee == null || !mounted || _isUpdating) return;
-    final deliveryId = delivery['id']?.toString();
-    if (deliveryId == null) return;
-    setState(() => _isUpdating = true);
-    try {
-      final updated = await _operations.quoteOffer(deliveryId, fee);
-      if (!mounted) return;
-      await _setActiveDelivery(Map<String, dynamic>.from(updated));
-    } catch (error) {
-      if (mounted) {
-        AppToast.show(
-          context: context,
-          message: error.toString().replaceFirst('Exception: ', ''),
           type: AppToastType.error,
         );
       }
@@ -1665,6 +1704,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
     _offerTimer?.cancel();
     _refreshTimer?.cancel();
+    _locationRetryTimer?.cancel();
+    _availabilityStartupTimer?.cancel();
+    _driverLoadRetryTimer?.cancel();
     _positionStream?.cancel();
     _driverChannel?.unsubscribe();
     _deliveriesChannel?.unsubscribe();
@@ -1674,6 +1716,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final availabilityKnown =
+        (_availabilityInitialized && _driverRecord != null) ||
+        _startupOnlineFallback;
     final delivery = _activeDelivery;
     final visibleRoutePoints = _visibleRoutePoints(delivery);
     final deliveryConnectorPoints = _deliveryConnectorPoints(delivery);
@@ -1865,7 +1910,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                           const SizedBox(width: AppSpacing.sm),
                           AppText(
-                            _isOnline ? 'ONLINE' : 'OFFLINE',
+                            !availabilityKnown
+                                ? 'CHECKING'
+                                : _isOnline
+                                ? 'ONLINE'
+                                : 'OFFLINE',
                             variant: AppTextVariant.labelLarge,
                             color: _isOnline
                                 ? Colors.white
@@ -1912,12 +1961,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(
+          NotificationListener<DraggableScrollableNotification>(
+            onNotification: (notification) {
+              _deliverySheetExtent = notification.extent;
+              return false;
+            },
+            child: DraggableScrollableSheet(
+              key: ValueKey(
+                '${delivery?['id'] ?? 'availability'}:${delivery?['status'] ?? 'idle'}',
+              ),
+              initialChildSize: delivery?['status'] == 'Assigned' ? 0.55 : 0.32,
+              minChildSize: delivery?['status'] == 'Assigned' ? 0.38 : 0.18,
+              maxChildSize: 0.80,
+              snap: true,
+              snapSizes: delivery?['status'] == 'Assigned'
+                  ? const [0.55]
+                  : const [0.32, 0.55],
+              builder: (context, sheetScrollController) => Container(
+                decoration: BoxDecoration(
                 color: context.appSurface,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(24),
@@ -1931,17 +1992,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   ),
                 ],
               ),
-              child: SafeArea(
+                child: SafeArea(
                 top: false,
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxHeight: MediaQuery.sizeOf(context).height * 0.58,
-                    ),
-                    child: _isOnline && delivery?['status'] == 'Assigned'
-                        ? _buildAssignedOfferPanel(delivery!)
+                  child: _isOnline && delivery?['status'] == 'Assigned'
+                        ? _buildAssignedOfferPanel(
+                            delivery!,
+                            sheetScrollController,
+                          )
                         : SingleChildScrollView(
+                            controller: sheetScrollController,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -2023,25 +2084,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildAssignedOfferPanel(Map<String, dynamic> delivery) {
-    final height = math.min(MediaQuery.sizeOf(context).height * 0.55, 420.0);
-    return SizedBox(
-      height: height,
-      child: Column(
+  Widget _buildAssignedOfferPanel(
+    Map<String, dynamic> delivery,
+    ScrollController sheetScrollController,
+  ) {
+    return Column(
         children: [
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: context.appBorder,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
           Expanded(
             child: SingleChildScrollView(
+              controller: sheetScrollController,
               child: Column(
                 children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: context.appBorder,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   _buildDeliveryHeader(
                     'New offer · ${_offerSecondsLeft}s',
                     delivery,
@@ -2085,13 +2147,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton.icon(
-                onPressed: _isUpdating || _offerSecondsLeft == 0
-                    ? null
-                    : () => _editOfferFee(delivery),
-                icon: const Icon(Icons.edit_outlined, size: 18),
-                label: const Text('Set fare'),
-              ),
               TextButton(
                 onPressed: _isUpdating ? null : _rejectDelivery,
                 child: const Text('Decline offer'),
@@ -2099,35 +2154,48 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ],
           ),
         ],
-      ),
     );
   }
 
   Widget _buildAvailabilityCard() {
+    final availabilityKnown =
+        (_availabilityInitialized && _driverRecord != null) ||
+        _startupOnlineFallback;
     final lastUpload = _lastLocationUploadAt;
     final hasSharedLocation = lastUpload != null;
+    final dispatchOnline = _driverRecord?['status'] == 'Online' &&
+        _driverRecord?['availability_paused'] != true;
     final ready =
         _isOnline &&
+        dispatchOnline &&
         lastUpload != null &&
-        DateTime.now().difference(lastUpload) < const Duration(minutes: 2);
-    final title = !_isOnline
+        DateTime.now().difference(lastUpload) < const Duration(seconds: 90);
+    final title = !availabilityKnown
+        ? 'Restoring availability'
+        : !_isOnline
         ? 'Taking a break'
+        : !dispatchOnline
+        ? 'Connecting to dispatch'
         : ready
         ? 'Ready for your next delivery'
         : hasSharedLocation
-        ? 'Online · updating location'
-        : 'Finding your location';
-    final subtitle = !_isOnline
+        ? 'Online · refreshing GPS'
+        : 'Online · finding GPS';
+    final subtitle = !availabilityKnown
+        ? 'Checking your last availability choice. You can tap CHECKING above to go online now.'
+        : !_isOnline
         ? 'You paused new offers. Tap OFFLINE above when you are ready again.'
+        : !dispatchOnline
+        ? 'Syncing your online status. Location tracking runs in the background.'
         : ready
         ? 'We will let you know as soon as a new offer arrives.'
         : hasSharedLocation
-        ? 'Location refresh is running in the background. Offers resume when GPS updates.'
+        ? 'GPS will keep retrying in the background. Stay online; there is no need to toggle OFFLINE.'
         : _locationIssue ??
               (_hasFreshGpsFix
                   ? 'Sharing your location with dispatch automatically.'
-                  : 'Finding your location automatically. Keep device location on.');
-    final paused = !_isOnline;
+                  : 'Finding GPS in the background. Keep device location on and stay online.');
+    final paused = availabilityKnown && !_isOnline;
     final foreground = paused ? context.appTextPrimary : Colors.white;
     final secondary = paused
         ? context.isAppDark
@@ -2174,7 +2242,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  !_isOnline
+                  paused
                       ? Icons.pause_rounded
                       : ready
                       ? Icons.route_rounded
@@ -2194,7 +2262,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  !_isOnline
+                  !availabilityKnown
+                      ? 'CHECKING'
+                      : !_isOnline
                       ? 'PAUSED'
                       : ready
                       ? 'AVAILABLE'
@@ -2241,7 +2311,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Widget _buildHomeDrawer() {
     final name = _driverRecord?['name']?.toString() ?? 'Driver';
-    final status = _isOnline ? 'Online' : 'Offline';
+    final status = !_availabilityInitialized
+        ? 'Checking'
+        : _isOnline
+        ? 'Online'
+        : 'Offline';
     final vehicle = _driverRecord?['vehicle_type']?.toString() ?? 'Driver';
 
     return Drawer(

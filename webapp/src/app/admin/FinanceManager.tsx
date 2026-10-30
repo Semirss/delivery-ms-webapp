@@ -14,6 +14,7 @@ type FinanceData = {
   wallets: { driver_id: string; commission_credit: number; reserved_credit: number; earnings_balance: number;
     reserved_cashout: number; driver?: { name: string } }[];
   ledger: { id: string; kind: string; created_at: string; credit_delta: number; earnings_delta: number; owner_commission: number; driver?: { name: string } }[];
+  drivers: { id: string; name: string; phone: string | null }[];
 };
 const money = (value: unknown) => `${Number(value ?? 0).toFixed(2)} ETB`;
 const field = 'w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900';
@@ -34,6 +35,11 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   const [collection,setCollection] = useState('cash');
   const [paymentReference,setPaymentReference] = useState('');
   const [paymentConfirmed,setPaymentConfirmed] = useState(false);
+  const [grantScope,setGrantScope] = useState<'one' | 'selected' | 'all'>('one');
+  const [grantIds,setGrantIds] = useState<string[]>([]);
+  const [grantAmount,setGrantAmount] = useState('');
+  const [grantNote,setGrantNote] = useState('');
+  const [grantKey,setGrantKey] = useState(() => crypto.randomUUID());
   const load = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/finance',{ cache:'no-store' });
@@ -61,7 +67,7 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   return <div className="space-y-6">
     <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 text-sm text-amber-900">
       <p className="font-extrabold">Review payments before updating wallets</p>
-      <p className="mt-1">For top-ups, compare the screenshot with the payment received at {BUSINESS_TELEBIRR_PHONE}. For cash-outs, send the payment first. Enter the real transaction reference when you approve.</p>
+      <p className="mt-1">For top-ups, compare the screenshot with the payment received at {BUSINESS_TELEBIRR_PHONE}. Enter the real transaction reference when you approve. Older cash-out requests can still be settled here.</p>
     </div>
     {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>}
     {notice && <p role="status" className="rounded-xl bg-emerald-50 p-4 text-emerald-700">{notice}</p>}
@@ -105,6 +111,26 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
           <label className="flex gap-2 text-sm"><input type="checkbox" required checked={paymentConfirmed} onChange={e => setPaymentConfirmed(e.target.checked)}/>I verified the full delivery fee in the business account.</label>
           <button disabled={busy || !paymentConfirmed} className="rounded-xl bg-emerald-700 px-4 py-2 text-white font-bold disabled:opacity-50">Confirm received payment</button>
         </form>}
+      </section>
+      <section className="rounded-2xl border bg-white p-5 space-y-4">
+        <h3 className="font-extrabold">Add commission credit</h3>
+        <p className="text-sm text-neutral-500">Choose one driver, selected drivers, or every approved active driver. Each selected driver receives the full amount.</p>
+        <form className="space-y-3" onSubmit={async e => {
+          e.preventDefault();
+          const count = grantScope === 'all' ? data.drivers.length : grantIds.length;
+          if (!count || !window.confirm(`Add ${money(grantAmount)} credit to ${count} driver${count === 1 ? '' : 's'}?`)) return;
+          if (await mutate({ action: 'credit_grant', scope: grantScope, driver_ids: grantIds,
+            amount: Number(grantAmount), note: grantNote, idempotency_key: grantKey },
+            `Credit granted to ${count} driver${count === 1 ? '' : 's'}.`)) {
+            setGrantKey(crypto.randomUUID()); setGrantAmount(''); setGrantNote(''); setGrantIds([]);
+          }
+        }}>
+          <label className="block text-sm font-bold">Recipients<select className={field} value={grantScope} onChange={e => {setGrantScope(e.target.value as 'one' | 'selected' | 'all');setGrantIds([]);}}><option value="one">One driver</option><option value="selected">Selected drivers</option><option value="all">All approved active drivers</option></select></label>
+          {grantScope === 'one' && <label className="block text-sm font-bold">Driver<select className={field} required value={grantIds[0] ?? ''} onChange={e => setGrantIds(e.target.value ? [e.target.value] : [])}><option value="">Choose a driver</option>{data.drivers.map(driver => <option key={driver.id} value={driver.id}>{driver.name} · {driver.phone}</option>)}</select></label>}
+          {grantScope === 'selected' && <div className="max-h-48 overflow-y-auto rounded-xl border p-3 space-y-2" aria-label="Select drivers">{data.drivers.map(driver => <label key={driver.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={grantIds.includes(driver.id)} onChange={e => setGrantIds(previous => e.target.checked ? [...previous,driver.id] : previous.filter(id => id !== driver.id))}/>{driver.name} · {driver.phone}</label>)}</div>}
+          <div className="grid gap-3 sm:grid-cols-2"><label className="text-sm font-bold">Credit per driver (ETB)<input className={field} required type="number" min="0.01" max="1000000" step="0.01" value={grantAmount} onChange={e => setGrantAmount(e.target.value)}/></label><label className="text-sm font-bold">Reason<input className={field} required minLength={3} maxLength={300} value={grantNote} onChange={e => setGrantNote(e.target.value)} placeholder="Reason shown to drivers"/></label></div>
+          <button disabled={busy || !data.drivers.length || (grantScope !== 'all' && !grantIds.length)} className="rounded-xl bg-emerald-700 px-5 py-2 text-white font-bold disabled:opacity-50">Add credit</button>
+        </form>
       </section>
       <section className="rounded-2xl border bg-white p-5 space-y-4">
         <div className="flex justify-between"><h3 className="font-extrabold">Wallet requests · {pending.length} pending</h3><button onClick={load} className="text-sm font-bold text-blue-600">Refresh</button></div>

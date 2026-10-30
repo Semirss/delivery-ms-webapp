@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, type FormEvent } from "react";
 import { resolveSupabaseClient, supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import NetworkStatus from "../components/NetworkStatus";
@@ -77,6 +77,7 @@ type Driver = {
   approval_status: string;
   vehicle_type?: string;
   is_active?: boolean;
+  availability_paused?: boolean | null;
   current_lat?: number | null;
   current_lng?: number | null;
   last_location_update?: string | null;
@@ -94,6 +95,7 @@ type DeliveryNotification = {
   pickup_location: string;
   dropoff_location: string;
 };
+type CreditNotification = { id: string; title: string; body: string; created_at: string; read_at: string | null };
 
 // ── Timeout config ───────────────────────────────────────────────────────────
 type ModalPromptData = Record<string, string>;
@@ -219,6 +221,13 @@ export default function AdminDashboard() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<DeliveryNotification[]>([]);
+  const [creditNotifications, setCreditNotifications] = useState<CreditNotification[]>([]);
+  const [messageAudience, setMessageAudience] = useState<'driver' | 'client' | 'both'>('driver');
+  const [messageTitle, setMessageTitle] = useState('');
+  const [messageBody, setMessageBody] = useState('');
+  const [messageStatus, setMessageStatus] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const seenCreditIdsRef = useRef<Set<string> | null>(null);
   const [realtimeState, setRealtimeState] = useState<'connecting' | 'live' | 'reconnecting' | 'offline'>('connecting');
   const [, setTickKey] = useState(0); // force countdown re-render
   const [assigningDelivery, setAssigningDelivery] = useState<Delivery | null>(null); // for map-assisted assignment
@@ -252,17 +261,17 @@ export default function AdminDashboard() {
         oscillator.connect(gainNode);
         gainNode.connect(ctx.destination);
         oscillator.frequency.setValueAtTime(freq, startTime);
-        oscillator.type = 'sine';
+        oscillator.type = 'triangle';
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.4, startTime + 0.01);
+        gainNode.gain.linearRampToValueAtTime(0.85, startTime + 0.01);
         gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
         oscillator.start(startTime);
         oscillator.stop(startTime + duration);
       };
       const t = ctx.currentTime;
-      playTone(520, t, 0.18);
-      playTone(660, t + 0.2, 0.18);
-      playTone(800, t + 0.4, 0.28);
+      playTone(650, t, 0.24);
+      playTone(820, t + 0.27, 0.24);
+      playTone(980, t + 0.54, 0.4);
     } catch (e) {
       console.warn('Audio notification not supported', e);
     }
@@ -276,6 +285,42 @@ export default function AdminDashboard() {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, 5000);
   }, [playNotificationSound]);
+
+  const loadCreditNotifications = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/notifications', { cache: 'no-store' });
+      if (!response.ok) return;
+      const rows = await response.json() as CreditNotification[];
+      if (seenCreditIdsRef.current !== null) {
+        const latest = rows.find(row => !seenCreditIdsRef.current!.has(row.id) && !row.read_at);
+        if (latest) addToast(latest.body);
+      }
+      seenCreditIdsRef.current = new Set(rows.map(row => row.id));
+      setCreditNotifications(rows);
+    } catch (error) { console.error('Could not load credit notifications', error); }
+  }, [addToast]);
+
+  useEffect(() => {
+    void loadCreditNotifications();
+    const interval = setInterval(() => void loadCreditNotifications(), 15000);
+    return () => clearInterval(interval);
+  }, [loadCreditNotifications]);
+
+  const sendAppMessage = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (sendingMessage) return;
+    setSendingMessage(true); setMessageStatus('');
+    try {
+      const response = await fetch('/api/admin/notifications', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audience: messageAudience, title: messageTitle, message: messageBody }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Message failed.');
+      setMessageBody(''); setMessageTitle(''); setMessageStatus('Message sent to the selected app audience.');
+    } catch (error) { setMessageStatus(error instanceof Error ? error.message : 'Message failed.'); }
+    finally { setSendingMessage(false); }
+  };
 
   // ── fetchData – wrapped in useCallback so its identity is stable.
   // A ref is also kept so realtime callbacks always call the *current* version.
@@ -497,7 +542,7 @@ export default function AdminDashboard() {
   const approveDriver = (driver: Driver) => {
     setModalConfig({
       isOpen: true, type: 'confirm', title: 'Approve Driver',
-      message: 'Approve this driver? They will be notified automatically via SMS.',
+      message: 'Approve this driver and add 2,000 ETB commission credit? They will also be notified by SMS.',
       onCancel: () => setModalConfig((prev) => ({ ...prev, isOpen: false })),
       onConfirm: async () => {
         setModalConfig((prev) => ({ ...prev, isOpen: false }));
@@ -514,7 +559,7 @@ export default function AdminDashboard() {
         } else {
           if (driver.phone) {
             try {
-              await fetch('/api/sms/send', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: driver.phone, message: "🎉 Congratulations! You have been approved by the Admin. You can now Log In using your email and password." }) });
+              await fetch('/api/sms/send', { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: driver.phone, message: "Congratulations! Your driver account is approved. You have 2,000 ETB commission credit and can now log in." }) });
             } catch (e) { console.error("Failed to notify driver via SMS", e); }
           }
           fetchData();
@@ -599,6 +644,9 @@ export default function AdminDashboard() {
 
   // ── Delivery assignment ───────────────────────────────────────────────────
   const assignDriver = async (deliveryId: string, driverId: string) => {
+    const selectedDriver = drivers.find(driver => driver.id === driverId);
+    if (selectedDriver && gpsQuality(selectedDriver) === 'unknown' &&
+        !window.confirm(`${selectedDriver.name}'s GPS is still unknown. Send the offer? They will need a fresh GPS fix before accepting.`)) return;
     const response = await fetch(`/api/deliveries/${deliveryId}/assign`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -750,6 +798,8 @@ export default function AdminDashboard() {
               onClick={() => {
                 setUnreadCount(0);
                 setNotificationsOpen(true);
+                setCreditNotifications(previous => previous.map(row => ({ ...row, read_at: row.read_at ?? new Date().toISOString() })));
+                void fetch('/api/admin/notifications', { method: 'PATCH' });
               }}
               className="relative p-2 text-neutral-500 hover:text-blue-600 transition-colors bg-neutral-50 hover:bg-blue-50 rounded-full"
               title="Notifications"
@@ -757,9 +807,9 @@ export default function AdminDashboard() {
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              {unreadCount > 0 && (
+              {unreadCount + creditNotifications.filter(row => !row.read_at).length > 0 && (
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-red-500 rounded-full shadow-sm animate-[bounce_1s_infinite]">
-                  {unreadCount}
+                  {unreadCount + creditNotifications.filter(row => !row.read_at).length}
                 </span>
               )}
             </button>
@@ -975,7 +1025,10 @@ export default function AdminDashboard() {
                                   {assignableDrivers.filter(drv => gpsQuality(drv) === 'live').map(drv => (
                                     <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online 🟢)</option>
                                   ))}
-                                  {assignableDrivers.filter(drv => gpsQuality(drv) !== 'live').map(drv => (
+                                  {assignableDrivers.filter(drv => gpsQuality(drv) === 'unknown').map(drv => (
+                                    <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online, GPS pending)</option>
+                                  ))}
+                                  {assignableDrivers.filter(drv => !['live', 'unknown'].includes(gpsQuality(drv))).map(drv => (
                                     <option key={drv.id} value={drv.id} disabled>{drv.name} (GPS {gpsQuality(drv)})</option>
                                   ))}
                                 </select>
@@ -1332,14 +1385,15 @@ export default function AdminDashboard() {
             <div className="p-6 border-b border-neutral-100 flex items-center justify-between">
               <h3 className="text-xl font-extrabold text-neutral-900">Notifications</h3>
               <div className="flex items-center space-x-2">
-                <button onClick={() => { setNotifications([]); setUnreadCount(0); }} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100">Clear</button>
+                <button onClick={() => { setNotifications([]); setUnreadCount(0); }} className="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100">Clear deliveries</button>
                 <button onClick={() => setNotificationsOpen(false)} className="px-3 py-1.5 bg-neutral-100 text-neutral-700 rounded-lg text-sm font-bold hover:bg-neutral-200">Close</button>
               </div>
             </div>
             <div className="max-h-[60vh] overflow-y-auto p-4 space-y-3">
-              {notifications.length === 0 && (
-                <div className="py-10 text-center text-neutral-500 font-medium">No delivery notifications yet.</div>
+              {notifications.length === 0 && creditNotifications.length === 0 && (
+                <div className="py-10 text-center text-neutral-500 font-medium">No notifications yet.</div>
               )}
+              {creditNotifications.map(note => <div key={note.id} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4"><p className="text-sm font-extrabold text-emerald-900">{note.title}</p><p className="mt-1 text-sm text-emerald-800">{note.body}</p><p className="mt-2 text-xs text-emerald-700">{new Date(note.created_at).toLocaleString()}</p><button onClick={() => {setNotificationsOpen(false);setActiveTab('finance');}} className="mt-2 text-sm font-bold text-emerald-800 underline">Review credit request</button></div>)}
               {notifications.map((note) => (
                 <div key={note.id} className="bg-neutral-50 border border-neutral-200 rounded-2xl p-4">
                   <p className="text-sm font-extrabold text-neutral-900">Requested by {note.customer_name || 'Customer'}</p>
@@ -1349,6 +1403,14 @@ export default function AdminDashboard() {
                   <p className="text-[11px] text-neutral-400 mt-2">{new Date(note.created_at).toLocaleString()}</p>
                 </div>
               ))}
+              <form onSubmit={sendAppMessage} className="space-y-3 rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                <h4 className="font-extrabold text-neutral-900">Send an app notification</h4>
+                <label className="block text-sm font-bold">Send to<select className="mt-1 w-full rounded-lg border bg-white p-2" value={messageAudience} onChange={e => setMessageAudience(e.target.value as 'driver' | 'client' | 'both')}><option value="driver">All drivers</option><option value="client">All clients</option><option value="both">Both apps</option></select></label>
+                <label className="block text-sm font-bold">Title<input className="mt-1 w-full rounded-lg border bg-white p-2" required maxLength={100} value={messageTitle} onChange={e => setMessageTitle(e.target.value)}/></label>
+                <label className="block text-sm font-bold">Message<textarea className="mt-1 w-full rounded-lg border bg-white p-2" required maxLength={1000} rows={3} value={messageBody} onChange={e => setMessageBody(e.target.value)}/></label>
+                {messageStatus && <p role="status" className="text-sm">{messageStatus}</p>}
+                <button disabled={sendingMessage} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50">{sendingMessage ? 'Sending…' : 'Send notification'}</button>
+              </form>
             </div>
           </div>
         </div>

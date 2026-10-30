@@ -5,7 +5,8 @@ import 'package:driver_app/core/storage/storage_key_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverOperationsApi {
-  DriverOperationsApi({Dio? dio}) : _dio = dio ?? Dio();
+  DriverOperationsApi({Dio? dio})
+      : _dio = dio ?? Dio(BaseOptions(connectTimeout: const Duration(seconds: 10)));
   final Dio _dio;
 
   static String availabilityPauseKey(String driverId) =>
@@ -26,6 +27,8 @@ class DriverOperationsApi {
     if (token == null || token.split('.').length != 3) {
       throw Exception('Please sign out and sign in again to continue.');
     }
+    final availabilityUpdate = path == '/api/driver/operations' &&
+        data is Map && data['action'] == 'online';
     try {
       final response = await _dio.request<Map<String, dynamic>>(
         '$base$path',
@@ -33,8 +36,8 @@ class DriverOperationsApi {
         options: Options(
           method: method,
           headers: {'Authorization': 'Bearer $token'},
-          sendTimeout: const Duration(seconds: 20),
-          receiveTimeout: const Duration(seconds: 30),
+          sendTimeout: Duration(seconds: availabilityUpdate ? 10 : 20),
+          receiveTimeout: Duration(seconds: availabilityUpdate ? 12 : 30),
         ),
       );
       return Map<String, dynamic>.from(response.data ?? {});
@@ -49,6 +52,7 @@ class DriverOperationsApi {
   }
 
   Future<Map<String, dynamic>> load() => request('/api/driver/operations');
+  Future<Map<String, dynamic>> profile() => request('/api/driver/profile');
   Future<Map<String, dynamic>> update(Map<String, dynamic> data) =>
       request('/api/driver/operations', method: 'PATCH', data: data);
   Future<Map<String, dynamic>> deliveryAction(String id, String action) =>
@@ -57,11 +61,6 @@ class DriverOperationsApi {
         method: 'POST',
         data: {'action': action},
       );
-  Future<Map<String, dynamic>> quoteOffer(String id, double fare) => request(
-    '/api/driver/deliveries/${Uri.encodeComponent(id)}',
-    method: 'POST',
-    data: {'action': 'quote', 'fare': fare},
-  );
   Future<Map<String, dynamic>> walletRequest(Map<String, dynamic> data) =>
       request('/api/driver/wallet', method: 'POST', data: data);
   Future<Map<String, dynamic>> walletTopupRequest(

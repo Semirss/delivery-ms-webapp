@@ -31,7 +31,7 @@ class _WalletRequestControllerScope extends StatefulWidget {
 class _WalletRequestControllerScopeState
     extends State<_WalletRequestControllerScope> {
   final _controllers = List<TextEditingController>.generate(
-    4,
+    1,
     (_) => TextEditingController(),
   );
 
@@ -152,7 +152,7 @@ class _WalletScreenState extends State<WalletScreen>
   Future<void> _request(String kind) async {
     final form = GlobalKey<FormState>();
     final key = _requestId();
-    String method = kind == 'convert' ? 'earnings' : 'telebirr';
+    String method = 'telebirr';
     bool busy = false;
     bool submitted = false;
     Map<String, dynamic>? attemptedBody;
@@ -167,9 +167,6 @@ class _WalletScreenState extends State<WalletScreen>
       builder: (context) => _WalletRequestControllerScope(
         builder: (context, controllers) {
           final amount = controllers[0];
-          final name = controllers[1];
-          final account = controllers[2];
-          final bank = controllers[3];
           return StatefulBuilder(
             builder: (context, setSheetState) {
               return PopScope(
@@ -189,20 +186,12 @@ class _WalletScreenState extends State<WalletScreen>
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            kind == 'topup'
-                                ? 'Buy commission credit'
-                                : kind == 'cashout'
-                                ? 'Request a cash out'
-                                : 'Move earnings to credit',
+                            'Buy commission credit',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            kind == 'convert'
-                                ? 'Moves available wallet earnings into non-withdrawable commission credit.'
-                                : kind == 'topup'
-                                ? 'Pay the amount by Telebirr to $_telebirrTopupNumber, then upload a screenshot of the completed payment. Credit is added after review.'
-                                : 'Dispatch reviews this request and sends payment to the account below. The amount stays reserved until payment is reconciled or the request is rejected.',
+                            'Pay the amount by Telebirr to $_telebirrTopupNumber, then upload a screenshot of the completed payment. Credit is added after review.',
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
@@ -227,30 +216,6 @@ class _WalletScreenState extends State<WalletScreen>
                                   : null;
                             },
                           ),
-                          if (kind == 'cashout') ...[
-                            const SizedBox(height: 12),
-                            DropdownButtonFormField<String>(
-                              initialValue: method,
-                              decoration: const InputDecoration(
-                                labelText: 'Payment method',
-                              ),
-                              items: const [
-                                DropdownMenuItem(
-                                  value: 'telebirr',
-                                  child: Text('Telebirr'),
-                                ),
-                                DropdownMenuItem(
-                                  value: 'bank',
-                                  child: Text('Bank account'),
-                                ),
-                              ],
-                              onChanged: busy || submitted
-                                  ? null
-                                  : (value) => setSheetState(
-                                      () => method = value ?? 'telebirr',
-                                    ),
-                            ),
-                          ],
                           if (kind == 'topup') ...[
                             const SizedBox(height: 12),
                             OutlinedButton.icon(
@@ -311,42 +276,6 @@ class _WalletScreenState extends State<WalletScreen>
                                 fit: BoxFit.contain,
                               ),
                           ],
-                          if (kind == 'cashout') ...[
-                            TextFormField(
-                              controller: name,
-                              enabled: !busy && !submitted,
-                              decoration: const InputDecoration(
-                                labelText: 'Account holder name',
-                              ),
-                              validator: (v) => (v?.trim().length ?? 0) < 2
-                                  ? 'Enter the account holder name.'
-                                  : null,
-                            ),
-                            TextFormField(
-                              controller: account,
-                              enabled: !busy && !submitted,
-                              decoration: InputDecoration(
-                                labelText: method == 'telebirr'
-                                    ? 'Telebirr phone number'
-                                    : 'Bank account number',
-                              ),
-                              keyboardType: TextInputType.number,
-                              validator: (v) => (v?.trim().length ?? 0) < 7
-                                  ? 'Enter a valid recipient account.'
-                                  : null,
-                            ),
-                            if (method == 'bank')
-                              TextFormField(
-                                controller: bank,
-                                enabled: !busy && !submitted,
-                                decoration: const InputDecoration(
-                                  labelText: 'Bank name',
-                                ),
-                                validator: (v) => (v?.trim().length ?? 0) < 2
-                                    ? 'Enter your bank name.'
-                                    : null,
-                              ),
-                          ],
                           if (error != null)
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -374,9 +303,9 @@ class _WalletScreenState extends State<WalletScreen>
                                       'kind': kind,
                                       'amount': double.parse(amount.text),
                                       'method': method,
-                                      'account_name': name.text.trim(),
-                                      'account_number': account.text.trim(),
-                                      'bank_name': bank.text.trim(),
+                                      'account_name': '',
+                                      'account_number': '',
+                                      'bank_name': '',
                                       'idempotency_key': key,
                                     };
                                     setSheetState(() {
@@ -406,9 +335,7 @@ class _WalletScreenState extends State<WalletScreen>
                                           ).showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                kind == 'convert'
-                                                    ? 'Earnings moved to commission credit.'
-                                                    : 'Request submitted. Payment is pending review.',
+                                                'Request submitted. Payment is pending review.',
                                               ),
                                             ),
                                           );
@@ -429,8 +356,6 @@ class _WalletScreenState extends State<WalletScreen>
                                   ? 'Submitting…'
                                   : submitted
                                   ? 'Retry same request'
-                                  : kind == 'convert'
-                                  ? 'Confirm conversion'
                                   : 'Submit request',
                             ),
                           ),
@@ -512,7 +437,7 @@ class _WalletScreenState extends State<WalletScreen>
                       'Available earnings',
                       _number(wallet['earnings_balance']) -
                           _number(wallet['reserved_cashout']),
-                      '${_money(wallet['reserved_cashout'])} reserved for cash out',
+                      'Contact dispatch about your earnings balance.',
                       icon: Icons.trending_up_rounded,
                     ),
                     const SizedBox(height: 20),
@@ -555,22 +480,6 @@ class _WalletScreenState extends State<WalletScreen>
                       ),
                       icon: const Icon(Icons.add_circle_outline_rounded),
                       label: const Text('Buy commission credit'),
-                    ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () => _request('cashout'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      icon: const Icon(Icons.account_balance_outlined),
-                      label: const Text('Cash out'),
-                    ),
-                    TextButton(
-                      onPressed: () => _request('convert'),
-                      child: const Text('Move earnings to credit'),
                     ),
                     const SizedBox(height: 28),
                     Text(

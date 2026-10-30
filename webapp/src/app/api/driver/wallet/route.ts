@@ -17,6 +17,7 @@ export async function POST(request: Request) {
     const form = isMultipart ? await request.formData() : null;
     const body = form ? Object.fromEntries(form.entries()) : await request.json();
     const kind = textValue(body.kind, 20);
+    if (kind !== 'topup') throw new OperationsError('Only commission credit top-ups are available.');
     const key = uuid(body.idempotency_key);
     const amount = moneyAmount(Number(body.amount));
     const method = textValue(body.method, 20);

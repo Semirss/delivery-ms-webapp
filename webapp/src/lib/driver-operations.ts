@@ -45,10 +45,10 @@ export function validatedLocation(body: Record<string, unknown>, now = Date.now(
 }
 
 export function gpsQuality(driver: {
-  status?: string; current_lat?: number | null; current_lng?: number | null;
+  status?: string; availability_paused?: boolean | null; current_lat?: number | null; current_lng?: number | null;
   last_location_update?: string | null; location_accuracy_m?: number | null;
 }, now = Date.now()): 'live' | 'stale' | 'inaccurate' | 'offline' | 'unknown' {
-  if (driver.status !== 'Online') return 'offline';
+  if (driver.status !== 'Online' || driver.availability_paused === true) return 'offline';
   const observed = Date.parse(driver.last_location_update ?? '');
   if (driver.current_lat == null || driver.current_lng == null || !Number.isFinite(driver.current_lat) ||
       !Number.isFinite(driver.current_lng) || Math.abs(driver.current_lat) > 90 || Math.abs(driver.current_lng) > 180 ||

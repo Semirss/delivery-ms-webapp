@@ -356,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context,
             icon: Icons.account_balance_wallet_outlined,
             title: 'Wallet',
-            subtitle: 'Commission credit, Telebirr and bank cash out',
+            subtitle: 'Commission credit and Telebirr top-ups',
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
             ),
