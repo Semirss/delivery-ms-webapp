@@ -24,6 +24,10 @@ const androidPlayStoreUrls: Record<AppKey, string> = {
   client: "https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client",
   driver: "https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.driver",
 };
+const iosAppStoreUrls: Record<AppKey, string> = {
+  client: "https://apps.apple.com/us/app/motobike-delivery/id6801999163",
+  driver: "https://apps.apple.com/us/app/motobike-driver/id6801999509",
+};
 
 const defaultRows: AppVersion[] = [
   {
@@ -45,7 +49,7 @@ const defaultRows: AppVersion[] = [
     latest_build: 1,
     latest_version: "1.0.0",
     force_update: false,
-    update_url: androidPlayStoreUrls.driver,
+    update_url: iosAppStoreUrls.client,
     release_notes: "",
     maintenance_mode: false,
     maintenance_message: "",
@@ -57,7 +61,7 @@ const defaultRows: AppVersion[] = [
     latest_build: 1,
     latest_version: "1.0.0",
     force_update: false,
-    update_url: "",
+    update_url: androidPlayStoreUrls.driver,
     release_notes: "",
     maintenance_mode: false,
     maintenance_message: "",
@@ -69,7 +73,7 @@ const defaultRows: AppVersion[] = [
     latest_build: 1,
     latest_version: "1.0.0",
     force_update: false,
-    update_url: "",
+    update_url: iosAppStoreUrls.driver,
     release_notes: "",
     maintenance_mode: false,
     maintenance_message: "",
@@ -87,8 +91,11 @@ function labelFor(row: AppVersion) {
 }
 
 function withDefaultUpdateUrl(row: AppVersion) {
-  if (row.update_url.trim() || row.platform !== "android") return row;
-  return { ...row, update_url: androidPlayStoreUrls[row.app] };
+  if (row.update_url.trim()) return row;
+  return {
+    ...row,
+    update_url: row.platform === "android" ? androidPlayStoreUrls[row.app] : iosAppStoreUrls[row.app],
+  };
 }
 
 function errorMessage(error: unknown, fallback: string) {

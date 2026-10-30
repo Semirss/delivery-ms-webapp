@@ -13,6 +13,10 @@ const ANDROID_PLAY_STORE_URLS: Record<string, string> = {
     client: 'https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.client',
     driver: 'https://play.google.com/store/apps/details?id=com.motobikedeliveryservice.driver',
 };
+const IOS_APP_STORE_URLS: Record<string, string> = {
+    client: 'https://apps.apple.com/us/app/motobike-delivery/id6801999163',
+    driver: 'https://apps.apple.com/us/app/motobike-driver/id6801999509',
+};
 
 type VersionPayload = {
     app: string;
@@ -62,7 +66,9 @@ function errorMessage(error: unknown, fallback: string) {
 }
 
 function defaultUpdateUrl(app: string, platform: string) {
-    return platform === 'android' ? ANDROID_PLAY_STORE_URLS[app] || '' : '';
+    return platform === 'android'
+        ? ANDROID_PLAY_STORE_URLS[app] || ''
+        : IOS_APP_STORE_URLS[app] || '';
 }
 
 function withDefaultUpdateUrl<T extends { app: string; platform: string; update_url: string }>(row: T): T {
