@@ -18,8 +18,8 @@ export async function GET() {
     ]);
     for (const result of results) if (result.error) throw result.error;
     // Requests and ledger entries reference driver_wallets, not drivers directly.
-    const driverIds = [...new Set(results.slice(1).flatMap(result =>
-      (result.data ?? []).map((row: { driver_id: string }) => String(row.driver_id))))];
+    const driverIds = [...new Set(results.slice(1, 5).flatMap(result =>
+      (result.data ?? []).map((row: { driver_id: string }) => row.driver_id)))];
     const driverById = new Map<string, { name: string; phone: string | null }>();
     for (let start = 0; start < driverIds.length; start += 100) {
       const { data: drivers, error } = await db.from('drivers')
