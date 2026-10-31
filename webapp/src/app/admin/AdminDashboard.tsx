@@ -7,6 +7,7 @@ import NetworkStatus from "../components/NetworkStatus";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import AppVersionManager from "./AppVersionManager";
+import BackendManager from "./BackendManager";
 import DealsManager from "./DealsManager";
 import FoodMarketplaceManager from "./FoodMarketplaceManager";
 import LocationManager from "./LocationManager";
@@ -19,6 +20,7 @@ import {
   LogOut,
   MapPinned,
   Package,
+  ServerCog,
   Smartphone,
   Store,
   Users,
@@ -213,7 +215,7 @@ export default function AdminDashboard() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "locations" | "analytics" | "deals" | "versions" | "food" | "finance">("deliveries");
+  const [activeTab, setActiveTab] = useState<"deliveries" | "drivers" | "pending" | "map" | "locations" | "analytics" | "deals" | "versions" | "food" | "finance" | "backend">("deliveries");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [dateRange, setDateRange] = useState<DateRange>('today');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -743,6 +745,7 @@ export default function AdminDashboard() {
             { key: 'deals', label: 'Deals', icon: <BadgePercent className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'food', label: 'Food Market', icon: <Store className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
             { key: 'versions', label: 'App Versions', icon: <Smartphone className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
+            { key: 'backend', label: 'Backend', icon: <ServerCog className="h-5 w-5 shrink-0" strokeWidth={2.25} /> },
           ] as const).map(tab => (
             <button
               key={tab.key}
@@ -1372,6 +1375,8 @@ export default function AdminDashboard() {
               {activeTab === 'versions' && (
                 <AppVersionManager />
               )}
+
+              {activeTab === 'backend' && <BackendManager />}
 
             </div>
           )}
