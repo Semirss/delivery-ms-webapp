@@ -63,6 +63,27 @@ export async function POST(request: Request) {
       if (error) throw error;
       return operationsJson(data);
     }
+    if (body.action === 'payment_methods') {
+      const telebirrPhone = textValue(body.telebirr_phone, 30);
+      const bankEnabled = body.bank_enabled === true;
+      const bankName = textValue(body.bank_name, 100);
+      const bankAccountName = textValue(body.bank_account_name, 100);
+      const bankAccountNumber = textValue(body.bank_account_number, 34);
+      if (!/^(?:[+]251|251|0)9[0-9]{8}$/.test(telebirrPhone.replace(/[ ()-]/g, ''))) {
+        throw new OperationsError('Enter a valid Telebirr phone number.');
+      }
+      if (bankEnabled && (bankName.length < 2 || bankAccountName.length < 2 ||
+        !/^[0-9]{7,34}$/.test(bankAccountNumber))) {
+        throw new OperationsError('Enter the bank name, account holder and a 7 to 34 digit account number.');
+      }
+      const { data, error } = await db.from('driver_operations_settings').update({
+        telebirr_phone: telebirrPhone, bank_enabled: bankEnabled,
+        bank_name: bankName, bank_account_name: bankAccountName,
+        bank_account_number: bankAccountNumber, updated_at: new Date().toISOString(),
+      }).eq('id', true).select().single();
+      if (error) throw error;
+      return operationsJson(data);
+    }
     if (body.action === 'review') {
       if (typeof body.approve !== 'boolean') throw new OperationsError('Choose approval or rejection.');
       const { data, error } = await db.rpc('review_driver_wallet_request', {

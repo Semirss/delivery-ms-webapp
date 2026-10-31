@@ -21,19 +21,33 @@ export async function POST(request: Request) {
     const key = uuid(body.idempotency_key);
     const amount = moneyAmount(Number(body.amount));
     const method = textValue(body.method, 20);
+    const { data: settings, error: settingsError } = await db.from('driver_operations_settings')
+      .select('telebirr_phone,bank_enabled,bank_name,bank_account_name,bank_account_number')
+      .eq('id', true).single();
+    if (settingsError) throw settingsError;
+    const { data: priorRequest, error: priorError } = await db.from('driver_wallet_requests')
+      .select('method,account_name,account_number,bank_name,proof_path,proof_mime_type')
+      .eq('driver_id', driver.id).eq('idempotency_key', key).maybeSingle();
+    if (priorError) throw priorError;
+    if (method !== 'telebirr' && method !== 'bank') throw new OperationsError('Choose Telebirr or bank transfer.');
+    if (priorRequest && priorRequest.method !== method) {
+      throw new OperationsError('This request was started with another payment method. Start a new top-up.');
+    }
+    if (method === 'bank' && !settings.bank_enabled && !priorRequest) {
+      throw new OperationsError('Bank transfer is not available right now. Refresh your wallet.');
+    }
+    const accountName = priorRequest?.account_name ?? (method === 'bank' ? settings.bank_account_name : '');
+    const accountNumber = priorRequest?.account_number ?? (method === 'bank' ? settings.bank_account_number : settings.telebirr_phone);
+    const bankName = priorRequest?.bank_name ?? (method === 'bank' ? settings.bank_name : '');
     let proof: { path: string; mime: string } | null = null;
     if (kind === 'topup') {
-      if (method !== 'telebirr') throw new OperationsError('Choose Telebirr for a commission credit top-up.');
       const file = form?.get('proof');
       if (!(file instanceof File) || file.size === 0 || file.size > 5 * 1024 * 1024) {
         throw new OperationsError('Upload a payment screenshot under 5 MB.');
       }
       const bytes = new Uint8Array(await file.arrayBuffer());
       const type = imageType(bytes);
-      const { data: existing, error: lookupError } = await db.from('driver_wallet_requests')
-        .select('proof_path,proof_mime_type').eq('driver_id', driver.id).eq('idempotency_key', key).maybeSingle();
-      if (lookupError) throw lookupError;
-      if (existing?.proof_path) proof = { path: existing.proof_path, mime: existing.proof_mime_type };
+      if (priorRequest?.proof_path) proof = { path: priorRequest.proof_path, mime: priorRequest.proof_mime_type };
       else {
         const path = `${driver.id}/${key}-${crypto.randomUUID()}.${type.ext}`;
         const { error: uploadError } = await db.storage.from(proofBucket).upload(path, bytes,
@@ -44,8 +58,8 @@ export async function POST(request: Request) {
     }
     const { data, error } = await db.rpc('request_driver_wallet', {
       p_driver_id: driver.id, p_kind: kind, p_amount: amount,
-      p_method: method, p_account_name: textValue(body.account_name),
-      p_account_number: textValue(body.account_number, 60), p_bank_name: textValue(body.bank_name),
+      p_method: method, p_account_name: accountName,
+      p_account_number: accountNumber, p_bank_name: bankName,
       p_key: key,
     });
     if (error) throw new OperationsError(error.message, 409);

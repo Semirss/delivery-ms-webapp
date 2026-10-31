@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-const _telebirrTopupNumber = '+251 931 323 328';
-
 String _requestId() {
   final random = Random.secure();
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));
@@ -125,7 +123,7 @@ class _WalletScreenState extends State<WalletScreen>
         {
           'kind': 'topup',
           'amount': _number(walletRequest['amount']),
-          'method': 'telebirr',
+          'method': walletRequest['method'] ?? 'telebirr',
           'account_name': walletRequest['account_name'] ?? '',
           'account_number': walletRequest['account_number'] ?? '',
           'bank_name': walletRequest['bank_name'] ?? '',
@@ -150,6 +148,18 @@ class _WalletScreenState extends State<WalletScreen>
   }
 
   Future<void> _request(String kind) async {
+    final settings = (_data?['settings'] as Map?) ?? {};
+    final telebirrPhone = settings['telebirr_phone']?.toString().trim() ?? '';
+    final bankEnabled = settings['bank_enabled'] == true;
+    final bankName = settings['bank_name']?.toString().trim() ?? '';
+    final bankAccountName = settings['bank_account_name']?.toString().trim() ?? '';
+    final bankAccountNumber = settings['bank_account_number']?.toString().trim() ?? '';
+    if (telebirrPhone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Payment details are unavailable. Refresh your wallet and try again.'),
+      ));
+      return;
+    }
     final form = GlobalKey<FormState>();
     final key = _requestId();
     String method = 'telebirr';
@@ -190,9 +200,23 @@ class _WalletScreenState extends State<WalletScreen>
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 12),
-                          Text(
-                            'Pay the amount by Telebirr to $_telebirrTopupNumber, then upload a screenshot of the completed payment. Credit is added after review.',
-                          ),
+                          if (bankEnabled) ...[
+                            DropdownButtonFormField<String>(
+                              initialValue: method,
+                              decoration: const InputDecoration(labelText: 'Payment method'),
+                              items: const [
+                                DropdownMenuItem(value: 'telebirr', child: Text('Telebirr')),
+                                DropdownMenuItem(value: 'bank', child: Text('Bank transfer')),
+                              ],
+                              onChanged: busy || submitted ? null : (value) {
+                                if (value != null) setSheetState(() => method = value);
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          Text(method == 'bank'
+                              ? 'Transfer to $bankName, $bankAccountName, account $bankAccountNumber. Then upload a screenshot of the completed payment. Credit is added after review.'
+                              : 'Pay the amount by Telebirr to $telebirrPhone, then upload a screenshot of the completed payment. Credit is added after review.'),
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: amount,
@@ -295,7 +319,7 @@ class _WalletScreenState extends State<WalletScreen>
                                     if (kind == 'topup' && proofBytes == null) {
                                       setSheetState(
                                         () => error =
-                                            'Upload your Telebirr payment screenshot.',
+                                            'Upload your completed payment screenshot.',
                                       );
                                       return;
                                     }
@@ -519,7 +543,7 @@ class _WalletScreenState extends State<WalletScreen>
                           ),
                           trailing:
                               request['kind'] == 'topup' &&
-                                  request['method'] == 'telebirr' &&
+                                  (request['method'] == 'telebirr' || request['method'] == 'bank') &&
                                   request['status'] == 'pending' &&
                                   request['proof_path'] == null
                               ? TextButton(

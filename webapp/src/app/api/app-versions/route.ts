@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
-import { parse } from 'cookie';
-import jwt from 'jsonwebtoken';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { isAdminRequest } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_change_me_in_production_123';
 const APPS = new Set(['client', 'driver']);
 const PLATFORMS = new Set(['android', 'ios']);
 const ANDROID_PLAY_STORE_URLS: Record<string, string> = {
@@ -30,19 +28,6 @@ type VersionPayload = {
     maintenance_mode: boolean;
     maintenance_message: string;
 };
-
-function isAdminRequest(request: Request) {
-    const cookieHeader = request.headers.get('cookie') || '';
-    const token = parse(cookieHeader).admin_token;
-    if (!token) return false;
-
-    try {
-        jwt.verify(token, JWT_SECRET);
-        return true;
-    } catch {
-        return false;
-    }
-}
 
 function toPositiveInteger(value: unknown, field: string) {
     const parsed = typeof value === 'number' ? value : Number(value);
@@ -135,12 +120,12 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-    const supabase = await getSupabaseAdmin();
-    if (!isAdminRequest(request)) {
+    if (!await isAdminRequest()) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
+        const supabase = await getSupabaseAdmin();
         const payload = validatePayload(await request.json());
         const now = new Date().toISOString();
 

@@ -14,6 +14,13 @@ class _WalletApi extends DriverOperationsApi {
     },
     'requests': <Map<String, dynamic>>[],
     'ledger': <Map<String, dynamic>>[],
+    'settings': {
+      'telebirr_phone': '0912345678',
+      'bank_enabled': true,
+      'bank_name': 'Example Bank',
+      'bank_account_name': 'MotoBike Business',
+      'bank_account_number': '1234567890',
+    },
   };
 }
 
@@ -66,6 +73,13 @@ void main() {
       await tester.tap(find.text('Buy commission credit'));
       await tester.pumpAndSettle();
       expect(find.text('Amount (ETB)'), findsOneWidget);
+      expect(find.textContaining('0912345678'), findsOneWidget);
+
+      await tester.tap(find.text('Telebirr').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Bank transfer').last);
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Example Bank, MotoBike Business, account 1234567890'), findsOneWidget);
 
       Navigator.of(tester.element(find.byType(TextFormField).first)).pop();
       await tester.pumpAndSettle();

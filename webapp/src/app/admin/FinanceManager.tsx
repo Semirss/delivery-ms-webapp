@@ -1,14 +1,14 @@
 "use client";
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
-import { BUSINESS_TELEBIRR_PHONE } from '@/lib/business-contact';
 
 type Delivery = { id: string; status: string; customer_name: string; delivery_fee: string | null;
   fee_collection_method?: string; commission_percent?: number | null; payment_confirmed_at?: string | null; pickup_location: string; dropoff_location: string };
 type RequestRow = { id: string; kind: string; amount: number; method: string; status: string; account_name?: string;
   account_number?: string; bank_name?: string; external_reference?: string; review_note?: string; proof_path?: string | null; driver?: { name: string; phone: string } };
 type FinanceData = {
-  settings: { commission_percent: number; rate_note: string };
+  settings: { commission_percent: number; rate_note: string; telebirr_phone: string;
+    bank_enabled: boolean; bank_name: string; bank_account_name: string; bank_account_number: string };
   totals: { owner_commission: number; driver_earnings_balance: number; commission_credit: number; reserved_cashout: number };
   requests: RequestRow[];
   wallets: { driver_id: string; commission_credit: number; reserved_credit: number; earnings_balance: number;
@@ -18,6 +18,11 @@ type FinanceData = {
 };
 const money = (value: unknown) => `${Number(value ?? 0).toFixed(2)} ETB`;
 const field = 'w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900';
+const paymentDestination = (request: RequestRow) => request.account_number
+  ? request.method === 'bank'
+    ? `${request.bank_name} / ${request.account_name} / ${request.account_number}`
+    : `Telebirr ${request.account_number}`
+  : 'Destination not recorded on this older request';
 
 export default function FinanceManager({ deliveries, onUpdated }: { deliveries: Delivery[]; onUpdated: () => void }) {
   const [data,setData] = useState<FinanceData | null>(null);
@@ -25,6 +30,11 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   const [notice,setNotice] = useState('');
   const [rate,setRate] = useState('12');
   const [rateNote,setRateNote] = useState('');
+  const [telebirrPhone,setTelebirrPhone] = useState('');
+  const [bankEnabled,setBankEnabled] = useState(false);
+  const [bankName,setBankName] = useState('');
+  const [bankAccountName,setBankAccountName] = useState('');
+  const [bankAccountNumber,setBankAccountNumber] = useState('');
   const [busy,setBusy] = useState(false);
   const [review,setReview] = useState<RequestRow | null>(null);
   const [reference,setReference] = useState('');
@@ -46,7 +56,10 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
       if (response.status === 401) { window.location.assign('/admin/login'); return; }
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error);
-      setData(payload); setRate(String(payload.settings.commission_percent)); setRateNote(payload.settings.rate_note); setError('');
+      setData(payload); setRate(String(payload.settings.commission_percent)); setRateNote(payload.settings.rate_note);
+      setTelebirrPhone(payload.settings.telebirr_phone ?? ''); setBankEnabled(payload.settings.bank_enabled === true);
+      setBankName(payload.settings.bank_name ?? ''); setBankAccountName(payload.settings.bank_account_name ?? '');
+      setBankAccountNumber(payload.settings.bank_account_number ?? ''); setError('');
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not load finance.'); }
   },[]);
   useEffect(() => { void load(); },[load]);
@@ -67,7 +80,7 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
   return <div className="space-y-6">
     <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 text-sm text-amber-900">
       <p className="font-extrabold">Review payments before updating wallets</p>
-      <p className="mt-1">For top-ups, compare the screenshot with the payment received at {BUSINESS_TELEBIRR_PHONE}. Enter the real transaction reference when you approve. Older cash-out requests can still be settled here.</p>
+      <p className="mt-1">For top-ups, compare the screenshot with the payment received at the configured Telebirr or bank account. Enter the real transaction reference when you approve. Older cash-out requests can still be settled here.</p>
     </div>
     {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>}
     {notice && <p role="status" className="rounded-xl bg-emerald-50 p-4 text-emerald-700">{notice}</p>}
@@ -89,6 +102,21 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
           <button disabled={busy} className="self-end rounded-xl bg-blue-600 px-5 py-2 text-white font-bold disabled:opacity-50">Save commission</button>
         </div>
         <p className="text-xs text-neutral-500">200 ETB delivery → owner {money(200 * Number(rate || 0)/100)} · driver {money(200 - 200 * Number(rate || 0)/100)}</p>
+      </form>
+      <form className="rounded-2xl border bg-white p-5 space-y-4" onSubmit={e => {e.preventDefault(); void mutate({
+        action:'payment_methods',telebirr_phone:telebirrPhone,bank_enabled:bankEnabled,
+        bank_name:bankName,bank_account_name:bankAccountName,bank_account_number:bankAccountNumber,
+      },'Wallet payment details saved. Drivers will see them when they refresh their wallet.');}}>
+        <h3 className="font-extrabold text-neutral-900">Wallet top-up payment details</h3>
+        <p className="text-sm text-neutral-500">These details appear in the updated driver app. Verify the destination before saving because drivers may send real payments to it.</p>
+        <label className="block text-sm font-bold">Telebirr phone number<input className={field} type="tel" required minLength={8} maxLength={30} value={telebirrPhone} onChange={e => setTelebirrPhone(e.target.value)}/></label>
+        <label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" checked={bankEnabled} onChange={e => setBankEnabled(e.target.checked)}/>Offer bank transfer</label>
+        {bankEnabled && <div className="grid gap-3 sm:grid-cols-3">
+          <label className="text-sm font-bold">Bank name<input className={field} required minLength={2} maxLength={100} value={bankName} onChange={e => setBankName(e.target.value)}/></label>
+          <label className="text-sm font-bold">Account holder<input className={field} required minLength={2} maxLength={100} value={bankAccountName} onChange={e => setBankAccountName(e.target.value)}/></label>
+          <label className="text-sm font-bold">Account number<input className={field} required minLength={7} maxLength={34} inputMode="numeric" pattern="[0-9]{7,34}" value={bankAccountNumber} onChange={e => setBankAccountNumber(e.target.value)}/></label>
+        </div>}
+        <button disabled={busy} className="rounded-xl bg-blue-600 px-5 py-2 text-white font-bold disabled:opacity-50">Save payment details</button>
       </form>
       <section className="rounded-2xl border bg-white p-5 space-y-4">
         <h3 className="font-extrabold">Delivery fee and payment collection</h3>
@@ -135,10 +163,11 @@ export default function FinanceManager({ deliveries, onUpdated }: { deliveries: 
       <section className="rounded-2xl border bg-white p-5 space-y-4">
         <div className="flex justify-between"><h3 className="font-extrabold">Wallet requests · {pending.length} pending</h3><button onClick={load} className="text-sm font-bold text-blue-600">Refresh</button></div>
         {pending.length === 0 && <p className="text-sm text-neutral-500">No pending wallet requests.</p>}
-        {pending.map(r => <div key={r.id} className="rounded-xl border p-4 flex flex-wrap gap-4 justify-between items-center"><div><p className="font-bold">{r.driver?.name} · {r.kind === 'cashout' ? 'Cash out' : 'Credit top-up'} · {money(r.amount)}</p><p className="text-sm text-neutral-500">{r.method} · {r.driver?.phone}{r.account_number ? ` · ${r.bank_name || 'Telebirr'} / ${r.account_name} / ${r.account_number}` : ''}</p></div><button disabled={busy} onClick={() => {setReview(r);setReference('');setNote('');setConfirmed(false);}} className="rounded-xl border px-4 py-2 text-sm font-bold">Review</button></div>)}
+        {pending.map(r => <div key={r.id} className="rounded-xl border p-4 flex flex-wrap gap-4 justify-between items-center"><div><p className="font-bold">{r.driver?.name} · {r.kind === 'cashout' ? 'Cash out' : 'Credit top-up'} · {money(r.amount)}</p><p className="text-sm text-neutral-500">{r.method} · {r.driver?.phone} · {paymentDestination(r)}</p></div><button disabled={busy} onClick={() => {setReview(r);setReference('');setNote('');setConfirmed(false);}} className="rounded-xl border px-4 py-2 text-sm font-bold">Review</button></div>)}
         {review && <form className="rounded-xl bg-neutral-50 p-4 space-y-3" onSubmit={async e => {e.preventDefault();if(await mutate({action:'review',request_id:review.id,approve:true,external_reference:reference,review_note:note},'Payment reconciled and wallet updated.'))setReview(null);}}>
           <p className="font-bold">{review.driver?.name} · {review.kind} · {money(review.amount)}</p>
-          {review.kind === 'topup' && (review.proof_path ? <div className="space-y-2"><p className="text-sm font-bold">Driver payment screenshot</p><a href={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 underline">Open full screenshot</a><Image src={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} alt="Driver submitted Telebirr payment screenshot" width={960} height={720} unoptimized className="max-h-96 w-auto rounded-xl border object-contain" /></div> : <p className="text-sm text-red-700">No screenshot attached. Ask the driver to add one in the wallet, or reject this old request so they can submit a new Telebirr top-up.</p>)}
+          {review.kind === 'topup' && <p className="text-sm">Payment destination recorded on this request: {paymentDestination(review)}</p>}
+          {review.kind === 'topup' && (review.proof_path ? <div className="space-y-2"><p className="text-sm font-bold">Driver payment screenshot</p><a href={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 underline">Open full screenshot</a><Image src={`/api/admin/finance/proof?request_id=${encodeURIComponent(review.id)}`} alt="Driver submitted payment screenshot" width={960} height={720} unoptimized className="max-h-96 w-auto rounded-xl border object-contain" /></div> : <p className="text-sm text-red-700">No screenshot attached. Ask the driver to add one in the wallet, or reject this old request so they can submit a new top-up.</p>)}
           <p className="text-sm">{review.kind === 'cashout' ? 'Send the payout first, verify its final success, then enter the transaction reference.' : 'Verify that the driver’s top-up payment has reached the business account before adding credit.'}</p>
           <label className="block text-sm">Actual transaction reference<input className={field} minLength={5} maxLength={150} required value={reference} onChange={e => setReference(e.target.value)}/></label>
           <label className="block text-sm">Review note<textarea className={field} required minLength={3} maxLength={500} value={note} onChange={e => setNote(e.target.value)}/></label>
