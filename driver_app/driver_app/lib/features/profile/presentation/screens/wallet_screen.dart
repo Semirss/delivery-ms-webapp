@@ -54,10 +54,15 @@ class WalletScreen extends StatefulWidget {
 
 class _WalletScreenState extends State<WalletScreen>
     with WidgetsBindingObserver {
+  static const _historyPageSize = 10;
   late final DriverOperationsApi _api;
   Map<String, dynamic>? _data;
   String? _error;
   bool _loading = true;
+  bool _historyLoading = false;
+  int _requestsPage = 1;
+  int _ledgerPage = 1;
+  int _loadGeneration = 0;
   Timer? _refreshTimer;
   @override
   void initState() {
@@ -66,10 +71,11 @@ class _WalletScreenState extends State<WalletScreen>
     WidgetsBinding.instance.addObserver(this);
     _load();
     _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (mounted &&
-          ((_data?['requests'] as List?) ?? []).any(
-            (r) => r['status'] == 'pending',
-          )) {
+      if (mounted && !_historyLoading &&
+          ((_data?['pending_requests_count'] as num?)?.toInt() ??
+                  ((_data?['requests'] as List?) ?? []).where(
+                    (r) => r['status'] == 'pending',
+                  ).length) > 0) {
         _load();
       }
     });
@@ -89,21 +95,50 @@ class _WalletScreenState extends State<WalletScreen>
 
   double _number(Object? value) => double.tryParse('$value') ?? 0;
   String _money(Object? value) => '${_number(value).toStringAsFixed(2)} ETB';
-  Future<void> _load() async {
+  Future<void> _load({int? requestsPage, int? ledgerPage}) async {
+    final generation = ++_loadGeneration;
+    var targetRequestsPage = requestsPage ?? _requestsPage;
+    var targetLedgerPage = ledgerPage ?? _ledgerPage;
+    if (requestsPage != null || ledgerPage != null) {
+      setState(() => _historyLoading = true);
+    }
     try {
-      final data = await _api.load();
-      if (mounted)
+      var data = await _api.load(
+        requestsPage: targetRequestsPage,
+        ledgerPage: targetLedgerPage,
+      );
+      final requestsTotal = (data['requests_total'] as num?)?.toInt() ??
+          ((data['requests'] as List?)?.length ?? 0);
+      final ledgerTotal = (data['ledger_total'] as num?)?.toInt() ??
+          ((data['ledger'] as List?)?.length ?? 0);
+      final lastRequestsPage = max(1, (requestsTotal + _historyPageSize - 1) ~/ _historyPageSize);
+      final lastLedgerPage = max(1, (ledgerTotal + _historyPageSize - 1) ~/ _historyPageSize);
+      if (targetRequestsPage > lastRequestsPage || targetLedgerPage > lastLedgerPage) {
+        targetRequestsPage = min(targetRequestsPage, lastRequestsPage);
+        targetLedgerPage = min(targetLedgerPage, lastLedgerPage);
+        data = await _api.load(
+          requestsPage: targetRequestsPage,
+          ledgerPage: targetLedgerPage,
+        );
+      }
+      if (mounted && generation == _loadGeneration) {
         setState(() {
           _data = data;
           _error = null;
           _loading = false;
+          _historyLoading = false;
+          _requestsPage = targetRequestsPage;
+          _ledgerPage = targetLedgerPage;
         });
+      }
     } catch (error) {
-      if (mounted)
+      if (mounted && generation == _loadGeneration) {
         setState(() {
           _error = '$error'.replaceFirst('Exception: ', '');
           _loading = false;
+          _historyLoading = false;
         });
+      }
     }
   }
 
@@ -132,7 +167,7 @@ class _WalletScreenState extends State<WalletScreen>
         bytes,
         image.name,
       );
-      await _load();
+                                         await _load(requestsPage: 1);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Screenshot attached for review.')),
@@ -401,6 +436,15 @@ class _WalletScreenState extends State<WalletScreen>
     final wallet = (_data?['wallet'] as Map?) ?? {};
     final requests = (_data?['requests'] as List?) ?? [];
     final ledger = (_data?['ledger'] as List?) ?? [];
+    final requestsTotal = (_data?['requests_total'] as num?)?.toInt() ?? requests.length;
+    final ledgerTotal = (_data?['ledger_total'] as num?)?.toInt() ?? ledger.length;
+    final serverPaged = _data?['history_page_size'] is num;
+    final visibleRequests = serverPaged
+        ? requests
+        : requests.skip((_requestsPage - 1) * _historyPageSize).take(_historyPageSize);
+    final visibleLedger = serverPaged
+        ? ledger
+        : ledger.skip((_ledgerPage - 1) * _historyPageSize).take(_historyPageSize);
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
@@ -517,8 +561,9 @@ class _WalletScreenState extends State<WalletScreen>
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text('No wallet requests yet.'),
                       ),
-                    for (final request in requests)
+                    for (final request in visibleRequests)
                       Card(
+                        key: Key('wallet-request-${request['id']}'),
                         margin: const EdgeInsets.only(top: 9),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(17),
@@ -561,6 +606,14 @@ class _WalletScreenState extends State<WalletScreen>
                                 ),
                         ),
                       ),
+                    if (requestsTotal > _historyPageSize)
+                      _historyPager(
+                        section: 'requests',
+                        page: _requestsPage,
+                        total: requestsTotal,
+                        onPrevious: () => _load(requestsPage: _requestsPage - 1),
+                        onNext: () => _load(requestsPage: _requestsPage + 1),
+                      ),
                     const SizedBox(height: 28),
                     Text(
                       'Wallet activity',
@@ -575,8 +628,9 @@ class _WalletScreenState extends State<WalletScreen>
                           'Settled trips and verified wallet payments will appear here.',
                         ),
                       ),
-                    for (final entry in ledger)
+                    for (final entry in visibleLedger)
                       Card(
+                        key: Key('wallet-ledger-${entry['id']}'),
                         margin: const EdgeInsets.only(top: 9),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(17),
@@ -592,10 +646,47 @@ class _WalletScreenState extends State<WalletScreen>
                           ),
                         ),
                       ),
+                    if (ledgerTotal > _historyPageSize)
+                      _historyPager(
+                        section: 'ledger',
+                        page: _ledgerPage,
+                        total: ledgerTotal,
+                        onPrevious: () => _load(ledgerPage: _ledgerPage - 1),
+                        onNext: () => _load(ledgerPage: _ledgerPage + 1),
+                      ),
                   ],
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _historyPager({
+    required String section,
+    required int page,
+    required int total,
+    required VoidCallback onPrevious,
+    required VoidCallback onNext,
+  }) {
+    final pages = (total + _historyPageSize - 1) ~/ _historyPageSize;
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        children: [
+          Text('Page $page of $pages'),
+          const Spacer(),
+          TextButton(
+            key: Key('$section-previous'),
+            onPressed: _historyLoading || page == 1 ? null : onPrevious,
+            child: const Text('Previous'),
+          ),
+          TextButton(
+            key: Key('$section-next'),
+            onPressed: _historyLoading || page >= pages ? null : onNext,
+            child: const Text('Next'),
+          ),
+        ],
+      ),
     );
   }
 

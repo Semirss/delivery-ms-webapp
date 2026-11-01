@@ -51,7 +51,10 @@ class DriverOperationsApi {
     }
   }
 
-  Future<Map<String, dynamic>> load() => request('/api/driver/operations');
+  Future<Map<String, dynamic>> load({int requestsPage = 1, int ledgerPage = 1}) =>
+      request(
+        '/api/driver/operations?requests_page=$requestsPage&ledger_page=$ledgerPage',
+      );
   Future<Map<String, dynamic>> profile() => request('/api/driver/profile');
   Future<Map<String, dynamic>> update(Map<String, dynamic> data) =>
       request('/api/driver/operations', method: 'PATCH', data: data);

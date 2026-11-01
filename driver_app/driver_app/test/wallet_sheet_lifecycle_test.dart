@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _WalletApi extends DriverOperationsApi {
   @override
-  Future<Map<String, dynamic>> load() async => {
+  Future<Map<String, dynamic>> load({int requestsPage = 1, int ledgerPage = 1}) async => {
     'wallet': {
       'commission_credit': 0,
       'reserved_credit': 0,
@@ -26,7 +26,7 @@ class _WalletApi extends DriverOperationsApi {
 
 class _WalletApiWithRequest extends _WalletApi {
   @override
-  Future<Map<String, dynamic>> load() async {
+  Future<Map<String, dynamic>> load({int requestsPage = 1, int ledgerPage = 1}) async {
     final data = await super.load();
     data['requests'] = <Map<String, dynamic>>[
       {
@@ -39,6 +39,38 @@ class _WalletApiWithRequest extends _WalletApi {
         'review_note': null,
       },
     ];
+    return data;
+  }
+}
+
+class _WalletApiWithHistory extends _WalletApi {
+  int lastRequestsPage = 1;
+  int lastLedgerPage = 1;
+
+  @override
+  Future<Map<String, dynamic>> load({int requestsPage = 1, int ledgerPage = 1}) async {
+    lastRequestsPage = requestsPage;
+    lastLedgerPage = ledgerPage;
+    final data = await super.load();
+    data['requests'] = List.generate(10, (index) {
+      final number = (requestsPage - 1) * 10 + index + 1;
+      return {
+        'id': 'request-$number', 'kind': 'topup', 'method': 'telebirr',
+        'amount': number, 'status': 'completed', 'proof_path': 'proof',
+      };
+    }).where((request) => (request['amount'] as int) <= 25).toList();
+    data['ledger'] = List.generate(10, (index) {
+      final number = (ledgerPage - 1) * 10 + index + 1;
+      return {
+        'id': 'entry-$number', 'kind': 'credit_$number',
+        'created_at': '2026-11-01T09:00:00Z',
+        'credit_delta': number, 'earnings_delta': 0,
+      };
+    }).where((entry) => (entry['credit_delta'] as int) <= 25).toList();
+    data['requests_total'] = 25;
+    data['ledger_total'] = 25;
+    data['pending_requests_count'] = 0;
+    data['history_page_size'] = 10;
     return data;
   }
 }
@@ -87,4 +119,36 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
+
+  testWidgets('wallet history pages requests and activity independently', (tester) async {
+    final api = _WalletApiWithHistory();
+    await tester.pumpWidget(MaterialApp(home: WalletScreen(api: api)));
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(find.byKey(const Key('requests-next')), 250);
+    await tester.ensureVisible(find.byKey(const Key('requests-next')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('requests-next')));
+    await tester.pumpAndSettle();
+    expect(api.lastRequestsPage, 2);
+    expect(api.lastLedgerPage, 1);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('wallet-request-request-11')),
+      -250,
+    );
+    expect(find.byKey(const Key('wallet-request-request-11')), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.byKey(const Key('ledger-next')), 250);
+    await tester.ensureVisible(find.byKey(const Key('ledger-next')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('ledger-next')));
+    await tester.pumpAndSettle();
+    expect(api.lastRequestsPage, 2);
+    expect(api.lastLedgerPage, 2);
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('wallet-ledger-entry-11')),
+      -250,
+    );
+    expect(find.byKey(const Key('wallet-ledger-entry-11')), findsOneWidget);
+  });
 }

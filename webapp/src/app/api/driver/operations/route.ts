@@ -4,22 +4,41 @@ import { operationsFailure, operationsJson, operationsOptions } from '@/lib/oper
 
 export const dynamic = 'force-dynamic';
 export const OPTIONS = operationsOptions;
+const historyPageSize = 10;
+
+function historyPage(value: string | null) {
+  if (!value || !/^[1-9][0-9]*$/.test(value)) return 1;
+  const page = Number(value);
+  return Number.isSafeInteger(page) ? Math.min(page, 100000) : 1;
+}
 
 export async function GET(request: Request) {
   try {
     const { db, driver } = await requireDriver(request);
+    const params = new URL(request.url).searchParams;
+    const requestsPage = historyPage(params.get('requests_page'));
+    const ledgerPage = historyPage(params.get('ledger_page'));
     const { error: expiryError } = await db.rpc('expire_driver_offers', { p_driver_id: driver.id });
     if (expiryError) throw expiryError;
     const { error: walletError } = await db.from('driver_wallets').upsert({ driver_id: driver.id }, { onConflict: 'driver_id', ignoreDuplicates: true });
     if (walletError) throw walletError;
     const results = await Promise.all([
       db.from('driver_wallets').select('*').eq('driver_id', driver.id).single(),
-      db.from('driver_wallet_requests').select('*').eq('driver_id', driver.id).order('created_at', { ascending: false }).limit(100),
-      db.from('driver_wallet_ledger').select('*').eq('driver_id', driver.id).order('created_at', { ascending: false }).limit(100),
+      db.from('driver_wallet_requests').select('*', { count: 'exact' }).eq('driver_id', driver.id)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range((requestsPage - 1) * historyPageSize, requestsPage * historyPageSize - 1),
+      db.from('driver_wallet_ledger').select('*', { count: 'exact' }).eq('driver_id', driver.id)
+        .order('created_at', { ascending: false }).order('id', { ascending: false })
+        .range((ledgerPage - 1) * historyPageSize, ledgerPage * historyPageSize - 1),
       db.from('driver_operations_settings').select('*').eq('id', true).single(),
+      db.from('driver_wallet_requests').select('id', { count: 'exact', head: true })
+        .eq('driver_id', driver.id).eq('status', 'pending'),
     ]);
     for (const result of results) if (result.error) throw result.error;
     return operationsJson({ driver, wallet: results[0].data, requests: results[1].data, ledger: results[2].data,
+      requests_total: results[1].count ?? 0, ledger_total: results[2].count ?? 0,
+      pending_requests_count: results[4].count ?? 0,
+      requests_page: requestsPage, ledger_page: ledgerPage, history_page_size: historyPageSize,
       settings: results[3].data, payment_mode: 'manual_reconciliation', automatic_transfers_enabled: false });
   } catch (error) { return operationsFailure(error); }
 }
