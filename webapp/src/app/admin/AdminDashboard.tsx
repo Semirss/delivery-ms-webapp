@@ -46,6 +46,7 @@ type Delivery = {
   driver_id: string | null;
   created_at: string;
   assigned_at?: string | null;
+  offer_expires_at?: string | null;
   accepted_at?: string | null;
   fee_collection_method?: string;
   payment_confirmed_at?: string | null;
@@ -104,10 +105,10 @@ type ModalPromptData = Record<string, string>;
 
 const ASSIGN_TIMEOUT_MS = 2 * 60 * 1000; // 2 minutes
 
-function getSecondsLeft(assignedAt?: string | null): number {
+function getSecondsLeft(assignedAt?: string | null, expiresAt?: string | null): number {
   if (!assignedAt) return 0;
-  const elapsed = Date.now() - new Date(assignedAt).getTime();
-  return Math.max(0, Math.floor((ASSIGN_TIMEOUT_MS - elapsed) / 1000));
+  const deadline = expiresAt ? new Date(expiresAt).getTime() : new Date(assignedAt).getTime() + ASSIGN_TIMEOUT_MS;
+  return Math.max(0, Math.floor((deadline - Date.now()) / 1000));
 }
 
 // ── Date filter helpers ──────────────────────────────────────────────────────
@@ -391,7 +392,7 @@ export default function AdminDashboard() {
     const timedOut = deliveries.filter(d =>
       d.status === 'Assigned' &&
       d.assigned_at &&
-      now - new Date(d.assigned_at).getTime() > ASSIGN_TIMEOUT_MS
+      now >= (d.offer_expires_at ? new Date(d.offer_expires_at).getTime() : new Date(d.assigned_at).getTime() + ASSIGN_TIMEOUT_MS)
     );
     for (const d of timedOut) {
       try {
@@ -646,9 +647,6 @@ export default function AdminDashboard() {
 
   // ── Delivery assignment ───────────────────────────────────────────────────
   const assignDriver = async (deliveryId: string, driverId: string) => {
-    const selectedDriver = drivers.find(driver => driver.id === driverId);
-    if (selectedDriver && gpsQuality(selectedDriver) === 'unknown' &&
-        !window.confirm(`${selectedDriver.name}'s GPS is still unknown. Send the offer? They will need a fresh GPS fix before accepting.`)) return;
     const response = await fetch(`/api/deliveries/${deliveryId}/assign`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -903,7 +901,7 @@ export default function AdminDashboard() {
                       <div className="col-span-full py-12 text-center text-neutral-500 font-medium bg-white rounded-2xl border border-neutral-200">No deliveries found.</div>
                     )}
                     {displayedDeliveries.map(d => {
-                      const secsLeft = d.status === 'Assigned' ? getSecondsLeft(d.assigned_at) : 0;
+                      const secsLeft = d.status === 'Assigned' ? getSecondsLeft(d.assigned_at, d.offer_expires_at) : 0;
                       const isTimingOut = d.status === 'Assigned' && secsLeft > 0 && secsLeft < 60;
                       const showCancellationNotice = shouldShowCancellationNotice(d);
                       const foodDelivery = isFoodDelivery(d);
@@ -939,7 +937,7 @@ export default function AdminDashboard() {
                           {d.status === 'Assigned' && d.assigned_at && (
                             <div className={`mb-3 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center space-x-2 ${secsLeft === 0 ? 'bg-red-50 text-red-600' : secsLeft < 60 ? 'bg-amber-50 text-amber-700 animate-pulse' : 'bg-blue-50 text-blue-600'}`}>
                               <span>⏱️</span>
-                              <span>{secsLeft === 0 ? 'Reverting...' : `Driver accepts in: ${Math.floor(secsLeft / 60)}:${String(secsLeft % 60).padStart(2, '0')}`}</span>
+                              <span>{secsLeft === 0 ? 'Reverting...' : `Driver accepts in: ${secsLeft >= 3600 ? `${Math.floor(secsLeft / 3600)}:` : ''}${String(Math.floor(secsLeft / 60) % 60).padStart(2, '0')}:${String(secsLeft % 60).padStart(2, '0')}`}</span>
                             </div>
                           )}
 
@@ -1017,7 +1015,9 @@ export default function AdminDashboard() {
                                   className="block w-full text-sm rounded-xl border-neutral-200 bg-neutral-50 focus:ring-blue-500 focus:border-blue-500 font-medium py-2.5 border"
                                   onChange={(e) => {
                                     if (e.target.value) {
-                                      assignDriver(d.id, e.target.value);
+                                      const driverId = e.target.value;
+                                      e.target.value = '';
+                                      void assignDriver(d.id, driverId);
                                       // NOTE: do NOT switch tabs here — switching tabs unmounts this
                                       // card which causes the dropdown to vanish before selection registers.
                                     }
@@ -1025,14 +1025,10 @@ export default function AdminDashboard() {
                                   defaultValue=""
                                 >
                                   <option value="" disabled>Assign Driver...</option>
-                                  {assignableDrivers.filter(drv => gpsQuality(drv) === 'live').map(drv => (
-                                    <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online 🟢)</option>
-                                  ))}
-                                  {assignableDrivers.filter(drv => gpsQuality(drv) === 'unknown').map(drv => (
-                                    <option key={drv.id} value={drv.id}>{drv.name} ({drv.vehicle_type || 'Bike'} - Online, GPS pending)</option>
-                                  ))}
-                                  {assignableDrivers.filter(drv => !['live', 'unknown'].includes(gpsQuality(drv))).map(drv => (
-                                    <option key={drv.id} value={drv.id} disabled>{drv.name} (GPS {gpsQuality(drv)})</option>
+                                  {assignableDrivers.map(drv => (
+                                    <option key={drv.id} value={drv.id}>
+                                      {drv.name} ({drv.vehicle_type || 'Bike'} - {drv.status === 'Online' && !drv.availability_paused ? 'Online' : 'Offline'}, GPS {gpsQuality(drv)})
+                                    </option>
                                   ))}
                                 </select>
                                 <button

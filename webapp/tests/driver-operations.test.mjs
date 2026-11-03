@@ -35,7 +35,7 @@ async function platformTrip(fee=200) {
 before(async () => {
   db = new PGlite({extensions:{pgcrypto}});
   await db.exec("CREATE SCHEMA extensions; CREATE SCHEMA storage; CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit integer,allowed_mime_types text[]); CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS; CREATE PUBLICATION supabase_realtime; CREATE TABLE public.app_notifications(id uuid DEFAULT gen_random_uuid(),app text,recipient_id uuid,title text,body text,type text);");
-  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql','schema_v16_driver_topup_proofs.sql','schema_v17_browser_gps_accuracy.sql','schema_v18_driver_offer_fare.sql']) {
+  for (const name of ['schema.sql','schema_v2_updates.sql','schema_v3_updates.sql','schema_v15_driver_operations.sql','schema_v16_driver_topup_proofs.sql','schema_v17_browser_gps_accuracy.sql','schema_v18_driver_offer_fare.sql','schema_v20_pending_gps_dispatch.sql','schema_v23_admin_assign_any_driver.sql']) {
     await db.exec(await readFile(new URL(`../../supabase/${name}`,import.meta.url),'utf8'));
   }
 });
@@ -182,14 +182,51 @@ test('anonymous and authenticated database roles cannot mutate money or forge co
   }
 });
 
-test('dispatch rejects stale, inaccurate, inactive and unapproved drivers',async () => {
+test('dispatch assigns offline or stale-GPS drivers, while account checks still apply',async () => {
   const id=await delivery();
-  await db.query("UPDATE drivers SET last_location_update=now()-interval '2 minutes' WHERE id=$1",[driver]);
-  await assert.rejects(assign(id),/fresh GPS/);
+  await db.query("UPDATE drivers SET status='Offline',availability_paused=true WHERE id=$1",[driver]);
+  const offlineOffer=await assign(id);
+  assert.equal(offlineOffer.status,'Assigned');
+  assert.ok(new Date(offlineOffer.offer_expires_at).getTime()-Date.now()>29*60*1000);
+  await assert.rejects(action(id,'accept'),/Go online with a fresh, accurate GPS/);
+  await action(id,'reject');
+  await db.query("UPDATE drivers SET status='Online',availability_paused=false,last_location_update=now()-interval '2 minutes' WHERE id=$1",[driver]);
+  const onlineOffer=await assign(id);
+  assert.equal(onlineOffer.status,'Assigned');
+  assert.ok(new Date(onlineOffer.offer_expires_at).getTime()-Date.now()<3*60*1000);
+  await action(id,'reject');
   await db.query('UPDATE drivers SET last_location_update=now(),location_accuracy_m=500 WHERE id=$1',[driver]);
-  await assert.rejects(assign(id),/fresh GPS/);
-  await db.query('UPDATE drivers SET location_accuracy_m=10,is_active=false WHERE id=$1',[driver]);
+  assert.equal((await assign(id)).status,'Assigned');
+  await action(id,'reject');
+  await db.query('UPDATE drivers SET current_lat=NULL,current_lng=NULL,last_location_update=NULL,location_accuracy_m=NULL WHERE id=$1',[driver]);
+  assert.equal((await assign(id)).status,'Assigned');
+  await action(id,'reject');
+  await db.query('UPDATE drivers SET is_active=false WHERE id=$1',[driver]);
   await assert.rejects(assign(id),/approved, active/);
+  await db.query("UPDATE drivers SET is_active=true,approval_status='Pending' WHERE id=$1",[driver]);
+  await assert.rejects(assign(id),/approved, active/);
+});
+
+test('dispatch preserves the one-active-offer limit for offline drivers',async () => {
+  await db.query("UPDATE drivers SET status='Offline' WHERE id=$1",[driver]);
+  await assign(await delivery());
+  await assert.rejects(assign(await delivery()),/already has an active/);
+});
+
+test('offline drivers can receive an offer with no GPS fix',async () => {
+  const id=await delivery();
+  await db.query("UPDATE drivers SET status='Offline',current_lat=NULL,current_lng=NULL,last_location_update=NULL,location_accuracy_m=NULL WHERE id=$1",[driver]);
+  const offer=await assign(id);
+  assert.equal(offer.driver_id,driver);
+  assert.equal(offer.status,'Assigned');
+});
+
+test('driver location validation still rejects stale and inaccurate fixes',async () => {
+  await db.query("UPDATE drivers SET last_location_update=now()-interval '2 minutes' WHERE id=$1",[driver]);
+  const id=await delivery(); await assign(id);
+  await assert.rejects(action(id,'accept'),/fresh, accurate GPS/);
+  await db.query('UPDATE drivers SET last_location_update=now(),location_accuracy_m=500 WHERE id=$1',[driver]);
+  await assert.rejects(action(id,'accept'),/fresh, accurate GPS/);
 });
 
 test('Chrome-size 150 m fixes can receive and accept offers, but 201 m cannot',async () => {
